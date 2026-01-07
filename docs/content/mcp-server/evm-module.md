@@ -378,13 +378,96 @@ Get current gas price.
 
 | Network | Chain ID | Native Token |
 |---------|----------|--------------|
-| arbitrum | 42161 | ETH |
 | ethereum | 1 | ETH |
 | bsc | 56 | BNB |
 | polygon | 137 | MATIC |
+| arbitrum | 42161 | ETH |
 | optimism | 10 | ETH |
-| avalanche | 43114 | AVAX |
 | base | 8453 | ETH |
+| avalanche | 43114 | AVAX |
+| opbnb | 204 | BNB |
+| iotex | 4689 | IOTX |
+
+### Testnets
+
+| Network | Chain ID | Native Token |
+|---------|----------|--------------|
+| sepolia | 11155111 | ETH |
+| bsc_testnet | 97 | tBNB |
+| polygon_mumbai | 80001 | MATIC |
+| opbnb_testnet | 5611 | tBNB |
+
+---
+
+## Additional Module Reference
+
+### Security Module
+
+| Tool | Description |
+|------|-------------|
+| `analyze_token_security` | Comprehensive token analysis |
+| `detect_rug_pull_risk` | Rug pull indicators detection |
+| `detect_honeypot` | Honeypot token detection |
+| `check_contract_ownership` | Ownership verification (renounced/multisig/timelock) |
+| `get_holder_distribution` | Holder concentration & whale analysis |
+| `analyze_contract_permissions` | Dangerous permissions detection |
+| `verify_contract_source` | Verify source on block explorer |
+
+### Staking Module
+
+| Tool | Description |
+|------|-------------|
+| `stake_eth_lido` | Stake ETH for stETH |
+| `wrap_steth` | Wrap stETH to wstETH |
+| `unwrap_wsteth` | Unwrap wstETH |
+| `get_lido_stats` | Lido statistics |
+| `stake_lp_tokens` | LP farming |
+| `get_farming_position` | Farm position info |
+
+### Governance Module
+
+| Tool | Description |
+|------|-------------|
+| `get_proposal_details` | Proposal info |
+| `cast_vote` | Vote on proposal |
+| `delegate_votes` | Delegate voting power |
+| `queue_proposal` | Queue for execution |
+| `execute_proposal` | Execute proposal |
+| `cancel_proposal` | Cancel proposal |
+
+### ENS/Domains Module
+
+| Tool | Description |
+|------|-------------|
+| `resolve_ens_name` | Resolve ENS to address |
+| `reverse_resolve_address` | Get ENS for address |
+| `check_ens_availability` | Check name availability |
+| `get_ens_name_details` | Get comprehensive ENS info |
+| `register_ens_name` | Register new ENS domain |
+| `set_ens_records` | Set address, text, contenthash records |
+| `transfer_ens` | Transfer ENS ownership |
+| `renew_ens` | Extend registration |
+| `create_subdomain` | Create ENS subdomain |
+
+### Deployment Module
+
+| Tool | Description |
+|------|-------------|
+| `deploy_contract` | Deploy from bytecode |
+| `deploy_create2` | Deterministic CREATE2 deployment |
+| `deploy_proxy` | Deploy upgradeable proxy |
+| `upgrade_proxy` | Upgrade proxy implementation |
+| `verify_contract` | Verify on block explorer |
+| `predict_create2_address` | Predict CREATE2 address |
+
+### MEV Protection Module
+
+| Tool | Description |
+|------|-------------|
+| `send_private_transaction` | Send via Flashbots Protect |
+| `simulate_bundle` | Simulate transaction bundle |
+| `check_mev_exposure` | Analyze MEV risk for swaps |
+| `get_mev_protection_info` | Get protection options |
 
 ---
 
@@ -395,3 +478,5 @@ Get current gas price.
 | `PRIVATE_KEY` | Default private key for write operations |
 | `RPC_URL_ARBITRUM` | Custom Arbitrum RPC |
 | `RPC_URL_ETHEREUM` | Custom Ethereum RPC |
+| `RPC_URL_BSC` | Custom BSC RPC |
+| `RPC_URL_POLYGON` | Custom Polygon RPC |

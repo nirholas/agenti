@@ -4,11 +4,13 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { registerBlocks } from "./modules/blocks/index.js"
 import { registerBridge } from "./modules/bridge/index.js"
 import { registerContracts } from "./modules/contracts/index.js"
+import { registerDeployment } from "./modules/deployment/index.js"
 import { registerDomains } from "./modules/domains/index.js"
 import { registerEvents } from "./modules/events/index.js"
 import { registerGas } from "./modules/gas/index.js"
 import { registerGovernance } from "./modules/governance/index.js"
 import { registerLending } from "./modules/lending/index.js"
+import { registerMEV } from "./modules/mev/index.js"
 import { registerMulticall } from "./modules/multicall/index.js"
 import { registerNetwork } from "./modules/network/index.js"
 import { registerNews } from "./modules/news/index.js"
@@ -54,6 +56,10 @@ export function registerEVM(server: McpServer) {
   registerWallet(server)
   registerPortfolio(server)
   registerUtils(server)
+
+  // Deployment & MEV modules
+  registerDeployment(server)
+  registerMEV(server)
 
   // Data modules
   registerPriceFeeds(server)

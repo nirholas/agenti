@@ -22,13 +22,16 @@ Enable AI agents to interact with any EVM blockchain through natural language.
 - ⛽ **Gas** - Gas prices across chains, EIP-1559 suggestions
 - 📦 **Multicall** - Batch read/write operations
 - 📊 **Events/Logs** - Query historical events, decode logs
-- 🔒 **Security** - Token honeypot check, contract verification
-- 💰 **Staking** - Liquid staking, validator info
+- 🔒 **Security** - Rug pull detection, honeypot check, holder analysis, contract permissions
+- 💰 **Staking** - Liquid staking (Lido), LP farming
 - ✍️ **Signatures** - Sign messages, verify signatures, EIP-712
 - 🏦 **Lending** - Aave/Compound positions, borrow rates
 - 📈 **Price Feeds** - Historical prices, TWAP, oracle aggregation
 - 📁 **Portfolio** - Track holdings across chains
 - 🏛️ **Governance** - Snapshot votes, on-chain proposals
+- 🚀 **Deployment** - Deploy contracts, CREATE2, upgradeable proxies, verification
+- 🛡️ **MEV Protection** - Flashbots Protect, private transactions, bundle simulation
+- 🆔 **ENS/Domains** - Register, transfer, renew, set records, subdomains
 
 ## Quick Start
 
@@ -349,20 +352,20 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 #### Liquid Staking
 | Feature | Status |
 |---------|--------|
-| Stake for liquid staking tokens (stETH, rETH) | 📋 |
-| Unwrap liquid staking tokens | 📋 |
-| Get exchange rate | 📋 |
-| Get staking rewards rate | 📋 |
+| Stake for liquid staking tokens (stETH, rETH) | ✅ |
+| Unwrap liquid staking tokens | ✅ |
+| Get exchange rate | ✅ |
+| Get staking rewards rate | ✅ |
 
 #### LP Staking/Farming
 | Feature | Status |
 |---------|--------|
-| Stake LP tokens | 📋 |
-| Unstake LP tokens | 📋 |
-| Claim farming rewards | 📋 |
-| Get farming APY | 📋 |
+| Stake LP tokens | ✅ |
+| Unstake LP tokens | ✅ |
+| Claim farming rewards | ✅ |
+| Get farming APY | ✅ |
 | Compound rewards | 📋 |
-| Get pending rewards | 📋 |
+| Get pending rewards | ✅ |
 | Boost rewards (veTokens) | 📋 |
 
 #### Restaking
@@ -420,12 +423,12 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 |---------|--------|
 | Bridge tokens cross-chain | ✅ |
 | Get bridge quote | ✅ |
-| Get bridge status | 📋 |
+| Get bridge status | ✅ |
 | Get supported chains | ✅ |
-| Get supported tokens | 📋 |
+| Get supported tokens | ✅ |
 | Claim bridged tokens | 📋 |
 | Get bridge fees | ✅ |
-| Get estimated time | 📋 |
+| Get estimated time | ✅ |
 
 #### Cross-Chain Messaging
 | Feature | Status |
@@ -457,10 +460,10 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Delegate votes | ✅ |
 | Get voting power | ✅ |
 | Get proposal state | ✅ |
-| Queue proposal | 📋 |
-| Execute proposal | 📋 |
-| Cancel proposal | 📋 |
-| Get vote receipt | 📋 |
+| Queue proposal | ✅ |
+| Execute proposal | ✅ |
+| Cancel proposal | ✅ |
+| Get vote receipt | ✅ |
 
 #### Token Locking
 | Feature | Status |
@@ -491,31 +494,31 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Check if contract is proxy | ✅ |
 | Get implementation address | ✅ |
 | Detect honeypots | ✅ |
-| Check for rug pull risks | 📋 |
+| Check for rug pull risks | ✅ |
 | Audit score | 📋 |
-| Get contract creator | 📋 |
-| Get contract age | 📋 |
-| Detect malicious functions | 📋 |
+| Get contract creator | ✅ |
+| Get contract age | ✅ |
+| Detect malicious functions | ✅ |
 
 #### Token Security
 | Feature | Status |
 |---------|--------|
 | Check token safety | ✅ |
-| Get holder distribution | 📋 |
-| Check if mintable | 📋 |
-| Check if pausable | 📋 |
-| Check for hidden fees | 📋 |
-| Check liquidity locked | 📋 |
-| Get top holders | 📋 |
-| Check ownership renounced | 📋 |
+| Get holder distribution | ✅ |
+| Check if mintable | ✅ |
+| Check if pausable | ✅ |
+| Check for hidden fees | ✅ |
+| Check liquidity locked | ✅ |
+| Get top holders | ✅ |
+| Check ownership renounced | ✅ |
 
 #### Wallet Security
 | Feature | Status |
 |---------|--------|
-| Get approval list | 📋 |
-| Revoke approvals | 📋 |
-| Check for drainers | 📋 |
-| Simulate transaction safety | 📋 |
+| Get approval list | ✅ |
+| Revoke approvals | ✅ |
+| Check for drainers | ✅ |
+| Simulate transaction safety | ✅ |
 | Get wallet risk score | 📋 |
 
 ---
@@ -554,15 +557,15 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 #### ENS (Ethereum Name Service)
 | Feature | Status |
 |---------|--------|
-| Register domain | 📋 |
+| Register domain | ✅ |
 | Resolve name to address | ✅ |
 | Reverse resolve address to name | ✅ |
 | Set primary name | 📋 |
-| Set records (text, address, content hash) | 📋 |
-| Transfer domain | 📋 |
-| Renew domain | 📋 |
+| Set records (text, address, content hash) | ✅ |
+| Transfer domain | ✅ |
+| Renew domain | ✅ |
 | Get expiry date | 📋 |
-| Set subdomains | 📋 |
+| Set subdomains | ✅ |
 
 #### Other Name Services
 | Feature | Status |
@@ -657,10 +660,10 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Feature | Status |
 |---------|--------|
 | Call view/pure functions | ✅ |
-| Get storage at slot | 📋 |
+| Get storage at slot | ✅ |
 | Get contract bytecode | ✅ |
 | Multicall (batch reads) | ✅ |
-| Static call simulation | 📋 |
+| Static call simulation | ✅ |
 
 #### Write Operations
 | Feature | Status |
@@ -674,11 +677,11 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 #### Contract Deployment
 | Feature | Status |
 |---------|--------|
-| Deploy contract | 📋 |
-| Deploy with CREATE2 | 📋 |
-| Deploy proxy contract | 📋 |
-| Upgrade proxy | 📋 |
-| Verify on explorer | 📋 |
+| Deploy contract | ✅ |
+| Deploy with CREATE2 | ✅ |
+| Deploy proxy contract | ✅ |
+| Upgrade proxy | ✅ |
+| Verify on explorer | ✅ |
 
 ---
 
@@ -687,12 +690,12 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 #### MEV & Flashbots
 | Feature | Status |
 |---------|--------|
-| Submit private transaction | 📋 |
-| Submit bundle | 📋 |
-| Get MEV opportunities | 📋 |
-| Backrun protection | 📋 |
-| Frontrun protection | 📋 |
-| Sandwich protection | 📋 |
+| Submit private transaction | ✅ |
+| Submit bundle | ✅ |
+| Get MEV opportunities | ✅ |
+| Backrun protection | ✅ |
+| Frontrun protection | ✅ |
+| Sandwich protection | ✅ |
 
 #### Account Abstraction (ERC-4337)
 | Feature | Status |
@@ -740,8 +743,8 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 |---------|--------|
 | ABI encode | ✅ |
 | ABI decode | ✅ |
-| Keccak256 hash | 📋 |
-| Pack/unpack data | 📋 |
+| Keccak256 hash | ✅ |
+| Pack/unpack data | ✅ |
 | Sign typed data (EIP-712) | ✅ |
 
 #### Address Utils

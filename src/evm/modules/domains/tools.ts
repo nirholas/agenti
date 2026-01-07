@@ -1,9 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hex } from "viem"
 import { namehash, labelhash, normalize } from "viem/ens"
+import { keccak256, toHex, encodeFunctionData, parseEther, formatEther } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
 import { z } from "zod"
 
-import { getPublicClient } from "@/evm/services/clients.js"
+import { getPublicClient, getWalletClient } from "@/evm/services/clients.js"
 import { mcpToolRes } from "@/utils/helper.js"
 import { defaultNetworkParam } from "../common/types.js"
 
@@ -29,6 +31,34 @@ const ENS_REGISTRY_ABI = [
     stateMutability: "view",
     inputs: [{ name: "node", type: "bytes32" }],
     outputs: [{ name: "", type: "uint64" }]
+  },
+  {
+    name: "setSubnodeOwner",
+    type: "function",
+    inputs: [
+      { name: "node", type: "bytes32" },
+      { name: "label", type: "bytes32" },
+      { name: "owner", type: "address" }
+    ],
+    outputs: [{ name: "", type: "bytes32" }]
+  },
+  {
+    name: "setOwner",
+    type: "function",
+    inputs: [
+      { name: "node", type: "bytes32" },
+      { name: "owner", type: "address" }
+    ],
+    outputs: []
+  },
+  {
+    name: "setResolver",
+    type: "function",
+    inputs: [
+      { name: "node", type: "bytes32" },
+      { name: "resolver", type: "address" }
+    ],
+    outputs: []
   }
 ] as const
 
@@ -56,14 +86,136 @@ const ENS_RESOLVER_ABI = [
     stateMutability: "view",
     inputs: [{ name: "node", type: "bytes32" }],
     outputs: [{ name: "", type: "bytes" }]
+  },
+  {
+    name: "setAddr",
+    type: "function",
+    inputs: [
+      { name: "node", type: "bytes32" },
+      { name: "addr", type: "address" }
+    ],
+    outputs: []
+  },
+  {
+    name: "setText",
+    type: "function",
+    inputs: [
+      { name: "node", type: "bytes32" },
+      { name: "key", type: "string" },
+      { name: "value", type: "string" }
+    ],
+    outputs: []
+  },
+  {
+    name: "setContenthash",
+    type: "function",
+    inputs: [
+      { name: "node", type: "bytes32" },
+      { name: "hash", type: "bytes" }
+    ],
+    outputs: []
+  }
+] as const
+
+// ENS Controller ABI (for registration)
+const ENS_CONTROLLER_ABI = [
+  {
+    name: "available",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "name", type: "string" }],
+    outputs: [{ name: "", type: "bool" }]
+  },
+  {
+    name: "rentPrice",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "name", type: "string" },
+      { name: "duration", type: "uint256" }
+    ],
+    outputs: [
+      { name: "base", type: "uint256" },
+      { name: "premium", type: "uint256" }
+    ]
+  },
+  {
+    name: "makeCommitment",
+    type: "function",
+    stateMutability: "pure",
+    inputs: [
+      { name: "name", type: "string" },
+      { name: "owner", type: "address" },
+      { name: "duration", type: "uint256" },
+      { name: "secret", type: "bytes32" },
+      { name: "resolver", type: "address" },
+      { name: "data", type: "bytes[]" },
+      { name: "reverseRecord", type: "bool" },
+      { name: "ownerControlledFuses", type: "uint16" }
+    ],
+    outputs: [{ name: "", type: "bytes32" }]
+  },
+  {
+    name: "commit",
+    type: "function",
+    inputs: [{ name: "commitment", type: "bytes32" }],
+    outputs: []
+  },
+  {
+    name: "register",
+    type: "function",
+    stateMutability: "payable",
+    inputs: [
+      { name: "name", type: "string" },
+      { name: "owner", type: "address" },
+      { name: "duration", type: "uint256" },
+      { name: "secret", type: "bytes32" },
+      { name: "resolver", type: "address" },
+      { name: "data", type: "bytes[]" },
+      { name: "reverseRecord", type: "bool" },
+      { name: "ownerControlledFuses", type: "uint16" }
+    ],
+    outputs: []
+  },
+  {
+    name: "renew",
+    type: "function",
+    stateMutability: "payable",
+    inputs: [
+      { name: "name", type: "string" },
+      { name: "duration", type: "uint256" }
+    ],
+    outputs: []
+  },
+  {
+    name: "minCommitmentAge",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }]
+  },
+  {
+    name: "maxCommitmentAge",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }]
   }
 ] as const
 
 // ENS contract addresses
-const ENS_CONTRACTS: Record<number, { registry: Address }> = {
-  1: { registry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" },
+const ENS_CONTRACTS: Record<number, { registry: Address; controller?: Address; publicResolver?: Address }> = {
+  1: { 
+    registry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
+    controller: "0x253553366Da8546fC250F225fe3d25d0C782303b",
+    publicResolver: "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63"
+  },
   5: { registry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" }, // Goerli
-  11155111: { registry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e" } // Sepolia
+  11155111: { 
+    registry: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
+    controller: "0xFED6a969AaA60E4961FCD3EBF1A2e8913ac65B72",
+    publicResolver: "0x8FADE66B79cC9f707aB26799354482EB93a5B7dD"
+  } // Sepolia
 }
 
 // Space ID for BNB Chain
@@ -343,4 +495,492 @@ export function registerDomainsTools(server: McpServer) {
       }
     }
   )
+
+  // Register ENS name
+  server.tool(
+    "register_ens_name",
+    "Register a new ENS name via ETH Registrar Controller (requires commit-reveal process)",
+    {
+      name: z.string().describe("ENS name to register (without .eth suffix)"),
+      duration: z.number().describe("Registration duration in seconds (1 year = 31536000)"),
+      ownerAddress: z.string().optional().describe("Address to set as owner (defaults to sender)"),
+      setReverseRecord: z.boolean().optional().default(true).describe("Set as primary name for owner"),
+      privateKey: z.string().describe("Private key for registration").default(process.env.PRIVATE_KEY as string)
+    },
+    async ({ name, duration, ownerAddress, setReverseRecord = true, privateKey }) => {
+      try {
+        const publicClient = getPublicClient("ethereum")
+        const walletClient = getWalletClient(privateKey as Hex, "ethereum")
+        const chainId = await publicClient.getChainId()
+        
+        const ensContracts = ENS_CONTRACTS[chainId]
+        if (!ensContracts?.controller) {
+          return mcpToolRes.error(
+            new Error("ENS registration not available on this network"),
+            "registering ENS name"
+          )
+        }
+
+        // Normalize name (remove .eth if present)
+        const label = name.toLowerCase().replace(/\.eth$/, "")
+        const owner = (ownerAddress || walletClient.account.address) as Address
+
+        // Check availability
+        const isAvailable = await publicClient.readContract({
+          address: ensContracts.controller,
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "available",
+          args: [label]
+        })
+
+        if (!isAvailable) {
+          return mcpToolRes.error(new Error(`Name "${label}.eth" is not available`), "registering ENS name")
+        }
+
+        // Get rent price
+        const [basePrice, premium] = await publicClient.readContract({
+          address: ensContracts.controller,
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "rentPrice",
+          args: [label, BigInt(duration)]
+        }) as [bigint, bigint]
+
+        const totalPrice = basePrice + premium
+
+        // Generate random secret for commit-reveal
+        const secret = keccak256(toHex(Date.now().toString() + Math.random().toString()))
+
+        // Get minimum commitment age
+        const minCommitmentAge = await publicClient.readContract({
+          address: ensContracts.controller,
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "minCommitmentAge"
+        }) as bigint
+
+        // Create commitment
+        const commitment = await publicClient.readContract({
+          address: ensContracts.controller,
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "makeCommitment",
+          args: [
+            label,
+            owner,
+            BigInt(duration),
+            secret,
+            ensContracts.publicResolver || "0x0000000000000000000000000000000000000000",
+            [],
+            setReverseRecord,
+            0
+          ]
+        }) as Hex
+
+        // Submit commitment
+        const commitData = encodeFunctionData({
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "commit",
+          args: [commitment]
+        })
+
+        const commitTx = await walletClient.sendTransaction({
+          to: ensContracts.controller,
+          data: commitData
+        })
+
+        await publicClient.waitForTransactionReceipt({ hash: commitTx })
+
+        // Return info for second step (register)
+        // In practice, user needs to wait minCommitmentAge and then call register
+        return mcpToolRes.success({
+          step: "commitment_submitted",
+          name: `${label}.eth`,
+          owner,
+          duration: {
+            seconds: duration,
+            years: (duration / 31536000).toFixed(2)
+          },
+          pricing: {
+            basePrice: formatEther(basePrice),
+            premium: formatEther(premium),
+            totalPrice: formatEther(totalPrice),
+            totalPriceWei: totalPrice.toString()
+          },
+          commitment: {
+            hash: commitment,
+            secret: secret,
+            transactionHash: commitTx
+          },
+          nextStep: {
+            waitTime: Number(minCommitmentAge),
+            waitTimeMinutes: Math.ceil(Number(minCommitmentAge) / 60),
+            action: "After waiting, use the secret to complete registration",
+            note: "IMPORTANT: Save the secret! You need it to complete registration."
+          },
+          resolver: ensContracts.publicResolver
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "registering ENS name")
+      }
+    }
+  )
+
+  // Set ENS records
+  server.tool(
+    "set_ens_records",
+    "Set records for an ENS name (address, text records, contenthash)",
+    {
+      name: z.string().describe("ENS name"),
+      records: z.object({
+        address: z.string().optional().describe("ETH address to resolve to"),
+        textRecords: z.record(z.string()).optional().describe("Text records (e.g., {\"com.twitter\": \"@username\"})"),
+        contenthash: z.string().optional().describe("Content hash (IPFS, Swarm, etc.)")
+      }).describe("Records to set"),
+      privateKey: z.string().describe("Private key of name owner").default(process.env.PRIVATE_KEY as string)
+    },
+    async ({ name, records, privateKey }) => {
+      try {
+        const publicClient = getPublicClient("ethereum")
+        const walletClient = getWalletClient(privateKey as Hex, "ethereum")
+        const chainId = await publicClient.getChainId()
+        
+        const ensContracts = ENS_CONTRACTS[chainId]
+        if (!ensContracts) {
+          return mcpToolRes.error(new Error("ENS not available on this network"), "setting ENS records")
+        }
+
+        const normalizedName = normalize(name)
+        const node = namehash(normalizedName)
+
+        // Get resolver address
+        const resolverAddress = await publicClient.readContract({
+          address: ensContracts.registry,
+          abi: ENS_REGISTRY_ABI,
+          functionName: "resolver",
+          args: [node]
+        }) as Address
+
+        if (!resolverAddress || resolverAddress === "0x0000000000000000000000000000000000000000") {
+          return mcpToolRes.error(
+            new Error("No resolver set for this name. Set a resolver first."),
+            "setting ENS records"
+          )
+        }
+
+        const transactions: Array<{ type: string; hash: string }> = []
+
+        // Set address record
+        if (records.address) {
+          const setAddrData = encodeFunctionData({
+            abi: ENS_RESOLVER_ABI,
+            functionName: "setAddr",
+            args: [node, records.address as Address]
+          })
+
+          const hash = await walletClient.sendTransaction({
+            to: resolverAddress,
+            data: setAddrData
+          })
+          await publicClient.waitForTransactionReceipt({ hash })
+          transactions.push({ type: "setAddr", hash })
+        }
+
+        // Set text records
+        if (records.textRecords) {
+          for (const [key, value] of Object.entries(records.textRecords)) {
+            const setTextData = encodeFunctionData({
+              abi: ENS_RESOLVER_ABI,
+              functionName: "setText",
+              args: [node, key, value]
+            })
+
+            const hash = await walletClient.sendTransaction({
+              to: resolverAddress,
+              data: setTextData
+            })
+            await publicClient.waitForTransactionReceipt({ hash })
+            transactions.push({ type: `setText(${key})`, hash })
+          }
+        }
+
+        // Set contenthash
+        if (records.contenthash) {
+          const setContenthashData = encodeFunctionData({
+            abi: ENS_RESOLVER_ABI,
+            functionName: "setContenthash",
+            args: [node, records.contenthash as Hex]
+          })
+
+          const hash = await walletClient.sendTransaction({
+            to: resolverAddress,
+            data: setContenthashData
+          })
+          await publicClient.waitForTransactionReceipt({ hash })
+          transactions.push({ type: "setContenthash", hash })
+        }
+
+        return mcpToolRes.success({
+          name: normalizedName,
+          resolver: resolverAddress,
+          recordsSet: {
+            address: records.address || null,
+            textRecords: records.textRecords || {},
+            contenthash: records.contenthash || null
+          },
+          transactions,
+          status: "success"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "setting ENS records")
+      }
+    }
+  )
+
+  // Transfer ENS name
+  server.tool(
+    "transfer_ens",
+    "Transfer ENS name ownership to a new address",
+    {
+      name: z.string().describe("ENS name to transfer"),
+      newOwner: z.string().describe("Address of new owner"),
+      privateKey: z.string().describe("Private key of current owner").default(process.env.PRIVATE_KEY as string)
+    },
+    async ({ name, newOwner, privateKey }) => {
+      try {
+        const publicClient = getPublicClient("ethereum")
+        const walletClient = getWalletClient(privateKey as Hex, "ethereum")
+        const chainId = await publicClient.getChainId()
+        
+        const ensContracts = ENS_CONTRACTS[chainId]
+        if (!ensContracts) {
+          return mcpToolRes.error(new Error("ENS not available on this network"), "transferring ENS name")
+        }
+
+        const normalizedName = normalize(name)
+        const node = namehash(normalizedName)
+
+        // Verify current ownership
+        const currentOwner = await publicClient.readContract({
+          address: ensContracts.registry,
+          abi: ENS_REGISTRY_ABI,
+          functionName: "owner",
+          args: [node]
+        }) as Address
+
+        if (currentOwner.toLowerCase() !== walletClient.account.address.toLowerCase()) {
+          return mcpToolRes.error(
+            new Error("You are not the owner of this ENS name"),
+            "transferring ENS name"
+          )
+        }
+
+        // Transfer ownership
+        const transferData = encodeFunctionData({
+          abi: ENS_REGISTRY_ABI,
+          functionName: "setOwner",
+          args: [node, newOwner as Address]
+        })
+
+        const hash = await walletClient.sendTransaction({
+          to: ensContracts.registry,
+          data: transferData
+        })
+
+        await publicClient.waitForTransactionReceipt({ hash })
+
+        return mcpToolRes.success({
+          name: normalizedName,
+          transfer: {
+            from: currentOwner,
+            to: newOwner,
+            transactionHash: hash
+          },
+          status: "success",
+          note: "ENS name ownership transferred. The new owner now controls this name."
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "transferring ENS name")
+      }
+    }
+  )
+
+  // Renew ENS name
+  server.tool(
+    "renew_ens",
+    "Extend the registration of an ENS name",
+    {
+      name: z.string().describe("ENS name to renew (without .eth)"),
+      duration: z.number().describe("Additional duration in seconds (1 year = 31536000)"),
+      privateKey: z.string().describe("Private key for payment").default(process.env.PRIVATE_KEY as string)
+    },
+    async ({ name, duration, privateKey }) => {
+      try {
+        const publicClient = getPublicClient("ethereum")
+        const walletClient = getWalletClient(privateKey as Hex, "ethereum")
+        const chainId = await publicClient.getChainId()
+        
+        const ensContracts = ENS_CONTRACTS[chainId]
+        if (!ensContracts?.controller) {
+          return mcpToolRes.error(
+            new Error("ENS renewal not available on this network"),
+            "renewing ENS name"
+          )
+        }
+
+        // Normalize name
+        const label = name.toLowerCase().replace(/\.eth$/, "")
+
+        // Get renewal price
+        const [basePrice, premium] = await publicClient.readContract({
+          address: ensContracts.controller,
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "rentPrice",
+          args: [label, BigInt(duration)]
+        }) as [bigint, bigint]
+
+        const totalPrice = basePrice + premium
+        // Add 10% buffer for price fluctuations
+        const valueToSend = (totalPrice * 110n) / 100n
+
+        // Renew the name
+        const renewData = encodeFunctionData({
+          abi: ENS_CONTROLLER_ABI,
+          functionName: "renew",
+          args: [label, BigInt(duration)]
+        })
+
+        const hash = await walletClient.sendTransaction({
+          to: ensContracts.controller,
+          data: renewData,
+          value: valueToSend
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+
+        return mcpToolRes.success({
+          name: `${label}.eth`,
+          renewal: {
+            duration: {
+              seconds: duration,
+              years: (duration / 31536000).toFixed(2)
+            },
+            price: {
+              base: formatEther(basePrice),
+              premium: formatEther(premium),
+              total: formatEther(totalPrice)
+            },
+            transactionHash: hash,
+            gasUsed: receipt.gasUsed.toString()
+          },
+          status: "success"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "renewing ENS name")
+      }
+    }
+  )
+
+  // Create subdomain
+  server.tool(
+    "create_subdomain",
+    "Create a subdomain under an ENS name you own",
+    {
+      parentName: z.string().describe("Parent ENS name (e.g., 'example.eth')"),
+      subdomain: z.string().describe("Subdomain label (e.g., 'blog' for 'blog.example.eth')"),
+      ownerAddress: z.string().optional().describe("Owner of the subdomain (defaults to sender)"),
+      resolverAddress: z.string().optional().describe("Resolver address for subdomain"),
+      privateKey: z.string().describe("Private key of parent name owner").default(process.env.PRIVATE_KEY as string)
+    },
+    async ({ parentName, subdomain, ownerAddress, resolverAddress, privateKey }) => {
+      try {
+        const publicClient = getPublicClient("ethereum")
+        const walletClient = getWalletClient(privateKey as Hex, "ethereum")
+        const chainId = await publicClient.getChainId()
+        
+        const ensContracts = ENS_CONTRACTS[chainId]
+        if (!ensContracts) {
+          return mcpToolRes.error(new Error("ENS not available on this network"), "creating subdomain")
+        }
+
+        const normalizedParent = normalize(parentName)
+        const parentNode = namehash(normalizedParent)
+        const subdomainLabel = subdomain.toLowerCase()
+        const subdomainLabelHash = labelhash(subdomainLabel)
+        const fullName = `${subdomainLabel}.${normalizedParent}`
+        const fullNode = namehash(fullName)
+
+        // Verify ownership of parent
+        const parentOwner = await publicClient.readContract({
+          address: ensContracts.registry,
+          abi: ENS_REGISTRY_ABI,
+          functionName: "owner",
+          args: [parentNode]
+        }) as Address
+
+        if (parentOwner.toLowerCase() !== walletClient.account.address.toLowerCase()) {
+          return mcpToolRes.error(
+            new Error("You are not the owner of the parent ENS name"),
+            "creating subdomain"
+          )
+        }
+
+        const subdomainOwner = (ownerAddress || walletClient.account.address) as Address
+
+        // Create subdomain
+        const setSubnodeData = encodeFunctionData({
+          abi: ENS_REGISTRY_ABI,
+          functionName: "setSubnodeOwner",
+          args: [parentNode, subdomainLabelHash, subdomainOwner]
+        })
+
+        const createTx = await walletClient.sendTransaction({
+          to: ensContracts.registry,
+          data: setSubnodeData
+        })
+
+        await publicClient.waitForTransactionReceipt({ hash: createTx })
+
+        // Set resolver if provided
+        let resolverTx: string | null = null
+        if (resolverAddress || ensContracts.publicResolver) {
+          const resolver = (resolverAddress || ensContracts.publicResolver) as Address
+          
+          // Need to set resolver as subdomain owner
+          const setResolverData = encodeFunctionData({
+            abi: ENS_REGISTRY_ABI,
+            functionName: "setResolver",
+            args: [fullNode, resolver]
+          })
+
+          // If subdomain owner is different, this would need to be called by them
+          if (subdomainOwner.toLowerCase() === walletClient.account.address.toLowerCase()) {
+            resolverTx = await walletClient.sendTransaction({
+              to: ensContracts.registry,
+              data: setResolverData
+            })
+            await publicClient.waitForTransactionReceipt({ hash: resolverTx as Hex })
+          }
+        }
+
+        return mcpToolRes.success({
+          subdomain: {
+            fullName,
+            label: subdomainLabel,
+            parent: normalizedParent,
+            owner: subdomainOwner,
+            node: fullNode
+          },
+          transactions: {
+            create: createTx,
+            setResolver: resolverTx
+          },
+          status: "success",
+          note: resolverTx 
+            ? "Subdomain created and resolver set"
+            : "Subdomain created. Set a resolver to configure records."
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "creating subdomain")
+      }
+    }
+  )
 }
+
