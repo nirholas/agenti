@@ -13,9 +13,16 @@ import {
   concat,
   slice,
   pad,
-  size
+  size,
+  hashMessage,
+  recoverMessageAddress,
+  verifyMessage,
+  hashTypedData,
+  recoverTypedDataAddress,
+  getContractAddress,
+  getCreate2Address
 } from "viem"
-import { generateMnemonic, mnemonicToAccount, english } from "viem/accounts"
+import { generateMnemonic, mnemonicToAccount, privateKeyToAccount, english, signMessage } from "viem/accounts"
 import { z } from "zod"
 
 import { getPublicClient } from "@/services/clients.js"
@@ -469,6 +476,274 @@ export function registerUtilityTools(server: McpServer) {
         })
       } catch (error) {
         return mcpToolRes.error(error, "slicing hex data")
+      }
+    }
+  )
+
+  // Sign message with private key
+  server.tool(
+    "sign_message",
+    "Sign an arbitrary message with a private key (EIP-191 personal sign)",
+    {
+      message: z.string().describe("Message to sign"),
+      privateKey: z.string().describe("Private key for signing")
+    },
+    async ({ message, privateKey }) => {
+      try {
+        const account = privateKeyToAccount(privateKey as `0x${string}`)
+        const signature = await account.signMessage({ message })
+        const messageHash = hashMessage(message)
+
+        return mcpToolRes.success({
+          message,
+          signer: account.address,
+          signature,
+          messageHash,
+          signatureLength: signature.length
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "signing message")
+      }
+    }
+  )
+
+  // Verify message signature
+  server.tool(
+    "verify_signature",
+    "Verify a message signature and recover the signer address",
+    {
+      message: z.string().describe("Original message that was signed"),
+      signature: z.string().describe("Signature to verify (hex string)"),
+      expectedAddress: z.string().optional().describe("Expected signer address for validation")
+    },
+    async ({ message, signature, expectedAddress }) => {
+      try {
+        const recoveredAddress = await recoverMessageAddress({
+          message,
+          signature: signature as Hex
+        })
+
+        const isValid = expectedAddress 
+          ? recoveredAddress.toLowerCase() === expectedAddress.toLowerCase()
+          : true
+        const messageHash = hashMessage(message)
+
+        return mcpToolRes.success({
+          message,
+          signature,
+          recoveredAddress,
+          messageHash,
+          isValid,
+          validation: expectedAddress
+            ? isValid 
+              ? "Signature is valid for the expected address"
+              : `Signature does NOT match expected address ${expectedAddress}`
+            : "Signer address recovered successfully"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "verifying signature")
+      }
+    }
+  )
+
+  // Compute contract deployment address
+  server.tool(
+    "compute_contract_address",
+    "Compute the address where a contract will be deployed (CREATE opcode)",
+    {
+      deployer: z.string().describe("Address that will deploy the contract"),
+      nonce: z.number().describe("Transaction nonce of the deployer")
+    },
+    async ({ deployer, nonce }) => {
+      try {
+        const predictedAddress = getContractAddress({
+          from: deployer as Address,
+          nonce: BigInt(nonce)
+        })
+
+        return mcpToolRes.success({
+          deployer,
+          nonce,
+          predictedAddress,
+          note: "Address where contract will be deployed with CREATE opcode"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "computing contract address")
+      }
+    }
+  )
+
+  // Compute CREATE2 address
+  server.tool(
+    "compute_create2_address",
+    "Compute deterministic contract address for CREATE2 deployment",
+    {
+      factory: z.string().describe("Factory/deployer contract address"),
+      salt: z.string().describe("32-byte salt (hex) or string to hash"),
+      initCodeHash: z.string().describe("Keccak256 hash of init code (bytecode + constructor args)")
+    },
+    async ({ factory, salt, initCodeHash }) => {
+      try {
+        // Process salt
+        let saltBytes: Hex
+        if (salt.startsWith("0x") && salt.length === 66) {
+          saltBytes = salt as Hex
+        } else {
+          saltBytes = keccak256(toHex(salt))
+        }
+
+        const predictedAddress = getCreate2Address({
+          from: factory as Address,
+          salt: saltBytes,
+          bytecodeHash: initCodeHash as Hex
+        })
+
+        return mcpToolRes.success({
+          factory,
+          salt: saltBytes,
+          initCodeHash,
+          predictedAddress,
+          note: "Deterministic address for CREATE2 deployment"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "computing CREATE2 address")
+      }
+    }
+  )
+
+  // Hash typed data (EIP-712)
+  server.tool(
+    "hash_typed_data",
+    "Hash typed structured data according to EIP-712",
+    {
+      domain: z.object({
+        name: z.string().optional(),
+        version: z.string().optional(),
+        chainId: z.number().optional(),
+        verifyingContract: z.string().optional(),
+        salt: z.string().optional()
+      }).describe("EIP-712 domain separator"),
+      types: z.record(z.array(z.object({
+        name: z.string(),
+        type: z.string()
+      }))).describe("Type definitions"),
+      primaryType: z.string().describe("Primary type name"),
+      message: z.record(z.any()).describe("Message data to hash")
+    },
+    async ({ domain, types, primaryType, message }) => {
+      try {
+        const hash = hashTypedData({
+          domain: domain as any,
+          types: types as any,
+          primaryType,
+          message
+        })
+
+        return mcpToolRes.success({
+          domain,
+          primaryType,
+          hash,
+          note: "EIP-712 typed data hash for signing"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "hashing typed data")
+      }
+    }
+  )
+
+  // Parse units
+  server.tool(
+    "parse_units",
+    "Convert a human-readable value to its smallest unit (e.g., ETH to wei)",
+    {
+      value: z.string().describe("Human-readable value (e.g., '1.5')"),
+      decimals: z.number().default(18).describe("Number of decimals (18 for ETH, 6 for USDC)")
+    },
+    async ({ value, decimals }) => {
+      try {
+        const multiplier = 10n ** BigInt(decimals)
+        const [whole, fraction = ""] = value.split(".")
+        const paddedFraction = fraction.padEnd(decimals, "0").slice(0, decimals)
+        const result = BigInt(whole) * multiplier + BigInt(paddedFraction)
+
+        return mcpToolRes.success({
+          input: value,
+          decimals,
+          result: result.toString(),
+          hex: toHex(result)
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "parsing units")
+      }
+    }
+  )
+
+  // Format units
+  server.tool(
+    "format_units",
+    "Convert smallest unit value to human-readable format (e.g., wei to ETH)",
+    {
+      value: z.string().describe("Value in smallest unit (e.g., wei)"),
+      decimals: z.number().default(18).describe("Number of decimals")
+    },
+    async ({ value, decimals }) => {
+      try {
+        const bigValue = BigInt(value)
+        const multiplier = 10n ** BigInt(decimals)
+        const whole = bigValue / multiplier
+        const fraction = bigValue % multiplier
+        
+        const fractionStr = fraction.toString().padStart(decimals, "0")
+        const trimmedFraction = fractionStr.replace(/0+$/, "")
+        
+        const result = trimmedFraction 
+          ? `${whole}.${trimmedFraction}`
+          : whole.toString()
+
+        return mcpToolRes.success({
+          input: value,
+          decimals,
+          result
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "formatting units")
+      }
+    }
+  )
+
+  // Get chain ID
+  server.tool(
+    "get_chain_id",
+    "Get the chain ID for a network",
+    {
+      network: defaultNetworkParam
+    },
+    async ({ network }) => {
+      try {
+        const client = getPublicClient(network)
+        const chainId = await client.getChainId()
+
+        const chainNames: Record<number, string> = {
+          1: "Ethereum Mainnet",
+          56: "BNB Smart Chain",
+          137: "Polygon",
+          42161: "Arbitrum One",
+          10: "Optimism",
+          8453: "Base",
+          43114: "Avalanche C-Chain",
+          250: "Fantom Opera",
+          11155111: "Sepolia Testnet",
+          97: "BSC Testnet",
+          80001: "Mumbai Testnet"
+        }
+
+        return mcpToolRes.success({
+          network,
+          chainId,
+          chainName: chainNames[chainId] || "Unknown"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "getting chain ID")
       }
     }
   )

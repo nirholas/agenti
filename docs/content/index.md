@@ -59,25 +59,39 @@ Enable AI agents to interact with any EVM blockchain through natural language. S
 
 ## Features
 
-🔄 **Swap/DEX** - Get quotes and execute swaps via 1inch, 0x, ParaSwap
+🔄 **Swap/DEX** - Get quotes, execute swaps, add/remove liquidity, arbitrage detection
 
-🌉 **Bridge** - Cross-chain transfers via LayerZero, Stargate, Wormhole
+🌉 **Bridge** - Cross-chain transfers via LayerZero, Stargate, Wormhole, Across
 
-⛽ **Gas** - Gas prices across chains, EIP-1559 suggestions
+⛽ **Gas** - Gas prices across chains, EIP-1559 suggestions, cost estimation
 
-📦 **Multicall** - Batch read/write operations
+📦 **Multicall** - Batch read/write operations, multi-token balances
 
-📊 **Events/Logs** - Query historical events, decode logs
+📊 **Events/Logs** - Query historical events, decode logs, filter by topic
 
-🔒 **Security** - Token honeypot check, contract verification
+🔒 **Security** - Rug pull detection, honeypot analysis, contract permissions, holder distribution
 
-💰 **Staking** - Liquid staking, validator info
+💰 **Staking** - Liquid staking (Lido stETH/wstETH), LP farming, reward claiming
 
-✍️ **Signatures** - Sign messages, verify signatures, EIP-712
+✍️ **Signatures** - Sign messages, verify signatures, EIP-712 typed data
 
-🏦 **Lending** - Aave/Compound positions, borrow rates
+🏦 **Lending** - Aave/Compound: supply, borrow, repay, flash loans, liquidations
 
-📈 **Price Feeds** - Historical prices, TWAP, oracle aggregation
+📈 **Price Feeds** - Historical prices, TWAP, Chainlink oracles
+
+📁 **Portfolio** - Track holdings across chains
+
+🏛️ **Governance** - Create proposals, vote, delegate, queue/execute proposals
+
+🎨 **NFTs** - Marketplace approvals, batch transfers, metadata fetching
+
+🆔 **ENS** - Register domains, set records, create subdomains, transfers
+
+🛡️ **MEV Protection** - Private transactions via Flashbots, MEV exposure analysis
+
+📜 **Contracts** - Deploy, CREATE2, proxy deployment, upgrades, verification
+
+📰 **News** - Latest crypto news, DeFi updates, Bitcoin news
 
 📁 **Portfolio** - Track holdings across chains
 
