@@ -1,11 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hex } from "viem"
-import { formatUnits } from "viem"
+import { formatUnits, parseUnits, encodeFunctionData } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
 import { z } from "zod"
 
-import { getPublicClient } from "@/evm/services/clients.js"
+import { getPublicClient, getWalletClient } from "@/evm/services/clients.js"
 import { mcpToolRes } from "@/utils/helper.js"
-import { defaultNetworkParam } from "../common/types.js"
+import { defaultNetworkParam, privateKeyParam } from "../common/types.js"
 
 // Aave V3 Pool ABI (subset)
 const AAVE_POOL_ABI = [
@@ -372,6 +373,413 @@ export function registerLendingTools(server: McpServer) {
         })
       } catch (error) {
         return mcpToolRes.error(error, "calculating health factor")
+      }
+    }
+  )
+
+  // Flash loan info
+  server.tool(
+    "get_flash_loan_info",
+    "Get flash loan information and fees for a protocol",
+    {
+      network: defaultNetworkParam,
+      protocol: z.string().describe("Lending protocol name (e.g., 'Aave V3')"),
+      asset: z.string().describe("Asset address to flash loan")
+    },
+    async ({ network, protocol, asset }) => {
+      try {
+        const publicClient = getPublicClient(network)
+        const chainId = await publicClient.getChainId()
+        
+        const protocolConfig = LENDING_PROTOCOLS[chainId]?.[protocol]
+        if (!protocolConfig) {
+          return mcpToolRes.error(new Error(`Protocol ${protocol} not found`), "getting flash loan info")
+        }
+
+        // Aave flash loan fee is typically 0.09%
+        const flashLoanFee = protocolConfig.type === "aave" ? "0.09%" : "0.05%"
+
+        // Get available liquidity
+        let availableLiquidity = "0"
+        if (protocolConfig.type === "aave") {
+          try {
+            const reserveData = await publicClient.readContract({
+              address: protocolConfig.pool,
+              abi: AAVE_POOL_ABI,
+              functionName: "getReserveData",
+              args: [asset as Address]
+            })
+            // aTokenAddress holds the liquidity
+            const aTokenAddress = reserveData[8]
+            const balance = await publicClient.readContract({
+              address: asset as Address,
+              abi: [{ name: "balanceOf", type: "function", stateMutability: "view", inputs: [{ name: "account", type: "address" }], outputs: [{ type: "uint256" }] }],
+              functionName: "balanceOf",
+              args: [aTokenAddress]
+            }) as bigint
+            availableLiquidity = formatUnits(balance, 18)
+          } catch {}
+        }
+
+        return mcpToolRes.success({
+          network,
+          protocol,
+          asset,
+          flashLoanFee,
+          availableLiquidity,
+          requirements: [
+            "Must repay loan + fee in same transaction",
+            "Must implement IFlashLoanReceiver interface",
+            "Sufficient liquidity must be available"
+          ],
+          note: "Flash loans require a smart contract to receive and repay in the same tx"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "getting flash loan info")
+      }
+    }
+  )
+
+  // Get liquidatable positions
+  server.tool(
+    "get_liquidatable_positions",
+    "Find positions that can be liquidated (health factor < 1)",
+    {
+      network: defaultNetworkParam,
+      protocol: z.string().describe("Lending protocol name"),
+      addresses: z.array(z.string()).describe("Array of addresses to check")
+    },
+    async ({ network, protocol, addresses }) => {
+      try {
+        const publicClient = getPublicClient(network)
+        const chainId = await publicClient.getChainId()
+        
+        const protocolConfig = LENDING_PROTOCOLS[chainId]?.[protocol]
+        if (!protocolConfig || protocolConfig.type !== "aave") {
+          return mcpToolRes.error(new Error("Only Aave V3 supported for liquidation checks"), "getting liquidatable positions")
+        }
+
+        const liquidatable: Array<{
+          address: string
+          healthFactor: string
+          totalDebt: string
+          totalCollateral: string
+        }> = []
+
+        for (const addr of addresses) {
+          try {
+            const data = await publicClient.readContract({
+              address: protocolConfig.pool,
+              abi: AAVE_POOL_ABI,
+              functionName: "getUserAccountData",
+              args: [addr as Address]
+            })
+
+            const [totalCollateral, totalDebt, , , , healthFactor] = data
+            const hf = Number(healthFactor) / 1e18
+
+            if (hf < 1 && totalDebt > 0n) {
+              liquidatable.push({
+                address: addr,
+                healthFactor: hf.toFixed(4),
+                totalDebt: formatUnits(totalDebt, 8),
+                totalCollateral: formatUnits(totalCollateral, 8)
+              })
+            }
+          } catch {}
+        }
+
+        return mcpToolRes.success({
+          network,
+          protocol,
+          addressesChecked: addresses.length,
+          liquidatableCount: liquidatable.length,
+          liquidatablePositions: liquidatable.sort((a, b) => parseFloat(a.healthFactor) - parseFloat(b.healthFactor))
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "getting liquidatable positions")
+      }
+    }
+  )
+
+  // Supply to lending protocol
+  server.tool(
+    "supply_to_lending",
+    "Supply/deposit assets to a lending protocol to earn interest",
+    {
+      network: defaultNetworkParam,
+      protocol: z.string().describe("Lending protocol (e.g., 'Aave V3')"),
+      asset: z.string().describe("Asset address to supply"),
+      amount: z.string().describe("Amount to supply (in wei)"),
+      privateKey: privateKeyParam
+    },
+    async ({ network, protocol, asset, amount, privateKey }) => {
+      try {
+        const publicClient = getPublicClient(network)
+        const walletClient = getWalletClient(privateKey as Hex, network)
+        const account = privateKeyToAccount(privateKey as Hex)
+        const chainId = await publicClient.getChainId()
+        
+        const protocolConfig = LENDING_PROTOCOLS[chainId]?.[protocol]
+        if (!protocolConfig || protocolConfig.type !== "aave") {
+          return mcpToolRes.error(new Error("Only Aave V3 supported"), "supplying to lending")
+        }
+
+        // Approve first
+        const approveHash = await walletClient.writeContract({
+          address: asset as Address,
+          abi: [{ name: "approve", type: "function", inputs: [{ name: "spender", type: "address" }, { name: "amount", type: "uint256" }], outputs: [{ type: "bool" }] }],
+          functionName: "approve",
+          args: [protocolConfig.pool, BigInt(amount)],
+          account
+        })
+        await publicClient.waitForTransactionReceipt({ hash: approveHash })
+
+        // Supply
+        const supplyAbi = [{
+          name: "supply",
+          type: "function",
+          inputs: [
+            { name: "asset", type: "address" },
+            { name: "amount", type: "uint256" },
+            { name: "onBehalfOf", type: "address" },
+            { name: "referralCode", type: "uint16" }
+          ],
+          outputs: []
+        }]
+
+        const hash = await walletClient.writeContract({
+          address: protocolConfig.pool,
+          abi: supplyAbi,
+          functionName: "supply",
+          args: [asset as Address, BigInt(amount), account.address, 0],
+          account
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+
+        return mcpToolRes.success({
+          network,
+          protocol,
+          asset,
+          amount,
+          transactionHash: hash,
+          status: receipt.status === "success" ? "success" : "failed"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "supplying to lending")
+      }
+    }
+  )
+
+  // Borrow from lending protocol
+  server.tool(
+    "borrow_from_lending",
+    "Borrow assets from a lending protocol",
+    {
+      network: defaultNetworkParam,
+      protocol: z.string().describe("Lending protocol (e.g., 'Aave V3')"),
+      asset: z.string().describe("Asset address to borrow"),
+      amount: z.string().describe("Amount to borrow (in wei)"),
+      interestRateMode: z.enum(["stable", "variable"]).default("variable").describe("Interest rate mode"),
+      privateKey: privateKeyParam
+    },
+    async ({ network, protocol, asset, amount, interestRateMode, privateKey }) => {
+      try {
+        const publicClient = getPublicClient(network)
+        const walletClient = getWalletClient(privateKey as Hex, network)
+        const account = privateKeyToAccount(privateKey as Hex)
+        const chainId = await publicClient.getChainId()
+        
+        const protocolConfig = LENDING_PROTOCOLS[chainId]?.[protocol]
+        if (!protocolConfig || protocolConfig.type !== "aave") {
+          return mcpToolRes.error(new Error("Only Aave V3 supported"), "borrowing from lending")
+        }
+
+        // Check health factor first
+        const userData = await publicClient.readContract({
+          address: protocolConfig.pool,
+          abi: AAVE_POOL_ABI,
+          functionName: "getUserAccountData",
+          args: [account.address]
+        })
+        const healthFactor = Number(userData[5]) / 1e18
+
+        if (healthFactor < 1.1) {
+          return mcpToolRes.error(new Error("Health factor too low to borrow safely"), "borrowing from lending")
+        }
+
+        const borrowAbi = [{
+          name: "borrow",
+          type: "function",
+          inputs: [
+            { name: "asset", type: "address" },
+            { name: "amount", type: "uint256" },
+            { name: "interestRateMode", type: "uint256" },
+            { name: "referralCode", type: "uint16" },
+            { name: "onBehalfOf", type: "address" }
+          ],
+          outputs: []
+        }]
+
+        const hash = await walletClient.writeContract({
+          address: protocolConfig.pool,
+          abi: borrowAbi,
+          functionName: "borrow",
+          args: [asset as Address, BigInt(amount), interestRateMode === "stable" ? 1n : 2n, 0, account.address],
+          account
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+
+        return mcpToolRes.success({
+          network,
+          protocol,
+          asset,
+          amount,
+          interestRateMode,
+          transactionHash: hash,
+          status: receipt.status === "success" ? "success" : "failed"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "borrowing from lending")
+      }
+    }
+  )
+
+  // Repay to lending protocol
+  server.tool(
+    "repay_to_lending",
+    "Repay borrowed assets to a lending protocol",
+    {
+      network: defaultNetworkParam,
+      protocol: z.string().describe("Lending protocol (e.g., 'Aave V3')"),
+      asset: z.string().describe("Asset address to repay"),
+      amount: z.string().describe("Amount to repay (in wei, use 'max' for full repay)"),
+      interestRateMode: z.enum(["stable", "variable"]).default("variable").describe("Interest rate mode of the debt"),
+      privateKey: privateKeyParam
+    },
+    async ({ network, protocol, asset, amount, interestRateMode, privateKey }) => {
+      try {
+        const publicClient = getPublicClient(network)
+        const walletClient = getWalletClient(privateKey as Hex, network)
+        const account = privateKeyToAccount(privateKey as Hex)
+        const chainId = await publicClient.getChainId()
+        
+        const protocolConfig = LENDING_PROTOCOLS[chainId]?.[protocol]
+        if (!protocolConfig || protocolConfig.type !== "aave") {
+          return mcpToolRes.error(new Error("Only Aave V3 supported"), "repaying to lending")
+        }
+
+        const repayAmount = amount.toLowerCase() === "max" 
+          ? BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+          : BigInt(amount)
+
+        // Approve first
+        const approveHash = await walletClient.writeContract({
+          address: asset as Address,
+          abi: [{ name: "approve", type: "function", inputs: [{ name: "spender", type: "address" }, { name: "amount", type: "uint256" }], outputs: [{ type: "bool" }] }],
+          functionName: "approve",
+          args: [protocolConfig.pool, repayAmount],
+          account
+        })
+        await publicClient.waitForTransactionReceipt({ hash: approveHash })
+
+        const repayAbi = [{
+          name: "repay",
+          type: "function",
+          inputs: [
+            { name: "asset", type: "address" },
+            { name: "amount", type: "uint256" },
+            { name: "interestRateMode", type: "uint256" },
+            { name: "onBehalfOf", type: "address" }
+          ],
+          outputs: [{ type: "uint256" }]
+        }]
+
+        const hash = await walletClient.writeContract({
+          address: protocolConfig.pool,
+          abi: repayAbi,
+          functionName: "repay",
+          args: [asset as Address, repayAmount, interestRateMode === "stable" ? 1n : 2n, account.address],
+          account
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+
+        return mcpToolRes.success({
+          network,
+          protocol,
+          asset,
+          amount,
+          interestRateMode,
+          transactionHash: hash,
+          status: receipt.status === "success" ? "success" : "failed"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "repaying to lending")
+      }
+    }
+  )
+
+  // Withdraw from lending protocol
+  server.tool(
+    "withdraw_from_lending",
+    "Withdraw supplied assets from a lending protocol",
+    {
+      network: defaultNetworkParam,
+      protocol: z.string().describe("Lending protocol (e.g., 'Aave V3')"),
+      asset: z.string().describe("Asset address to withdraw"),
+      amount: z.string().describe("Amount to withdraw (in wei, use 'max' for full withdraw)"),
+      privateKey: privateKeyParam
+    },
+    async ({ network, protocol, asset, amount, privateKey }) => {
+      try {
+        const publicClient = getPublicClient(network)
+        const walletClient = getWalletClient(privateKey as Hex, network)
+        const account = privateKeyToAccount(privateKey as Hex)
+        const chainId = await publicClient.getChainId()
+        
+        const protocolConfig = LENDING_PROTOCOLS[chainId]?.[protocol]
+        if (!protocolConfig || protocolConfig.type !== "aave") {
+          return mcpToolRes.error(new Error("Only Aave V3 supported"), "withdrawing from lending")
+        }
+
+        const withdrawAmount = amount.toLowerCase() === "max" 
+          ? BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+          : BigInt(amount)
+
+        const withdrawAbi = [{
+          name: "withdraw",
+          type: "function",
+          inputs: [
+            { name: "asset", type: "address" },
+            { name: "amount", type: "uint256" },
+            { name: "to", type: "address" }
+          ],
+          outputs: [{ type: "uint256" }]
+        }]
+
+        const hash = await walletClient.writeContract({
+          address: protocolConfig.pool,
+          abi: withdrawAbi,
+          functionName: "withdraw",
+          args: [asset as Address, withdrawAmount, account.address],
+          account
+        })
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+
+        return mcpToolRes.success({
+          network,
+          protocol,
+          asset,
+          amount,
+          transactionHash: hash,
+          status: receipt.status === "success" ? "success" : "failed"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "withdrawing from lending")
       }
     }
   )

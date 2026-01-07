@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
-import { registerEVM } from "@/evm/index.js"
+import { registerEVM } from "@/evm.js"
 import Logger from "@/utils/logger.js"
 
 // Create and start the MCP server
