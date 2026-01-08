@@ -71,6 +71,27 @@ Add to your MCP settings:
 }
 ```
 
+### ChatGPT Developer Mode
+
+1. Enable [Developer Mode](https://chatgpt.com/#settings/Connectors/Advanced) in ChatGPT settings
+2. Start the HTTP server:
+   ```bash
+   npx @nirholas/universal-crypto-mcp@latest --http
+   ```
+3. In ChatGPT Settings → Apps, click **Create app**
+4. Enter your server URL: `http://localhost:3001/mcp`
+5. Select the app in conversations via **Developer mode** menu
+
+For detailed setup instructions, see [ChatGPT Setup Guide](https://universal-crypto-mcp.vercel.app/mcp-server/chatgpt-setup/).
+
+## Server Modes
+
+| Mode | Command | Use Case |
+|------|---------|----------|
+| stdio | `npx @nirholas/universal-crypto-mcp` | Claude Desktop, Cursor |
+| HTTP | `npx @nirholas/universal-crypto-mcp --http` | ChatGPT Developer Mode |
+| SSE | `npx @nirholas/universal-crypto-mcp --sse` | Legacy HTTP clients |
+
 ## Local Development
 
 ```bash
@@ -81,7 +102,13 @@ cd universal-crypto-mcp
 # Install
 bun install
 
-# Run dev server
+# Run dev server (stdio - Claude)
+bun dev
+
+# Run dev server (HTTP - ChatGPT)
+bun dev:http
+
+# Run dev server (SSE - legacy)
 bun dev:sse
 ```
 

@@ -8,18 +8,60 @@ import type { Request, Response } from "express"
 import Logger from "@/utils/logger"
 import { startServer } from "./base"
 
+/**
+ * SSE-based MCP Server (Legacy)
+ * 
+ * This is maintained for backwards compatibility.
+ * For ChatGPT Developer Mode, consider using the HTTP server instead.
+ * 
+ * @deprecated Use startHTTPServer for new integrations
+ */
 export const startSSEServer = async () => {
   try {
     const app = express()
     const server = startServer()
-    app.use(cors())
+    
+    app.use(cors({
+      origin: "*",
+      methods: ["GET", "POST", "OPTIONS"],
+      allowedHeaders: ["Content-Type"]
+    }))
+    app.use(express.json())
 
     // Log the current log level on startup
-    Logger.info(`Starting sse server with log level: ${Logger.getLevel()}`)
+    Logger.info(`Starting SSE server with log level: ${Logger.getLevel()}`)
 
     // to support multiple simultaneous connections we have a lookup object from
     // sessionId to transport
     const transports: { [sessionId: string]: SSEServerTransport } = {}
+
+    // Health check endpoint
+    app.get("/health", (_: Request, res: Response) => {
+      res.json({
+        status: "healthy",
+        name: "Universal Crypto MCP",
+        version: "1.0.0",
+        transport: "sse",
+        sessions: Object.keys(transports).length,
+        timestamp: new Date().toISOString()
+      })
+    })
+
+    // Server info endpoint
+    app.get("/", (_: Request, res: Response) => {
+      res.json({
+        name: "Universal Crypto MCP",
+        version: "1.0.0",
+        description: "Universal MCP server for all EVM-compatible networks",
+        protocol: "mcp",
+        transport: "sse",
+        endpoints: {
+          sse: "/sse",
+          messages: "/messages",
+          health: "/health"
+        }
+      })
+    })
 
     app.get("/sse", async (_: Request, res: Response) => {
       const transport = new SSEServerTransport("/messages", res)
@@ -63,12 +105,12 @@ export const startSSEServer = async () => {
 
     const PORT = process.env.PORT || 3001
     app.listen(PORT, () => {
-      Logger.info(
-        `SperaxOS SSE Server is running on http://localhost:${PORT}`
-      )
+      Logger.info(`Universal Crypto MCP SSE Server running on http://localhost:${PORT}`)
+      Logger.info(`SSE endpoint: http://localhost:${PORT}/sse`)
     })
     return server
   } catch (error) {
-    Logger.error("Error starting SperaxOS SSE Server:", error)
+    Logger.error("Error starting SSE Server:", error)
+    throw error
   }
 }

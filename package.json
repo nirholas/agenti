@@ -12,8 +12,10 @@
   "scripts": {
     "start": "node dist/index.js",
     "start:sse": "npm run start -- --sse",
-    "dev:sse": "tsx watch src/index.ts --sse",
+    "start:http": "npm run start -- --http",
     "dev": "tsx watch src/index.ts",
+    "dev:sse": "tsx watch src/index.ts --sse",
+    "dev:http": "tsx watch src/index.ts --http",
     "build": "tsup",
     "prepublishOnly": "npm run build",
     "test": "npx @modelcontextprotocol/inspector tsx src/index.ts",
