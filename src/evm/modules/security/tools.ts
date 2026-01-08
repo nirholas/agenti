@@ -1276,4 +1276,643 @@ export function registerSecurityTools(server: McpServer) {
       }
     }
   )
+
+  // ==================== GOPLUS SECURITY API TOOLS ====================
+  
+  const GOPLUS_API_BASE = "https://api.gopluslabs.io/api/v1"
+  
+  // GoPlus chain IDs mapping
+  const GOPLUS_CHAIN_IDS: Record<string, string> = {
+    "ethereum": "1",
+    "mainnet": "1",
+    "bsc": "56",
+    "binance": "56",
+    "polygon": "137",
+    "arbitrum": "42161",
+    "optimism": "10",
+    "base": "8453",
+    "avalanche": "43114",
+    "fantom": "250",
+    "cronos": "25",
+    "gnosis": "100",
+    "celo": "42220",
+    "moonbeam": "1284",
+    "moonriver": "1285",
+    "harmony": "1666600000",
+    "heco": "128",
+    "okc": "66",
+    "kcc": "321",
+    "linea": "59144",
+    "scroll": "534352",
+    "zksync": "324",
+    "mantle": "5000",
+    "opbnb": "204"
+  }
+  
+  async function goPlusRequest<T>(
+    endpoint: string,
+    params: Record<string, unknown> = {}
+  ): Promise<T | null> {
+    try {
+      const queryParams = new URLSearchParams()
+      for (const [key, value] of Object.entries(params)) {
+        if (value !== undefined && value !== null) {
+          queryParams.set(key, String(value))
+        }
+      }
+      const queryString = queryParams.toString()
+      const url = `${GOPLUS_API_BASE}${endpoint}${queryString ? `?${queryString}` : ""}`
+
+      const response = await fetch(url, {
+        headers: { "Content-Type": "application/json" }
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      if (data.code !== 1) {
+        throw new Error(data.message || "GoPlus API error")
+      }
+      
+      return data.result as T
+    } catch (error) {
+      console.error("GoPlus API error:", error)
+      return null
+    }
+  }
+  
+  // Resolve chain to GoPlus chain ID
+  function resolveGoPlusChainId(network: string): string {
+    const normalized = network.toLowerCase().replace(/[-_\s]/g, "")
+    return GOPLUS_CHAIN_IDS[normalized] || network
+  }
+
+  // GoPlus Token Security Check
+  server.tool(
+    "goplus_token_security",
+    "Check token security using GoPlus API - detects honeypots, rug pulls, malicious code, and other risks",
+    {
+      chainId: z.string().describe("Chain ID or name (ethereum, bsc, polygon, arbitrum, base, etc.)"),
+      contractAddress: z.string().describe("Token contract address to analyze")
+    },
+    async ({ chainId, contractAddress }) => {
+      try {
+        const resolvedChainId = resolveGoPlusChainId(chainId)
+        const data = await goPlusRequest<Record<string, unknown>>(
+          `/token_security/${resolvedChainId}`,
+          { contract_addresses: contractAddress.toLowerCase() }
+        )
+        
+        if (!data || !data[contractAddress.toLowerCase()]) {
+          return mcpToolRes.success({
+            chainId: resolvedChainId,
+            contractAddress,
+            status: "not_found",
+            message: "Token not found or not analyzed by GoPlus"
+          })
+        }
+        
+        const tokenData = data[contractAddress.toLowerCase()] as Record<string, unknown>
+        
+        // Parse risk indicators
+        const risks: string[] = []
+        const warnings: string[] = []
+        
+        if (tokenData.is_honeypot === "1") risks.push("HONEYPOT DETECTED")
+        if (tokenData.is_mintable === "1") warnings.push("Token is mintable")
+        if (tokenData.can_take_back_ownership === "1") risks.push("Ownership can be reclaimed")
+        if (tokenData.hidden_owner === "1") risks.push("Hidden owner detected")
+        if (tokenData.selfdestruct === "1") risks.push("Contract can self-destruct")
+        if (tokenData.external_call === "1") warnings.push("External calls detected")
+        if (tokenData.is_proxy === "1") warnings.push("Proxy contract")
+        if (tokenData.is_blacklisted === "1") warnings.push("Blacklist functionality")
+        if (tokenData.is_whitelisted === "1") warnings.push("Whitelist functionality")
+        if (tokenData.trading_cooldown === "1") warnings.push("Trading cooldown enabled")
+        if (tokenData.transfer_pausable === "1") warnings.push("Transfers can be paused")
+        if (tokenData.cannot_sell_all === "1") risks.push("Cannot sell all tokens")
+        if (tokenData.is_anti_whale === "1") warnings.push("Anti-whale mechanism")
+        
+        // Tax analysis
+        const buyTax = parseFloat(String(tokenData.buy_tax || "0")) * 100
+        const sellTax = parseFloat(String(tokenData.sell_tax || "0")) * 100
+        if (buyTax > 10) warnings.push(`High buy tax: ${buyTax.toFixed(1)}%`)
+        if (sellTax > 10) warnings.push(`High sell tax: ${sellTax.toFixed(1)}%`)
+        if (sellTax > 50) risks.push(`Extreme sell tax: ${sellTax.toFixed(1)}%`)
+        
+        // Calculate risk score
+        const riskScore = risks.length * 30 + warnings.length * 10
+        const riskLevel = riskScore >= 60 ? "critical" : riskScore >= 30 ? "high" : riskScore >= 10 ? "medium" : "low"
+        
+        return mcpToolRes.success({
+          chainId: resolvedChainId,
+          contractAddress,
+          tokenInfo: {
+            name: tokenData.token_name,
+            symbol: tokenData.token_symbol,
+            totalSupply: tokenData.total_supply,
+            holderCount: tokenData.holder_count,
+            creator: tokenData.creator_address,
+            owner: tokenData.owner_address
+          },
+          securityAnalysis: {
+            riskLevel,
+            riskScore,
+            isHoneypot: tokenData.is_honeypot === "1",
+            isMintable: tokenData.is_mintable === "1",
+            isProxy: tokenData.is_proxy === "1",
+            hasBlacklist: tokenData.is_blacklisted === "1",
+            canPause: tokenData.transfer_pausable === "1",
+            buyTax: `${buyTax.toFixed(2)}%`,
+            sellTax: `${sellTax.toFixed(2)}%`
+          },
+          risks,
+          warnings,
+          lpInfo: tokenData.lp_holders ? {
+            lpHolderCount: tokenData.lp_holder_count,
+            lpTotalSupply: tokenData.lp_total_supply,
+            isLpLocked: (tokenData as Record<string, unknown[]>).lp_holders?.some((h: Record<string, unknown>) => h.is_locked === 1)
+          } : null,
+          rawData: tokenData,
+          recommendation: riskLevel === "critical"
+            ? "DO NOT INTERACT - Critical security risks detected"
+            : riskLevel === "high"
+            ? "HIGH RISK - Multiple security concerns found"
+            : riskLevel === "medium"
+            ? "CAUTION - Some risk factors present, proceed carefully"
+            : "Lower risk detected but always DYOR"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "checking token security via GoPlus")
+      }
+    }
+  )
+
+  // GoPlus Address Security Check
+  server.tool(
+    "goplus_address_security",
+    "Check if an address is associated with malicious activity (scams, phishing, hacks)",
+    {
+      address: z.string().describe("Address to check for malicious activity")
+    },
+    async ({ address }) => {
+      try {
+        const data = await goPlusRequest<Record<string, unknown>>(
+          "/address_security/" + address.toLowerCase()
+        )
+        
+        if (!data) {
+          return mcpToolRes.success({
+            address,
+            status: "not_found",
+            message: "Address not in GoPlus database"
+          })
+        }
+        
+        const risks: string[] = []
+        
+        if (data.honeypot_related_address === "1") risks.push("Associated with honeypot scams")
+        if (data.phishing_activities === "1") risks.push("Phishing activity detected")
+        if (data.blacklist_doubt === "1") risks.push("Blacklisted address")
+        if (data.stealing_attack === "1") risks.push("Involved in theft attacks")
+        if (data.fake_kyc === "1") risks.push("Fake KYC detected")
+        if (data.malicious_mining_activities === "1") risks.push("Malicious mining activity")
+        if (data.darkweb_transactions === "1") risks.push("Darkweb transactions")
+        if (data.cybercrime === "1") risks.push("Associated with cybercrime")
+        if (data.money_laundering === "1") risks.push("Money laundering activity")
+        if (data.financial_crime === "1") risks.push("Financial crime")
+        if (data.blackmail_activities === "1") risks.push("Blackmail activities")
+        if (data.mixer === "1") risks.push("Mixer/tumbler usage")
+        if (data.sanctioned === "1") risks.push("SANCTIONED ADDRESS")
+        if (data.contract_address === "1") risks.push("Is a contract address")
+        
+        const isMalicious = risks.length > 0
+        
+        return mcpToolRes.success({
+          address,
+          isMalicious,
+          riskLevel: risks.length >= 3 ? "critical" : risks.length >= 1 ? "high" : "safe",
+          risks,
+          dataAge: data.data_source,
+          recommendation: isMalicious
+            ? "WARNING: This address is flagged as malicious. Do not send funds or interact."
+            : "No malicious activity detected, but always verify before transacting"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "checking address security via GoPlus")
+      }
+    }
+  )
+
+  // GoPlus Approval Security Check
+  server.tool(
+    "goplus_approval_security",
+    "Check token approval security - analyze if approved spender contracts are risky",
+    {
+      chainId: z.string().describe("Chain ID or name"),
+      contractAddress: z.string().describe("Spender contract address to check")
+    },
+    async ({ chainId, contractAddress }) => {
+      try {
+        const resolvedChainId = resolveGoPlusChainId(chainId)
+        const data = await goPlusRequest<Record<string, unknown>>(
+          `/approval_security/${resolvedChainId}`,
+          { contract_addresses: contractAddress.toLowerCase() }
+        )
+        
+        if (!data || !data[contractAddress.toLowerCase()]) {
+          return mcpToolRes.success({
+            chainId: resolvedChainId,
+            contractAddress,
+            status: "not_found",
+            message: "Contract not found in GoPlus database"
+          })
+        }
+        
+        const contractData = data[contractAddress.toLowerCase()] as Record<string, unknown>
+        const risks: string[] = []
+        
+        if (contractData.is_contract === "0") risks.push("Approval to EOA (not a contract)")
+        if (contractData.is_open_source === "0") risks.push("Contract source not verified")
+        if (contractData.trust_list === "0" && contractData.risky_approval === "1") {
+          risks.push("Not on trusted list and flagged as risky")
+        }
+        if (contractData.malicious_address === "1") risks.push("Known malicious contract")
+        
+        return mcpToolRes.success({
+          chainId: resolvedChainId,
+          contractAddress,
+          analysis: {
+            isContract: contractData.is_contract === "1",
+            isOpenSource: contractData.is_open_source === "1",
+            isTrusted: contractData.trust_list === "1",
+            isRisky: contractData.risky_approval === "1",
+            isMalicious: contractData.malicious_address === "1",
+            deployTime: contractData.deploy_time,
+            tag: contractData.tag
+          },
+          risks,
+          riskLevel: risks.length >= 2 ? "high" : risks.length >= 1 ? "medium" : "low",
+          recommendation: risks.length > 0
+            ? "Consider revoking this approval - security concerns detected"
+            : "Approval appears safe but regularly review your approvals"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "checking approval security via GoPlus")
+      }
+    }
+  )
+
+  // GoPlus NFT Security Check
+  server.tool(
+    "goplus_nft_security",
+    "Check NFT collection security - detect fake collections, malicious contracts",
+    {
+      chainId: z.string().describe("Chain ID or name"),
+      contractAddress: z.string().describe("NFT contract address to analyze")
+    },
+    async ({ chainId, contractAddress }) => {
+      try {
+        const resolvedChainId = resolveGoPlusChainId(chainId)
+        const data = await goPlusRequest<Record<string, unknown>>(
+          `/nft_security/${resolvedChainId}`,
+          { contract_addresses: contractAddress.toLowerCase() }
+        )
+        
+        if (!data || !data[contractAddress.toLowerCase()]) {
+          return mcpToolRes.success({
+            chainId: resolvedChainId,
+            contractAddress,
+            status: "not_found",
+            message: "NFT collection not found in GoPlus database"
+          })
+        }
+        
+        const nftData = data[contractAddress.toLowerCase()] as Record<string, unknown>
+        const risks: string[] = []
+        const warnings: string[] = []
+        
+        if (nftData.nft_open_source === "0") warnings.push("Contract source not verified")
+        if (nftData.nft_proxy === "1") warnings.push("Upgradeable proxy contract")
+        if (nftData.oversupply_minting === "1") risks.push("Oversupply minting possible")
+        if (nftData.restricted_approval === "1") warnings.push("Has approval restrictions")
+        if (nftData.transfer_without_approval === "1") risks.push("Can transfer without approval")
+        if (nftData.self_destruct === "1") risks.push("Contract can self-destruct")
+        if (nftData.privileged_burn === "1") risks.push("Privileged burn capability")
+        if (nftData.privileged_minting === "1") warnings.push("Privileged minting enabled")
+        
+        const riskScore = risks.length * 25 + warnings.length * 10
+        const riskLevel = riskScore >= 50 ? "high" : riskScore >= 25 ? "medium" : "low"
+        
+        return mcpToolRes.success({
+          chainId: resolvedChainId,
+          contractAddress,
+          nftInfo: {
+            name: nftData.nft_name,
+            symbol: nftData.nft_symbol,
+            erc: nftData.nft_erc,
+            owner: nftData.owner_address,
+            creator: nftData.creator_address
+          },
+          securityAnalysis: {
+            riskLevel,
+            riskScore,
+            isOpenSource: nftData.nft_open_source === "1",
+            isProxy: nftData.nft_proxy === "1",
+            canSelfDestruct: nftData.self_destruct === "1",
+            hasPrivilegedMint: nftData.privileged_minting === "1",
+            hasPrivilegedBurn: nftData.privileged_burn === "1"
+          },
+          risks,
+          warnings,
+          recommendation: riskLevel === "high"
+            ? "HIGH RISK - Exercise extreme caution with this NFT collection"
+            : riskLevel === "medium"
+            ? "MEDIUM RISK - Review concerns before minting/buying"
+            : "Lower risk detected but verify authenticity"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "checking NFT security via GoPlus")
+      }
+    }
+  )
+
+  // GoPlus dApp Security Check
+  server.tool(
+    "goplus_dapp_security",
+    "Check dApp/website security - detect phishing sites, malicious dApps",
+    {
+      url: z.string().describe("dApp URL to check (e.g., https://uniswap.org)")
+    },
+    async ({ url }) => {
+      try {
+        const data = await goPlusRequest<Record<string, unknown>>(
+          "/dapp_security",
+          { url }
+        )
+        
+        if (!data) {
+          return mcpToolRes.success({
+            url,
+            status: "not_found",
+            message: "URL not found in GoPlus database"
+          })
+        }
+        
+        const risks: string[] = []
+        
+        if (data.is_audit === "0") risks.push("Not audited")
+        if (data.audit_info) {
+          const auditInfo = data.audit_info as Record<string, unknown>
+          if (auditInfo.is_audit === "0") risks.push("No security audit")
+        }
+        if (data.is_phishing === "1") risks.push("PHISHING SITE DETECTED")
+        if (data.malicious_contract === "1") risks.push("Uses malicious contracts")
+        
+        const isPhishing = data.is_phishing === "1"
+        
+        return mcpToolRes.success({
+          url,
+          isPhishing,
+          riskLevel: isPhishing ? "critical" : risks.length > 0 ? "medium" : "low",
+          dAppInfo: {
+            name: data.name,
+            contracts: data.contracts,
+            isAudited: data.is_audit === "1"
+          },
+          risks,
+          recommendation: isPhishing
+            ? "DANGER: This is a known phishing site. Do NOT interact!"
+            : risks.length > 0
+            ? "Some concerns detected - verify the URL and contracts"
+            : "No issues detected but always verify URLs before connecting wallet"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "checking dApp security via GoPlus")
+      }
+    }
+  )
+
+  // GoPlus Signature Data Decode
+  server.tool(
+    "goplus_signature_decode",
+    "Decode signature/permit data to understand what you're signing (prevents blind signing attacks)",
+    {
+      chainId: z.string().describe("Chain ID or name"),
+      contractAddress: z.string().optional().describe("Contract address (for EIP-712)"),
+      inputData: z.string().describe("Signature data (hex) or EIP-712 typed data (JSON)")
+    },
+    async ({ chainId, contractAddress, inputData }) => {
+      try {
+        const resolvedChainId = resolveGoPlusChainId(chainId)
+        const data = await goPlusRequest<Record<string, unknown>>(
+          "/signature_data_decode",
+          {
+            chain_id: resolvedChainId,
+            contract_address: contractAddress,
+            data: inputData
+          }
+        )
+        
+        if (!data) {
+          return mcpToolRes.success({
+            chainId: resolvedChainId,
+            status: "decode_failed",
+            message: "Could not decode signature data"
+          })
+        }
+        
+        const risks: string[] = []
+        
+        // Analyze the decoded data for risks
+        const decodedData = data as Record<string, unknown>
+        if (decodedData.risk_level === "high") risks.push("High-risk signature request")
+        if (decodedData.is_malicious === "1") risks.push("Malicious signature detected")
+        
+        return mcpToolRes.success({
+          chainId: resolvedChainId,
+          contractAddress,
+          decoded: {
+            type: decodedData.data_type,
+            method: decodedData.method,
+            params: decodedData.params,
+            description: decodedData.description
+          },
+          risks,
+          riskLevel: risks.length > 0 ? "high" : "low",
+          recommendation: "Always review what you're signing. If unsure, do not sign."
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "decoding signature data via GoPlus")
+      }
+    }
+  )
+
+  // GoPlus Supported Chains
+  server.tool(
+    "goplus_supported_chains",
+    "Get list of blockchain networks supported by GoPlus security API",
+    {},
+    async () => {
+      try {
+        const data = await goPlusRequest<{ id: string; name: string }[]>(
+          "/supported_chains"
+        )
+        
+        if (!data) {
+          // Return hardcoded list if API fails
+          return mcpToolRes.success({
+            chains: Object.entries(GOPLUS_CHAIN_IDS).map(([name, id]) => ({ name, id }))
+          })
+        }
+        
+        return mcpToolRes.success({
+          chains: data,
+          totalChains: data.length
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "fetching supported chains from GoPlus")
+      }
+    }
+  )
+
+  // GoPlus Rug Pull Detection
+  server.tool(
+    "goplus_rugpull_detection",
+    "Comprehensive rug pull detection combining multiple GoPlus security checks",
+    {
+      chainId: z.string().describe("Chain ID or name"),
+      tokenAddress: z.string().describe("Token contract address to analyze")
+    },
+    async ({ chainId, tokenAddress }) => {
+      try {
+        const resolvedChainId = resolveGoPlusChainId(chainId)
+        
+        // Fetch token security data
+        const tokenData = await goPlusRequest<Record<string, unknown>>(
+          `/token_security/${resolvedChainId}`,
+          { contract_addresses: tokenAddress.toLowerCase() }
+        )
+        
+        if (!tokenData || !tokenData[tokenAddress.toLowerCase()]) {
+          return mcpToolRes.success({
+            chainId: resolvedChainId,
+            tokenAddress,
+            status: "not_found",
+            message: "Token not found in GoPlus database"
+          })
+        }
+        
+        const token = tokenData[tokenAddress.toLowerCase()] as Record<string, unknown>
+        
+        // Rug pull indicators
+        const rugIndicators: { indicator: string; severity: string; found: boolean }[] = []
+        let rugScore = 0
+        
+        // Critical indicators
+        if (token.is_honeypot === "1") {
+          rugIndicators.push({ indicator: "Honeypot", severity: "critical", found: true })
+          rugScore += 40
+        }
+        if (token.hidden_owner === "1") {
+          rugIndicators.push({ indicator: "Hidden Owner", severity: "critical", found: true })
+          rugScore += 30
+        }
+        if (token.can_take_back_ownership === "1") {
+          rugIndicators.push({ indicator: "Ownership Reclaim", severity: "critical", found: true })
+          rugScore += 30
+        }
+        if (token.selfdestruct === "1") {
+          rugIndicators.push({ indicator: "Self-Destruct", severity: "critical", found: true })
+          rugScore += 25
+        }
+        
+        // High risk indicators
+        if (token.is_mintable === "1") {
+          rugIndicators.push({ indicator: "Mintable", severity: "high", found: true })
+          rugScore += 15
+        }
+        const sellTax = parseFloat(String(token.sell_tax || "0")) * 100
+        if (sellTax > 25) {
+          rugIndicators.push({ indicator: `High Sell Tax (${sellTax.toFixed(1)}%)`, severity: "high", found: true })
+          rugScore += 20
+        }
+        if (token.cannot_sell_all === "1") {
+          rugIndicators.push({ indicator: "Cannot Sell All", severity: "high", found: true })
+          rugScore += 25
+        }
+        
+        // Medium risk indicators
+        if (token.transfer_pausable === "1") {
+          rugIndicators.push({ indicator: "Transfer Pausable", severity: "medium", found: true })
+          rugScore += 10
+        }
+        if (token.is_blacklisted === "1") {
+          rugIndicators.push({ indicator: "Blacklist", severity: "medium", found: true })
+          rugScore += 10
+        }
+        if (token.is_proxy === "1" && token.is_open_source === "0") {
+          rugIndicators.push({ indicator: "Unverified Proxy", severity: "medium", found: true })
+          rugScore += 15
+        }
+        
+        // LP analysis
+        let lpLocked = false
+        let lpLockedPercent = 0
+        if (token.lp_holders && Array.isArray(token.lp_holders)) {
+          const lpHolders = token.lp_holders as { is_locked: number; percent: string }[]
+          const lockedLp = lpHolders.filter(h => h.is_locked === 1)
+          if (lockedLp.length > 0) {
+            lpLocked = true
+            lpLockedPercent = lockedLp.reduce((sum, h) => sum + parseFloat(h.percent || "0"), 0) * 100
+          }
+        }
+        
+        if (!lpLocked) {
+          rugIndicators.push({ indicator: "LP Not Locked", severity: "high", found: true })
+          rugScore += 20
+        }
+        
+        // Calculate risk level
+        const rugRisk = rugScore >= 70 ? "critical" : rugScore >= 40 ? "high" : rugScore >= 20 ? "medium" : "low"
+        
+        return mcpToolRes.success({
+          chainId: resolvedChainId,
+          tokenAddress,
+          tokenInfo: {
+            name: token.token_name,
+            symbol: token.token_symbol,
+            totalSupply: token.total_supply,
+            holders: token.holder_count
+          },
+          rugPullAnalysis: {
+            rugRisk,
+            rugScore,
+            maxScore: 100,
+            indicatorsFound: rugIndicators.filter(i => i.found).length
+          },
+          indicators: rugIndicators,
+          liquidityAnalysis: {
+            lpLocked,
+            lpLockedPercent: `${lpLockedPercent.toFixed(2)}%`,
+            lpHolderCount: token.lp_holder_count
+          },
+          taxes: {
+            buyTax: `${(parseFloat(String(token.buy_tax || "0")) * 100).toFixed(2)}%`,
+            sellTax: `${sellTax.toFixed(2)}%`
+          },
+          recommendation: rugRisk === "critical"
+            ? "🚨 EXTREME DANGER - Strong rug pull indicators. DO NOT INVEST"
+            : rugRisk === "high"
+            ? "⚠️ HIGH RISK - Multiple rug pull warning signs detected"
+            : rugRisk === "medium"
+            ? "⚡ CAUTION - Some concerning indicators present"
+            : "Lower risk but always DYOR and never invest more than you can lose"
+        })
+      } catch (error) {
+        return mcpToolRes.error(error, "running rug pull detection via GoPlus")
+      }
+    }
+  )
 }
