@@ -22,7 +22,7 @@ Enable AI agents to interact with any EVM blockchain through natural language.
 - ⛽ **Gas** - Gas prices across chains, EIP-1559 suggestions
 - 📦 **Multicall** - Batch read/write operations
 - 📊 **Events/Logs** - Query historical events, decode logs
-- 🔒 **Security** - Rug pull detection, honeypot check, holder analysis, contract permissions
+- 🔒 **Security** - Rug pull detection, honeypot check, GoPlus token/address security, dApp phishing detection
 - 💰 **Staking** - Liquid staking (Lido), LP farming
 - ✍️ **Signatures** - Sign messages, verify signatures, EIP-712
 - 🏦 **Lending** - Aave/Compound positions, borrow rates
@@ -32,6 +32,10 @@ Enable AI agents to interact with any EVM blockchain through natural language.
 - 🚀 **Deployment** - Deploy contracts, CREATE2, upgradeable proxies, verification
 - 🛡️ **MEV Protection** - Flashbots Protect, private transactions, bundle simulation
 - 🆔 **ENS/Domains** - Register, transfer, renew, set records, subdomains
+- 📊 **Market Data** - CoinGecko & CoinStats prices, OHLCV, trending, categories, exchanges
+- 🌐 **DeFi Analytics** - DefiLlama TVL, yields, fees, bridges, stablecoins, protocol data
+- 💬 **Social Sentiment** - LunarCrush social metrics, influencers, trending topics
+- 📈 **DEX Analytics** - DexPaprika & GeckoTerminal pools, trades, OHLCV, trending tokens
 
 ## Quick Start
 
@@ -292,6 +296,21 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Get price impact | ✅ |
 | MEV protection (private transactions) | 📋 |
 
+#### DEX Analytics
+| Feature | Status |
+|---------|--------|
+| Get trending pools | ✅ |
+| Get new pools | ✅ |
+| Get top pools by volume | ✅ |
+| Get pool OHLCV data | ✅ |
+| Get pool trades | ✅ |
+| Get token pools | ✅ |
+| Get DEX list | ✅ |
+| Search pools cross-chain | ✅ |
+| Get token price by contract | ✅ |
+| Get pool transactions | ✅ |
+| Multi-token price lookup | ✅ |
+
 #### Liquidity Provision
 | Feature | Status |
 |---------|--------|
@@ -522,6 +541,8 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Get implementation address | ✅ |
 | Detect honeypots | ✅ |
 | Check for rug pull risks | ✅ |
+| GoPlus token security check | ✅ |
+| GoPlus rug pull detection | ✅ |
 | Audit score | 📋 |
 | Get contract creator | ✅ |
 | Get contract age | ✅ |
@@ -538,6 +559,8 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Check liquidity locked | ✅ |
 | Get top holders | ✅ |
 | Check ownership renounced | ✅ |
+| GoPlus NFT security | ✅ |
+| GoPlus approval security | ✅ |
 
 #### Wallet Security
 | Feature | Status |
@@ -547,6 +570,9 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Check for drainers | ✅ |
 | Simulate transaction safety | ✅ |
 | Get wallet risk score | 📋 |
+| GoPlus address security | ✅ |
+| GoPlus dApp phishing check | ✅ |
+| GoPlus signature decode | ✅ |
 
 ---
 
@@ -557,25 +583,37 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 |---------|--------|
 | Get current price | ✅ |
 | Get historical prices | ✅ |
-| Get OHLCV data | 📋 |
+| Get OHLCV data | ✅ |
 | Get price from DEX | ✅ |
 | Get price from oracle (Chainlink, Pyth) | ✅ |
 | Get TWAP price | ✅ |
-| Get price across exchanges | 📋 |
-| Get volume | 📋 |
-| Get market cap | 📋 |
+| Get price across exchanges | ✅ |
+| Get volume | ✅ |
+| Get market cap | ✅ |
+| Get trending coins | ✅ |
+| Get token by contract address | ✅ |
+| Get exchange rates | ✅ |
+| Get coin categories | ✅ |
+| Get derivatives data | ✅ |
+| Get company BTC/ETH holdings | ✅ |
 
 #### Analytics
 | Feature | Status |
 |---------|--------|
-| Get TVL (Total Value Locked) | 📋 |
-| Get protocol metrics | 📋 |
-| Get yield farming APYs | 📋 |
+| Get TVL (Total Value Locked) | ✅ |
+| Get protocol metrics | ✅ |
+| Get yield farming APYs | ✅ |
 | Get gas tracker | ✅ |
 | Get whale transactions | 📋 |
 | Get token flow analysis | 📋 |
-| Get DEX volume | 📋 |
+| Get DEX volume | ✅ |
 | Get lending metrics | 📋 |
+| Get DeFi fees & revenue | ✅ |
+| Get stablecoin data | ✅ |
+| Get bridge volumes | ✅ |
+| Get liquidation data | ✅ |
+| Get DeFi hacks history | ✅ |
+| Get perpetuals data | ✅ |
 
 ---
 
@@ -795,7 +833,14 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Get DeFi news | ✅ |
 | Get Bitcoin news | ✅ |
 | Get breaking news | ✅ |
-| Get social sentiment | 📋 |
+| Get social sentiment | ✅ |
+| Get influencer rankings | ✅ |
+| Get trending topics | ✅ |
+| Get coin social metrics | ✅ |
+| Get social feed | ✅ |
+| Get market sentiment index | ✅ |
+| Get Galaxy Score | ✅ |
+| Get AltRank | ✅ |
 | Get Twitter mentions | 📋 |
 | Get Discord activity | 📋 |
 | Get GitHub activity | 📋 |
@@ -837,6 +882,24 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Portfolio tracking | ✅ |
 | P&L reporting | 📋 |
 | Transaction history export | 📋 |
+
+---
+
+## Data Sources
+
+This MCP server integrates with the following APIs:
+
+| Provider | Data Type | API Key Required |
+|----------|-----------|------------------|
+| [CoinGecko](https://coingecko.com) | Market data, prices, OHLCV | Optional (free tier) |
+| [CoinStats](https://coinstats.app) | Portfolio, prices, wallets | Yes |
+| [DefiLlama](https://defillama.com) | TVL, yields, fees, protocols | No |
+| [LunarCrush](https://lunarcrush.com) | Social sentiment, influencers | Yes |
+| [GoPlus](https://gopluslabs.io) | Security analysis, honeypot detection | No |
+| [GeckoTerminal](https://geckoterminal.com) | DEX pools, trades, OHLCV | No |
+| [DexPaprika](https://dexpaprika.com) | DEX analytics, pools | No |
+| [CryptoPanic](https://cryptopanic.com) | Crypto news | Yes |
+| [Alternative.me](https://alternative.me) | Fear & Greed Index | No |
 
 ---
 
