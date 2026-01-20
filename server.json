@@ -1,0 +1,45 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/universal-crypto-mcp",
+  "title": "Universal Blockchain MCP",
+  "description": "Universal blockchain MCP - swaps bridges staking lending Ethereum Arbitrum Base Polygon BSC natural lang",
+  "version": "1.0.0",
+  "keywords": [
+    "blockchain",
+    "crypto",
+    "ethereum",
+    "arbitrum",
+    "base",
+    "polygon",
+    "bsc",
+    "swap",
+    "bridge",
+    "staking",
+    "lending",
+    "defi",
+    "web3",
+    "natural-language",
+    "plugins",
+    "universal",
+    "multi-chain",
+    "mcp",
+    "claude",
+    "ai",
+    "llm",
+    "agents"
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "source": "github"
+  },
+  "license": "MIT",
+  "packages": [
+    {
+      "registryType": "source",
+      "url": "https://github.com/nirholas/universal-crypto-mcp",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
