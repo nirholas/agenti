@@ -1,12 +1,25 @@
-// src/tools/binance-simple-earn/index.ts
+// src/modules/simple-earn/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerBinanceSimpleEarnApiTools } from "./earn-api/index.js";
 import { registerBinanceSimpleEarnAccountApiTools } from "./account-api/index.js";
+import { registerSimpleEarnFlexibleTools } from "./flexible/index.js";
+import { registerSimpleEarnLockedTools } from "./locked/index.js";
+import { registerSimpleEarnAccountTools } from "./account/index.js";
 
-export function registerBinanceSimpleEarnTools(server: McpServer) {
-    // Registers core API tools like subscribing to flexible products
+export function registerSimpleEarn(server: McpServer) {
+    // Legacy API tools (for backwards compatibility)
     registerBinanceSimpleEarnApiTools(server);
-
-    // Registers account-related tools like viewing product lists and positions
     registerBinanceSimpleEarnAccountApiTools(server);
+    
+    // New comprehensive flexible product tools
+    registerSimpleEarnFlexibleTools(server);
+    
+    // New comprehensive locked product tools
+    registerSimpleEarnLockedTools(server);
+    
+    // Account-level tools
+    registerSimpleEarnAccountTools(server);
 }
+
+// Export alias for backwards compatibility
+export { registerSimpleEarn as registerBinanceSimpleEarnTools };

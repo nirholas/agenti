@@ -5,3 +5,5 @@ import { registerBinanceGetPayTradeHistory } from "./pay-api/getPayTradeHistory.
 export function registerBinancePayTools(server: McpServer) {
     registerBinanceGetPayTradeHistory(server);
 }
+
+export { registerBinancePayTools as registerPayTools };

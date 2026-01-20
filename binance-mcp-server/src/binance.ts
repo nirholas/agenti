@@ -19,6 +19,10 @@ import { registerDualInvestment } from "./modules/dual-investment/index.js"
 import { registerMining } from "./modules/mining/index.js"
 import { registerVipLoan } from "./modules/vip-loan/index.js"
 import { registerStaking } from "./modules/staking/index.js"
+import { registerMargin } from "./modules/margin/index.js"
+import { registerOptions } from "./modules/options/index.js"
+import { registerPortfolioMargin } from "./modules/portfolio-margin/index.js"
+import { registerAutoInvest } from "./modules/auto-invest/index.js"
 
 /**
  * Register all Binance modules with the MCP server
@@ -28,10 +32,20 @@ export function registerBinance(server: McpServer) {
   registerSpot(server)
   registerAlgo(server)
   
+  // Margin trading module
+  registerMargin(server)
+  
+  // Options trading module
+  registerOptions(server)
+  
+  // Portfolio Margin module
+  registerPortfolioMargin(server)
+  
   // Earn & Investment modules
   registerSimpleEarn(server)
   registerDualInvestment(server)
   registerStaking(server)
+  registerAutoInvest(server)
   
   // Trading modules
   registerC2C(server)

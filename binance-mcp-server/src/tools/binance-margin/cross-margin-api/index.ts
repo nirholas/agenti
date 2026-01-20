@@ -26,6 +26,7 @@ import { registerBinanceCrossMarginSmallLiabilityExchangeHistory } from "./cross
 import { registerBinanceCrossMarginAvailableInventory } from "./crossMarginAvailableInventory.js";
 import { registerBinanceCrossMarginCapitalFlow } from "./crossMarginCapitalFlow.js";
 import { registerBinanceCrossMarginDelist } from "./crossMarginDelist.js";
+import { registerBinanceCrossMarginAllAssets } from "./crossMarginAllAssets.js";
 
 export function registerBinanceCrossMarginTools(server: McpServer) {
     // Borrow & Repay
@@ -52,6 +53,7 @@ export function registerBinanceCrossMarginTools(server: McpServer) {
     registerBinanceCrossMarginFee(server);
     registerBinanceCrossMarginAvailableInventory(server);
     registerBinanceCrossMarginDelist(server);
+    registerBinanceCrossMarginAllAssets(server);
     
     // Trading
     registerBinanceCrossMarginNewOrder(server);

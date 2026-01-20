@@ -1,7 +1,18 @@
-// src/tools/binance-pay/index.ts
+// src/modules/pay/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerBinanceGetPayTradeHistory } from "./pay-api/getPayTradeHistory.js";
+import { registerBinancePayCreateOrder } from "./pay-api/createOrder.js";
+import { registerBinancePayQueryOrder } from "./pay-api/queryOrder.js";
+import { registerBinancePayGetHistory } from "./pay-api/getHistory.js";
 
-export function registerBinancePayTools(server: McpServer) {
+export function registerPay(server: McpServer) {
+    // Legacy tool
     registerBinanceGetPayTradeHistory(server);
+    
+    // New comprehensive tools
+    registerBinancePayCreateOrder(server);
+    registerBinancePayQueryOrder(server);
+    registerBinancePayGetHistory(server);
 }
+
+export { registerPay as registerBinancePayTools };

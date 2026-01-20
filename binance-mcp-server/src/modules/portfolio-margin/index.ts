@@ -1,7 +1,24 @@
 // src/modules/portfolio-margin/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerBinancePortfolioMarginTools } from "../../tools/binance-portfolio-margin/index.js";
+import { registerPortfolioMarginAccountApi } from "./account/index.js";
+import { registerPortfolioMarginUmTradeApi } from "./um-trade/index.js";
+import { registerPortfolioMarginCmTradeApi } from "./cm-trade/index.js";
+import { registerPortfolioMarginMarginTradeApi } from "./margin-trade/index.js";
+import { registerPortfolioMarginUserdataApi } from "./userdata/index.js";
 
 export function registerPortfolioMargin(server: McpServer) {
-    registerBinancePortfolioMarginTools(server);
+    // Account API
+    registerPortfolioMarginAccountApi(server);
+    
+    // UM (USDT-M Futures) Trade API
+    registerPortfolioMarginUmTradeApi(server);
+    
+    // CM (COIN-M Futures) Trade API
+    registerPortfolioMarginCmTradeApi(server);
+    
+    // Cross Margin Trade API
+    registerPortfolioMarginMarginTradeApi(server);
+    
+    // User Data Stream API
+    registerPortfolioMarginUserdataApi(server);
 }
