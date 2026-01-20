@@ -1,1 +1,9 @@
-{"$schema":"https://registry.modelcontextprotocol.io/schema/server.json","name":"universal-crypto-mcp","title":"Universal Blockchain MCP","description":"Universal blockchain MCP - swaps bridges staking lending Ethereum Arbitrum Base","repository":"https://github.com/nirholas/universal-crypto-mcp","keywords":["blockchain","crypto","defi","swaps"],"packages":[{"registry_name":"source","identifier":"https://github.com/nirholas/universal-crypto-mcp"}]}
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/universal-crypto-mcp",
+  "title": "Universal Blockchain MCP",
+  "description": "Universal blockchain MCP - swaps bridges staking lending Ethereum Arbitrum",
+  "keywords": ["blockchain", "crypto", "defi", "swaps", "bridges", "staking", "ethereum"],
+  "repository": {"url": "https://github.com/nirholas/universal-crypto-mcp", "source": "github"},
+  "packages": [{"registryType": "source", "identifier": "https://github.com/nirholas/universal-crypto-mcp"}]
+}
