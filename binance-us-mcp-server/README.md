@@ -214,6 +214,17 @@ Common error codes:
 
 Contributions are welcome! Please read the contributing guidelines before submitting pull requests.
 
+## Documentation
+
+Detailed documentation is available in the `docs/` folder:
+
+- [**TOOLS.md**](docs/TOOLS.md) - Complete tools reference with parameters, examples, and responses
+- [**API_CLIENT.md**](docs/API_CLIENT.md) - API client architecture, types, and error handling
+- [**QUICK_REFERENCE.md**](docs/QUICK_REFERENCE.md) - Fast lookup guide for all tools
+- [**TRADING.md**](docs/TRADING.md) - Trading tools and order management (all 13 tools)
+- [**TRADING_QUICK_REF.md**](docs/TRADING_QUICK_REF.md) - Trading tools cheat sheet
+- [**ERROR_CODES.md**](docs/ERROR_CODES.md) - Complete error code reference with solutions
+
 ## License
 
 MIT License - see [LICENSE](../LICENSE) for details.
@@ -223,3 +234,10 @@ MIT License - see [LICENSE](../LICENSE) for details.
 - [Binance.US API Documentation](https://docs.binance.us/)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [MCP SDK Documentation](https://github.com/modelcontextprotocol/sdk)
+
+## Documentation
+
+- [**Tools Reference**](docs/TOOLS_REFERENCE.md) - Complete documentation for all 93 tools
+- [**Quick Reference**](docs/QUICK_REFERENCE.md) - Concise tool lookup card
+- [**Prompt Examples**](docs/PROMPT_EXAMPLES.md) - Example prompts for Claude
+- [**Changelog**](docs/CHANGELOG.md) - Version history and changes

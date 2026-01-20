@@ -903,6 +903,60 @@ This MCP server integrates with the following APIs:
 
 ---
 
+## Related MCP Servers
+
+Additional specialized MCP servers in this workspace:
+
+| Server | Description | Tools |
+|--------|-------------|-------|
+| [binance-mcp-server](./binance-mcp-server/) | Binance.com global exchange API | 156+ tools |
+| [binance-us-mcp-server](./binance-us-mcp-server/) | Binance.US exchange API | 71+ tools |
+
+### Binance.com Server
+Full Binance global API coverage including:
+- Spot trading, wallet, staking, mining
+- Convert, Simple Earn, Algo Trading (TWAP/VP)
+- NFT, Pay, Copy Trading, Dual Investment
+- VIP Loans, C2C/P2P, Fiat
+
+```json
+{
+  "mcpServers": {
+    "binance": {
+      "command": "npx",
+      "args": ["ts-node", "binance-mcp-server/src/index.ts"],
+      "env": {
+        "BINANCE_API_KEY": "your_key",
+        "BINANCE_API_SECRET": "your_secret"
+      }
+    }
+  }
+}
+```
+
+### Binance.US Server
+US-regulated exchange with:
+- Market data, spot trading, wallet
+- Staking, OTC, sub-accounts
+- Custodial solutions (institutional)
+
+```json
+{
+  "mcpServers": {
+    "binance-us": {
+      "command": "node",
+      "args": ["binance-us-mcp-server/build/index.js"],
+      "env": {
+        "BINANCE_US_API_KEY": "your_key",
+        "BINANCE_US_API_SECRET": "your_secret"
+      }
+    }
+  }
+}
+```
+
+---
+
 ## Credits
 
 Built by **[nich](https://x.com/nichxbt)** ([github.com/nirholas](https://github.com/nirholas))
