@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/portfolio-margin/account/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerPortfolioMarginGetAccountInfo } from "./getAccountInfo.js";

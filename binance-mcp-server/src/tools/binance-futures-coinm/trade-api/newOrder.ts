@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-futures-coinm/trade-api/newOrder.ts// src/tools/binance-futures-coinm/trade-api/newOrder.ts
 
 

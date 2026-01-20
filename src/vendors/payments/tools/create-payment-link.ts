@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // MCP tool for creating web redirect payments
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';

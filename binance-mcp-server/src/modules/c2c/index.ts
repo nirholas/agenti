@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/c2c/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerBinanceGetC2CTradeHistory } from "./C2C/getC2CTradeHistory.js";

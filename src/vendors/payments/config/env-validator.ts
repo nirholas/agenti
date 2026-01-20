@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Environment variable validation at startup
 
 import { validateEnvironmentConfig } from '../utils/validation.js';

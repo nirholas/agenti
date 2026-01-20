@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Request/response logging middleware for MCP operations
 
 import { getLogger } from './logger.js';

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-wallet/others-api/getSymbolsDelistScheduleForSpot.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { walletClient } from "../../../config/binanceClient.js";

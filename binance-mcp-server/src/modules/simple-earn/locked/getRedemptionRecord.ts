@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/simple-earn/locked/getRedemptionRecord.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { simpleEarnClient } from "../../../config/binanceClient.js";

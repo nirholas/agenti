@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { formatEther, formatUnits, getContract, type Address } from "viem"
 
 import { ERC20_ABI } from "./abi/erc20.js"

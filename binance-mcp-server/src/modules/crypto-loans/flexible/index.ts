@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/crypto-loans/flexible/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerFlexibleLoanAssets } from "./getFlexibleLoanAssets.js";

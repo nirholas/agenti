@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/options/market-api/klines.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { optionsClient } from "../../../config/binanceClient.js";

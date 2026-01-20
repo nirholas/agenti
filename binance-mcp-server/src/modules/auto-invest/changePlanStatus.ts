@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/auto-invest/changePlanStatus.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { autoInvestClient } from "../../config/binanceClient.js";

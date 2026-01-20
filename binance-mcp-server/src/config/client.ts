@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Algo } from '@binance/algo';
 import { Spot } from '@binance/connector-typescript';
 

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Utility to format MCP responses for better display in Claude Desktop
 
 import type { QrCodeData } from '../types/index.js';

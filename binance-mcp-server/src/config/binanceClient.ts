@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/config/binanceClient.ts
 import { Spot } from "@binance/spot";
 import { SimpleEarn } from "@binance/simple-earn";

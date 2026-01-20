@@ -1,3 +1,9 @@
+"""
+@author Nich
+@website x.com/nichxbt
+@github github.com/nirholas
+@license MIT
+"""
 from mcp.server.fastmcp import FastMCP, Context
 import httpx
 import asyncio

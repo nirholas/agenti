@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/custodial/index.ts
 // Binance.US Custodial Solution Tools
 // For institutional custody partners (e.g., Anchorage, BitGo)

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { accountTools, handleAccountTools } from './account.js';
 import { applicationTools, handleApplicationTools } from './application.js';
 import { assetTools, handleAssetTools } from './asset.js';

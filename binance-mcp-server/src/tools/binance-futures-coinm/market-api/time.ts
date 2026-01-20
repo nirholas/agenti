@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-futures-coinm/market-api/time.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { deliveryClient } from "../../../config/binanceClient.js";

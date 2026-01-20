@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import path from "path"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Hex } from "viem"

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-fiat/fiat-api/getFiatDepositWithdrawHistory.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { fiatClient } from "../../../config/binanceClient.js";

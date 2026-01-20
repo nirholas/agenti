@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { algodTools, handleAlgodTools } from './algod/index.js';
 import { indexerTools, handleIndexerTools } from './indexer/index.js';
 import { nfdTools, handleNFDTools } from './nfd/index.js';

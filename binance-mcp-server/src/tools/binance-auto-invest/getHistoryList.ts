@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-auto-invest/getHistoryList.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { autoInvestClient } from "../../config/binanceClient.js";

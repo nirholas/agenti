@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-simple-earn/account-api/simpleEarnFlexibleProductList.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { simpleEarnClient } from "../../../config/binanceClient.js";

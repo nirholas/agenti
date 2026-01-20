@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-convert/trade-api/queryLimitOpenOrders.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { convertClient } from "../../../config/binanceClient.js";

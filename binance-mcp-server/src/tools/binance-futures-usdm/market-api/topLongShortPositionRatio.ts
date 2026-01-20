@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-futures-usdm/market-api/topLongShortPositionRatio.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { futuresClient } from "../../../config/binanceClient.js";

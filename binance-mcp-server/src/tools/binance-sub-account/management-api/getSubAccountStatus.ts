@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-sub-account/management-api/getSubAccountStatus.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { spotClient } from "../../../config/binanceClient.js";

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { StreamAccountStatus } from "@bnb-chain/greenfield-cosmos-types/greenfield/payment/stream_record"
 import { Long } from "@bnb-chain/greenfield-js-sdk"
 import { Hex, parseEther } from "viem"

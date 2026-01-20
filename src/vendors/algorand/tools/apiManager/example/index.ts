@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { McpError, ErrorCode, Tool } from '@modelcontextprotocol/sdk/types.js';
 import { getBalanceTool, getBalanceToolSchema } from './get-balance.js';
 

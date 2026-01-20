@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-margin/margin-order-api/marginGetOco.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { marginClient } from "../../../config/binanceClient.js";

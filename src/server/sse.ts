@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import "dotenv/config"
 
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js"

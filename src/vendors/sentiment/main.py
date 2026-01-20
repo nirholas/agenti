@@ -1,3 +1,9 @@
+"""
+@author Nich
+@website x.com/nichxbt
+@github github.com/nirholas
+@license MIT
+"""
 import requests
 from mcp.server.fastmcp import FastMCP
 from datetime import datetime, timedelta, UTC

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-vip-loan/trade-api/vipLoanRepay.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { vipLoanClient } from "../../../config/binanceClient.js";

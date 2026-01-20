@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-staking/ETH-staking-api/getWbethUnwrapHistory.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { stakingClient } from "../../../config/binanceClient.js";

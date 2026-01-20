@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Error handling middleware with HTTP status mapping and structured error responses
 
 import { getLogger } from './logger.js';

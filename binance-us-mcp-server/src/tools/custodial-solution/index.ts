@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/custodial-solution/index.ts
 // Binance.US Custodial Solution API Tools
 // ⚠️ REQUIRES CUSTODIAL SOLUTION API KEY - Not available to regular users

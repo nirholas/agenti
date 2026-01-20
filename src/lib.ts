@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Library entry point - exports for use as a dependency
 export { registerEVM } from "./evm/index.js"
 export * from "./evm/chains.js"

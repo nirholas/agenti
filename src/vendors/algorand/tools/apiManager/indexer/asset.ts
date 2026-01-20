@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
 import { indexerClient } from '../../../algorand-client.js';
 import { ResponseProcessor } from '../../../utils/responseProcessor.js';

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/credit-line/index.ts
 // Binance.US Credit Line Tools
 // For institutional clients with credit line agreements

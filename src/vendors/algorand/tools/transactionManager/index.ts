@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import { AccountTransactionManager, accountTransactionTools } from './accountTransactions.js';
 import { AssetTransactionManager, assetTransactionTools } from './assetTransactions.js';

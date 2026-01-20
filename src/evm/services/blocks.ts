@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { type Block, type Hash } from "viem"
 
 import { getPublicClient } from "./clients.js"

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/otc/index.ts
 // Binance.US OTC (Over-The-Counter) Trading Tools
 // Large block trades executed outside the regular order book

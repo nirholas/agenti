@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { env } from '../../env.js';
 import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import algosdk from 'algosdk';

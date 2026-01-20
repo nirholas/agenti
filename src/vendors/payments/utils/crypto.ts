@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // HMAC validation utilities for webhook signature verification
 
 import { createHmac, timingSafeEqual } from 'node:crypto';

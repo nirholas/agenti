@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Tunnel Manager - Manages external tunnel providers for webhook access
 // Supports: ngrok (persistent URL), zrok (open-source persistent URL), manual (server with public IP)
 

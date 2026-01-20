@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/staking/index.ts
 // Binance.US Staking Tools
 // Earn rewards by staking supported cryptocurrencies

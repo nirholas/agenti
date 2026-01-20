@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Ultra-fast QR code generation with Sharp overlay (~10ms total)
 
 import QRCodeGenerator from 'qrcode-generator';

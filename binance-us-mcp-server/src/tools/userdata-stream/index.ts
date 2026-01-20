@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/userdata-stream/index.ts
 // User Data Stream management for real-time account updates
 // These endpoints manage listen keys for WebSocket user data streams

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/c2c/C2C/getAds.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { c2cClient } from "../../../config/binanceClient.js";

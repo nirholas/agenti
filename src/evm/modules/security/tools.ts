@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hex } from "viem"
 import { decodeFunctionData, parseAbi, formatEther, formatUnits, encodeFunctionData, createPublicClient, http, keccak256, toHex } from "viem"

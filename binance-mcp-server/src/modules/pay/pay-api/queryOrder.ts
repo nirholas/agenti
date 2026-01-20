@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/modules/pay/pay-api/queryOrder.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { payClient } from "../../../config/binanceClient.js";

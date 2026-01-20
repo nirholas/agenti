@@ -1,13 +1,35 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-copy-trading/FutureCopyTrading-api/index.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerBinanceGetFuturesLeadTraderStatus } from "./getFuturesLeadTraderStatus.js";
 import { registerBinanceGetFuturesLeadTradingSymbolWhitelist } from "./getFuturesLeadTradingSymbolWhitelist.js";
+import { registerBinanceCopyTradingGetLeaders } from "./getLeadTraders.js";
+import { registerBinanceCopyTradingGetPerformance } from "./getTraderPerformance.js";
+import { registerBinanceCopyTradingFollow } from "./followTrader.js";
+import { registerBinanceCopyTradingUnfollow } from "./unfollowTrader.js";
+import { registerBinanceCopyTradingGetFollowing } from "./getFollowingTraders.js";
+import { registerBinanceCopyTradingGetOrders } from "./getCopyOrders.js";
+import { registerBinanceCopyTradingGetPositions } from "./getCopyPositions.js";
 
 // Registers Binance Futures Copy Trading API tools with the MCP server.
 export function registerBinanceFutureCopyTradingApiTools(server: McpServer) {
-    // Registers an endpoint to get the status of a lead trader in futures copy trading
+    // Lead trader info
     registerBinanceGetFuturesLeadTraderStatus(server);
-
-    // Registers an endpoint to get the whitelist of symbols available for futures copy trading
     registerBinanceGetFuturesLeadTradingSymbolWhitelist(server);
+    registerBinanceCopyTradingGetLeaders(server);
+    registerBinanceCopyTradingGetPerformance(server);
+    
+    // Following management
+    registerBinanceCopyTradingFollow(server);
+    registerBinanceCopyTradingUnfollow(server);
+    registerBinanceCopyTradingGetFollowing(server);
+    
+    // Orders and positions
+    registerBinanceCopyTradingGetOrders(server);
+    registerBinanceCopyTradingGetPositions(server);
 }

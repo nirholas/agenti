@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/utils/logger.ts
 
 type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"

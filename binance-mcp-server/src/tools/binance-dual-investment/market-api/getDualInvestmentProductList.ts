@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-dual-investment/market-api/getDualInvestmentProductList.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { dualInvestmentClient } from "../../../config/binanceClient.js";

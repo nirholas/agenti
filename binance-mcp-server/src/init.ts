@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import prompts, { PromptObject } from 'prompts';
 import figlet from 'figlet';
 import chalk from 'chalk';

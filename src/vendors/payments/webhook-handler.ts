@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Webhook request handler and payload processor
 // Validates, processes, and stores webhook notifications from Bitnovo Pay
 

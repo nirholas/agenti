@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/binance.ts
 // Central registration file for all Binance modules
 
@@ -23,6 +29,10 @@ import { registerMargin } from "./modules/margin/index.js"
 import { registerOptions } from "./modules/options/index.js"
 import { registerPortfolioMargin } from "./modules/portfolio-margin/index.js"
 import { registerAutoInvest } from "./modules/auto-invest/index.js"
+import { registerFuturesUSDM } from "./modules/futures-usdm/index.js"
+import { registerFuturesCOINM } from "./modules/futures-coinm/index.js"
+import { registerGiftCard } from "./modules/gift-card/index.js"
+import { registerCryptoLoans } from "./modules/crypto-loans/index.js"
 
 /**
  * Register all Binance modules with the MCP server
@@ -34,6 +44,10 @@ export function registerBinance(server: McpServer) {
   
   // Margin trading module
   registerMargin(server)
+  
+  // Futures trading modules
+  registerFuturesUSDM(server)
+  registerFuturesCOINM(server)
   
   // Options trading module
   registerOptions(server)
@@ -56,10 +70,12 @@ export function registerBinance(server: McpServer) {
   registerWallet(server)
   registerFiat(server)
   registerVipLoan(server)
+  registerCryptoLoans(server)
   
   // Other modules
   registerNFT(server)
   registerPay(server)
   registerRebate(server)
   registerMining(server)
+  registerGiftCard(server)
 }

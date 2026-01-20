@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-margin/cross-margin-api/crossMarginNewOrder.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { marginClient } from "../../../config/binanceClient.js";

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-mining/mining-api/hashrateResaleDetail.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { miningClient } from "../../../config/binanceClient.js";

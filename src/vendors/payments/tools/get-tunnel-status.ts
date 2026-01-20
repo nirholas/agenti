@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // MCP Tool: get_tunnel_status
 // Returns detailed status of the tunnel connection
 

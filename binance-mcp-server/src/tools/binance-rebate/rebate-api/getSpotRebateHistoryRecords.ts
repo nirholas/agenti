@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // src/tools/binance-pay/rebate-api/getSpotRebateHistoryRecords.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { rebateClient } from "../../../config/binanceClient.js";
