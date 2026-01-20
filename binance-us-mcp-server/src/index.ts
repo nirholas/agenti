@@ -83,6 +83,9 @@ export async function main() {
   // Custodial Solution Tools (requires Custodial Solution API key)
   registerCustodialTools(server);
   
+  // Custodial Solution Transfer/Settlement Tools (requires Custodial Solution API key)
+  registerCustodialSolutionTools(server);
+  
   // Credit Line Tools (requires Credit Line API key)
   registerCreditLineTools(server);
 

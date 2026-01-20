@@ -13,6 +13,7 @@ import { registerStakingTools } from "./tools/staking/index.js";
 import { registerSubaccountTools } from "./tools/subaccount/index.js";
 import { registerUserDataStreamTools } from "./tools/userdata-stream/index.js";
 import { registerCustodialTools } from "./tools/custodial/index.js";
+import { registerCustodialSolutionTools } from "./tools/custodial-solution/index.js";
 import { registerCreditLineTools } from "./tools/creditline/index.js";
 // Load environment variables
 dotenv.config();
@@ -64,6 +65,8 @@ export async function main() {
     registerUserDataStreamTools(server);
     // Custodial Solution Tools (requires Custodial Solution API key)
     registerCustodialTools(server);
+    // Custodial Solution Transfer/Settlement Tools (requires Custodial Solution API key)
+    registerCustodialSolutionTools(server);
     // Credit Line Tools (requires Credit Line API key)
     registerCreditLineTools(server);
     // Connect to stdio transport for MCP communication
