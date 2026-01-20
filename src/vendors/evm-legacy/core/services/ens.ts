@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { normalize } from 'viem/ens';
 import { getPublicClient } from './clients.js';
 import { type Address } from 'viem';

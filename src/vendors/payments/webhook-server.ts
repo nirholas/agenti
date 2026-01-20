@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // HTTP webhook server for receiving Bitnovo Pay notifications
 // Runs alongside the MCP stdio server to handle incoming webhooks
 

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // High-performance QR code cache with LRU eviction policy
 
 import { getLogger } from './logger.js';

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Payment status enumeration with user-friendly descriptions and business logic
 
 import type { PaymentStatusCode } from './index.js';

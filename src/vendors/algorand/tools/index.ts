@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 export { AccountManager } from './accountManager.js';
 export { KnowledgeManager } from './knowledgeManager.js';
 export { arc26Manager } from './arc26Manager.js';

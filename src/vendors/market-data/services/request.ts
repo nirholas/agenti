@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { UNIVERSAL_CRYPTO_API_KEY } from '../config/constants.js';
 
 // Helper function for making Universal Crypto API requests

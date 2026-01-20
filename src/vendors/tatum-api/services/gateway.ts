@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { Gateway, GatewayChain, ExternalBlockchain, TatumApiResponse } from '../types.js';
 import { chainProtocolMap, getChainProtocol, getChainApiConfig, ChainApiConfig } from '../utils/chains.js';

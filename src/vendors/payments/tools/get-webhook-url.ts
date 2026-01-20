@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // MCP Tool: get_webhook_url
 // Returns the public webhook URL for configuring in Bitnovo Dashboard
 

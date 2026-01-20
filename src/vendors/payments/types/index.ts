@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Core TypeScript type definitions for MCP Bitnovo Pay Integration
 
 export type PaymentType = 'onchain' | 'redirect';

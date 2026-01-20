@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // MCP tool for generating QR codes for payment addresses and payment URIs
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Mime } from "mime"
 import otherTypes from "mime/types/other.js"
 import standardTypes from "mime/types/standard.js"

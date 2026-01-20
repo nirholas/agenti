@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { TatumApiClient } from '../api-client.js';
 
 // Hardcoded Data API Tools

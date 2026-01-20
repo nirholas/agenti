@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 #!/usr/bin/env node
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp"
 

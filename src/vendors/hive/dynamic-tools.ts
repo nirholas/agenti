@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { z } from 'zod';
 import { ToolRegistry, getAllToolsInCategory } from './toolRegistry';

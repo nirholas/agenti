@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // MCP tool for creating on-chain cryptocurrency payments
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';

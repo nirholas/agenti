@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Client } from "@bnb-chain/greenfield-js-sdk"
 
 import { MAINNET, TESTNET } from "../constants"

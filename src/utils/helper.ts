@@ -1,4 +1,10 @@
 /**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
+/**
  * Custom replacer function for JSON.stringify that handles BigInt
  * @param _key The current key being processed
  * @param value The value to process

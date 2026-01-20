@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Structured logging with sensitive data masking for constitutional privacy compliance
 
 import winston from 'winston';

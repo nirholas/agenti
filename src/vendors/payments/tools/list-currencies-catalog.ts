@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // MCP tool for listing available cryptocurrency catalog with filtering
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';

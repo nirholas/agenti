@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Tool } from "@modelcontextprotocol/sdk/types"
 
 export const supportedTools :Tool[]= [

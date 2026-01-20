@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // In-memory event store for webhook notifications
 // Stores webhook events temporarily with automatic cleanup
 

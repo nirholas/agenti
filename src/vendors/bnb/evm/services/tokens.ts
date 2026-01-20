@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { formatUnits, getContract, parseUnits, type Address } from "viem"
 
 import Logger from "@/utils/logger.js"

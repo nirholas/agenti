@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // URL utilities for payment gateway URL processing
 
 import { getLogger } from './logger.js';

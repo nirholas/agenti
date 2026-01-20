@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { SuggestedParams, OnApplicationComplete } from 'algosdk';
 import { on } from 'events';
 

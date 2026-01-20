@@ -1,4 +1,10 @@
 /**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
+/**
  * Chain protocol mapping utility
  */
 

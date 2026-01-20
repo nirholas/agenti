@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Tool, ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
 import { networkTools, handleNetworkTools } from './networks.js';
 import { protocolTools, handleProtocolTools } from './protocols.js';

@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Context Detector - Auto-detect execution environment for optimal tunnel strategy
 // Detects: N8N, Opal, VPS/server, Docker, Kubernetes, or local development
 

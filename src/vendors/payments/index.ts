@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 #!/usr/bin/env node
 // MCP Bitnovo Pay Integration Server Entry Point
 

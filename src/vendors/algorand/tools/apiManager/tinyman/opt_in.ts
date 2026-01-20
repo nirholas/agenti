@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 import { Tool, ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
 import { generateOptIntoAssetTxns, generateOptIntoValidatorTxns, generateOptOutOfValidatorTxns, SupportedNetwork } from '@tinymanorg/tinyman-js-sdk';
 import { algodClient } from '../../../algorand-client.js';

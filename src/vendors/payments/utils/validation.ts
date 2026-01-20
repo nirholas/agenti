@@ -1,3 +1,9 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
 // Input validation utilities using zod for schema validation and type safety
 
 import { z } from 'zod';
