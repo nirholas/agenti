@@ -506,6 +506,83 @@ npm run dev:sse
 
 ---
 
+## 🧪 Testing
+
+<p align="center">
+  <a href="https://codecov.io/gh/nirholas/universal-crypto-mcp"><img src="https://img.shields.io/codecov/c/github/nirholas/universal-crypto-mcp?style=flat-square&logo=codecov&label=coverage" alt="Code Coverage"></a>
+  <a href="https://github.com/nirholas/universal-crypto-mcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nirholas/universal-crypto-mcp/ci.yml?branch=main&style=flat-square&logo=github&label=tests" alt="Tests"></a>
+</p>
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run unit tests only
+npm run test:unit
+
+# Run integration tests
+npm run test:integration
+
+# Run E2E tests (requires network access)
+npm run test:e2e
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests in watch mode (development)
+npm run test:watch
+```
+
+### Test Structure
+
+| Type | Location | Description |
+|------|----------|-------------|
+| **Unit** | `src/**/*.test.ts` | Test individual functions/modules |
+| **Integration** | `tests/integration/` | Test multiple components together |
+| **E2E** | `tests/e2e/` | Test full MCP server flow |
+
+### E2E Tests
+
+End-to-end tests verify the complete tool execution flow:
+
+- **EVM Tools** - Block, balance, token operations across chains
+- **DeFi Tools** - Protocol TVL, yields, stablecoins via DefiLlama
+- **Market Data** - CoinGecko, Fear & Greed index
+- **Multichain** - Same operations across different networks
+- **Error Recovery** - Error handling, invalid inputs, edge cases
+
+### Custom Test Utilities
+
+The project includes custom Vitest matchers for MCP responses:
+
+```typescript
+// In your test file
+import "../utils/assertions"
+
+expect(result).toBeSuccessfulToolResponse()
+expect(result).toHaveJsonProperty("balance")
+expect(result).toContainValidAddress()
+expect(result).toContainToolError(/invalid/i)
+```
+
+### Test Fixtures
+
+Reusable test data in `tests/utils/fixtures.ts`:
+
+```typescript
+import {
+  ETH_MAINNET_ADDRESSES,
+  MOCK_TOKEN_DATA,
+  generateRandomAddress
+} from "../utils/fixtures"
+```
+
+For detailed testing documentation, see [tests/README.md](tests/README.md).
+
+---
+
 ## ⚙️ Environment Variables
 
 Configure optional API keys for enhanced features. Create a `.env` file:

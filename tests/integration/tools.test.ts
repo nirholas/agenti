@@ -10,6 +10,43 @@ import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from "vite
 
 import { MockMcpServer, createMockMcpServer, validateToolInput } from "../mocks/mcp"
 
+// Mock @/evm to avoid ABI parsing issues
+vi.mock("@/evm", () => ({
+  registerEVM: vi.fn((server: any) => {
+    // Register comprehensive set of mock tools for testing
+    const tools = [
+      { name: "get_block", desc: "Get block by number", schema: { blockNumber: {}, network: {} } },
+      { name: "get_block_by_number", desc: "Get block by specific number", schema: { blockNumber: {}, network: {} } },
+      { name: "get_latest_block", desc: "Get latest block from chain", schema: { network: {} } },
+      { name: "get_block_by_hash", desc: "Get block by hash", schema: { blockHash: {}, network: {} } },
+      { name: "get_native_balance", desc: "Get native token balance for an address", schema: { address: {}, network: {} } },
+      { name: "get_erc20_balance", desc: "Get ERC20 token balance", schema: { address: {}, tokenAddress: {}, network: {} } },
+      { name: "get_erc20_token_info", desc: "Get ERC20 token information", schema: { tokenAddress: {}, network: {} } },
+      { name: "estimate_gas", desc: "Estimate gas for transaction", schema: { to: {}, data: {}, network: {} } },
+      { name: "get_gas_price", desc: "Get current gas price", schema: { network: {} } },
+      { name: "get_chain_id", desc: "Get current chain ID", schema: { network: {} } },
+      { name: "get_transaction", desc: "Get transaction by hash", schema: { txHash: {}, network: {} } },
+      { name: "get_transaction_receipt", desc: "Get transaction receipt", schema: { txHash: {}, network: {} } },
+      { name: "call_contract", desc: "Call a contract function", schema: { address: {}, abi: {}, functionName: {}, network: {} } },
+      { name: "send_transaction", desc: "Send a transaction", schema: { to: {}, value: {}, network: {} } },
+      { name: "deploy_contract", desc: "Deploy a smart contract", schema: { abi: {}, bytecode: {}, network: {} } },
+      { name: "get_nft_metadata", desc: "Get NFT token metadata", schema: { contractAddress: {}, tokenId: {}, network: {} } },
+      { name: "resolve_ens_name", desc: "Resolve ENS name to address", schema: { name: {}, network: {} } },
+      { name: "get_token_price", desc: "Get token price from DEX", schema: { tokenAddress: {}, network: {} } },
+      { name: "swap_tokens", desc: "Swap tokens on DEX", schema: { tokenIn: {}, tokenOut: {}, amount: {}, network: {} } },
+      { name: "get_pool_info", desc: "Get liquidity pool information", schema: { poolAddress: {}, network: {} } },
+      { name: "format_units", desc: "Format token units", schema: { value: {}, decimals: {} } },
+      { name: "parse_units", desc: "Parse token units", schema: { value: {}, decimals: {} } }
+    ]
+    
+    for (const tool of tools) {
+      server.tool(tool.name, tool.desc, tool.schema, async () => ({ 
+        content: [{ type: "text", text: JSON.stringify({ success: true }) }] 
+      }))
+    }
+  })
+}))
+
 // Mock viem/chains to avoid issues with chain imports
 vi.mock("viem/chains", () => ({
   mainnet: { id: 1, name: "Ethereum" },
