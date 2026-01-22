@@ -48,8 +48,8 @@ const mockIndexerClient = {
 
 // Mock SDK functions
 const mockTransaction = {
-  from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
-  to: "MOCKADDRESS987654321098765432109876543210987654321098765432",
+  from: "MOCKADDR12345678901234567890123456789012345678901234567890",
+  to: "MOCKADDR98765432109876543210987654321098765432109876543210",
   amount: 1000000,
   fee: 1000,
   firstRound: 1000,
@@ -61,11 +61,11 @@ const mockTransaction = {
 
 const mockAlgosdk = {
   generateAccount: () => ({
-    addr: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+    addr: "MOCKADDR12345678901234567890123456789012345678901234567890",
     sk: new Uint8Array(64)
   }),
   mnemonicToSecretKey: (_mnemonic: string) => ({
-    addr: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+    addr: "MOCKADDR12345678901234567890123456789012345678901234567890",
     sk: new Uint8Array(64)
   }),
   secretKeyToMnemonic: (_sk: Uint8Array) => "mock mnemonic word list",
@@ -156,7 +156,7 @@ describe("Algorand Vendor Module", () => {
     describe("Account Information", () => {
       it("should get account information", async () => {
         const mockAccountInfo = {
-          address: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+          address: "MOCKADDR12345678901234567890123456789012345678901234567890",
           amount: 10000000,
           "amount-without-pending-rewards": 10000000,
           "min-balance": 100000,
@@ -191,7 +191,7 @@ describe("Algorand Vendor Module", () => {
       })
 
       it("should validate address format", () => {
-        const validAddress = "MOCKADDRESS123456789012345678901234567890123456789012345678"
+        const validAddress = "MOCKADDR12345678901234567890123456789012345678901234567890"
         const invalidAddress = "invalid"
 
         expect(mockAlgosdk.isValidAddress(validAddress)).toBe(true)
@@ -213,7 +213,7 @@ describe("Algorand Vendor Module", () => {
     describe("Asset Creation", () => {
       it("should create an asset creation transaction", () => {
         const params = {
-          from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+          from: "MOCKADDR12345678901234567890123456789012345678901234567890",
           total: 1000000,
           decimals: 6,
           defaultFrozen: false,
@@ -248,12 +248,12 @@ describe("Algorand Vendor Module", () => {
     describe("Asset Configuration", () => {
       it("should create an asset configuration transaction", () => {
         const params = {
-          from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+          from: "MOCKADDR12345678901234567890123456789012345678901234567890",
           assetIndex: 12345,
-          manager: "NEWMANAGER123456789012345678901234567890123456789012345678",
-          reserve: "NEWRESERVE123456789012345678901234567890123456789012345678",
-          freeze: "NEWFREEZE1234567890123456789012345678901234567890123456789",
-          clawback: "NEWCLAWBACK12345678901234567890123456789012345678901234567",
+          manager: "NEWMANAGR12345678901234567890123456789012345678901234567890",
+          reserve: "NEWRESERV12345678901234567890123456789012345678901234567890",
+          freeze: "NEWFREEZE12345678901234567890123456789012345678901234567890",
+          clawback: "NEWCLAWBK12345678901234567890123456789012345678901234567890",
           strictEmptyAddressChecking: true,
           suggestedParams: mockSuggestedParams
         }
@@ -267,8 +267,8 @@ describe("Algorand Vendor Module", () => {
     describe("Asset Transfer", () => {
       it("should create an asset transfer transaction", () => {
         const params = {
-          from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
-          to: "RECIPIENT12345678901234567890123456789012345678901234567890",
+          from: "MOCKADDR12345678901234567890123456789012345678901234567890",
+          to: "RECIPENT12345678901234567890123456789012345678901234567890",
           assetIndex: 12345,
           amount: 1000000,
           suggestedParams: mockSuggestedParams
@@ -280,7 +280,7 @@ describe("Algorand Vendor Module", () => {
       })
 
       it("should create an asset opt-in transaction (transfer to self with 0 amount)", () => {
-        const address = "MOCKADDRESS123456789012345678901234567890123456789012345678"
+        const address = "MOCKADDR12345678901234567890123456789012345678901234567890"
         const params = {
           from: address,
           to: address,
@@ -298,9 +298,9 @@ describe("Algorand Vendor Module", () => {
     describe("Asset Freeze", () => {
       it("should create an asset freeze transaction", () => {
         const params = {
-          from: "FREEZEADDRESS1234567890123456789012345678901234567890123456",
+          from: "FREEZEADR12345678901234567890123456789012345678901234567890",
           assetIndex: 12345,
-          freezeTarget: "TARGETADDRESS123456789012345678901234567890123456789012345",
+          freezeTarget: "TARGETADR12345678901234567890123456789012345678901234567890",
           freezeState: true,
           suggestedParams: mockSuggestedParams
         }
@@ -314,7 +314,7 @@ describe("Algorand Vendor Module", () => {
     describe("Asset Destruction", () => {
       it("should create an asset destroy transaction", () => {
         const params = {
-          from: "MANAGERADDRESS12345678901234567890123456789012345678901234567",
+          from: "MANAGERADR1234567890123456789012345678901234567890123456789",
           assetIndex: 12345,
           suggestedParams: mockSuggestedParams
         }
@@ -339,8 +339,8 @@ describe("Algorand Vendor Module", () => {
         }
 
         const params = {
-          from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
-          to: "RECIPIENT12345678901234567890123456789012345678901234567890",
+          from: "MOCKADDR12345678901234567890123456789012345678901234567890",
+          to: "RECIPENT12345678901234567890123456789012345678901234567890",
           amount: 1000000,
           suggestedParams: mockSuggestedParams
         }
@@ -466,7 +466,7 @@ describe("Algorand Vendor Module", () => {
     it("should lookup account by ID", async () => {
       const mockAccountData = {
         account: {
-          address: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+          address: "MOCKADDR12345678901234567890123456789012345678901234567890",
           amount: 10000000,
           assets: [
             { "asset-id": 12345, amount: 1000 }

@@ -32,12 +32,10 @@ export default defineConfig({
     },
     testTimeout: 30000,
     hookTimeout: 30000,
-    reporters: ["verbose"],
+    reporters: ["default"],
     pool: "forks",
-    poolOptions: {
-      forks: {
-        singleFork: true
-      }
+    forks: {
+      singleFork: true
     }
   },
   resolve: {

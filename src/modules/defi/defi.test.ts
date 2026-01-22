@@ -123,8 +123,7 @@ describe("DeFi Module", () => {
       await server.executeTool("defi_get_protocols", {})
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/protocols"),
-        expect.anything()
+        "https://api.llama.fi/protocols"
       )
     })
 
@@ -189,8 +188,7 @@ describe("DeFi Module", () => {
       })
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/protocol/uniswap"),
-        expect.anything()
+        "https://api.llama.fi/protocol/uniswap"
       )
     })
 

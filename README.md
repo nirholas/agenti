@@ -7,6 +7,11 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/nirholas/universal-crypto-mcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nirholas/universal-crypto-mcp/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI" alt="CI Status"></a>
+  <a href="https://codecov.io/gh/nirholas/universal-crypto-mcp"><img src="https://img.shields.io/codecov/c/github/nirholas/universal-crypto-mcp?style=for-the-badge&logo=codecov" alt="Code Coverage"></a>
+</p>
+
+<p align="center">
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-Compatible-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyek0xMiAyMGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6Ii8+PC9zdmc+" alt="MCP Compatible"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
   <a href="https://github.com/nirholas/universal-crypto-mcp/stargazers"><img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars"></a>

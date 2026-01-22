@@ -54,6 +54,21 @@ import { registerRipple } from "@/vendors/ripple/index.js"
 import { registerTon } from "@/vendors/ton/index.js"
 import { registerThorchain } from "@/vendors/thorchain/index.js"
 
+// Import new chain vendors (Cosmos, Near, Sui, Aptos)
+import { registerCosmos } from "@/vendors/cosmos/index.js"
+import { registerNear } from "@/vendors/near/index.js"
+import { registerSui } from "@/vendors/sui/index.js"
+import { registerAptos } from "@/vendors/aptos/index.js"
+
+// Import new feature modules
+import { registerWebSockets } from "@/modules/websockets/index.js"
+import { registerPortfolioTracker } from "@/modules/portfolio/index.js"
+import { registerWalletAnalytics } from "@/modules/wallet-analytics/index.js"
+import { registerAlerts } from "@/modules/alerts/index.js"
+import { registerAIPrompts } from "@/modules/ai-prompts/index.js"
+import { registerHistoricalData } from "@/modules/historical-data/index.js"
+import { registerServerUtils } from "@/modules/server-utils/index.js"
+
 /**
  * Register all EVM modules with the MCP server
  */
@@ -121,4 +136,19 @@ export function registerEVM(server: McpServer) {
   registerRipple(server)
   registerTon(server)
   registerThorchain(server)
+
+  // New chain modules
+  registerCosmos(server)
+  registerNear(server)
+  registerSui(server)
+  registerAptos(server)
+
+  // New feature modules
+  registerWebSockets(server)
+  registerPortfolioTracker(server)
+  registerWalletAnalytics(server)
+  registerAlerts(server)
+  registerAIPrompts(server)
+  registerHistoricalData(server)
+  registerServerUtils(server)
 }

@@ -14,7 +14,6 @@ import { mcpToolRes } from "@/utils/helper.js"
 import { defaultNetworkParam } from "../common/types.js"
 
 // Common tokens by chain for portfolio tracking
-// TODO: Add Sperax $USDs
 const POPULAR_TOKENS: Record<number, Array<{ symbol: string; address: Address; decimals: number }>> = {
   1: [ // Ethereum
     { symbol: "USDC", address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", decimals: 6 },
@@ -33,7 +32,8 @@ const POPULAR_TOKENS: Record<number, Array<{ symbol: string; address: Address; d
     { symbol: "USDC", address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", decimals: 6 },
     { symbol: "USDT", address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", decimals: 6 },
     { symbol: "WETH", address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", decimals: 18 },
-    { symbol: "ARB", address: "0x912CE59144191C1204E64559FE8253a0e49E6548", decimals: 18 }
+    { symbol: "ARB", address: "0x912CE59144191C1204E64559FE8253a0e49E6548", decimals: 18 },
+    { symbol: "USDs", address: "0xD74f5255D557944cf7Dd0E45FF521520002D5748", decimals: 18 } // Sperax USDs
   ],
   137: [ // Polygon
     { symbol: "USDC", address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", decimals: 6 },
