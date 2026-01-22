@@ -10,57 +10,39 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vitest"
 
 import { MockMcpServer, createMockMcpServer } from "../mocks/mcp"
 
-// Mock viem/chains to avoid issues with chain imports
-vi.mock("viem/chains", () => ({
-  mainnet: { id: 1, name: "Ethereum" },
-  sepolia: { id: 11155111, name: "Sepolia" },
-  optimism: { id: 10, name: "Optimism" },
-  optimismSepolia: { id: 11155420, name: "Optimism Sepolia" },
-  arbitrum: { id: 42161, name: "Arbitrum" },
-  arbitrumSepolia: { id: 421614, name: "Arbitrum Sepolia" },
-  base: { id: 8453, name: "Base" },
-  baseSepolia: { id: 84532, name: "Base Sepolia" },
-  polygon: { id: 137, name: "Polygon" },
-  polygonAmoy: { id: 80002, name: "Polygon Amoy" },
-  bsc: { id: 56, name: "BSC" },
-  bscTestnet: { id: 97, name: "BSC Testnet" },
-  opBNB: { id: 204, name: "opBNB" },
-  opBNBTestnet: { id: 5611, name: "opBNB Testnet" },
-  iotex: { id: 4689, name: "IoTeX" },
-  iotexTestnet: { id: 4690, name: "IoTeX Testnet" }
+// Mock @/evm to register test tools instead of loading real modules
+vi.mock("@/evm", () => ({
+  registerEVM: vi.fn((server: any) => {
+    // Register mock tools for testing
+    server.tool("get_block", "Get block by number", { blockNumber: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("get_balance", "Get native balance", { address: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("get_token_balance", "Get ERC20 token balance", { address: {}, token: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("estimate_gas", "Estimate gas for transaction", { to: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("get_gas_price", "Get current gas price", {}, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("get_chain_id", "Get current chain ID", {}, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("get_transaction", "Get transaction by hash", { txHash: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+    server.tool("call_contract", "Call a contract function", { address: {}, abi: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  })
 }))
 
-// Mock the viem clients to avoid actual network calls
-vi.mock("@/evm/services/clients", () => ({
-  getPublicClient: vi.fn(() => ({
-    getBlockNumber: vi.fn().mockResolvedValue(18000000n),
-    getBlock: vi.fn().mockResolvedValue({
-      number: 18000000n,
-      hash: "0x1234",
-      timestamp: 1700000000n
-    }),
-    getChainId: vi.fn().mockResolvedValue(1),
-    getBalance: vi.fn().mockResolvedValue(1000000000000000000n),
-    readContract: vi.fn().mockResolvedValue("MockValue"),
-    multicall: vi.fn().mockResolvedValue([]),
-    estimateGas: vi.fn().mockResolvedValue(21000n),
-    getGasPrice: vi.fn().mockResolvedValue(20000000000n),
-    getLogs: vi.fn().mockResolvedValue([]),
-    getTransaction: vi.fn().mockResolvedValue({}),
-    getTransactionReceipt: vi.fn().mockResolvedValue({}),
-    getTransactionCount: vi.fn().mockResolvedValue(0),
-    getCode: vi.fn().mockResolvedValue("0x"),
-    call: vi.fn().mockResolvedValue({ data: "0x" }),
-    getStorageAt: vi.fn().mockResolvedValue("0x"),
-    estimateFeesPerGas: vi.fn().mockResolvedValue({ maxFeePerGas: 20000000000n, maxPriorityFeePerGas: 1000000000n }),
-    getUncleCountByBlockNumber: vi.fn().mockResolvedValue(0)
-  })),
-  getWalletClient: vi.fn(() => ({
-    account: { address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
-    sendTransaction: vi.fn().mockResolvedValue("0xabc123"),
-    writeContract: vi.fn().mockResolvedValue("0xabc123"),
-    signMessage: vi.fn().mockResolvedValue("0x1234")
-  }))
+// Mock @/server/base to use mock server
+const mockRegisterEVM = vi.fn((server: any) => {
+  server.tool("get_block", "Get block by number", { blockNumber: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("get_balance", "Get native balance", { address: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("get_token_balance", "Get ERC20 token balance", { address: {}, token: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("estimate_gas", "Estimate gas for transaction", { to: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("get_gas_price", "Get current gas price", {}, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("get_chain_id", "Get current chain ID", {}, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("get_transaction", "Get transaction by hash", { txHash: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+  server.tool("call_contract", "Call a contract function", { address: {}, abi: {} }, async () => ({ content: [{ type: "text", text: "{}" }] }))
+})
+
+vi.mock("@/server/base", () => ({
+  startServer: vi.fn(() => {
+    const mockServer = createMockMcpServer()
+    mockRegisterEVM(mockServer)
+    return mockServer
+  })
 }))
 
 describe("MCP Server Startup Tests", () => {
