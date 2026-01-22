@@ -539,6 +539,18 @@ A comprehensive list of all 300+ tools available in Universal Crypto MCP.
 
 ---
 
+## Prediction Markets (4 tools)
+
+### Polymarket Integration
+| Tool | Description |
+|------|-------------|
+| `predictions_get_markets` | Get active prediction markets |
+| `predictions_get_market` | Get market details by ID |
+| `predictions_search_markets` | Search markets by keyword |
+| `predictions_get_crypto_markets` | Get crypto-related markets |
+
+---
+
 ## Summary
 
 | Category | Tool Count |
@@ -547,4 +559,5 @@ A comprehensive list of all 300+ tools available in Universal Crypto MCP.
 | Data & Analytics | ~100 |
 | Multi-Chain | ~80 |
 | Trading Strategies | 25 |
-| **Total** | **~325** |
+| Prediction Markets | 4 |
+| **Total** | **~330** |

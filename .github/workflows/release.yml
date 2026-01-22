@@ -1,9 +1,12 @@
 name: Release
 
+# Disabled: GitHub Actions not enabled for this repo
+# To re-enable, uncomment the push trigger below
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:  # Manual trigger only
+  # push:
+  #   tags:
+  #     - 'v*'
 
 permissions:
   contents: write
