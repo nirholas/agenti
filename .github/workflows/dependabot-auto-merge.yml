@@ -1,8 +1,11 @@
 name: Dependabot Auto-Merge
 
+# Disabled: GitHub Actions not enabled for this repo
+# To re-enable, uncomment the pull_request trigger below
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:  # Manual trigger only
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
 
 permissions:
   contents: write

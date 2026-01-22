@@ -6,132 +6,98 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 
-// Mock algosdk before importing
-vi.mock("algosdk", async () => {
-  const mockTransaction = {
-    from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
-    to: "MOCKADDRESS987654321098765432109876543210987654321098765432",
-    amount: 1000000,
-    fee: 1000,
-    firstRound: 1000,
-    lastRound: 2000,
-    genesisID: "testnet-v1.0",
-    genesisHash: "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    signTxn: vi.fn()
-  }
+// Mock fetch for API calls
+const mockFetch = vi.fn()
+global.fetch = mockFetch
 
-  return {
-    default: {
-      Algodv2: vi.fn().mockImplementation(() => ({
-        accountInformation: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        getTransactionParams: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        compile: vi.fn().mockReturnValue({
-          sourcemap: vi.fn().mockReturnValue({
-            do: vi.fn()
-          })
-        }),
-        disassemble: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        sendRawTransaction: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        simulateRawTransactions: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        simulateTransactions: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        status: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        pendingTransactionInformation: vi.fn().mockReturnValue({
-          do: vi.fn()
-        })
-      })),
-      Indexer: vi.fn().mockImplementation(() => ({
-        lookupAccountByID: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        lookupAssetByID: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        lookupAccountTransactions: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        lookupTransactionByID: vi.fn().mockReturnValue({
-          do: vi.fn()
-        }),
-        searchForTransactions: vi.fn().mockReturnValue({
-          do: vi.fn()
-        })
-      })),
-      generateAccount: vi.fn().mockReturnValue({
-        addr: "MOCKADDRESS123456789012345678901234567890123456789012345678",
-        sk: new Uint8Array(64)
-      }),
-      mnemonicToSecretKey: vi.fn().mockReturnValue({
-        addr: "MOCKADDRESS123456789012345678901234567890123456789012345678",
-        sk: new Uint8Array(64)
-      }),
-      secretKeyToMnemonic: vi.fn().mockReturnValue("mock mnemonic word list"),
-      mnemonicToMasterDerivationKey: vi.fn().mockReturnValue(new Uint8Array(32)),
-      masterDerivationKeyToMnemonic: vi.fn().mockReturnValue("mock mnemonic word list"),
-      seedFromMnemonic: vi.fn().mockReturnValue(new Uint8Array(32)),
-      mnemonicFromSeed: vi.fn().mockReturnValue("mock mnemonic from seed"),
-      makePaymentTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeAssetCreateTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeAssetConfigTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeAssetDestroyTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeAssetFreezeTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeAssetTransferTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeKeyRegistrationTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationCreateTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationUpdateTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationDeleteTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationOptInTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationCloseOutTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationClearStateTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      makeApplicationNoOpTxnFromObject: vi.fn().mockReturnValue(mockTransaction),
-      isValidAddress: vi.fn().mockImplementation((addr: string) => addr.length === 58),
-      encodeAddress: vi.fn(),
-      decodeAddress: vi.fn()
-    },
-    Transaction: vi.fn()
+// McpError mock
+class McpError extends Error {
+  code: string
+  constructor(code: string, message: string) {
+    super(message)
+    this.code = code
   }
-})
+}
 
-// Mock MCP SDK
-vi.mock("@modelcontextprotocol/sdk/types.js", () => ({
-  McpError: class McpError extends Error {
-    code: string
-    constructor(code: string, message: string) {
-      super(message)
-      this.code = code
-    }
-  },
-  ErrorCode: {
-    InvalidParams: "INVALID_PARAMS",
-    MethodNotFound: "METHOD_NOT_FOUND",
-    InternalError: "INTERNAL_ERROR"
-  }
-}))
+const ErrorCode = {
+  InvalidParams: "INVALID_PARAMS",
+  MethodNotFound: "METHOD_NOT_FOUND",
+  InternalError: "INTERNAL_ERROR"
+}
 
-import algosdk from "algosdk"
-import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js"
+// Mock Algorand SDK functions and client behaviors
+const mockAlgodClient = {
+  accountInformation: vi.fn().mockReturnValue({ do: vi.fn() }),
+  getTransactionParams: vi.fn().mockReturnValue({ do: vi.fn() }),
+  compile: vi.fn().mockReturnValue({ sourcemap: vi.fn().mockReturnValue({ do: vi.fn() }) }),
+  disassemble: vi.fn().mockReturnValue({ do: vi.fn() }),
+  sendRawTransaction: vi.fn().mockReturnValue({ do: vi.fn() }),
+  simulateRawTransactions: vi.fn().mockReturnValue({ do: vi.fn() }),
+  simulateTransactions: vi.fn().mockReturnValue({ do: vi.fn() }),
+  status: vi.fn().mockReturnValue({ do: vi.fn() }),
+  pendingTransactionInformation: vi.fn().mockReturnValue({ do: vi.fn() })
+}
+
+const mockIndexerClient = {
+  lookupAccountByID: vi.fn().mockReturnValue({ do: vi.fn() }),
+  lookupAssetByID: vi.fn().mockReturnValue({ do: vi.fn() }),
+  lookupAccountTransactions: vi.fn().mockReturnValue({ do: vi.fn() }),
+  lookupTransactionByID: vi.fn().mockReturnValue({ do: vi.fn() }),
+  searchForTransactions: vi.fn().mockReturnValue({ do: vi.fn() })
+}
+
+// Mock SDK functions
+const mockTransaction = {
+  from: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+  to: "MOCKADDRESS987654321098765432109876543210987654321098765432",
+  amount: 1000000,
+  fee: 1000,
+  firstRound: 1000,
+  lastRound: 2000,
+  genesisID: "testnet-v1.0",
+  genesisHash: "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+  signTxn: vi.fn()
+}
+
+const mockAlgosdk = {
+  generateAccount: () => ({
+    addr: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+    sk: new Uint8Array(64)
+  }),
+  mnemonicToSecretKey: (_mnemonic: string) => ({
+    addr: "MOCKADDRESS123456789012345678901234567890123456789012345678",
+    sk: new Uint8Array(64)
+  }),
+  secretKeyToMnemonic: (_sk: Uint8Array) => "mock mnemonic word list",
+  mnemonicToMasterDerivationKey: (_mnemonic: string) => new Uint8Array(32),
+  masterDerivationKeyToMnemonic: (_mdk: Uint8Array) => "mock mnemonic word list",
+  seedFromMnemonic: (_mnemonic: string) => new Uint8Array(32),
+  mnemonicFromSeed: (_seed: Uint8Array) => "mock mnemonic from seed",
+  makePaymentTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
+  makeAssetCreateTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
+  makeAssetConfigTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
+  makeAssetDestroyTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
+  makeAssetFreezeTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
+  makeAssetTransferTxnWithSuggestedParamsFromObject: vi.fn().mockReturnValue(mockTransaction),
+  isValidAddress: (addr: string) => addr.length === 58
+}
 
 describe("Algorand Vendor Module", () => {
-  let mockAlgodClient: ReturnType<typeof algosdk.Algodv2>
-  let mockIndexerClient: ReturnType<typeof algosdk.Indexer>
-
   beforeEach(() => {
     vi.clearAllMocks()
-    mockAlgodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "")
-    mockIndexerClient = new algosdk.Indexer("", "https://testnet-idx.algonode.cloud", "")
+    mockFetch.mockReset()
+    
+    // Reset mock implementations for do() methods
+    mockAlgodClient.accountInformation("").do = vi.fn()
+    mockAlgodClient.status().do = vi.fn()
+    mockAlgodClient.sendRawTransaction([]).do = vi.fn()
+    mockAlgodClient.simulateRawTransactions([]).do = vi.fn()
+    mockAlgodClient.compile("").sourcemap().do = vi.fn()
+    mockAlgodClient.disassemble(Buffer.from("")).do = vi.fn()
+    
+    mockIndexerClient.lookupAccountByID("").do = vi.fn()
+    mockIndexerClient.lookupAssetByID(0).do = vi.fn()
+    mockIndexerClient.searchForTransactions().do = vi.fn()
   })
 
   afterEach(() => {
@@ -141,7 +107,7 @@ describe("Algorand Vendor Module", () => {
   describe("Account Management", () => {
     describe("Account Creation", () => {
       it("should create a new Algorand account", () => {
-        const account = algosdk.generateAccount()
+        const account = mockAlgosdk.generateAccount()
         
         expect(account).toBeDefined()
         expect(account.addr).toBeDefined()
@@ -152,7 +118,7 @@ describe("Algorand Vendor Module", () => {
       it("should convert mnemonic to secret key", () => {
         const mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         
-        const result = algosdk.mnemonicToSecretKey(mnemonic)
+        const result = mockAlgosdk.mnemonicToSecretKey(mnemonic)
         
         expect(result).toBeDefined()
         expect(result.addr).toBeDefined()
@@ -162,7 +128,7 @@ describe("Algorand Vendor Module", () => {
       it("should convert secret key to mnemonic", () => {
         const secretKey = new Uint8Array(64)
         
-        const mnemonic = algosdk.secretKeyToMnemonic(secretKey)
+        const mnemonic = mockAlgosdk.secretKeyToMnemonic(secretKey)
         
         expect(mnemonic).toBeDefined()
         expect(typeof mnemonic).toBe("string")
@@ -171,7 +137,7 @@ describe("Algorand Vendor Module", () => {
       it("should convert mnemonic to master derivation key", () => {
         const mnemonic = "mock mnemonic word list"
         
-        const mdk = algosdk.mnemonicToMasterDerivationKey(mnemonic)
+        const mdk = mockAlgosdk.mnemonicToMasterDerivationKey(mnemonic)
         
         expect(mdk).toBeDefined()
         expect(mdk).toBeInstanceOf(Uint8Array)
@@ -180,7 +146,7 @@ describe("Algorand Vendor Module", () => {
       it("should convert master derivation key to mnemonic", () => {
         const mdk = new Uint8Array(32)
         
-        const mnemonic = algosdk.masterDerivationKeyToMnemonic(mdk)
+        const mnemonic = mockAlgosdk.masterDerivationKeyToMnemonic(mdk)
         
         expect(mnemonic).toBeDefined()
         expect(typeof mnemonic).toBe("string")
@@ -205,7 +171,8 @@ describe("Algorand Vendor Module", () => {
           "total-created-assets": 1
         }
 
-        ;(mockAlgodClient.accountInformation("").do as ReturnType<typeof vi.fn>).mockResolvedValue(mockAccountInfo)
+        const mockDo = vi.fn().mockResolvedValue(mockAccountInfo)
+        mockAlgodClient.accountInformation = vi.fn().mockReturnValue({ do: mockDo })
 
         const result = await mockAlgodClient.accountInformation("MOCKADDRESS").do()
         
@@ -215,9 +182,8 @@ describe("Algorand Vendor Module", () => {
       })
 
       it("should handle non-existent account", async () => {
-        ;(mockAlgodClient.accountInformation("").do as ReturnType<typeof vi.fn>).mockRejectedValue(
-          new Error("account not found")
-        )
+        const mockDo = vi.fn().mockRejectedValue(new Error("account not found"))
+        mockAlgodClient.accountInformation = vi.fn().mockReturnValue({ do: mockDo })
 
         await expect(
           mockAlgodClient.accountInformation("NONEXISTENTADDRESS").do()
@@ -228,8 +194,8 @@ describe("Algorand Vendor Module", () => {
         const validAddress = "MOCKADDRESS123456789012345678901234567890123456789012345678"
         const invalidAddress = "invalid"
 
-        expect(algosdk.isValidAddress(validAddress)).toBe(true)
-        expect(algosdk.isValidAddress(invalidAddress)).toBe(false)
+        expect(mockAlgosdk.isValidAddress(validAddress)).toBe(true)
+        expect(mockAlgosdk.isValidAddress(invalidAddress)).toBe(false)
       })
     })
   })
@@ -257,10 +223,10 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
-        expect(algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject).toHaveBeenCalledWith(params)
+        expect(mockAlgosdk.makeAssetCreateTxnWithSuggestedParamsFromObject).toHaveBeenCalledWith(params)
       })
 
       it("should validate asset creation parameters", () => {
@@ -274,7 +240,7 @@ describe("Algorand Vendor Module", () => {
 
         // The actual validation would throw, but we're testing the mock behavior
         expect(() => {
-          algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(invalidParams)
+          mockAlgosdk.makeAssetCreateTxnWithSuggestedParamsFromObject(invalidParams)
         }).not.toThrow() // Mock doesn't validate
       })
     })
@@ -292,7 +258,7 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makeAssetConfigTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makeAssetConfigTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
       })
@@ -308,7 +274,7 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
       })
@@ -323,7 +289,7 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makeAssetTransferTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
       })
@@ -339,7 +305,7 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makeAssetFreezeTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
       })
@@ -353,7 +319,7 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makeAssetDestroyTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makeAssetDestroyTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
       })
