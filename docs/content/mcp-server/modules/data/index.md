@@ -514,3 +514,161 @@ Search for Bitcoin markets
 Get crypto-specific predictions
 → predictions_get_crypto_markets()
 ```
+---
+
+## WebSocket Subscriptions Module
+
+Real-time blockchain data streams for prices, transactions, and blocks.
+
+### Tools (8 tools)
+
+| Tool | Description |
+|------|-------------|
+| `ws_subscribe_price` | Subscribe to real-time price updates |
+| `ws_subscribe_wallet` | Subscribe to wallet transaction notifications |
+| `ws_subscribe_blocks` | Subscribe to new block notifications |
+| `ws_subscribe_pool` | Subscribe to DEX pool events (swaps, mint, burn) |
+| `ws_get_subscriptions` | List all active subscriptions |
+| `ws_unsubscribe` | Unsubscribe from a stream |
+| `ws_get_updates` | Poll for latest subscription updates |
+| `ws_pause_subscription` | Pause a subscription |
+
+### Supported Chains
+
+- Ethereum, BSC, Polygon, Arbitrum (EVM)
+- Solana, Near, Cosmos, Sui, Aptos (Non-EVM)
+
+### Examples
+
+```
+Subscribe to BTC price
+→ ws_subscribe_price(symbol: "BTC/USDT", exchange: "binance")
+
+Monitor wallet transactions
+→ ws_subscribe_wallet(address: "0x...", chain: "ethereum")
+
+Subscribe to new Ethereum blocks
+→ ws_subscribe_blocks(chain: "ethereum")
+
+Monitor Uniswap pool swaps
+→ ws_subscribe_pool(poolAddress: "0x...", chain: "ethereum", events: ["swap"])
+```
+
+---
+
+## Alerts Module
+
+Create and manage alerts for blockchain events and price conditions.
+
+### Tools (13 tools)
+
+| Tool | Description |
+|------|-------------|
+| `alert_price` | Create price alert (above/below/crosses) |
+| `alert_whale_movement` | Alert on large transactions |
+| `alert_gas` | Create gas price alert |
+| `alert_liquidity` | Alert on liquidity pool changes |
+| `alert_governance` | Alert on governance proposal activity |
+| `alert_contract` | Alert on contract events |
+| `alert_list` | List all active alerts |
+| `alert_pause` | Pause an alert |
+| `alert_resume` | Resume a paused alert |
+| `alert_delete` | Delete an alert |
+| `alert_history` | Get triggered alert history |
+| `alert_test` | Test an alert configuration |
+| `alert_clear_all` | Clear all alerts |
+
+### Examples
+
+```
+Price alert: BTC above $100k
+→ alert_price(symbol: "BTC", condition: "above", targetPrice: 100000)
+
+Whale alert: Track large ETH movements
+→ alert_whale_movement(
+    target: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    targetType: "token",
+    minValueUSD: 1000000,
+    chain: "ethereum"
+  )
+
+Gas alert: Ethereum gas below 20 Gwei
+→ alert_gas(chain: "ethereum", condition: "below", targetGwei: 20)
+```
+
+---
+
+## Wallet Analytics Module
+
+Advanced wallet analysis including whale tracking, scoring, and behavior patterns.
+
+### Tools (7 tools)
+
+| Tool | Description |
+|------|-------------|
+| `wallet_score` | Calculate comprehensive wallet score |
+| `wallet_detect_whales` | Detect whale wallets holding a token |
+| `wallet_whale_movements` | Track recent large transactions |
+| `wallet_label_lookup` | Identify known wallets (exchanges, protocols) |
+| `wallet_analyze_portfolio` | Analyze portfolio composition |
+| `wallet_get_pnl` | Calculate wallet profit/loss |
+| `wallet_compare` | Compare two wallets |
+
+### Scoring Metrics
+
+- **Wallet Age**: How long the wallet has been active
+- **Activity Score**: Transaction frequency and patterns
+- **Diversity Score**: Token holdings diversification
+- **DeFi Engagement**: Protocol usage depth
+- **Risk Score**: Interaction with flagged addresses
+
+### Examples
+
+```
+Score a wallet
+→ wallet_score(address: "0x...", chain: "ethereum")
+
+Find whale holders
+→ wallet_detect_whales(
+    tokenAddress: "0x...",
+    chain: "ethereum",
+    minBalance: 1000000
+  )
+
+Track whale movements in last 24h
+→ wallet_whale_movements(
+    chain: "ethereum",
+    minValueUSD: 1000000,
+    hours: 24
+  )
+```
+
+---
+
+## Portfolio Module (EVM)
+
+Cross-chain portfolio tracking for EVM networks.
+
+### Tools (5 tools)
+
+| Tool | Description |
+|------|-------------|
+| `get_portfolio_overview` | Comprehensive portfolio overview |
+| `get_token_balance` | Get balance of specific token |
+| `get_portfolio_value` | Get total portfolio value in USD |
+| `get_portfolio_history` | Get historical portfolio value |
+| `get_portfolio_tokens` | List all tokens in portfolio |
+
+### Supported Networks
+
+- Ethereum, Arbitrum, Polygon, BSC, Optimism, Base, and more
+
+### Examples
+
+```
+Get portfolio overview
+→ get_portfolio_overview(address: "0x...", network: "ethereum")
+
+Track portfolio value
+→ get_portfolio_value(address: "0x...", network: "arbitrum")
+```

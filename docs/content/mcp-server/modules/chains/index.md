@@ -374,6 +374,174 @@ Algorand blockchain operations.
 
 ---
 
+## Cosmos Module
+
+Cosmos SDK chain operations (ATOM, OSMO, JUNO, and more).
+
+### Tools (9 tools)
+
+| Tool | Description |
+|------|-------------|
+| `cosmos_get_balance` | Get balance of a Cosmos SDK chain address |
+| `cosmos_get_account` | Get account info (sequence number, pubkey) |
+| `cosmos_get_delegations` | Get staking delegations |
+| `cosmos_get_rewards` | Get staking rewards |
+| `cosmos_get_validators` | Get list of validators |
+| `cosmos_get_ibc_channels` | Get IBC channels for cross-chain transfers |
+| `cosmos_get_proposals` | Get governance proposals |
+| `cosmos_get_transaction` | Get transaction details |
+| `cosmos_get_supported_chains` | List supported Cosmos chains |
+
+### Supported Chains
+
+- Cosmos Hub (ATOM)
+- Osmosis (OSMO)
+- Juno (JUNO)
+- Stargaze (STARS)
+- Akash (AKT)
+- Injective (INJ)
+
+### Examples
+
+```
+Get ATOM balance
+→ cosmos_get_balance(address: "cosmos1...", chain: "cosmoshub")
+
+Get Osmosis staking delegations
+→ cosmos_get_delegations(address: "osmo1...", chain: "osmosis")
+
+Check validator list
+→ cosmos_get_validators(chain: "cosmoshub", limit: 20)
+```
+
+---
+
+## Near Protocol Module
+
+Near blockchain operations with full account and contract support.
+
+### Tools (10 tools)
+
+| Tool | Description |
+|------|-------------|
+| `near_get_balance` | Get NEAR token balance |
+| `near_get_account` | Get detailed account information |
+| `near_get_access_keys` | Get all access keys for an account |
+| `near_get_transaction` | Get transaction details by hash |
+| `near_view_contract` | Call view method on a contract |
+| `near_get_contract_state` | Get contract state/storage |
+| `near_get_block` | Get block by height or finality |
+| `near_get_validators` | Get current validator set |
+| `near_get_gas_price` | Get current gas price |
+| `near_validate_address` | Validate Near account ID format |
+
+### Environment Variables
+
+```bash
+NEAR_RPC_URL=https://rpc.mainnet.near.org
+```
+
+### Examples
+
+```
+Get NEAR balance
+→ near_get_balance(accountId: "example.near")
+
+View contract state
+→ near_view_contract(
+    contractId: "wrap.near",
+    methodName: "ft_balance_of",
+    args: { account_id: "alice.near" }
+  )
+```
+
+---
+
+## Sui Module
+
+Sui blockchain operations with object-centric model support.
+
+### Tools (10 tools)
+
+| Tool | Description |
+|------|-------------|
+| `sui_get_balance` | Get SUI token balance |
+| `sui_get_all_balances` | Get all token balances |
+| `sui_get_owned_objects` | Get objects owned by address (NFTs, coins) |
+| `sui_get_object` | Get object details by ID |
+| `sui_get_transaction` | Get transaction block details |
+| `sui_get_coins` | Get coins owned by address |
+| `sui_get_dynamic_fields` | Get dynamic fields of an object |
+| `sui_get_validators` | Get current validator set |
+| `sui_get_latest_checkpoint` | Get latest checkpoint |
+| `sui_validate_address` | Validate Sui address format |
+
+### Environment Variables
+
+```bash
+SUI_RPC_URL=https://fullnode.mainnet.sui.io
+```
+
+### Examples
+
+```
+Get SUI balance
+→ sui_get_balance(address: "0x...")
+
+Get all owned NFTs
+→ sui_get_owned_objects(address: "0x...", limit: 50)
+
+Get object details
+→ sui_get_object(objectId: "0x...")
+```
+
+---
+
+## Aptos Module
+
+Aptos blockchain operations with Move-based account model.
+
+### Tools (11 tools)
+
+| Tool | Description |
+|------|-------------|
+| `aptos_get_balance` | Get APT token balance |
+| `aptos_get_account` | Get account info (sequence number) |
+| `aptos_get_resources` | Get all resources owned by account |
+| `aptos_get_modules` | Get Move modules deployed by account |
+| `aptos_get_transaction` | Get transaction by hash |
+| `aptos_get_account_transactions` | Get transactions for account |
+| `aptos_get_table_item` | Read from a Move table |
+| `aptos_get_token_balance` | Get fungible token balance |
+| `aptos_get_block` | Get block by height |
+| `aptos_view_function` | Call a view function |
+| `aptos_validate_address` | Validate Aptos address format |
+
+### Environment Variables
+
+```bash
+APTOS_API_URL=https://fullnode.mainnet.aptoslabs.com/v1
+```
+
+### Examples
+
+```
+Get APT balance
+→ aptos_get_balance(address: "0x...")
+
+Get account resources
+→ aptos_get_resources(address: "0x...", limit: 100)
+
+View function call
+→ aptos_view_function(
+    function: "0x1::coin::balance",
+    typeArgs: ["0x1::aptos_coin::AptosCoin"],
+    args: ["0x..."]
+  )
+```
+
+---
+
 ## Summary Table
 
 | Chain | Native Token | Main Features |
@@ -387,6 +555,10 @@ Algorand blockchain operations.
 | THORChain | RUNE | Cross-chain swaps, pools |
 | BNB Chain | BNB | Full EVM + BSC specifics |
 | Algorand | ALGO | Account info, ASAs |
+| **Cosmos** | **ATOM** | **Staking, governance, IBC** |
+| **Near** | **NEAR** | **Accounts, contracts, access keys** |
+| **Sui** | **SUI** | **Objects, NFTs, Move modules** |
+| **Aptos** | **APT** | **Resources, Move tables, modules** |
 
 ## Cross-Chain Comparison
 
@@ -400,6 +572,10 @@ Solana:      solana_get_balance(address)
 TON:         ton_get_balance(address)
 XRP:         xrp_get_balance(address)
 THORChain:   thorchain_get_balance(address)
+Cosmos:      cosmos_get_balance(address, chain)
+Near:        near_get_balance(accountId)
+Sui:         sui_get_balance(address)
+Aptos:       aptos_get_balance(address)
 EVM Chains:  get_native_balance(address, chain)
 ```
 
@@ -411,5 +587,6 @@ Litecoin:    litecoin_get_transaction_history(address)
 Dogecoin:    dogecoin_get_transaction_history(address)
 TON:         ton_get_transaction_history(address)
 XRP:         xrp_get_transaction_history(address)
-EVM Chains:  get_wallet_activity(address, chain)
-```
+Near:        near_get_transaction(txHash, sender)
+Sui:         sui_get_transaction(txHash)
+Aptos:       aptos_get_account_transactions(address)

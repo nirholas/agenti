@@ -85,34 +85,34 @@ function resolveNetworkToChainId(network: string | number | undefined): number {
   return map[network.toLowerCase()] || 1
 }
 
-// Mock chain data
-const mockChainMap = new Map([
-  [1, { id: 1, name: "Ethereum", network: "mainnet" }],
-  [56, { id: 56, name: "BNB Smart Chain", network: "bsc" }],
-  [137, { id: 137, name: "Polygon", network: "polygon" }],
-  [42161, { id: 42161, name: "Arbitrum One", network: "arbitrum" }],
-  [10, { id: 10, name: "Optimism", network: "optimism" }],
-  [8453, { id: 8453, name: "Base", network: "base" }],
-  [11155111, { id: 11155111, name: "Sepolia", network: "sepolia" }],
-  [421614, { id: 421614, name: "Arbitrum Sepolia", network: "arbitrum-sepolia" }],
-  [84532, { id: 84532, name: "Base Sepolia", network: "base-sepolia" }],
-  [80002, { id: 80002, name: "Polygon Amoy", network: "polygon-amoy" }],
-  [97, { id: 97, name: "BSC Testnet", network: "bsc-testnet" }]
-])
+// Mock chain data as plain objects (not Maps) to match test expectations
+const mockChainMap: Record<number, any> = {
+  1: { id: 1, name: "Ethereum", network: "mainnet" },
+  56: { id: 56, name: "BNB Smart Chain", network: "bsc" },
+  137: { id: 137, name: "Polygon", network: "polygon" },
+  42161: { id: 42161, name: "Arbitrum One", network: "arbitrum" },
+  10: { id: 10, name: "Optimism", network: "optimism" },
+  8453: { id: 8453, name: "Base", network: "base" },
+  11155111: { id: 11155111, name: "Sepolia", network: "sepolia" },
+  421614: { id: 421614, name: "Arbitrum Sepolia", network: "arbitrum-sepolia" },
+  84532: { id: 84532, name: "Base Sepolia", network: "base-sepolia" },
+  80002: { id: 80002, name: "Polygon Amoy", network: "polygon-amoy" },
+  97: { id: 97, name: "BSC Testnet", network: "bsc-testnet" }
+}
 
-const mockNetworkNameMap = new Map([
-  ["ethereum", 1], ["mainnet", 1], ["eth", 1],
-  ["polygon", 137], ["matic", 137],
-  ["arbitrum", 42161], ["arb", 42161],
-  ["optimism", 10], ["op", 10],
-  ["base", 8453],
-  ["bsc", 56], ["binance", 56], ["bnb", 56],
-  ["sepolia", 11155111],
-  ["arbitrum sepolia", 421614], ["arbitrum-sepolia", 421614],
-  ["base sepolia", 84532], ["base-sepolia", 84532],
-  ["polygon amoy", 80002], ["polygon-amoy", 80002],
-  ["bsc testnet", 97], ["bsc-testnet", 97]
-])
+const mockNetworkNameMap: Record<string, number> = {
+  "ethereum": 1, "mainnet": 1, "eth": 1,
+  "polygon": 137, "matic": 137,
+  "arbitrum": 42161, "arb": 42161,
+  "optimism": 10, "op": 10,
+  "base": 8453,
+  "bsc": 56, "binance": 56, "bnb": 56,
+  "sepolia": 11155111,
+  "arbitrum sepolia": 421614, "arbitrum-sepolia": 421614,
+  "base sepolia": 84532, "base-sepolia": 84532,
+  "polygon amoy": 80002, "polygon-amoy": 80002,
+  "bsc testnet": 97, "bsc-testnet": 97
+}
 
 // Mock @/evm to avoid ABI parsing issues
 vi.mock("@/evm", () => ({
@@ -147,7 +147,7 @@ vi.mock("@/evm/chains", () => ({
   resolveChainId: vi.fn((network: string | number | undefined) => resolveNetworkToChainId(network)),
   getChain: vi.fn((network: string | number) => {
     const chainId = typeof network === "number" ? network : resolveNetworkToChainId(network)
-    return mockChainMap.get(chainId)
+    return mockChainMap[chainId]
   })
 }))
 
@@ -222,54 +222,6 @@ vi.mock("@/evm/services/index", () => ({
   getNativeBalance: mockGetNativeBalance,
   getERC20TokenInfo: mockGetERC20TokenInfo,
   getERC20Balance: mockGetERC20Balance
-}))
-      chainId: chainId,
-      network: network
-    })
-  }),
-  getBlockByNumber: vi.fn().mockImplementation((blockNum, network) => {
-    const chainId = typeof network === "number" ? network : 1
-    return Promise.resolve({
-      number: blockNum.toString(),
-      hash: `0x${chainId.toString(16).padStart(64, "0")}`,
-      timestamp: 1700000000,
-      chainId: chainId
-    })
-  }),
-  getBlockByHash: vi.fn().mockResolvedValue({
-    number: "18000000",
-    hash: "0x1234",
-    timestamp: 1700000000
-  }),
-  getNativeBalance: vi.fn().mockImplementation((address, network) => {
-    const chainId = typeof network === "number" ? network : 1
-    const nativeSymbols: Record<number, string> = {
-      1: "ETH",
-      56: "BNB",
-      137: "MATIC",
-      42161: "ETH",
-      10: "ETH",
-      8453: "ETH"
-    }
-    return Promise.resolve({
-      balance: "1.5",
-      balanceWei: "1500000000000000000",
-      network: network,
-      chainId: chainId,
-      symbol: nativeSymbols[chainId] || "ETH"
-    })
-  }),
-  getERC20TokenInfo: vi.fn().mockResolvedValue({
-    name: "Test Token",
-    symbol: "TEST",
-    decimals: 18,
-    totalSupply: "1000000000000000000000000"
-  }),
-  getERC20Balance: vi.fn().mockResolvedValue({
-    balance: "100.0",
-    rawBalance: "100000000000000000000",
-    decimals: 18
-  })
 }))
 
 describe("Multi-Chain Integration Tests", () => {

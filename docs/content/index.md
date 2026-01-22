@@ -1,8 +1,8 @@
 # Universal Crypto MCP
 
 <p align="center">
-  <strong>🚀 330+ blockchain tools for AI agents</strong><br>
-  Connect Claude, ChatGPT, and Cursor to 15+ EVM chains
+  <strong>🚀 380+ blockchain tools for AI agents</strong><br>
+  Connect Claude, ChatGPT, and Cursor to 20+ chains
 </p>
 
 <p align="center">
@@ -39,9 +39,9 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 | Ethereum | Arbitrum One | Solana |
 | BNB Chain | Base | TON |
 | Avalanche | Optimism | XRP Ledger |
-| Fantom | Polygon | |
-| | zkSync Era | |
-| | Linea | |
+| Fantom | Polygon | **Cosmos (NEW)** |
+| **Near (NEW)** | zkSync Era | **Sui (NEW)** |
+| **Aptos (NEW)** | Linea | |
 | | Scroll | |
 | | Blast | |
 | | Mode | |

@@ -1,6 +1,6 @@
 # Complete Tools List
 
-A comprehensive list of all 300+ tools available in Universal Crypto MCP.
+A comprehensive list of all **380+ tools** available in Universal Crypto MCP.
 
 ---
 
@@ -492,6 +492,62 @@ A comprehensive list of all 300+ tools available in Universal Crypto MCP.
 | `thorchain_get_network_info` | Get network info |
 | `thorchain_get_inbound_addresses` | Get vault addresses |
 
+### Cosmos/IBC (9 tools) <span class="new-badge">NEW</span>
+| Tool | Description |
+|------|-------------|
+| `cosmos_get_balance` | Get native/IBC token balance |
+| `cosmos_get_delegations` | Get staking delegations |
+| `cosmos_get_rewards` | Get staking rewards |
+| `cosmos_get_validators` | Get chain validators |
+| `cosmos_get_account_info` | Get account information |
+| `cosmos_transfer` | Transfer tokens |
+| `cosmos_delegate` | Delegate to validator |
+| `cosmos_undelegate` | Undelegate from validator |
+| `cosmos_claim_rewards` | Claim staking rewards |
+
+### Near Protocol (10 tools) <span class="new-badge">NEW</span>
+| Tool | Description |
+|------|-------------|
+| `near_get_balance` | Get NEAR balance |
+| `near_get_account_info` | Get account details |
+| `near_get_staking_info` | Get staking information |
+| `near_get_validators` | Get validators list |
+| `near_get_transaction` | Get transaction details |
+| `near_transfer` | Transfer NEAR tokens |
+| `near_stake` | Stake NEAR tokens |
+| `near_unstake` | Unstake NEAR tokens |
+| `near_view_function` | Call view function |
+| `near_call_function` | Call change function |
+
+### Sui (10 tools) <span class="new-badge">NEW</span>
+| Tool | Description |
+|------|-------------|
+| `sui_get_balance` | Get SUI balance |
+| `sui_get_objects` | Get owned objects |
+| `sui_get_coins` | Get coin objects |
+| `sui_get_transaction` | Get transaction details |
+| `sui_get_staking_info` | Get staking information |
+| `sui_transfer` | Transfer SUI tokens |
+| `sui_transfer_object` | Transfer object NFT |
+| `sui_stake` | Stake SUI tokens |
+| `sui_unstake` | Unstake SUI tokens |
+| `sui_execute_move_call` | Execute Move function |
+
+### Aptos (11 tools) <span class="new-badge">NEW</span>
+| Tool | Description |
+|------|-------------|
+| `aptos_get_balance` | Get APT balance |
+| `aptos_get_account_info` | Get account resources |
+| `aptos_get_transactions` | Get account transactions |
+| `aptos_get_staking_info` | Get staking delegations |
+| `aptos_get_validators` | Get validators list |
+| `aptos_transfer` | Transfer APT tokens |
+| `aptos_stake` | Stake APT tokens |
+| `aptos_unstake` | Unstake APT tokens |
+| `aptos_claim_rewards` | Claim staking rewards |
+| `aptos_view_function` | Call view function |
+| `aptos_execute_function` | Execute entry function |
+
 ---
 
 ## Trading Strategies (25 tools)
@@ -551,13 +607,90 @@ A comprehensive list of all 300+ tools available in Universal Crypto MCP.
 
 ---
 
+## WebSocket Subscriptions (8 tools) <span class="new-badge">NEW</span>
+
+### Real-Time Data Streams
+| Tool | Description |
+|------|-------------|
+| `ws_subscribe_price` | Subscribe to real-time price updates |
+| `ws_subscribe_trades` | Subscribe to trade stream |
+| `ws_subscribe_orderbook` | Subscribe to order book updates |
+| `ws_subscribe_blocks` | Subscribe to new blocks |
+| `ws_subscribe_mempool` | Subscribe to mempool transactions |
+| `ws_unsubscribe` | Unsubscribe from a stream |
+| `ws_list_subscriptions` | List active subscriptions |
+| `ws_get_connection_status` | Get WebSocket connection status |
+
+---
+
+## Alerts System (13 tools) <span class="new-badge">NEW</span>
+
+### Price Alerts (4 tools)
+| Tool | Description |
+|------|-------------|
+| `alert_create_price` | Create price threshold alert |
+| `alert_create_percent_change` | Create % change alert |
+| `alert_list_price` | List active price alerts |
+| `alert_delete_price` | Delete a price alert |
+
+### Whale Alerts (5 tools)
+| Tool | Description |
+|------|-------------|
+| `alert_create_whale` | Create whale movement alert |
+| `alert_configure_whale_threshold` | Set whale threshold amount |
+| `alert_list_whale` | List whale alerts |
+| `alert_get_recent_whales` | Get recent whale movements |
+| `alert_delete_whale` | Delete a whale alert |
+
+### Gas Alerts (4 tools)
+| Tool | Description |
+|------|-------------|
+| `alert_create_gas` | Create gas price alert |
+| `alert_configure_gas_threshold` | Set gas threshold |
+| `alert_list_gas` | List gas alerts |
+| `alert_delete_gas` | Delete a gas alert |
+
+---
+
+## Wallet Analytics (7 tools) <span class="new-badge">NEW</span>
+
+### Wallet Analysis
+| Tool | Description |
+|------|-------------|
+| `analytics_get_wallet_score` | Get wallet reputation score |
+| `analytics_get_wallet_activity` | Get wallet activity summary |
+| `analytics_get_wallet_pnl` | Get realized/unrealized PnL |
+| `analytics_get_top_holders` | Get top token holders |
+| `analytics_track_whale` | Add wallet to whale tracking |
+| `analytics_untrack_whale` | Remove from whale tracking |
+| `analytics_get_tracked_whales` | List tracked whale wallets |
+
+---
+
+## Portfolio Tracker (5 tools) <span class="new-badge">NEW</span>
+
+### Cross-Chain Portfolio
+| Tool | Description |
+|------|-------------|
+| `portfolio_get_overview` | Get full portfolio value across chains |
+| `portfolio_get_tokens` | Get all token holdings |
+| `portfolio_get_nfts` | Get NFT holdings |
+| `portfolio_get_defi_positions` | Get DeFi positions |
+| `portfolio_get_history` | Get portfolio value history |
+
+---
+
 ## Summary
 
 | Category | Tool Count |
 |----------|------------|
 | EVM Blockchain | ~120 |
 | Data & Analytics | ~100 |
-| Multi-Chain | ~80 |
+| Multi-Chain | ~120 |
 | Trading Strategies | 25 |
 | Prediction Markets | 4 |
-| **Total** | **~330** |
+| WebSocket Subscriptions | 8 |
+| Alerts System | 13 |
+| Wallet Analytics | 7 |
+| Portfolio Tracker | 5 |
+| **Total** | **~380** |

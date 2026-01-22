@@ -1,13 +1,13 @@
 # Modules Overview
 
-Universal Crypto MCP provides **300+ tools** across **56 modules** organized into three main categories:
+Universal Crypto MCP provides **380+ tools** across **60+ modules** organized into three main categories:
 
 ## Module Categories
 
 ### 🔷 EVM Modules (`src/evm/modules/`)
 Core blockchain operations for all EVM-compatible chains including Ethereum, Polygon, BSC, Arbitrum, Base, Optimism, and more.
 
-**22 modules** covering:
+**23 modules** covering:
 - Block & transaction management
 - Smart contract interactions
 - Token operations (ERC20, ERC721, ERC1155)
@@ -15,7 +15,7 @@ Core blockchain operations for all EVM-compatible chains including Ethereum, Pol
 - Cross-chain bridging
 - ENS domains
 - Security analysis
-- Portfolio tracking
+- **Portfolio tracking (NEW)**
 
 [→ EVM Modules Documentation](evm/index.md)
 
@@ -24,7 +24,7 @@ Core blockchain operations for all EVM-compatible chains including Ethereum, Pol
 ### 📊 Data & Analytics Modules (`src/modules/`)
 Market data, technical analysis, research tools, and analytics.
 
-**13 modules** covering:
+**17 modules** covering:
 - CoinGecko market data
 - DefiLlama TVL & yields
 - Technical indicators (50+)
@@ -34,6 +34,9 @@ Market data, technical analysis, research tools, and analytics.
 - News aggregation
 - Research tools
 - Prediction markets (Polymarket)
+- **WebSocket subscriptions (NEW)**
+- **On-chain alerts (NEW)**
+- **Wallet analytics (NEW)**
 
 [→ Data & Analytics Documentation](data/index.md)
 
@@ -42,12 +45,18 @@ Market data, technical analysis, research tools, and analytics.
 ### 🌐 Multi-Chain Vendors (`src/vendors/`)
 Non-EVM blockchain integrations and third-party services.
 
-**10+ modules** covering:
+**14+ modules** covering:
 - Bitcoin (BTC)
 - Litecoin (LTC)
 - Dogecoin (DOGE)
 - Solana (SOL)
 - TON
+- XRP Ledger
+- THORChain
+- **Cosmos/IBC (NEW)** - ATOM, OSMO, JUNO
+- **Near Protocol (NEW)**
+- **Sui (NEW)**
+- **Aptos (NEW)**
 - XRP Ledger
 - THORChain
 - BNB Chain specifics
