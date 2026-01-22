@@ -37,8 +37,8 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 
 | Feature | Universal Crypto MCP | Other MCP Servers |
 |---------|---------------------|-------------------|
-| **Tools** | 330+ tools | 10-50 tools |
-| **Chains** | 15+ EVM chains | 1-3 chains |
+| **Tools** | 380+ tools | 10-50 tools |
+| **Chains** | 20+ chains (EVM + multi-chain) | 1-3 chains |
 | **DEX Support** | Multi-aggregator (1inch, 0x, ParaSwap) | Single DEX or none |
 | **Security** | GoPlus, honeypot, rug pull detection | Basic or none |
 | **DeFi** | Aave, Compound, Lido, Uniswap | Limited |
@@ -52,14 +52,17 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 
 ## Supported Networks
 
-- BNB Smart Chain (BSC)
-- opBNB
-- Arbitrum One
-- Ethereum
-- Polygon
-- Base
-- Optimism
-- + All testnets
+### EVM Chains
+- Ethereum, BNB Smart Chain (BSC), Polygon, Arbitrum, Base, Optimism
+- Avalanche, Fantom, zkSync Era, Linea, Scroll, Blast, Mode, Mantle
+- opBNB + All testnets
+
+### Multi-Chain (NEW)
+- **Cosmos/IBC** - ATOM, OSMO, JUNO, INJ, and more
+- **Near Protocol** - NEAR native + contracts
+- **Sui** - SUI with Move support
+- **Aptos** - APT with Move support
+- Bitcoin, Litecoin, Solana, TON, XRP, THORChain
 
 ## Features
 
@@ -84,6 +87,10 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 - 📈 **DEX Analytics** - DexPaprika & GeckoTerminal pools, trades, OHLCV, trending tokens
 - 🔮 **Predictions** - Polymarket prediction markets, crypto forecasts
 - 📉 **Technical Indicators** - 50+ indicators (RSI, MACD, Bollinger Bands, etc.)
+- 🔔 **Alerts** - Price alerts, whale movement alerts, gas alerts (NEW)
+- 📡 **WebSockets** - Real-time price streams, trade feeds, mempool monitoring (NEW)
+- 🐋 **Wallet Analytics** - Whale tracking, wallet scoring, behavior analysis (NEW)
+- 🌐 **Multi-Chain** - Cosmos, Near, Sui, Aptos native support (NEW)
 
 ## Quick Start
 

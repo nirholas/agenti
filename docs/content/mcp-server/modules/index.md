@@ -57,8 +57,6 @@ Non-EVM blockchain integrations and third-party services.
 - **Near Protocol (NEW)**
 - **Sui (NEW)**
 - **Aptos (NEW)**
-- XRP Ledger
-- THORChain
 - BNB Chain specifics
 
 [→ Multi-Chain Documentation](chains/index.md)
@@ -69,10 +67,10 @@ Non-EVM blockchain integrations and third-party services.
 
 | Category | Modules | Tools |
 |----------|---------|-------|
-| EVM Core | 22 | ~120 |
-| Data & Analytics | 12 | ~100 |
-| Multi-Chain | 10+ | ~80 |
-| **Total** | **56** | **~300+** |
+| EVM Core | 23 | ~120 |
+| Data & Analytics | 17 | ~100 |
+| Multi-Chain | 14+ | ~120 |
+| **Total** | **60+** | **~380+** |
 
 ## Module Registration
 
