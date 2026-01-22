@@ -345,7 +345,7 @@ describe("Algorand Vendor Module", () => {
           suggestedParams: mockSuggestedParams
         }
 
-        const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject(params)
+        const txn = mockAlgosdk.makePaymentTxnWithSuggestedParamsFromObject(params)
         
         expect(txn).toBeDefined()
         expect(txn.amount).toBe(1000000)

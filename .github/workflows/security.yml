@@ -1,0 +1,181 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'package-lock.json'
+      - 'packages/*/package-lock.json'
+
+permissions:
+  contents: read
+  issues: write
+  security-events: write
+
+jobs:
+  npm-audit:
+    name: npm Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        id: audit
+        continue-on-error: true
+        run: |
+          npm audit --json > audit-results.json 2>&1 || true
+          
+          # Check if there are vulnerabilities
+          VULNS=$(cat audit-results.json | jq '.metadata.vulnerabilities | .high + .critical' 2>/dev/null || echo "0")
+          echo "vulnerabilities=$VULNS" >> $GITHUB_OUTPUT
+          
+          # Create readable report
+          echo "## Security Audit Report" > audit-report.md
+          echo "" >> audit-report.md
+          echo "Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> audit-report.md
+          echo "" >> audit-report.md
+          
+          if [ "$VULNS" -gt 0 ]; then
+            echo "⚠️ **Found $VULNS high/critical vulnerabilities**" >> audit-report.md
+            echo "" >> audit-report.md
+            npm audit 2>&1 | head -100 >> audit-report.md || true
+          else
+            echo "✅ No high or critical vulnerabilities found" >> audit-report.md
+          fi
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-results
+          path: |
+            audit-results.json
+            audit-report.md
+          retention-days: 30
+
+      - name: Create issue for vulnerabilities
+        if: steps.audit.outputs.vulnerabilities > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('audit-report.md', 'utf8');
+            
+            // Check for existing open issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security,automated'
+            });
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes('Security Vulnerabilities Detected')
+            );
+            
+            const issueBody = `
+            # Automated Security Audit Report
+            
+            ${report}
+            
+            ## Next Steps
+            
+            1. Review the vulnerabilities listed above
+            2. Update affected packages: \`npm audit fix\`
+            3. For breaking changes: \`npm audit fix --force\` (with caution)
+            4. Close this issue once all vulnerabilities are resolved
+            
+            ---
+            *This issue was automatically created by the security audit workflow.*
+            `;
+            
+            if (existingIssue) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: issueBody
+              });
+              console.log(`Updated existing issue #${existingIssue.number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🔒 Security Vulnerabilities Detected',
+                body: issueBody,
+                labels: ['security', 'automated', 'priority:high']
+              });
+              console.log('Created new security issue');
+            }
+
+  audit-packages:
+    name: Audit Sub-packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Audit all packages
+        run: |
+          echo "## Package Audit Results" > packages-audit.md
+          echo "" >> packages-audit.md
+          
+          for pkg in packages/*/; do
+            if [ -f "$pkg/package.json" ]; then
+              echo "### $(basename $pkg)" >> packages-audit.md
+              cd "$pkg"
+              npm audit --json > audit.json 2>&1 || true
+              VULNS=$(cat audit.json | jq '.metadata.vulnerabilities | .high + .critical' 2>/dev/null || echo "0")
+              if [ "$VULNS" -gt 0 ]; then
+                echo "⚠️ $VULNS high/critical vulnerabilities" >> ../../packages-audit.md
+              else
+                echo "✅ No high/critical vulnerabilities" >> ../../packages-audit.md
+              fi
+              cd -
+              echo "" >> packages-audit.md
+            fi
+          done
+
+      - name: Upload package audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-audit-results
+          path: packages-audit.md
+          retention-days: 30
+
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"

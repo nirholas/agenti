@@ -20,7 +20,7 @@ describe("EVM Chains Configuration", () => {
       const mainnetChainIds = [1, 10, 42161, 8453, 137, 56, 204, 4689]
       for (const chainId of mainnetChainIds) {
         expect(chainMap[chainId]).toBeDefined()
-        expect(chainMap[chainId].id).toBe(chainId)
+        expect(chainMap[chainId]!.id).toBe(chainId)
       }
     })
 
@@ -28,7 +28,7 @@ describe("EVM Chains Configuration", () => {
       const testnetChainIds = [11155111, 11155420, 421614, 84532, 80002, 97, 5611, 4690]
       for (const chainId of testnetChainIds) {
         expect(chainMap[chainId]).toBeDefined()
-        expect(chainMap[chainId].id).toBe(chainId)
+        expect(chainMap[chainId]!.id).toBe(chainId)
       }
     })
 

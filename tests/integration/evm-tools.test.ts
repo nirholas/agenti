@@ -6,12 +6,31 @@
  * @github github.com/nirholas
  * @license Apache-2.0
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from "vitest"
 
 import { MockMcpServer, createMockMcpServer } from "../mocks/mcp"
 import { mockPublicClient, mockWalletClient, mockTokenData } from "../mocks/viem"
-import { registerEVM } from "@/evm"
 import { TEST_ADDRESSES } from "../setup"
+
+// Mock viem/chains to avoid issues with chain imports
+vi.mock("viem/chains", () => ({
+  mainnet: { id: 1, name: "Ethereum" },
+  sepolia: { id: 11155111, name: "Sepolia" },
+  optimism: { id: 10, name: "Optimism" },
+  optimismSepolia: { id: 11155420, name: "Optimism Sepolia" },
+  arbitrum: { id: 42161, name: "Arbitrum" },
+  arbitrumSepolia: { id: 421614, name: "Arbitrum Sepolia" },
+  base: { id: 8453, name: "Base" },
+  baseSepolia: { id: 84532, name: "Base Sepolia" },
+  polygon: { id: 137, name: "Polygon" },
+  polygonAmoy: { id: 80002, name: "Polygon Amoy" },
+  bsc: { id: 56, name: "BSC" },
+  bscTestnet: { id: 97, name: "BSC Testnet" },
+  opBNB: { id: 204, name: "opBNB" },
+  opBNBTestnet: { id: 5611, name: "opBNB Testnet" },
+  iotex: { id: 4689, name: "IoTeX" },
+  iotexTestnet: { id: 4690, name: "IoTeX Testnet" }
+}))
 
 // Mock the viem services
 vi.mock("@/evm/services/clients", () => ({
@@ -64,6 +83,12 @@ vi.mock("@/evm/services/index", () => ({
 
 describe("EVM Tool Integration Tests", () => {
   let mockServer: MockMcpServer
+  let registerEVM: any
+
+  beforeAll(async () => {
+    const evmModule = await import("@/evm")
+    registerEVM = evmModule.registerEVM
+  })
 
   beforeEach(() => {
     mockServer = createMockMcpServer()

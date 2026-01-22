@@ -398,7 +398,7 @@ describe("Solana Vendor Module", () => {
       mockConnection.getBalance.mockRejectedValue(new Error("429 Too Many Requests"))
 
       await expect(
-        mockConnection.getBalance(new PublicKey("SomeAddress"))
+        mockConnection.getBalance("SomeAddress")
       ).rejects.toThrow("429 Too Many Requests")
     })
 
@@ -406,7 +406,7 @@ describe("Solana Vendor Module", () => {
       mockConnection.getBalance.mockRejectedValue(new Error("Request timeout"))
 
       await expect(
-        mockConnection.getBalance(new PublicKey("SomeAddress"))
+        mockConnection.getBalance("SomeAddress")
       ).rejects.toThrow("Request timeout")
     })
   })

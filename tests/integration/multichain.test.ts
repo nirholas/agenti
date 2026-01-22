@@ -6,17 +6,30 @@
  * @github github.com/nirholas
  * @license Apache-2.0
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from "vitest"
 
 import { MockMcpServer, createMockMcpServer } from "../mocks/mcp"
-import { registerEVM } from "@/evm"
-import { 
-  chainMap, 
-  networkNameMap, 
-  resolveChainId, 
-  getChain 
-} from "@/evm/chains"
 import { TEST_ADDRESSES } from "../setup"
+
+// Mock viem/chains to avoid issues with chain imports
+vi.mock("viem/chains", () => ({
+  mainnet: { id: 1, name: "Ethereum" },
+  sepolia: { id: 11155111, name: "Sepolia" },
+  optimism: { id: 10, name: "Optimism" },
+  optimismSepolia: { id: 11155420, name: "Optimism Sepolia" },
+  arbitrum: { id: 42161, name: "Arbitrum" },
+  arbitrumSepolia: { id: 421614, name: "Arbitrum Sepolia" },
+  base: { id: 8453, name: "Base" },
+  baseSepolia: { id: 84532, name: "Base Sepolia" },
+  polygon: { id: 137, name: "Polygon" },
+  polygonAmoy: { id: 80002, name: "Polygon Amoy" },
+  bsc: { id: 56, name: "BSC" },
+  bscTestnet: { id: 97, name: "BSC Testnet" },
+  opBNB: { id: 204, name: "opBNB" },
+  opBNBTestnet: { id: 5611, name: "opBNB Testnet" },
+  iotex: { id: 4689, name: "IoTeX" },
+  iotexTestnet: { id: 4690, name: "IoTeX Testnet" }
+}))
 
 // Create chain-specific mock responses
 const createChainMockClient = (chainId: number) => ({
@@ -30,24 +43,37 @@ const createChainMockClient = (chainId: number) => ({
   }),
   getChainId: vi.fn().mockResolvedValue(chainId),
   getBalance: vi.fn().mockResolvedValue(BigInt(1000000000000000000)),
-  readContract: vi.fn().mockResolvedValue("MockToken")
+  readContract: vi.fn().mockResolvedValue("MockToken"),
+  multicall: vi.fn().mockResolvedValue([]),
+  estimateGas: vi.fn().mockResolvedValue(21000n),
+  getGasPrice: vi.fn().mockResolvedValue(20000000000n),
+  getLogs: vi.fn().mockResolvedValue([]),
+  getTransaction: vi.fn().mockResolvedValue({}),
+  getTransactionReceipt: vi.fn().mockResolvedValue({}),
+  getTransactionCount: vi.fn().mockResolvedValue(0),
+  getCode: vi.fn().mockResolvedValue("0x"),
+  call: vi.fn().mockResolvedValue({ data: "0x" }),
+  getStorageAt: vi.fn().mockResolvedValue("0x"),
+  estimateFeesPerGas: vi.fn().mockResolvedValue({ maxFeePerGas: 20000000000n, maxPriorityFeePerGas: 1000000000n }),
+  getUncleCountByBlockNumber: vi.fn().mockResolvedValue(0)
 })
 
 // Dynamic mock based on network parameter
 vi.mock("@/evm/services/clients", () => ({
   getPublicClient: vi.fn((network?: string | number) => {
-    const chainId = typeof network === "number" ? network : resolveChainId(network || "ethereum")
+    const chainId = typeof network === "number" ? network : 1
     return createChainMockClient(chainId)
   }),
   getWalletClient: vi.fn(() => ({
-    account: { address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" }
+    account: { address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
+    writeContract: vi.fn().mockResolvedValue("0xabc123")
   }))
 }))
 
 // Mock services with chain-aware responses
 vi.mock("@/evm/services/index", () => ({
   getLatestBlock: vi.fn().mockImplementation((network) => {
-    const chainId = resolveChainId(network || "ethereum")
+    const chainId = typeof network === "number" ? network : 1
     return Promise.resolve({
       number: "18000000",
       hash: `0x${chainId.toString(16).padStart(64, "0")}`,
@@ -57,7 +83,7 @@ vi.mock("@/evm/services/index", () => ({
     })
   }),
   getBlockByNumber: vi.fn().mockImplementation((blockNum, network) => {
-    const chainId = resolveChainId(network || "ethereum")
+    const chainId = typeof network === "number" ? network : 1
     return Promise.resolve({
       number: blockNum.toString(),
       hash: `0x${chainId.toString(16).padStart(64, "0")}`,
@@ -71,7 +97,7 @@ vi.mock("@/evm/services/index", () => ({
     timestamp: 1700000000
   }),
   getNativeBalance: vi.fn().mockImplementation((address, network) => {
-    const chainId = resolveChainId(network || "ethereum")
+    const chainId = typeof network === "number" ? network : 1
     const nativeSymbols: Record<number, string> = {
       1: "ETH",
       56: "BNB",
@@ -103,6 +129,21 @@ vi.mock("@/evm/services/index", () => ({
 
 describe("Multi-Chain Integration Tests", () => {
   let mockServer: MockMcpServer
+  let registerEVM: any
+  let chainMap: any
+  let networkNameMap: any
+  let resolveChainId: any
+  let getChain: any
+
+  beforeAll(async () => {
+    const evmModule = await import("@/evm")
+    registerEVM = evmModule.registerEVM
+    const chainsModule = await import("@/evm/chains")
+    chainMap = chainsModule.chainMap
+    networkNameMap = chainsModule.networkNameMap
+    resolveChainId = chainsModule.resolveChainId
+    getChain = chainsModule.getChain
+  })
 
   beforeEach(() => {
     mockServer = createMockMcpServer()

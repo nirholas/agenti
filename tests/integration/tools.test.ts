@@ -6,10 +6,29 @@
  * @github github.com/nirholas
  * @license Apache-2.0
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from "vitest"
 
 import { MockMcpServer, createMockMcpServer, validateToolInput } from "../mocks/mcp"
-import { registerEVM } from "@/evm"
+
+// Mock viem/chains to avoid issues with chain imports
+vi.mock("viem/chains", () => ({
+  mainnet: { id: 1, name: "Ethereum" },
+  sepolia: { id: 11155111, name: "Sepolia" },
+  optimism: { id: 10, name: "Optimism" },
+  optimismSepolia: { id: 11155420, name: "Optimism Sepolia" },
+  arbitrum: { id: 42161, name: "Arbitrum" },
+  arbitrumSepolia: { id: 421614, name: "Arbitrum Sepolia" },
+  base: { id: 8453, name: "Base" },
+  baseSepolia: { id: 84532, name: "Base Sepolia" },
+  polygon: { id: 137, name: "Polygon" },
+  polygonAmoy: { id: 80002, name: "Polygon Amoy" },
+  bsc: { id: 56, name: "BSC" },
+  bscTestnet: { id: 97, name: "BSC Testnet" },
+  opBNB: { id: 204, name: "opBNB" },
+  opBNBTestnet: { id: 5611, name: "opBNB Testnet" },
+  iotex: { id: 4689, name: "IoTeX" },
+  iotexTestnet: { id: 4690, name: "IoTeX Testnet" }
+}))
 
 // Mock the viem clients to avoid actual network calls
 vi.mock("@/evm/services/clients", () => ({
@@ -21,15 +40,35 @@ vi.mock("@/evm/services/clients", () => ({
       timestamp: 1700000000n
     }),
     getChainId: vi.fn().mockResolvedValue(1),
-    getBalance: vi.fn().mockResolvedValue(1000000000000000000n)
+    getBalance: vi.fn().mockResolvedValue(1000000000000000000n),
+    readContract: vi.fn().mockResolvedValue("MockValue"),
+    multicall: vi.fn().mockResolvedValue([]),
+    estimateGas: vi.fn().mockResolvedValue(21000n),
+    getGasPrice: vi.fn().mockResolvedValue(20000000000n),
+    getLogs: vi.fn().mockResolvedValue([]),
+    getTransaction: vi.fn().mockResolvedValue({}),
+    getTransactionReceipt: vi.fn().mockResolvedValue({}),
+    getTransactionCount: vi.fn().mockResolvedValue(0),
+    getCode: vi.fn().mockResolvedValue("0x"),
+    call: vi.fn().mockResolvedValue({ data: "0x" }),
+    getStorageAt: vi.fn().mockResolvedValue("0x"),
+    estimateFeesPerGas: vi.fn().mockResolvedValue({ maxFeePerGas: 20000000000n, maxPriorityFeePerGas: 1000000000n }),
+    getUncleCountByBlockNumber: vi.fn().mockResolvedValue(0)
   })),
   getWalletClient: vi.fn(() => ({
-    account: { address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" }
+    account: { address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
+    writeContract: vi.fn().mockResolvedValue("0xabc123")
   }))
 }))
 
 describe("Tool Registration Tests", () => {
   let mockServer: MockMcpServer
+  let registerEVM: any
+
+  beforeAll(async () => {
+    const evmModule = await import("@/evm")
+    registerEVM = evmModule.registerEVM
+  })
 
   beforeEach(() => {
     mockServer = createMockMcpServer()

@@ -3,7 +3,6 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/v/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/dm/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads"></a>
-  <a href="https://github.com/nirholas/universal-crypto-mcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nirholas/universal-crypto-mcp/ci.yml?style=for-the-badge&logo=github-actions&label=CI" alt="CI Status"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge" alt="License: Apache 2.0"></a>
 </p>
 
@@ -21,9 +20,7 @@
 > ⭐ **If you find this useful, please star the repo!** It helps others discover this project.
 
 <p align="center">
-  <a href="https://discord.gg/your-discord"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://x.com/nichxbt"><img src="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"></a>
-  <a href="https://github.com/sponsors/nirholas"><img src="https://img.shields.io/badge/Sponsor-💖-EA4AAA?style=for-the-badge" alt="Sponsor"></a>
+  <a href="https://x.com/nichxbt"><img src="https://img.shields.io/badge/𝕏-Follow-000000?style=for-the-badge&logo=x&logoColor=white" alt="Follow on X"></a>
 </p>
 
 ---
@@ -36,7 +33,7 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 
 | Feature | Universal Crypto MCP | Other MCP Servers |
 |---------|---------------------|-------------------|
-| **Tools** | 500+ tools | 10-50 tools |
+| **Tools** | 330+ tools | 10-50 tools |
 | **Chains** | 15+ EVM chains | 1-3 chains |
 | **DEX Support** | Multi-aggregator (1inch, 0x, ParaSwap) | Single DEX or none |
 | **Security** | GoPlus, honeypot, rug pull detection | Basic or none |
@@ -81,6 +78,8 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 - 🌐 **DeFi Analytics** - DefiLlama TVL, yields, fees, bridges, stablecoins, protocol data
 - 💬 **Social Sentiment** - LunarCrush social metrics, influencers, trending topics
 - 📈 **DEX Analytics** - DexPaprika & GeckoTerminal pools, trades, OHLCV, trending tokens
+- 🔮 **Predictions** - Polymarket prediction markets, crypto forecasts
+- 📉 **Technical Indicators** - 50+ indicators (RSI, MACD, Bollinger Bands, etc.)
 
 ## Quick Start
 
@@ -342,6 +341,72 @@ Encode a call to the transfer function for 100 USDC
 Simulate this transaction before executing: 0x...
 ```
 
+### 📉 Technical Indicators
+
+```
+Calculate RSI for Bitcoin over the last 14 days
+```
+```
+Get MACD signal for ETH/USDT on the 4-hour timeframe
+```
+```
+Show Bollinger Bands for SOL with 20-period SMA
+```
+```
+What's the current trend signal for BTC using multiple indicators?
+```
+```
+Run a momentum strategy analysis on DOGE
+```
+
+### 🔮 Prediction Markets
+
+```
+What are the top crypto prediction markets on Polymarket?
+```
+```
+Search for Bitcoin price predictions
+```
+```
+What's the current odds for ETH reaching $5000?
+```
+
+### 📊 Events & Logs
+
+```
+Get all Transfer events for USDC in the last 100 blocks on Ethereum
+```
+```
+Show me Approval events for my wallet address
+```
+```
+Decode this transaction log: 0x...
+```
+
+### ✍️ Signatures & Messages
+
+```
+Sign this message with my wallet: "Hello World"
+```
+```
+Verify this signature is from vitalik.eth
+```
+```
+Create an EIP-712 typed data signature for a permit
+```
+
+### 📦 Batch Operations (Multicall)
+
+```
+Get token balances for 10 different tokens in one call
+```
+```
+Read multiple contract values at once from Aave
+```
+```
+Batch check allowances for all my approved tokens
+```
+
 ---
 
 ## Local Development
@@ -419,10 +484,11 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 
 ### Legend
 - ✅ Implemented
-- 🚧 In Progress
+- 🚧 In Progress  
 - 📋 Planned
 
----
+<details>
+<summary><b>🔗 Core Blockchain Operations</b> (click to expand)</summary>
 
 ### 🔗 Core Blockchain Operations
 
@@ -496,7 +562,10 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Get wallet portfolio | ✅ |
 | Get token approvals | ✅ |
 
----
+</details>
+
+<details>
+<summary><b>💰 Token Operations</b> (click to expand)</summary>
 
 ### 💰 Token Operations
 
@@ -567,7 +636,10 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | ERC-404 (hybrid tokens) | 📋 |
 | Soulbound tokens (SBTs) | 📋 |
 
----
+</details>
+
+<details>
+<summary><b>🏦 DeFi - DEX, Lending, Staking, Derivatives</b> (click to expand)</summary>
 
 ### 🏦 DeFi - Decentralized Exchanges (DEX)
 
@@ -751,7 +823,10 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Get synthetic price feed | 📋 |
 | Liquidate synthetic positions | 📋 |
 
----
+</details>
+
+<details>
+<summary><b>🌉 Cross-Chain, Governance, Security, NFTs</b> (click to expand)</summary>
 
 ### 🌉 Cross-Chain & Bridges
 
@@ -1146,7 +1221,10 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Get daily active addresses | 📋 |
 | Get network hash rate | 📋 |
 
----
+</details>
+
+<details>
+<summary><b>🏛️ Institutional & Compliance</b> (click to expand)</summary>
 
 ### 🏛️ Institutional & Compliance
 
@@ -1173,6 +1251,8 @@ A comprehensive roadmap of all crypto/blockchain/DeFi/Web3 features to be implem
 | Portfolio tracking | ✅ |
 | P&L reporting | 📋 |
 | Transaction history export | 📋 |
+
+</details>
 
 ---
 

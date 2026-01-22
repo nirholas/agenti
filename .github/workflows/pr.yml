@@ -1,0 +1,231 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            
+            // Conventional commit format regex
+            const conventionalCommitRegex = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,72}$/;
+            
+            // Alternative format: [TYPE] Description
+            const bracketRegex = /^\[(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|breaking)\] .{1,72}$/i;
+            
+            if (!conventionalCommitRegex.test(title) && !bracketRegex.test(title)) {
+              core.setFailed(`PR title "${title}" does not match expected format.
+              
+            Expected formats:
+            - Conventional: type(scope): description
+            - Alternative: [TYPE] description
+            
+            Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+            
+            Examples:
+            - feat(evm): add support for Base chain
+            - fix: resolve connection timeout issue
+            - [FEAT] Add new trading module
+            - [FIX] Correct API response handling`);
+            } else {
+              console.log('✅ PR title is valid');
+            }
+
+  version-check:
+    name: Check Version Bump
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'main'
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Check for version changes
+        id: version
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            
+            // Get changed files
+            const changedFiles = execSync(
+              `git diff --name-only origin/${context.payload.pull_request.base.ref}...HEAD`
+            ).toString().trim().split('\n');
+            
+            // Check if package.json was modified
+            const packageJsonChanged = changedFiles.includes('package.json');
+            
+            // Check if CHANGELOG was updated
+            const changelogUpdated = changedFiles.some(f => 
+              f.toLowerCase().includes('changelog')
+            );
+            
+            // Check if this is a documentation-only change
+            const isDocsOnly = changedFiles.every(f => 
+              f.startsWith('docs/') || 
+              f.endsWith('.md') || 
+              f.startsWith('.github/')
+            );
+            
+            // Check if this is a CI/config-only change
+            const isConfigOnly = changedFiles.every(f =>
+              f.startsWith('.github/') ||
+              f.startsWith('.') ||
+              f === 'codecov.yml' ||
+              f === 'tsconfig.json' ||
+              f === 'vitest.config.ts'
+            );
+            
+            console.log('Changed files:', changedFiles);
+            console.log('Package.json changed:', packageJsonChanged);
+            console.log('Changelog updated:', changelogUpdated);
+            console.log('Is docs only:', isDocsOnly);
+            console.log('Is config only:', isConfigOnly);
+            
+            if (isDocsOnly || isConfigOnly) {
+              console.log('✅ Documentation or config-only changes, version bump not required');
+              return;
+            }
+            
+            // For non-docs changes, warn if no version bump (but don't fail)
+            if (!packageJsonChanged) {
+              core.warning('Consider updating the version in package.json for this change');
+            }
+            
+            if (!changelogUpdated) {
+              core.warning('Consider updating CHANGELOG.md to document this change');
+            }
+
+  add-labels:
+    name: Add Labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            return files.map(f => f.filename);
+
+      - name: Add labels based on files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const files = ${{ steps.changed-files.outputs.result }};
+            const labelsToAdd = new Set();
+            
+            // Define label rules
+            const labelRules = [
+              { pattern: /^src\/evm\//, label: 'evm' },
+              { pattern: /^src\/modules\//, label: 'modules' },
+              { pattern: /^src\/vendors\//, label: 'vendors' },
+              { pattern: /^src\/server\//, label: 'server' },
+              { pattern: /^packages\/binance/, label: 'binance' },
+              { pattern: /^docs\//, label: 'documentation' },
+              { pattern: /\.md$/, label: 'documentation' },
+              { pattern: /^\.github\//, label: 'ci' },
+              { pattern: /^tests\//, label: 'tests' },
+              { pattern: /\.test\.ts$/, label: 'tests' },
+              { pattern: /package\.json$/, label: 'dependencies' },
+              { pattern: /package-lock\.json$/, label: 'dependencies' },
+              { pattern: /tsconfig\.json$/, label: 'typescript' },
+              { pattern: /^src\/types\//, label: 'types' },
+            ];
+            
+            // Check size of PR
+            const additions = context.payload.pull_request.additions || 0;
+            const deletions = context.payload.pull_request.deletions || 0;
+            const totalChanges = additions + deletions;
+            
+            if (totalChanges < 10) {
+              labelsToAdd.add('size/xs');
+            } else if (totalChanges < 50) {
+              labelsToAdd.add('size/s');
+            } else if (totalChanges < 200) {
+              labelsToAdd.add('size/m');
+            } else if (totalChanges < 500) {
+              labelsToAdd.add('size/l');
+            } else {
+              labelsToAdd.add('size/xl');
+            }
+            
+            // Apply rules
+            for (const file of files) {
+              for (const rule of labelRules) {
+                if (rule.pattern.test(file)) {
+                  labelsToAdd.add(rule.label);
+                }
+              }
+            }
+            
+            if (labelsToAdd.size > 0) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  labels: Array.from(labelsToAdd)
+                });
+                console.log('Added labels:', Array.from(labelsToAdd).join(', '));
+              } catch (error) {
+                // Labels might not exist, that's okay
+                console.log('Could not add some labels:', error.message);
+              }
+            }
+
+  pr-size-warning:
+    name: PR Size Warning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const additions = context.payload.pull_request.additions || 0;
+            const deletions = context.payload.pull_request.deletions || 0;
+            const totalChanges = additions + deletions;
+            
+            if (totalChanges > 500) {
+              const body = `⚠️ **Large PR Warning**
+              
+            This PR has ${totalChanges} changes (${additions} additions, ${deletions} deletions).
+            
+            Consider breaking this into smaller PRs for easier review:
+            - Smaller PRs are reviewed faster
+            - Easier to catch bugs
+            - Simpler to revert if needed
+            
+            If this large change is necessary, please ensure:
+            - [ ] All changes are related to a single feature/fix
+            - [ ] Tests are comprehensive
+            - [ ] Documentation is updated`;
+            
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: body
+              });
+            }
