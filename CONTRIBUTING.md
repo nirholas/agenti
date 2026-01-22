@@ -1,76 +1,239 @@
 # Contributing to Universal Crypto MCP
 
-Thank you for your interest in contributing! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Universal Crypto MCP! This document provides comprehensive guidelines and instructions for contributing to the project.
+
+<p align="center">
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#development-workflow">Development</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#code-style">Code Style</a> •
+  <a href="#pull-request-process">Pull Requests</a>
+</p>
+
+---
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our Code of Conduct. Please be respectful and constructive in all interactions.
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please be respectful and constructive in all interactions.
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm 9+
-- Git
+- **Node.js** 18+ (LTS recommended)
+- **npm** 9+ or compatible package manager
+- **Git** 2.30+
+- A code editor (VS Code recommended with ESLint and Prettier extensions)
 
-### Setup
+### Development Environment Setup
 
-1. Fork the repository
-2. Clone your fork:
+1. **Fork the repository**
+   
+   Click the "Fork" button on [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+
+2. **Clone your fork**
    ```bash
    git clone https://github.com/YOUR_USERNAME/universal-crypto-mcp.git
    cd universal-crypto-mcp
    ```
-3. Install dependencies:
+
+3. **Add upstream remote**
+   ```bash
+   git remote add upstream https://github.com/nirholas/universal-crypto-mcp.git
+   ```
+
+4. **Install dependencies**
    ```bash
    npm install
    ```
-4. Create a branch for your changes:
+
+5. **Verify setup**
+   ```bash
+   npm run lint && npm test
+   ```
+
+6. **Create a branch for your changes**
    ```bash
    git checkout -b feat/your-feature-name
    ```
+
+### Environment Variables (Optional)
+
+Create a `.env` file for testing features that require API keys:
+
+```bash
+# Optional - for testing specific features
+COINGECKO_API_KEY=your_key
+PRIVATE_KEY=your_test_wallet_private_key  # Use a test wallet only!
+```
+
+---
 
 ## Development Workflow
 
 ### Running the Development Server
 
 ```bash
-# stdio mode (for Claude Desktop)
+# stdio mode (for Claude Desktop testing)
 npm run dev
 
-# HTTP mode (for ChatGPT)
+# HTTP mode (for ChatGPT testing)
 npm run dev:http
 
-# SSE mode (legacy)
+# SSE mode (legacy HTTP clients)
 npm run dev:sse
 ```
+
+### Project Structure
+
+```
+universal-crypto-mcp/
+├── src/
+│   ├── index.ts           # Entry point
+│   ├── cli.ts             # CLI handling
+│   ├── evm/               # EVM chain modules
+│   │   ├── modules/       # Feature modules (swap, bridge, etc.)
+│   │   └── services/      # Shared services
+│   ├── modules/           # Non-EVM feature modules
+│   ├── server/            # Server implementations (stdio, HTTP, SSE)
+│   ├── utils/             # Utility functions
+│   └── vendors/           # Third-party API integrations
+├── tests/
+│   ├── e2e/               # End-to-end tests
+│   ├── integration/       # Integration tests
+│   └── mocks/             # Test mocks and fixtures
+└── docs/                  # Documentation
+```
+
+---
+
+## Testing
+
+We use [Vitest](https://vitest.dev/) for testing. All new features must include tests.
 
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all unit tests
 npm test
 
-# Run tests in watch mode
+# Run tests in watch mode (recommended during development)
 npm run test:watch
 
-# Run tests with coverage
+# Run tests with coverage report
 npm run test:coverage
+
+# Run end-to-end tests
+npm run test:e2e
+
+# Open interactive test UI
+npm run test:ui
 ```
 
-### Code Quality
+### MCP Inspector
+
+Test your tools interactively:
 
 ```bash
-# Type check
+npm run test:inspector
+```
+
+This opens a browser UI where you can test tool execution with custom parameters.
+
+### Writing Tests
+
+- Place unit tests alongside source files: `module.ts` → `module.test.ts`
+- Place integration tests in `tests/integration/`
+- Place E2E tests in `tests/e2e/`
+
+### Test Coverage Requirements
+
+- Aim for **80%+ coverage** for new code
+- Critical paths (security, transactions) require **90%+ coverage**
+- Run `npm run test:coverage` to check coverage
+
+---
+
+## Code Style
+
+We use **Prettier** for formatting and **ESLint** for linting with TypeScript strict mode.
+
+### Code Quality Commands
+
+```bash
+# Check TypeScript types and run ESLint
 npm run lint
 
-# Format code
+# Run ESLint only
+npm run lint:eslint
+
+# Fix auto-fixable ESLint issues
+npm run lint:fix
+
+# Format code with Prettier
 npm run format
 
-# Run all checks (CI simulation)
+# Check formatting without making changes
+npm run format:check
+
+# Run all checks (simulates CI)
 npm run ci
 ```
+
+### Style Guidelines
+
+1. **TypeScript**
+   - Use strict TypeScript (`strict: true`)
+   - Prefer explicit types over `any`
+   - Use Zod schemas for runtime validation
+
+2. **Naming Conventions**
+   - Files: `kebab-case.ts`
+   - Functions/variables: `camelCase`
+   - Types/interfaces: `PascalCase`
+   - Constants: `SCREAMING_SNAKE_CASE`
+
+3. **Imports**
+   - Use path aliases (`@/utils/helper` instead of relative paths)
+   - Group imports: external → internal → types
+
+4. **Comments**
+   - Write JSDoc for public APIs
+   - Use `// TODO:` for future improvements
+   - Explain "why", not "what"
+
+### Editor Setup
+
+**VS Code** (recommended):
+```json
+// .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
+```
+
+Install extensions:
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+
+---
+
+## Pre-Submit Checklist
+
+Before submitting a PR, ensure:
+
+- [ ] `npm run lint` passes with no errors
+- [ ] `npm test` passes all tests
+- [ ] `npm run test:coverage` shows adequate coverage
+- [ ] `npm run build` succeeds
+- [ ] Documentation is updated if needed
+- [ ] Commit messages follow conventions
 
 ## Commit Guidelines
 
@@ -211,11 +374,60 @@ describe("Your Module Tools", () => {
 - Fall back to public endpoints when possible
 - Document required API keys clearly
 
-## Questions?
+---
 
-- Open a [GitHub Discussion](https://github.com/nirholas/universal-crypto-mcp/discussions)
-- Create an [Issue](https://github.com/nirholas/universal-crypto-mcp/issues)
+## Types of Contributions
+
+### 🐛 Bug Reports
+
+Found a bug? Please [open an issue](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=bug_report.yml) with:
+- Clear description of the bug
+- Steps to reproduce
+- Expected vs actual behavior
+- Environment details (Node.js version, OS, etc.)
+
+### 💡 Feature Requests
+
+Have an idea? [Request a feature](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=feature_request.yml) with:
+- Clear description of the feature
+- Use case and benefits
+- Potential implementation approach
+
+### 📖 Documentation
+
+Documentation improvements are always welcome:
+- Fix typos or clarify existing docs
+- Add examples and tutorials
+- Improve API documentation
+- Translate documentation
+
+### 🔧 Code Contributions
+
+We welcome code contributions of all sizes:
+- Bug fixes
+- New MCP tools
+- Performance improvements
+- Test coverage improvements
+
+---
+
+## Getting Help
+
+- 💬 [GitHub Discussions](https://github.com/nirholas/universal-crypto-mcp/discussions) - Questions and discussions
+- 🐛 [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues) - Bug reports and feature requests
+- 📖 [Documentation](https://universal-crypto-mcp.vercel.app) - Full documentation
+
+---
+
+## Recognition
+
+Contributors are recognized in:
+- The project's GitHub contributors page
+- Release notes for significant contributions
+- Our documentation (for major features)
+
+---
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the Apache License 2.0.
+By contributing, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).

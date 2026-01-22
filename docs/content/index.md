@@ -1,47 +1,74 @@
 # Universal Crypto MCP
 
-> **A Universal Model Context Protocol server for all EVM-compatible networks.**
+<p align="center">
+  <strong>🚀 330+ blockchain tools for AI agents</strong><br>
+  Connect Claude, ChatGPT, and Cursor to 15+ EVM chains
+</p>
 
-Enable AI agents to interact with any EVM blockchain through natural language. Supports BSC, opBNB, Arbitrum, Ethereum, Polygon, Base, Optimism, and more.
-
-**Supported Networks:**
-
-- **BNB Smart Chain (BSC)**
-- **opBNB** - Layer 2 for BNB Chain
-- **Arbitrum One**
-- **Ethereum**
-- **Polygon**
-- **Base**
-- **Optimism**
-- **+ All testnets**
+<p align="center">
+  <a href="https://github.com/nirholas/universal-crypto-mcp">GitHub</a> •
+  <a href="mcp-server/quickstart.md">Quick Start</a> •
+  <a href="tutorials/index.md">Tutorials</a> •
+  <a href="prompts/index.md">Prompts</a>
+</p>
 
 ---
 
-## 📚 Documentation Sections
+## What is Universal Crypto MCP?
+
+Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants interact with blockchain networks through natural language.
+
+**Instead of:**
+- Switching between 10 block explorers
+- Connecting to multiple dApps
+- Manual copy-pasting addresses
+
+**Just ask:**
+> "Check my portfolio across all chains"
+> "Swap 1 ETH to USDC on Arbitrum"
+> "Is this token safe to buy?"
+
+---
+
+## Supported Networks
+
+<div class="grid" markdown>
+
+| Layer 1 | Layer 2 | Alt Chains |
+|---------|---------|------------|
+| Ethereum | Arbitrum One | Solana |
+| BNB Chain | Base | TON |
+| Avalanche | Optimism | XRP Ledger |
+| Fantom | Polygon | |
+| | zkSync Era | |
+| | Linea | |
+| | Scroll | |
+| | Blast | |
+| | Mode | |
+| | Mantle | |
+| | opBNB | |
+
+</div>
+
+---
+
+## Key Features
 
 <div class="grid cards" markdown>
 
--   :material-robot:{ .lg .middle } **MCP Server**
+-   :material-swap-horizontal:{ .lg .middle } **DeFi Operations**
 
     ---
 
-    Tools, resources, and setup for AI agents
+    Swaps via 1inch, ParaSwap • Lending on Aave, Compound • Staking • Yield farming
 
-    [:octicons-arrow-right-24: MCP Documentation](mcp-server/index.md)
+    [:octicons-arrow-right-24: DeFi Tools](mcp-server/tools.md)
 
--   :material-swap-horizontal:{ .lg .middle } **Swap/DEX**
-
-    ---
-
-    Token swaps via DEX aggregators
-
-    [:octicons-arrow-right-24: Swap Tools](mcp-server/tools.md)
-
--   :material-bridge:{ .lg .middle } **Bridge**
+-   :material-bridge:{ .lg .middle } **Cross-Chain**
 
     ---
 
-    Cross-chain transfers
+    Bridge quotes • Multi-hop routing • 15+ chain support
 
     [:octicons-arrow-right-24: Bridge Tools](mcp-server/tools.md)
 
@@ -49,107 +76,141 @@ Enable AI agents to interact with any EVM blockchain through natural language. S
 
     ---
 
-    Token safety & contract verification
+    Honeypot detection • Rug pull scanning • Contract analysis
 
     [:octicons-arrow-right-24: Security Tools](mcp-server/tools.md)
+
+-   :material-chart-line:{ .lg .middle } **Market Data**
+
+    ---
+
+    Prices • Technical indicators • Fear & Greed • Sentiment
+
+    [:octicons-arrow-right-24: Market Tools](mcp-server/tools.md)
 
 </div>
 
 ---
 
-## Features
-
-🔄 **Swap/DEX** - Get quotes, execute swaps, add/remove liquidity, arbitrage detection
-
-🌉 **Bridge** - Cross-chain transfers via LayerZero, Stargate, Wormhole, Across
-
-⛽ **Gas** - Gas prices across chains, EIP-1559 suggestions, cost estimation
-
-📦 **Multicall** - Batch read/write operations, multi-token balances
-
-📊 **Events/Logs** - Query historical events, decode logs, filter by topic
-
-🔒 **Security** - Rug pull detection, honeypot analysis, contract permissions, holder distribution
-
-💰 **Staking** - Liquid staking (Lido stETH/wstETH), LP farming, reward claiming
-
-✍️ **Signatures** - Sign messages, verify signatures, EIP-712 typed data
-
-🏦 **Lending** - Aave/Compound: supply, borrow, repay, flash loans, liquidations
-
-📈 **Price Feeds** - Historical prices, TWAP, Chainlink oracles
-
-📁 **Portfolio** - Track holdings across chains
-
-🏛️ **Governance** - Create proposals, vote, delegate, queue/execute proposals
-
-🎨 **NFTs** - Marketplace approvals, batch transfers, metadata fetching
-
-🆔 **ENS** - Register domains, set records, create subdomains, transfers
-
-🛡️ **MEV Protection** - Private transactions via Flashbots, MEV exposure analysis
-
-📜 **Contracts** - Deploy, CREATE2, proxy deployment, upgrades, verification
-
-📰 **News** - Latest crypto news, DeFi updates, Bitcoin news
-
-📁 **Portfolio** - Track holdings across chains
-
-🏛️ **Governance** - Snapshot votes, on-chain proposals
-
----
-
 ## Quick Start
 
-### Claude Desktop
+### 1. Clone & Build
 
-Add to your `claude_desktop_config.json`:
+```bash
+git clone https://github.com/nirholas/universal-crypto-mcp.git
+cd universal-crypto-mcp
+npm install && npm run build
+```
+
+### 2. Configure Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "universal-crypto-mcp": {
-      "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "command": "node",
+      "args": ["/path/to/universal-crypto-mcp/dist/index.js"],
       "env": {
-        "PRIVATE_KEY": "your_private_key_here (optional)"
+        "ALCHEMY_API_KEY": "your_key"
       }
     }
   }
 }
 ```
 
-### Cursor
+### 3. Start Chatting!
 
-Add to your MCP settings:
-
-```json
-{
-  "mcpServers": {
-    "universal-crypto-mcp": {
-      "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
-      "env": {
-        "PRIVATE_KEY": "your_private_key_here (optional)"
-      }
-    }
-  }
-}
+```
+"What's my ETH balance on Arbitrum?"
+"Get a swap quote for 100 USDC to ETH on Base"
+"Scan this token for security risks: 0x..."
 ```
 
----
-
-## Links
-
-- 🐦 [Twitter](https://x.com/nichxbt)
-- 💻 [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+[:octicons-arrow-right-24: Full Setup Guide](mcp-server/quickstart.md)
 
 ---
 
-## Credits
+## Example Prompts
 
-Built by **[nich](https://x.com/nichxbt)** ([:material-github: nirholas](https://github.com/nirholas))
+| Category | Prompt |
+|----------|--------|
+| **Portfolio** | "Check my wallet balance across all chains" |
+| **Trading** | "Swap 1 ETH to USDC on Arbitrum with 0.5% slippage" |
+| **DeFi** | "What's my Aave health factor on Ethereum?" |
+| **Security** | "Is this token a honeypot? 0x1234..." |
+| **Research** | "Compare USDC lending rates across Aave and Compound" |
+| **Bridges** | "Best route to bridge 100 USDC from Ethereum to Base" |
 
-**Related Projects:**
+[:octicons-arrow-right-24: 100+ Example Prompts](prompts/index.md)
 
-- [sperax-crypto-mcp](https://github.com/nirholas/sperax-crypto-mcp) - Sperax Protocol MCP
+---
+
+## Documentation
+
+<div class="grid cards" markdown>
+
+-   :material-rocket-launch:{ .lg .middle } **Tutorials**
+
+    ---
+
+    Step-by-step guides for common workflows
+
+    [:octicons-arrow-right-24: View Tutorials](tutorials/index.md)
+
+-   :material-book-open-variant:{ .lg .middle } **API Reference**
+
+    ---
+
+    Complete tool documentation
+
+    [:octicons-arrow-right-24: API Docs](mcp-server/tools-complete.md)
+
+-   :material-cog:{ .lg .middle } **Configuration**
+
+    ---
+
+    Environment variables and setup
+
+    [:octicons-arrow-right-24: Config Guide](mcp-server/configuration.md)
+
+-   :material-frequently-asked-questions:{ .lg .middle } **FAQ**
+
+    ---
+
+    Common questions answered
+
+    [:octicons-arrow-right-24: FAQ](faq.md)
+
+</div>
+
+---
+
+## Why Universal Crypto MCP?
+
+| Feature | Universal Crypto MCP | Others |
+|---------|---------------------|--------|
+| Chains | **15+** | 3-5 |
+| Tools | **330+** | 20-50 |
+| DeFi | ✅ Full stack | Limited |
+| Security | ✅ Built-in | ❌ |
+| Open Source | ✅ Apache 2.0 | Varies |
+
+[:octicons-arrow-right-24: Full Comparison](comparison.md)
+
+---
+
+## Community
+
+- 🐦 **Twitter:** [@nichxbt](https://x.com/nichxbt)
+- 💻 **GitHub:** [nirholas/universal-crypto-mcp](https://github.com/nirholas/universal-crypto-mcp)
+- ⭐ **Star the repo** if you find it useful!
+
+---
+
+## License
+
+Apache 2.0 - Free for personal and commercial use.
+
+Built by **[Nich](https://x.com/nichxbt)** • [:material-github: nirholas](https://github.com/nirholas)

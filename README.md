@@ -14,6 +14,10 @@
 <p align="center">
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-Compatible-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyek0xMiAyMGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6Ii8+PC9zdmc+" alt="MCP Compatible"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js 18+"></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/nirholas/universal-crypto-mcp/stargazers"><img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars"></a>
   <a href="https://github.com/nirholas/universal-crypto-mcp/issues"><img src="https://img.shields.io/github/issues/nirholas/universal-crypto-mcp?style=for-the-badge&color=orange" alt="Issues"></a>
 </p>
@@ -414,6 +418,72 @@ Batch check allowances for all my approved tokens
 
 ---
 
+## 🧪 Testing
+
+We use [Vitest](https://vitest.dev/) as our testing framework with comprehensive test coverage.
+
+### Running Tests
+
+```bash
+# Run all unit tests
+npm test
+
+# Run tests in watch mode (re-runs on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run E2E tests (requires network access)
+npm run test:e2e
+
+# Run E2E tests in watch mode
+npm run test:e2e:watch
+
+# Open interactive test UI
+npm run test:ui
+```
+
+### MCP Inspector
+
+Test your MCP tools interactively using the official [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
+
+```bash
+npm run test:inspector
+```
+
+This opens a browser-based UI where you can:
+- Browse all available tools and prompts
+- Test tool execution with custom parameters
+- View tool responses and debug issues
+- Validate your MCP server implementation
+
+### Test Structure
+
+```
+tests/
+├── setup.ts              # Global test setup
+├── e2e/                  # End-to-end tests
+│   ├── evm-tools.e2e.test.ts
+│   └── market-data.e2e.test.ts
+├── integration/          # Integration tests
+│   ├── evm-tools.test.ts
+│   └── multichain.test.ts
+└── mocks/                # Test mocks and fixtures
+
+src/
+├── evm/
+│   ├── chains.test.ts    # Unit tests alongside source
+│   └── modules/
+│       └── */tools.test.ts
+└── utils/
+    ├── errors.test.ts
+    ├── helper.test.ts
+    └── validation.test.ts
+```
+
+---
+
 ## Local Development
 
 ```bash
@@ -422,16 +492,16 @@ git clone https://github.com/nirholas/universal-crypto-mcp
 cd universal-crypto-mcp
 
 # Install
-bun install
+npm install
 
 # Run dev server (stdio - Claude)
-bun dev
+npm run dev
 
 # Run dev server (HTTP - ChatGPT)
-bun dev:http
+npm run dev:http
 
 # Run dev server (SSE - legacy)
-bun dev:sse
+npm run dev:sse
 ```
 
 ---
@@ -1356,11 +1426,49 @@ Universal Crypto MCP is used by developers and teams building:
 
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions of all kinds! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Quick Start for Contributors
+
+```bash
+# Fork and clone the repo
+git clone https://github.com/YOUR_USERNAME/universal-crypto-mcp.git
+cd universal-crypto-mcp
+
+# Install dependencies
+npm install
+
+# Create a feature branch
+git checkout -b feat/your-feature
+
+# Make your changes, then run checks
+npm run lint          # Check code style
+npm test              # Run tests
+npm run test:coverage # Check coverage
+
+# Commit with conventional commits
+git commit -m "feat(module): add new feature"
+
+# Push and create a PR
+git push origin feat/your-feature
+```
+
+### Code Style
+
+We use **Prettier** for formatting and **ESLint** for linting:
+
+```bash
+npm run format    # Format code
+npm run lint      # Check types and lint
+npm run lint:fix  # Auto-fix issues
+```
+
+### Ways to Contribute
 
 - 🐛 [Report bugs](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=bug_report.yml)
 - 💡 [Request features](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=feature_request.yml)
 - 📖 [Improve docs](https://github.com/nirholas/universal-crypto-mcp/edit/main/README.md)
+- 🔧 Submit pull requests
 - ⭐ [Star the repo](https://github.com/nirholas/universal-crypto-mcp/stargazers)
 
 ---
