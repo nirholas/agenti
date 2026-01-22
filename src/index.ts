@@ -1,10 +1,12 @@
-/**
- * @author Nich
- * @website x.com/nichxbt
- * @github github.com/nirholas
- * @license MIT
- */
 #!/usr/bin/env node
+/**
+ * Universal Crypto MCP Server - Main entry point
+ * 
+ * @author nich
+ * @website https://x.com/nichxbt
+ * @github https://github.com/nirholas
+ * @license Apache-2.0
+ */
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp"
 
 import { startHTTPServer } from "./server/http"

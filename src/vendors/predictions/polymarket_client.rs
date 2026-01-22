@@ -1,3 +1,10 @@
+//! Polymarket API client
+//!
+//! @author nich
+//! @website https://x.com/nichxbt
+//! @github https://github.com/nirholas
+//! @license Apache-2.0
+
 use crate::config::Config;
 use crate::error::{PolymarketError, Result};
 use crate::models::*;

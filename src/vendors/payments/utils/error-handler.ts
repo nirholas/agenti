@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 // Error handling middleware with HTTP status mapping and structured error responses
 

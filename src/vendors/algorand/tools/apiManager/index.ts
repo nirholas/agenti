@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { algodTools, handleAlgodTools } from './algod/index.js';
 import { indexerTools, handleIndexerTools } from './indexer/index.js';

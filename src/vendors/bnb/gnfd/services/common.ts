@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { BaseAccount } from "@bnb-chain/greenfield-cosmos-types/cosmos/auth/v1beta1/auth"
 import { type TxResponse } from "@bnb-chain/greenfield-js-sdk"

@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 // MCP tool for querying payment status by identifier
 

@@ -103,6 +103,20 @@ src/tools/binance-spot/a.sh
 a.sh
 src/tools/binance-spot/a.txt
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# Rust
+target/
+**/*.rs.bk
+
 # Service Worker / Serwist
 public/sw*
 public/swe-worker*

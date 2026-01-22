@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hex } from "viem"
@@ -31,9 +31,9 @@ import {
 import { generateMnemonic, mnemonicToAccount, privateKeyToAccount, english, signMessage } from "viem/accounts"
 import { z } from "zod"
 
-import { getPublicClient } from "@/services/clients.js"
+import { getPublicClient } from "@/evm/services/clients.js"
 import { mcpToolRes } from "@/utils/helper.js"
-import { defaultNetworkParam } from "../common/types.js"
+import { defaultNetworkParam } from "@/evm/modules/common/types.js"
 
 export function registerUtilityTools(server: McpServer) {
   // Keccak256 hash

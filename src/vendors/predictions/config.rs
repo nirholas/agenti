@@ -1,3 +1,10 @@
+//! Configuration module
+//!
+//! @author nich
+//! @website https://x.com/nichxbt
+//! @github https://github.com/nirholas
+//! @license Apache-2.0
+
 use anyhow::{Context, Result};
 use config::{Config as ConfigBuilder, File};
 use serde::{Deserialize, Serialize};

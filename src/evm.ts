@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
@@ -37,6 +37,22 @@ import { registerMarketData } from "@/modules/market-data/index.js"
 import { registerNews } from "@/modules/news/index.js"
 import { registerSocial } from "@/modules/social/index.js"
 import { registerUtils } from "@/modules/utils/index.js"
+
+// Import new modules (from web3-mcp integration)
+import { registerCoinGecko } from "@/modules/coingecko/index.js"
+import { registerRubic } from "@/modules/rubic/index.js"
+
+// Import new modules (technical indicators, screeners, research)
+import { registerIndicators } from "@/modules/indicators/index.js"
+import { registerTradingView } from "@/modules/tradingview/index.js"
+import { registerResearch } from "@/modules/research/index.js"
+
+// Import non-EVM chain vendors (from web3-mcp integration)
+import { registerSolana } from "@/vendors/solana/index.js"
+import { registerUTXOChains } from "@/vendors/utxo/index.js"
+import { registerRipple } from "@/vendors/ripple/index.js"
+import { registerTon } from "@/vendors/ton/index.js"
+import { registerThorchain } from "@/vendors/thorchain/index.js"
 
 /**
  * Register all EVM modules with the MCP server
@@ -85,4 +101,24 @@ export function registerEVM(server: McpServer) {
   registerDexAnalytics(server)
   registerMarketData(server)
   registerSocial(server)
+
+  // New modules from web3-mcp integration
+  registerCoinGecko(server)
+  registerRubic(server)
+
+  // Technical indicators & strategies (50+ indicators)
+  registerIndicators(server)
+
+  // TradingView-style screeners
+  registerTradingView(server)
+
+  // Research tools
+  registerResearch(server)
+
+  // Non-EVM chain modules from web3-mcp integration
+  registerSolana(server)
+  registerUTXOChains(server) // Bitcoin, Litecoin, Dogecoin
+  registerRipple(server)
+  registerTon(server)
+  registerThorchain(server)
 }

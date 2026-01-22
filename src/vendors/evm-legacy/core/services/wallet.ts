@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { type Address, type Hex } from 'viem';
 import { privateKeyToAccount, mnemonicToAccount, type HDAccount, type PrivateKeyAccount } from 'viem/accounts';

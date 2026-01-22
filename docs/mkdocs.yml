@@ -1,7 +1,18 @@
 site_name: Universal Crypto MCP
 site_url: https://universal-crypto-mcp.vercel.app
-site_description: Universal MCP server for all EVM-compatible networks
+site_description: Universal MCP server enabling AI agents (Claude, ChatGPT, Cursor) to interact with 15+ EVM blockchains including Ethereum, Arbitrum, Polygon, Base, Optimism, and BNB Chain via natural language
 site_author: nich
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/universal-crypto-mcp
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@nirholas/universal-crypto-mcp
+  generator: false
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
 
 repo_name: nirholas/universal-crypto-mcp
 repo_url: https://github.com/nirholas/universal-crypto-mcp
@@ -46,7 +57,11 @@ extra_css:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -74,12 +89,27 @@ nav:
   - Home: index.md
   - MCP Server:
     - Overview: mcp-server/index.md
+    - Quick Start: mcp-server/quickstart.md
+    - Configuration: mcp-server/configuration.md
+    - API Reference: mcp-server/api-reference.md
+    - Real Examples: mcp-server/examples.md
     - Tools Reference: mcp-server/tools.md
+    - Complete Tools List: mcp-server/tools-complete.md
     - Extended Tools: mcp-server/tools-extended.md
+    - Modules:
+      - Overview: mcp-server/modules/index.md
+      - EVM Modules: mcp-server/modules/evm/index.md
+      - Data & Analytics: mcp-server/modules/data/index.md
+      - Multi-Chain: mcp-server/modules/chains/index.md
+      - Trading Strategies: mcp-server/modules/strategies.md
+    - Architecture: mcp-server/architecture.md
     - Universal EVM: mcp-server/universal-evm.md
     - EVM Module: mcp-server/evm-module.md
     - Resources & Prompts: mcp-server/resources-prompts.md
+    - Troubleshooting: mcp-server/troubleshooting.md
+    - Resources & Learning: mcp-server/resources.md
     - Development: mcp-server/development.md
     - ChatGPT Setup: mcp-server/chatgpt-setup.md
+    - Binance Servers: mcp-server/binance.md
   - Contributing:
     - Subtree Sync: contributing/subtree-sync.md

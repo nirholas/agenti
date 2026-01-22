@@ -1,8 +1,53 @@
 # Universal Crypto MCP
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/v/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/dm/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads"></a>
+  <a href="https://github.com/nirholas/universal-crypto-mcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nirholas/universal-crypto-mcp/ci.yml?style=for-the-badge&logo=github-actions&label=CI" alt="CI Status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge" alt="License: Apache 2.0"></a>
+</p>
+
+<p align="center">
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-Compatible-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyek0xMiAyMGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6Ii8+PC9zdmc+" alt="MCP Compatible"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
+  <a href="https://github.com/nirholas/universal-crypto-mcp/stargazers"><img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars"></a>
+  <a href="https://github.com/nirholas/universal-crypto-mcp/issues"><img src="https://img.shields.io/github/issues/nirholas/universal-crypto-mcp?style=for-the-badge&color=orange" alt="Issues"></a>
+</p>
+
+<p align="center">
+  <img src=".github/demo.svg" alt="Universal Crypto MCP Demo" width="800">
+</p>
+
+> ⭐ **If you find this useful, please star the repo!** It helps others discover this project.
+
+<p align="center">
+  <a href="https://discord.gg/your-discord"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://x.com/nichxbt"><img src="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"></a>
+  <a href="https://github.com/sponsors/nirholas"><img src="https://img.shields.io/badge/Sponsor-💖-EA4AAA?style=for-the-badge" alt="Sponsor"></a>
+</p>
+
+---
+
 A Universal Model Context Protocol server for all EVM-compatible networks.
 
-Enable AI agents to interact with any EVM blockchain through natural language.
+Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain through natural language.
+
+## 🆚 Why Universal Crypto MCP?
+
+| Feature | Universal Crypto MCP | Other MCP Servers |
+|---------|---------------------|-------------------|
+| **Tools** | 500+ tools | 10-50 tools |
+| **Chains** | 15+ EVM chains | 1-3 chains |
+| **DEX Support** | Multi-aggregator (1inch, 0x, ParaSwap) | Single DEX or none |
+| **Security** | GoPlus, honeypot, rug pull detection | Basic or none |
+| **DeFi** | Aave, Compound, Lido, Uniswap | Limited |
+| **Market Data** | CoinGecko, DefiLlama, LunarCrush | Basic prices |
+| **Bridges** | LayerZero, Stargate, Wormhole | None |
+| **MEV Protection** | Flashbots integration | None |
+| **Transport** | stdio, HTTP, SSE | Usually only stdio |
+| **ChatGPT Support** | ✅ Native HTTP mode | ❌ Most don't |
+
+---
 
 ## Supported Networks
 
@@ -96,6 +141,209 @@ For detailed setup instructions, see [ChatGPT Setup Guide](https://universal-cry
 | HTTP | `npx @nirholas/universal-crypto-mcp --http` | ChatGPT Developer Mode |
 | SSE | `npx @nirholas/universal-crypto-mcp --sse` | Legacy HTTP clients |
 
+---
+
+## 💬 Example Prompts (Copy & Paste!)
+
+Real prompts you can use with Claude, ChatGPT, or Cursor. Just copy and paste!
+
+### 🔄 Token Swaps
+
+```
+Swap 0.1 ETH for USDC on Arbitrum
+```
+```
+Get me a quote to swap 100 USDC to WBTC on Base
+```
+```
+What's the best rate to swap 500 DAI to ETH across all DEXs on Ethereum?
+```
+
+### 📊 Market Data & Prices
+
+```
+What's the current price of Bitcoin and Ethereum in USD?
+```
+```
+Show me the top 10 trending coins on CoinGecko right now
+```
+```
+Get the 7-day OHLCV data for Solana
+```
+```
+What's the market cap and 24h volume of BNB?
+```
+```
+Show me the price of token 0xdAC17F958D2ee523a2206206994597C13D831ec7 on Ethereum
+```
+
+### 🌐 DeFi Analytics (DefiLlama)
+
+```
+What's the total TVL of Aave across all chains?
+```
+```
+Show me the top 10 protocols by TVL
+```
+```
+What are the best yield opportunities for stablecoins right now?
+```
+```
+How much volume did bridges process in the last 24 hours?
+```
+```
+Show me the TVL history of Uniswap over the last 30 days
+```
+
+### 📈 DEX Analytics
+
+```
+Show me the top trending pools on Uniswap V3
+```
+```
+Get the most traded tokens on Base in the last 24 hours
+```
+```
+Find all liquidity pools for PEPE on Ethereum
+```
+```
+What's the price and liquidity of the ETH/USDC pool on Aerodrome?
+```
+
+### 🔒 Security Checks
+
+```
+Is this token safe? 0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE (SHIB)
+```
+```
+Check if this token is a honeypot: 0x... on BSC
+```
+```
+Scan my wallet for risky approvals: 0xYourAddress
+```
+```
+Is this dApp URL safe to connect to? https://suspicious-site.xyz
+```
+
+### 💰 Staking & Lending
+
+```
+What's the current staking APY for ETH on Lido?
+```
+```
+Show me Aave lending rates for USDC on Arbitrum
+```
+```
+What's my health factor on Aave if I borrow 1000 USDC against 2 ETH?
+```
+
+### 🌉 Cross-Chain Bridges
+
+```
+Bridge 100 USDC from Ethereum to Arbitrum
+```
+```
+What's the cheapest way to bridge ETH from mainnet to Base?
+```
+```
+Get a bridge quote for 0.5 ETH from Polygon to Optimism
+```
+
+### ⛽ Gas & Network
+
+```
+What's the current gas price on Ethereum?
+```
+```
+Get EIP-1559 gas fees for all supported chains
+```
+```
+Is it cheap to transact on Arbitrum right now?
+```
+
+### 🏛️ Governance
+
+```
+Show me active proposals on Uniswap
+```
+```
+What's my voting power on Compound?
+```
+```
+Get the results of the latest Aave governance vote
+```
+
+### 💬 Social Sentiment (LunarCrush)
+
+```
+What's the social sentiment for Bitcoin right now?
+```
+```
+Show me the top crypto influencers on social media
+```
+```
+What tokens are trending on Twitter/X today?
+```
+```
+Get the Galaxy Score for Ethereum
+```
+
+### 🆔 ENS Domains
+
+```
+Resolve vitalik.eth to an address
+```
+```
+Who owns the ENS domain "ethereum.eth"?
+```
+```
+Register the domain mycoolname.eth for 1 year
+```
+
+### 📰 Crypto News
+
+```
+Get the latest crypto news
+```
+```
+Search news about Bitcoin ETF
+```
+```
+What's the breaking news in DeFi?
+```
+
+### 📁 Portfolio & Wallet
+
+```
+Show my token balances on Ethereum: 0xYourAddress
+```
+```
+Get all NFTs owned by vitalik.eth
+```
+```
+What approvals have I granted from my wallet?
+```
+```
+Track my portfolio across all EVM chains
+```
+
+### 🚀 Advanced Operations
+
+```
+Deploy a new ERC-20 token called "MyToken" (MTK) with 1 million supply on Base
+```
+```
+Submit this transaction privately via Flashbots to avoid MEV
+```
+```
+Encode a call to the transfer function for 100 USDC
+```
+```
+Simulate this transaction before executing: 0x...
+```
+
+---
+
 ## Local Development
 
 ```bash
@@ -115,6 +363,49 @@ bun dev:http
 # Run dev server (SSE - legacy)
 bun dev:sse
 ```
+
+---
+
+## ⚙️ Environment Variables
+
+Configure optional API keys for enhanced features. Create a `.env` file:
+
+```bash
+# Required for write operations (swaps, transfers, etc.)
+PRIVATE_KEY=your_private_key_here
+
+# Market Data (optional - has free tier)
+COINGECKO_API_KEY=your_key        # https://coingecko.com/api
+COINSTATS_API_KEY=your_key        # https://coinstats.app
+
+# Social Sentiment (optional)
+LUNARCRUSH_API_KEY=your_key       # https://lunarcrush.com/developers
+
+# News (optional)
+CRYPTOPANIC_API_KEY=your_key      # https://cryptopanic.com/developers
+
+# Cross-chain Swaps (optional)
+RUBIC_API_KEY=your_key            # https://rubic.exchange
+
+# Custom RPC endpoints (optional - uses public RPCs by default)
+ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_KEY
+ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+BASE_RPC_URL=https://mainnet.base.org
+```
+
+### What Works Without API Keys
+
+| Feature | Without API Key | With API Key |
+|---------|-----------------|--------------|
+| Token prices | ✅ CoinGecko free tier | ✅ Higher rate limits |
+| DeFi analytics | ✅ DefiLlama (free) | - |
+| Security checks | ✅ GoPlus (free) | - |
+| DEX analytics | ✅ GeckoTerminal (free) | - |
+| Social sentiment | ❌ | ✅ LunarCrush |
+| Crypto news | ❌ | ✅ CryptoPanic |
+| Cross-chain swaps | ✅ Basic | ✅ Best routes |
+
+---
 
 ## Documentation
 
@@ -961,6 +1252,47 @@ US-regulated exchange with:
 
 Built by **[nich](https://x.com/nichxbt)** ([github.com/nirholas](https://github.com/nirholas))
 
-## License
+---
 
-MIT
+## 🏢 Who's Using This?
+
+Universal Crypto MCP is used by developers and teams building:
+
+- 🤖 **AI Trading Bots** - Automated portfolio management
+- 📊 **Analytics Dashboards** - DeFi monitoring tools
+- 🔒 **Security Auditors** - Token vetting workflows
+- 🏦 **DeFi Applications** - Cross-chain operations
+- 📱 **Mobile Apps** - Crypto portfolio trackers
+- 🎓 **Educational Tools** - Blockchain learning platforms
+
+> **Using Universal Crypto MCP?** [Let us know!](https://github.com/nirholas/universal-crypto-mcp/issues/new?title=Add%20my%20project%20to%20Who's%20Using%20This) We'd love to feature your project.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+- 🐛 [Report bugs](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=bug_report.yml)
+- 💡 [Request features](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=feature_request.yml)
+- 📖 [Improve docs](https://github.com/nirholas/universal-crypto-mcp/edit/main/README.md)
+- ⭐ [Star the repo](https://github.com/nirholas/universal-crypto-mcp/stargazers)
+
+---
+
+## 📜 License
+
+Apache-2.0 © [nich](https://github.com/nirholas)
+
+---
+
+<p align="center">
+  <b>Stop copy-pasting blockchain queries. Let AI do it.</b><br>
+  <sub>Made with 💜 for the crypto community</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/nirholas/universal-crypto-mcp/stargazers">
+    <img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=social" alt="Star on GitHub">
+  </a>
+</p>

@@ -1,5 +1,10 @@
 //! CLI module for universal-crypto-mcp
 //!
+//! @author nich
+//! @website https://x.com/nichxbt
+//! @github https://github.com/nirholas
+//! @license Apache-2.0
+//!
 //! Provides command-line interface for all MCP tools, allowing direct
 //! invocation without running the MCP server.
 

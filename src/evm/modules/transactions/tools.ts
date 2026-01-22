@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hash, Hex } from "viem"
@@ -10,7 +10,7 @@ import { parseGwei } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { z } from "zod"
 
-import { getPublicClient, getWalletClient } from "@/services/clients.js"
+import { getPublicClient, getWalletClient } from "@/evm/services/clients.js"
 import * as services from "@/evm/services/index.js"
 import { mcpToolRes } from "@/utils/helper"
 import { defaultNetworkParam, privateKeyParam } from "../common/types"

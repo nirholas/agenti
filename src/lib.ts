@@ -1,8 +1,10 @@
 /**
- * @author Nich
- * @website x.com/nichxbt
- * @github github.com/nirholas
- * @license MIT
+ * Library entry point - exports for use as a dependency
+ * 
+ * @author nich
+ * @website https://x.com/nichxbt
+ * @github https://github.com/nirholas
+ * @license Apache-2.0
  */
 // Library entry point - exports for use as a dependency
 export { registerEVM } from "./evm/index.js"

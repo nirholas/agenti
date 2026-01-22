@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import algosdk, { modelsv2 } from 'algosdk';
 import type { EncodedSignedTransaction } from 'algosdk';

@@ -1,3 +1,10 @@
+//! Polymarket Predictions MCP Server
+//!
+//! @author nich
+//! @website https://x.com/nichxbt
+//! @github https://github.com/nirholas
+//! @license Apache-2.0
+
 mod cli;
 mod config;
 mod error;

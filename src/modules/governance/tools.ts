@@ -1,8 +1,8 @@
 /**
- * @author Nich
+ * @author nich
  * @website x.com/nichxbt
  * @github github.com/nirholas
- * @license MIT
+ * @license Apache-2.0
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import type { Address, Hex } from "viem"
@@ -12,7 +12,7 @@ import { z } from "zod"
 
 import { getPublicClient, getWalletClient } from "@/evm/services/clients.js"
 import { mcpToolRes } from "@/utils/helper.js"
-import { defaultNetworkParam, privateKeyParam } from "../common/types.js"
+import { defaultNetworkParam, privateKeyParam } from "@/evm/modules/common/types.js"
 
 // OpenZeppelin Governor ABI
 const GOVERNOR_ABI = [

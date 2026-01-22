@@ -1,3 +1,10 @@
+//! Error handling module
+//!
+//! @author nich
+//! @website https://x.com/nichxbt
+//! @github https://github.com/nirholas
+//! @license Apache-2.0
+
 use serde::{Deserialize, Serialize};
 use std::fmt;
 

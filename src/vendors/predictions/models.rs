@@ -1,6 +1,12 @@
+//! Data models for Polymarket predictions
+//!
+//! @author nich
+//! @website https://x.com/nichxbt
+//! @github https://github.com/nirholas
+//! @license Apache-2.0
+
 // Allow unused code - some models are defined for future use
 #![allow(dead_code)]
-
 use serde::{Deserialize, Deserializer, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 

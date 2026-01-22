@@ -17,9 +17,19 @@
     "dev:sse": "tsx watch src/index.ts --sse",
     "dev:http": "tsx watch src/index.ts --http",
     "build": "tsup",
+    "clean": "rm -rf dist coverage .tsbuildinfo",
     "prepublishOnly": "npm run build",
-    "test": "npx @modelcontextprotocol/inspector tsx src/index.ts",
-    "format": "prettier --write ."
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test:inspector": "npx @modelcontextprotocol/inspector tsx src/index.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "tsc --noEmit",
+    "ci": "npm run lint && npm run test:coverage && npm run build",
+    "docs": "typedoc --out docs/api src/index.ts",
+    "docs:watch": "typedoc --watch --out docs/api src/index.ts"
   },
   "bin": {
     "universal-crypto-mcp": "./dist/index.js"
@@ -34,7 +44,7 @@
   },
   "author": {
     "name": "nich",
-    "url": "https://x.com/nichxbt"
+    "url": "https://github.com/nirholas"
   },
   "repository": {
     "type": "git",
@@ -43,6 +53,11 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
+    "ai-agents",
+    "claude",
+    "cursor",
+    "chatgpt",
+    "llm",
     "evm",
     "ethereum",
     "arbitrum",
@@ -50,31 +65,59 @@
     "base",
     "optimism",
     "bsc",
+    "bnb-chain",
+    "opbnb",
     "crypto",
     "defi",
     "blockchain",
-    "web3"
+    "web3",
+    "smart-contracts",
+    "token-swap",
+    "cross-chain",
+    "dex",
+    "bridge"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.0",
+    "@solana/spl-token": "^0.4.1",
+    "@solana/web3.js": "^1.87.6",
+    "@ton/core": "^0.59.0",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.0.0",
+    "@xchainjs/xchain-bitcoin": "^1.2.2",
+    "@xchainjs/xchain-client": "^1.0.10",
+    "@xchainjs/xchain-doge": "^1.0.10",
+    "@xchainjs/xchain-litecoin": "^1.0.10",
+    "@xchainjs/xchain-thorchain": "^2.0.13",
+    "@xchainjs/xchain-thorchain-query": "^1.0.13",
+    "@xchainjs/xchain-util": "^1.0.8",
+    "bignumber.js": "^9.1.2",
+    "bs58": "^5.0.0",
+    "ccxt": "^4.4.0",
     "cors": "^2.8.5",
+    "cross-fetch": "^4.0.0",
     "dotenv": "^16.5.0",
     "express": "^4.18.2",
+    "indicatorts": "^2.1.1",
     "mime": "^4.0.7",
     "reflect-metadata": "^0.2.2",
     "viem": "^2.27.2",
+    "xrpl": "^2.14.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.30",
+    "@vitest/coverage-v8": "^4.0.17",
     "prettier": "3.2.4",
     "tsup": "^8.0.0",
     "tsx": "^4.7.0",
-    "typescript": "^5.0.0"
+    "typedoc": "^0.27.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.17"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=18.0.0"
   }
