@@ -1,9 +1,24 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.nirholas/universal-crypto-mcp",
-  "version": "0.1.0",
   "title": "Universal Crypto MCP",
-  "description": "Universal MCP server for AI agents to interact with 15+ EVM blockchains - swaps, bridges, staking, lending, security, market data, and 330+ tools",
-  "keywords": ["blockchain", "crypto", "defi", "swaps", "bridges", "staking", "lending", "ethereum", "arbitrum", "polygon", "base", "mcp", "ai-agent"],
-  "repository": {"url": "https://github.com/nirholas/universal-crypto-mcp", "source": "github"}
+  "description": "Universal blockchain MCP - swaps, bridges, staking, lending on Ethereum, Arbitrum and more",
+  "repository": {
+    "url": "https://github.com/nirholas/universal-crypto-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "icons": {
+    "light": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+    "dark": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/bg.svg"
+  },
+  "packages": {
+    "npm": "@nirholas/universal-crypto-mcp"
+  },
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["crypto", "blockchain", "defi", "swap", "bridge", "staking", "lending", "ethereum", "arbitrum", "web3", "mcp", "ai"],
+      "category": "DeFi"
+    }
+  }
 }
