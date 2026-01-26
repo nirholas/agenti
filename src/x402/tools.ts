@@ -371,5 +371,348 @@ export function registerX402Tools(server: McpServer): void {
     }
   )
 
-  Logger.info(`x402: Registered 7 payment tools (chain: ${config.chain}, configured: ${isX402Configured()})`)
+  // Tool 8: Batch payments - send multiple payments in one transaction
+  server.tool(
+    "x402_batch_send",
+    "Send multiple payments in a single transaction. More gas efficient than separate sends.",
+    {
+      payments: z.array(z.object({
+        to: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Recipient address"),
+        amount: z.string().describe("Amount to send"),
+      })).min(1).max(20).describe("Array of payments (max 20)"),
+      token: z.enum(["USDs", "USDC", "native"]).default("USDs").describe("Token to send"),
+    },
+    async (params: { payments: Array<{ to: string; amount: string }>; token: string }) => {
+      try {
+        const client = getClient()
+        
+        // Calculate total and validate against max
+        const total = params.payments.reduce((sum: number, p: { amount: string }) => sum + parseFloat(p.amount), 0)
+        const maxPayment = parseFloat(config.maxPaymentPerRequest) * params.payments.length
+        if (total > maxPayment) {
+          throw new Error(`Total ${total} exceeds maximum allowed (${maxPayment})`)
+        }
+        
+        const batchItems = params.payments.map((p: { to: string; amount: string }) => ({
+          recipient: p.to as `0x${string}`,
+          amount: p.amount,
+        }))
+        
+        const result = await client.payBatch(batchItems)
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              totalAmount: result.totalAmount,
+              totalRecipients: params.payments.length,
+              successful: result.successful.length,
+              failed: result.failed.length,
+              transactions: result.successful.map((tx: any) => tx.hash),
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 9: Gasless payment via EIP-3009
+  server.tool(
+    "x402_gasless_send",
+    "Send a gasless payment using EIP-3009 authorization. Recipient pays gas, you just sign.",
+    {
+      to: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Recipient address"),
+      amount: z.string().describe("Amount to send"),
+      token: z.enum(["USDs", "USDC"]).default("USDs").describe("Token to send (must support EIP-3009)"),
+      validityPeriod: z.number().default(300).describe("Authorization valid for (seconds, default 5 min)"),
+    },
+    async (params: { to: string; amount: string; token: string; validityPeriod: number }) => {
+      try {
+        const client = getClient()
+        
+        if (!config.enableGasless) {
+          throw new Error("Gasless payments disabled. Set X402_ENABLE_GASLESS=true")
+        }
+        
+        // Create authorization
+        const auth = await client.createAuthorization(
+          params.to as `0x${string}`,
+          params.amount,
+          params.token as any,
+          { validityPeriod: params.validityPeriod }
+        )
+        
+        // Settle via facilitator (gasless)
+        const result = await client.settleGasless(auth)
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              transaction: {
+                hash: result.hash,
+                from: result.from,
+                to: result.to,
+                amount: result.amount,
+                token: result.token,
+              },
+              gasless: true,
+              gasPaidBy: "facilitator",
+              authorization: {
+                nonce: auth.nonce,
+                validBefore: auth.validBefore.toString(),
+              },
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 10: Approve token spending
+  server.tool(
+    "x402_approve",
+    "Approve a contract to spend your tokens. Required before some DeFi operations.",
+    {
+      spender: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Contract address to approve"),
+      amount: z.string().describe("Amount to approve (use 'unlimited' for max)"),
+      token: z.enum(["USDs", "USDC", "USDT", "DAI"]).default("USDs").describe("Token to approve"),
+    },
+    async (params: { spender: string; amount: string; token: string }) => {
+      try {
+        const client = getClient()
+        
+        const approveAmount = params.amount === "unlimited" ? 
+          "115792089237316195423570985008687907853269984665640564039457584007913129639935" : // uint256 max
+          params.amount
+        
+        const hash = await client.approve(
+          params.spender as `0x${string}`,
+          approveAmount,
+          params.token as any
+        )
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              approval: {
+                hash,
+                spender: params.spender,
+                token: params.token,
+                amount: params.amount === "unlimited" ? "unlimited" : params.amount,
+              },
+              warning: params.amount === "unlimited" ? 
+                "Unlimited approval granted. Only do this for trusted contracts." : null,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 11: Get current APY
+  server.tool(
+    "x402_apy",
+    "Get the current APY (Annual Percentage Yield) for USDs stablecoin.",
+    {},
+    async () => {
+      try {
+        const client = getClient()
+        const apy = await client.getCurrentAPY()
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              token: "USDs",
+              apy: `${(apy * 100).toFixed(2)}%`,
+              apyDecimal: apy,
+              source: "Sperax Protocol",
+              note: "USDs earns yield automatically via rebasing. No staking required.",
+              comparison: {
+                savingsAccount: "~0.5%",
+                usdc: "0%",
+                usds: `${(apy * 100).toFixed(2)}%`,
+              },
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 12: Estimate yield over time
+  server.tool(
+    "x402_yield_estimate",
+    "Estimate how much yield you would earn over a period of time.",
+    {
+      amount: z.string().describe("Amount of USDs to calculate yield for"),
+      days: z.number().default(30).describe("Number of days to estimate"),
+    },
+    async (params: { amount: string; days: number }) => {
+      try {
+        const client = getClient()
+        const apy = await client.getCurrentAPY()
+        
+        const principal = parseFloat(params.amount)
+        const dailyRate = apy / 365
+        const yieldEarned = principal * dailyRate * params.days
+        const finalBalance = principal + yieldEarned
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              principal: `${principal.toFixed(2)} USDs`,
+              period: `${params.days} days`,
+              currentAPY: `${(apy * 100).toFixed(2)}%`,
+              estimatedYield: `${yieldEarned.toFixed(4)} USDs`,
+              finalBalance: `${finalBalance.toFixed(4)} USDs`,
+              projections: {
+                "7 days": `+${(principal * dailyRate * 7).toFixed(4)} USDs`,
+                "30 days": `+${(principal * dailyRate * 30).toFixed(4)} USDs`,
+                "90 days": `+${(principal * dailyRate * 90).toFixed(4)} USDs`,
+                "365 days": `+${(principal * apy).toFixed(4)} USDs`,
+              },
+              note: "Actual yield may vary based on protocol performance.",
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 13: Payment status check (for pending/recent transactions)
+  server.tool(
+    "x402_tx_status",
+    "Check the status of a payment transaction.",
+    {
+      txHash: z.string().regex(/^0x[a-fA-F0-9]{64}$/).describe("Transaction hash to check"),
+    },
+    async (params: { txHash: string }) => {
+      try {
+        // Transaction status check - simplified
+        const explorerUrl = `https://arbiscan.io/tx/${params.txHash}`
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              hash: params.txHash,
+              explorerUrl,
+              message: "Check the explorer link for transaction status.",
+              chain: config.chain,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              hash: params.txHash,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 14: Get wallet configuration info
+  server.tool(
+    "x402_config",
+    "Get current x402 payment configuration and status.",
+    {},
+    async () => {
+      const validation = validateX402Config(config)
+      
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            configured: isX402Configured(),
+            chain: config.chain,
+            chainInfo: SUPPORTED_CHAINS[config.chain],
+            maxPaymentPerRequest: `$${config.maxPaymentPerRequest}`,
+            gaslessEnabled: config.enableGasless,
+            facilitatorUrl: config.facilitatorUrl || "default",
+            debug: config.debug,
+            validation: {
+              valid: validation.valid,
+              warnings: validation.errors,
+            },
+            environmentVariables: {
+              X402_PRIVATE_KEY: isX402Configured() ? "✓ set" : "✗ not set",
+              X402_CHAIN: config.chain,
+              X402_MAX_PAYMENT: config.maxPaymentPerRequest,
+              X402_ENABLE_GASLESS: String(config.enableGasless),
+            },
+          }, null, 2),
+        }],
+      }
+    }
+  )
+
+  Logger.info(`x402: Registered 14 payment tools (chain: ${config.chain}, configured: ${isX402Configured()})`)
 }
