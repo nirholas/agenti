@@ -1,4 +1,4 @@
-# Universal Crypto MCP
+# Universal Crypto MCP 
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/v/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version"></a>
