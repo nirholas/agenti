@@ -186,7 +186,7 @@ Add to your MCP settings:
 4. Enter your server URL: `http://localhost:3001/mcp`
 5. Select the app in conversations via **Developer mode** menu
 
-For detailed setup instructions, see [ChatGPT Setup Guide](https://universal-crypto-mcp.vercel.app/mcp-server/chatgpt-setup/).
+For detailed setup instructions, see [ChatGPT Setup Guide](https://mcp.giving/mcp-server/chatgpt-setup/).
 
 ## Server Modes
 
@@ -673,7 +673,7 @@ BASE_RPC_URL=https://mainnet.base.org
 
 ## Documentation
 
-https://universal-crypto-mcp.vercel.app
+https://mcp.giving
 
 ---
 
