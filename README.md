@@ -91,6 +91,51 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 - 📡 **WebSockets** - Real-time price streams, trade feeds, mempool monitoring (NEW)
 - 🐋 **Wallet Analytics** - Whale tracking, wallet scoring, behavior analysis (NEW)
 - 🌐 **Multi-Chain** - Cosmos, Near, Sui, Aptos native support (NEW)
+- 💰 **x402 Payments** - AI agents can pay for premium APIs automatically (NEW)
+
+---
+
+## 💰 x402 Payment Protocol (NEW!)
+
+> **Give Claude Money!** AI agents can now make and receive cryptocurrency payments.
+
+### What is x402?
+
+x402 implements HTTP 402 Payment Required, enabling AI agents to:
+- 💸 **Pay for APIs** - Automatically pay for premium API access
+- 🏦 **Hold funds** - Agents have their own crypto wallets
+- 📈 **Earn yield** - Payments use USDs stablecoin (~5% APY auto-yield)
+
+### Quick Setup
+
+```bash
+# Add to your environment
+export X402_PRIVATE_KEY=0x...  # Your EVM private key
+export X402_CHAIN=arbitrum      # Default chain
+```
+
+### x402 Tools
+
+| Tool | Description |
+|------|-------------|
+| `x402_pay_request` | Make HTTP request with automatic 402 payment |
+| `x402_balance` | Check wallet balance (USDs + native) |
+| `x402_send` | Send direct payment to an address |
+| `x402_estimate` | Check cost before paying |
+| `x402_yield` | Check USDs auto-yield earnings |
+
+### Example
+
+```
+User: "Get premium weather data for Tokyo"
+Agent: [calls x402_pay_request to weather API]
+       [automatically pays $0.01 in USDs]
+       "Here's the detailed forecast..."
+```
+
+📖 [Full x402 Documentation](src/x402/README.md)
+
+---
 
 ## Quick Start
 
