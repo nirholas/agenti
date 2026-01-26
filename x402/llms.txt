@@ -1,0 +1,115 @@
+# x402 - Open Payment Standard for Internet Native Payments
+
+> **For: https://github.com/nirholas/universal-crypto-mcp**
+> 
+> 💰 Give Claude Money!
+> ```bash
+> npx @nirholas/universal-crypto-mcp
+> ```
+
+## Overview
+
+x402 is an open standard built on HTTP 402 that enables:
+- Machine-to-machine payments for AI agents
+- API monetization with micropayments
+- Pay-per-use without accounts or sessions
+- Multi-chain support (EVM + Solana)
+
+## Key Files
+
+### Documentation
+- docs/llms-full.md - Complete LLM-friendly documentation
+- docs/CAIP-2.md - Blockchain ID specification (network identifiers)
+- docs/guides/mcp-server-with-x402.md - MCP Server integration guide
+- docs/getting-started/quickstart-for-buyers.mdx - Client setup
+- docs/getting-started/quickstart-for-sellers.mdx - Server setup
+- X402-INTEGRATION.md - Integration overview
+
+### Examples
+- examples/typescript/clients/mcp/ - MCP client with x402 payments
+- examples/typescript/servers/express/ - Express server with payments
+- examples/typescript/clients/fetch/ - Fetch client
+- examples/typescript/clients/axios/ - Axios client
+
+### Core Packages
+- typescript/packages/core/ - Core protocol
+- typescript/packages/mechanisms/evm/ - EVM payment support
+- typescript/packages/mechanisms/svm/ - Solana payment support
+- typescript/packages/http/axios/ - Axios wrapper
+- typescript/packages/http/fetch/ - Fetch wrapper
+- typescript/packages/http/express/ - Express middleware
+
+### Setup Scripts
+- scripts/setup-x402.sh - Full integration setup
+- scripts/convert-whitepaper-to-md.sh - Convert whitepaper PDF
+
+### Dependencies
+- gin-gonic/ - Go HTTP framework (for Go implementations)
+
+## Quick Integration
+
+### For AI Agents (Buyers)
+
+```typescript
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { privateKeyToAccount } from "viem/accounts";
+
+const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
+const client = new x402Client();
+registerExactEvmScheme(client, { signer });
+
+const api = wrapAxiosWithPayment(axios.create(), client);
+const res = await api.get("https://paid-api.com/data"); // Auto-pays!
+```
+
+### For APIs (Sellers)
+
+```typescript
+import { paymentMiddleware } from "@x402/express";
+
+app.use(paymentMiddleware({
+  "GET /api/data": {
+    accepts: [{
+      scheme: "exact",
+      price: "$0.001",
+      network: "eip155:8453",
+      payTo: "0xYourAddress",
+    }],
+  },
+}, server));
+```
+
+## Supported Networks
+
+### EVM (CAIP-2 Format)
+- eip155:8453 - Base Mainnet
+- eip155:84532 - Base Sepolia (testnet)
+- eip155:1 - Ethereum Mainnet
+- eip155:42161 - Arbitrum One
+- eip155:137 - Polygon
+- eip155:56 - BNB Chain
+
+### Solana
+- solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp - Mainnet
+- solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1 - Devnet
+
+## Protocol Flow
+
+1. Client requests resource
+2. Server returns HTTP 402 + PAYMENT-REQUIRED header
+3. Client signs payment with wallet
+4. Client retries with PAYMENT-SIGNATURE header
+5. Server verifies via facilitator
+6. Server returns resource + PAYMENT-RESPONSE header
+
+## Resources
+
+- Website: https://x402.org
+- Docs: https://docs.x402.org
+- GitHub: https://github.com/coinbase/x402
+- Facilitator (testnet): https://x402.org/facilitator
+
+## License
+
+Apache-2.0 - See LICENSE file
