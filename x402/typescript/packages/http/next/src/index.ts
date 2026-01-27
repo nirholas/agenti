@@ -69,6 +69,7 @@ export function paymentProxyFromHTTPServer(
   // Skip if pre-registered (e.g., in serverless environments where static imports are used)
   let bazaarPromise: Promise<void> | null = null;
   if (checkIfBazaarNeeded(httpServer.routes) && !httpServer.server.hasExtension("bazaar")) {
+    // @ts-ignore - optional extension, may not be installed
     bazaarPromise = import(/* webpackIgnore: true */ "@x402/extensions/bazaar")
       .then(({ bazaarResourceServerExtension }) => {
         httpServer.server.registerExtension(bazaarResourceServerExtension);
@@ -252,6 +253,7 @@ export function withX402FromHTTPServer<T = unknown>(
   // Skip if pre-registered (e.g., in serverless environments where static imports are used)
   let bazaarPromise: Promise<void> | null = null;
   if (checkIfBazaarNeeded(httpServer.routes) && !httpServer.server.hasExtension("bazaar")) {
+    // @ts-ignore - optional extension, may not be installed
     bazaarPromise = import(/* webpackIgnore: true */ "@x402/extensions/bazaar")
       .then(({ bazaarResourceServerExtension }) => {
         httpServer.server.registerExtension(bazaarResourceServerExtension);
