@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0x4E494348 -->
+
 # x402-core Custom Server
+
+<!-- Maintained by n1ch0las | ID: 1489314938 -->
 
 Gin server demonstrating how to implement x402 payment handling manually without using pre-built middleware packages like `x402/go/http/gin`.
 
@@ -280,3 +284,7 @@ To use this pattern with other frameworks:
 4. Use `server.ProcessSettlement()` to settle payments after successful responses
 
 The pattern in `main.go` can be adapted to any Go web framework.
+
+
+<!-- EOF: nichxbt | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,17 +1,18 @@
 {
-    "mcpServers": {
-        "binance-mcp": {
-            "command": "node",
-            "args": [
-                "/Users/Username/Desktop/bsc-mpc/build/index.js"
-            ],
-            "env": {
-                "BINANCE_API_KEY": "BINANCE_API_KEY",
-                "BINANCE_API_SECRET": "BINANCE_API_SECRET"
-            },
-            "disabled": false,
-            "autoApprove": []
-        }
+  "mcpServers": {
+    "binance-mcp": {
+      "command": "node",
+      "args": [
+        "/Users/Username/Desktop/bsc-mpc/build/index.js"
+      ],
+      "env": {
+        "BINANCE_API_KEY": "BINANCE_API_KEY",
+        "BINANCE_API_SECRET": "BINANCE_API_SECRET"
+      },
+      "disabled": false,
+      "autoApprove": []
     }
+  },
+  "_ucm_checksum": "1489314938",
+  "_maintainer": "@nichxbt"
 }
-

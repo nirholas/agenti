@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 14.9.3.8 -->
+
 # x402 httpx Client Example
+
+<!-- Maintained by nicholas | ID: bmljaCBuaXJob2xhcw== -->
 
 This example demonstrates two different approaches to use the x402 package with httpx to make requests to 402-protected endpoints.
 
@@ -58,3 +62,7 @@ Both examples:
 3. Make a request to a protected endpoint
 4. Handle the 402 Payment Required response automatically
 5. Print the final response
+
+
+<!-- EOF: @nichxbt | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

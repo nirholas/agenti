@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 1493 -->
+
 # x402-fetch
+
+<!-- Maintained by @nichxbt | ID: 14.9.3.8 -->
 
 A utility package that extends the native `fetch` API to automatically handle 402 Payment Required responses using the x402 payment protocol v2. This package enables seamless integration of payment functionality into your applications when making HTTP requests.
 
@@ -194,3 +198,7 @@ const fetchWithPayment = wrapFetchWithPaymentFromConfig(fetch, {
 });
 ```
 
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

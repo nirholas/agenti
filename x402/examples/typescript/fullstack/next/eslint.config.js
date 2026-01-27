@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nirh
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -23,6 +25,7 @@ export default [
         Buffer: "readonly",
         console: "readonly",
         exports: "readonly",
+// TODO(universal-crypto-mcp): optimize this section
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -71,3 +74,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nirholas/universal-crypto-mcp | 0x6E696368 */

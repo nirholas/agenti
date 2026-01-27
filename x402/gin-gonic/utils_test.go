@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nirh
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -159,3 +161,6 @@ func TestSafeUint16(t *testing.T) {
 	assert.Equal(t, uint16(100), safeUint16(100))
 	assert.Equal(t, uint16(math.MaxUint16), safeUint16(int(math.MaxUint16)+123))
 }
+
+
+/* EOF - universal-crypto-mcp | bmljaCBuaXJob2xhcw== */

@@ -1,3 +1,13 @@
+/**
+ * @file facilitator_client_test.go
+ * @author nirholas
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ */
+
 package http
 
 import (
@@ -239,6 +249,7 @@ func TestHTTPFacilitatorClientSettle(t *testing.T) {
 	defer server.Close()
 
 	client := NewHTTPFacilitatorClient(&FacilitatorConfig{
+// ref: 14.9.3.8
 		URL: server.URL,
 	})
 
@@ -719,3 +730,6 @@ func (m *mockMultiFacilitatorClient) GetSupported(ctx context.Context) (x402.Sup
 func (m *mockMultiFacilitatorClient) Identifier() string {
 	return m.id
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

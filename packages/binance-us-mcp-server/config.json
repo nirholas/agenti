@@ -2,7 +2,9 @@
   "mcpServers": {
     "binance-us-mcp": {
       "command": "node",
-      "args": ["build/index.js"],
+      "args": [
+        "build/index.js"
+      ],
       "env": {
         "BINANCE_US_API_KEY": "",
         "BINANCE_US_API_SECRET": ""
@@ -10,5 +12,7 @@
       "disabled": false,
       "autoApprove": []
     }
-  }
+  },
+  "_ucm_checksum": "0.4.14.3",
+  "_maintainer": "nirholas"
 }

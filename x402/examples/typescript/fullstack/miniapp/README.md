@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 6e696368-786274-4d43-5000-000000000000 -->
+
 # x402 Farcaster Mini App Example (v2 SDK)
+
+<!-- Maintained by nichxbt | ID: 1493814938 -->
 
 This is a [Next.js](https://nextjs.org) project demonstrating how to build a [Farcaster Mini App](https://miniapps.farcaster.xyz/) with x402 payment-protected API endpoints using the `@x402/next`, `@x402/fetch` and `@x402/evm` packages.
 
@@ -263,3 +267,7 @@ Network identifiers use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/mai
 - [MiniKit Documentation](https://docs.base.org/builderkits/minikit/overview)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS v4 Documentation](https://tailwindcss.com/docs)
+
+
+<!-- EOF: n1ch0las | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

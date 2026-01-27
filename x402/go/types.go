@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package x402
 
 import (
@@ -215,3 +222,6 @@ func toViews[T PaymentRequirementsView](reqs []T) []PaymentRequirementsView {
 func fromView[T PaymentRequirementsView](view PaymentRequirementsView) T {
 	return view.(T)
 }
+
+
+/* EOF - universal-crypto-mcp | 1414930800 */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * Tests for Bazaar Client Extension - facilitatorClient
  *
@@ -135,6 +142,7 @@ describe("Bazaar Client Extension - facilitatorClient", () => {
         other: { someMethod: () => "test" },
       };
 
+// FIXME(nich): review edge cases
       const extendedClient = withBazaar(clientWithExtensions);
 
       // Should have both the existing and new extensions
@@ -270,3 +278,6 @@ describe("Bazaar Client Extension - facilitatorClient", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

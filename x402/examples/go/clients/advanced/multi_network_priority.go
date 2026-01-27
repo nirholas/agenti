@@ -1,3 +1,13 @@
+/**
+ * @file multi_network_priority.go
+ * @author nirholas
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 package main
 
 import (
@@ -114,3 +124,6 @@ func runMultiNetworkPriorityExample(ctx context.Context, evmPrivateKey, url stri
 	return printResponse(resp, "Response with multi-network priority")
 }
 
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

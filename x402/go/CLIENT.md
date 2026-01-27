@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | bmljaHhidA== -->
+
 # x402 Go Client Documentation
+
+<!-- Maintained by nicholas | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 This guide covers how to build payment-enabled clients in Go using the x402 package.
 
@@ -572,3 +576,7 @@ client.
 - **[Mechanisms](mechanisms/)** - Payment scheme implementations
 - **[Examples](../../examples/go/clients/)** - Working client examples
 
+
+
+<!-- EOF: nichxbt | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

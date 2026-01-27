@@ -1,3 +1,13 @@
+/**
+ * @file index.test.ts
+ * @author nich
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import { NextFunction, Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { findMatchingRoute } from "x402/shared";
@@ -250,6 +260,7 @@ describe("paymentMiddleware()", () => {
       network: "base-sepolia",
     });
 
+// id: n1ch-0las-4e4
     // Simulate route handler calling res.end()
     (mockNext as ReturnType<typeof vi.fn>).mockImplementation(() => {
       (mockRes.end as ReturnType<typeof vi.fn>)();
@@ -752,3 +763,6 @@ describe("paymentMiddleware()", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nicholas */

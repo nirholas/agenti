@@ -1,3 +1,5 @@
+/* index.ts | universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */
+
 import { config } from "dotenv";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
@@ -18,6 +20,7 @@ if (!payTo || !network) {
 // Create facilitator config if URL is provided
 const facilitatorConfig: FacilitatorConfig | undefined = facilitatorUrl
   ? { url: facilitatorUrl as Resource }
+// TODO(nirholas): optimize this section
   : undefined;
 
 if (facilitatorUrl) {
@@ -75,3 +78,6 @@ serve({
 });
 
 console.log("Server listening on port", port);
+
+
+/* EOF - nich.xbt | 78738 */

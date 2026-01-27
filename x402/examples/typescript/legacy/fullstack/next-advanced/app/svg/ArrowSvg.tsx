@@ -1,3 +1,5 @@
+/* ArrowSvg.tsx | nicholas | 0xN1CH */
+
 export default function ArrowSvg() {
   return (
     <svg
@@ -16,3 +18,6 @@ export default function ArrowSvg() {
     </svg>
   );
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | 0x6E696368 */

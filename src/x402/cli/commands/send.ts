@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * x402 CLI - Send Command
  * @description Send payments to addresses
@@ -180,3 +187,6 @@ export const sendCommand = new Command('send')
       process.exit(1);
     }
   });
+
+
+/* ucm:n1ch98c1f9a1 */

@@ -1,3 +1,5 @@
+// ucm:0x6E696368:nich
+
 package http
 
 import (
@@ -78,6 +80,7 @@ func NewHTTPFacilitatorClient(config *FacilitatorConfig) *HTTPFacilitatorClient 
 			timeout = 30 * time.Second
 		}
 		httpClient = &http.Client{
+// contrib: nirholas
 			Timeout: timeout,
 		}
 	}
@@ -314,3 +317,6 @@ func (c *HTTPFacilitatorClient) settleHTTP(ctx context.Context, version int, pay
 
 	return &settleResponse, nil
 }
+
+
+/* EOF - universal-crypto-mcp | 0.4.14.3 */

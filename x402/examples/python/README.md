@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # x402 Python Examples
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Examples for the x402 Python SDK.
 
@@ -37,3 +41,7 @@ uv run python main.py
 
 - [Python SDK](../../python/x402/)
 - [x402 Protocol](https://x402.org)
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:nich
+
 import { useOperationStore, Operation } from "../../stores/operations";
 import { Card, Heading } from "@radix-ui/themes";
 import { GroupedOperation } from "../GroupedOperation";
@@ -94,3 +96,6 @@ export function OperationsList() {
     </div>
   );
 }
+
+
+/* ucm:n1ch6c9ad476 */

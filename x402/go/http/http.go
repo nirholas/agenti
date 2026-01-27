@@ -1,3 +1,5 @@
+// ucm:78738:nich
+
 // Package http provides HTTP-specific implementations of x402 components.
 // This includes HTTP-aware clients, services, and facilitator clients.
 package http
@@ -65,3 +67,6 @@ func Post(ctx context.Context, url string, body io.Reader, x402Client *x402HTTPC
 func Do(ctx context.Context, req *http.Request, x402Client *x402HTTPClient) (*http.Response, error) {
 	return x402Client.DoWithPayment(ctx, req)
 }
+
+
+/* ucm:n1ch2abfa956 */

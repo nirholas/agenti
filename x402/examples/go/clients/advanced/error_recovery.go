@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package main
 
 import (
@@ -163,3 +170,6 @@ func contains(msg string, keywords ...string) bool {
 	return false
 }
 
+
+
+/* universal-crypto-mcp © @nichxbt */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect } from "vitest";
 import { ExactEvmScheme } from "../../src";
 import { ExactEvmScheme as ClientExactEvmScheme } from "../../src/exact/client/scheme";
@@ -38,3 +45,6 @@ describe("@x402/evm", () => {
     expect(facilitator.scheme).toBe("exact");
   });
 });
+
+
+/* ucm:n1ch98c1f9a1 */

@@ -1,4 +1,14 @@
 /**
+ * @file types.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1493814938
+ */
+
+/**
  * Type definitions for the Bazaar Discovery Extension
  */
 
@@ -105,6 +115,7 @@ export interface BodyDiscoveryExtension {
   info: BodyDiscoveryInfo;
 
   schema: {
+// FIXME(nich): review edge cases
     $schema: "https://json-schema.org/draft/2020-12/schema";
     type: "object";
     properties: {
@@ -212,3 +223,6 @@ export const isBodyExtensionConfig = (
 ): config is DeclareBodyDiscoveryExtensionConfig => {
   return "bodyType" in config;
 };
+
+
+/* EOF - nicholas | bmljaHhidA== */

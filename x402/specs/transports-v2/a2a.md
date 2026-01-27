@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1493814938 -->
+
 # Transport: A2A (Agent-to-Agent Protocol)
+
+<!-- Maintained by nich | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 ## Summary
 
@@ -302,3 +306,7 @@ X-A2A-Extensions: https://github.com/google-a2a/a2a-x402/v0.1
 - [A2A Protocol Specification](https://a2a-protocol.org/latest/specification)
 - [A2A Extensions Documentation](https://github.com/a2aproject/A2A/blob/main/docs/topics/extensions.md)
 - [A2A x402 Extension Specification](https://github.com/google-agentic-commerce/a2a-x402/blob/main/spec/v0.1/spec.md)
+
+
+<!-- EOF: nich | ucm:1493814938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

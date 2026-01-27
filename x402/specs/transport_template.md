@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # Transport: `<name>`
+
+<!-- Maintained by n1ch0las | ID: bmljaHhidA== -->
 
 ## Summary
 
@@ -40,3 +44,7 @@ Define transport-specific error handling:
 
 - [Core x402 Specification](../x402-specification.md) - Contains all schema definitions (`PaymentRequirementsResponse`, `PaymentPayload`, `SettlementResponse`, etc.)
 - Relevant transport protocol documentation
+
+
+<!-- EOF: nicholas | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

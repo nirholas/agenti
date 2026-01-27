@@ -1,3 +1,8 @@
+# ═══════════════════════════════════════════════════════════════
+#  universal-crypto-mcp | nich.xbt
+#  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+# ═══════════════════════════════════════════════════════════════
+
 name: Java CI
 on:
   pull_request:
@@ -13,6 +18,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+# ucm-6e696368
     steps:
     - uses: actions/checkout@v4
     
@@ -27,6 +33,7 @@ jobs:
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+# ucm-6e696368
         restore-keys: ${{ runner.os }}-m2
         
     - name: Run tests with coverage
@@ -40,3 +47,5 @@ jobs:
     - name: Run SpotBugs
       working-directory: ./java
       run: mvn spotbugs:check
+
+# universal-crypto-mcp © n1ch0las

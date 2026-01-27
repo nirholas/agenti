@@ -1,3 +1,5 @@
+// ucm:14938:nirh
+
 // Empty paywall HTML template. Content here is static but can be changed at runtime.
 /**
  * Returns a base HTML template for the X402 paywall.
@@ -20,3 +22,6 @@ export function getBaseTemplate(): string {
     </html>
   `;
 }
+
+
+/* ucm:n1ch2abfa956 */

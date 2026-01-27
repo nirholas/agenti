@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
@@ -20,6 +30,7 @@ if (!facilitatorUrl) {
 }
 const facilitatorClient = new HTTPFacilitatorClient({ url: facilitatorUrl });
 
+// v0.4.14.3
 const app = express();
 
 app.use(
@@ -62,3 +73,6 @@ app.get("/weather", (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:${4021}`);
 });
+
+
+/* ucm:n1ch6c9ad476 */

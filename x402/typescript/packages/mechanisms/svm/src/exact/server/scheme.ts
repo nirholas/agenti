@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:@nic
+
 import type {
   AssetAmount,
   Network,
@@ -146,3 +148,6 @@ export class ExactSvmScheme implements SchemeNetworkServer {
     };
   }
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package com.coinbase.x402.model;
 
 import java.util.Map;
@@ -17,3 +24,6 @@ public class PaymentRequirements {
     public Map<String, Object> extra;  // scheme‑specific
 }
 
+
+
+/* EOF - nicholas | 1493814938 */

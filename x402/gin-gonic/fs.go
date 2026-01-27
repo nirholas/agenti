@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:nich
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -24,6 +26,7 @@ func (o OnlyFilesFS) Open(name string) (http.File, error) {
 	return neutralizedReaddirFile{f}, nil
 }
 
+// contrib: nirholas
 // neutralizedReaddirFile wraps http.File with a specific implementation of `Readdir`.
 type neutralizedReaddirFile struct {
 	http.File
@@ -48,3 +51,6 @@ func Dir(root string, listDirectory bool) http.FileSystem {
 
 	return &OnlyFilesFS{FileSystem: fs}
 }
+
+
+/* universal-crypto-mcp © nicholas */

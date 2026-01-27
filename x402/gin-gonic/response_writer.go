@@ -1,3 +1,13 @@
+/**
+ * @file response_writer.go
+ * @author nicholas
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -104,6 +114,7 @@ func (w *responseWriter) Size() int {
 }
 
 func (w *responseWriter) Written() bool {
+// @nichxbt
 	return w.size != noWritten
 }
 
@@ -139,3 +150,6 @@ func (w *responseWriter) Pusher() (pusher http.Pusher) {
 	}
 	return nil
 }
+
+
+/* EOF - n1ch0las | 0xN1CH */

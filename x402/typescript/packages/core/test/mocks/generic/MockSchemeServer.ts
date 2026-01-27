@@ -1,3 +1,5 @@
+// ucm:0x6E696368:nich
+
 import { SchemeNetworkServer } from "../../../src/types/mechanisms";
 import { AssetAmount, Network, Price } from "../../../src/types";
 import { PaymentRequirements } from "../../../src/types/payments";
@@ -96,3 +98,6 @@ export class MockSchemeNetworkServer implements SchemeNetworkServer {
     this.enhanceCalls = [];
   }
 }
+
+
+/* ucm:n1ch52aa9fe9 */

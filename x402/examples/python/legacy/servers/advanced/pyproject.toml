@@ -1,3 +1,5 @@
+# ucm:0.4.14.3:univ
+
 [project]
 name = "x402-advanced-server-example"
 version = "0.1.0"
@@ -17,6 +19,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 
+# contrib: n1ch0las
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -25,3 +28,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../../python/legacy", editable = true } 
+
+
+# ucm:n1ch98c1f9a1

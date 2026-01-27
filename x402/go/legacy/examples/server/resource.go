@@ -1,3 +1,13 @@
+/**
+ * @file resource.go
+ * @author nirholas
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaHhidA==
+ */
+
 package main
 
 import (
@@ -32,3 +42,6 @@ func main() {
 
 	r.Run(":4021") // Start the server on 0.0.0.0:4021 (for windows "localhost:4021")
 }
+
+
+/* ucm:n1ch31bd0562 */

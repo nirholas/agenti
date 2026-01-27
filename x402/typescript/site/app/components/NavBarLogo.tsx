@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import * as React from "react";
 
 export interface NavBarLogoProps extends React.SVGProps<SVGSVGElement> {
@@ -70,3 +77,6 @@ export function NavBarLogo({ title, ...props }: NavBarLogoProps) {
     </svg>
   );
 }
+
+
+/* universal-crypto-mcp © nirholas */

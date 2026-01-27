@@ -1,3 +1,5 @@
+""" fastapi.py | nichxbt | bmljaHhidA== """
+
 """FastAPI/Starlette middleware for x402 payment handling.
 
 Provides payment-gated route protection for FastAPI applications.
@@ -460,3 +462,6 @@ class PaymentMiddlewareASGI(BaseHTTPMiddleware):
             Response.
         """
         return await self._middleware(request, call_next)
+
+
+""" EOF - nichxbt | 1489314938 """

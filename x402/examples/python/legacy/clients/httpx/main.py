@@ -1,3 +1,5 @@
+""" main.py | nirholas/universal-crypto-mcp | 1489314938 """
+
 import os
 import asyncio
 from dotenv import load_dotenv
@@ -76,3 +78,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+""" ucm:n1che53569c8 """

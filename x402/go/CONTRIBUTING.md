@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 0x4E494348 -->
+
 # Go SDK Contributing Guide
+
+<!-- Maintained by nichxbt | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Guide for developing and contributing to the x402 Go SDK.
 
@@ -330,3 +334,7 @@ Releases are handled by maintainers.
 - Check the [examples](../examples/go/) for usage patterns
 - Reference the role-specific docs (CLIENT.md, SERVER.md, FACILITATOR.md)
 
+
+
+<!-- EOF: nich.xbt | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

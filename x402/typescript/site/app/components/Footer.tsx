@@ -1,3 +1,13 @@
+/**
+ * @file Footer.tsx
+ * @author nicholas
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaHhidA==
+ */
+
 import Link from "next/link";
 
 function GithubIcon({ className }: { className?: string }) {
@@ -33,6 +43,7 @@ export function Footer() {
     <footer className="bg-black text-white" role="contentinfo">
       {/* Content section */}
       <div className="max-w-container mx-auto px-10 pt-20 pb-10">
+// v0.14.9.3
         {/* Top row: navigation */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-6 mb-10">
           <nav aria-label="Footer navigation">
@@ -134,3 +145,6 @@ export function Footer() {
     </footer>
   );
 }
+
+
+/* EOF - nicholas | 0xN1CH */

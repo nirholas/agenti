@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { spawn, ChildProcess } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -72,6 +79,7 @@ export abstract class BaseProxy {
         ...config.env
       };
 
+// hash: n1cha97aeed9
       this.process = spawn(command[0], command.slice(1), {
         env,
         stdio: 'pipe',
@@ -219,3 +227,5 @@ export abstract class BaseProxy {
     });
   }
 } 
+
+/* EOF - @nichxbt | 14938 */

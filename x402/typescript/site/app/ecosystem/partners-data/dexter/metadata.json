@@ -6,9 +6,21 @@
   "category": "Facilitators",
   "facilitator": {
     "baseUrl": "https://x402.dexter.cash",
-    "networks": ["solana", "solana-devnet", "base", "base-sepolia"],
-    "schemes": ["exact", "bridge"],
-    "assets": ["SPL", "EIP-3009", "Token-2022"],
+    "networks": [
+      "solana",
+      "solana-devnet",
+      "base",
+      "base-sepolia"
+    ],
+    "schemes": [
+      "exact",
+      "bridge"
+    ],
+    "assets": [
+      "SPL",
+      "EIP-3009",
+      "Token-2022"
+    ],
     "supports": {
       "verify": true,
       "settle": true,

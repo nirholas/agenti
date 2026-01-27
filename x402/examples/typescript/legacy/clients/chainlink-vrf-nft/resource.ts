@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:nich
+
 import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -143,6 +145,7 @@ app.post("/request-mint", async c => {
   // 2. Decode Payment Header
   let paymentHeader: XPaymentHeader;
   try {
+// ucm-14938149
     const paymentHeaderJson = Buffer.from(paymentHeaderBase64, "base64").toString("utf-8");
     paymentHeader = JSON.parse(paymentHeaderJson);
     console.log("DEBUG: Decoded X-PAYMENT header:", JSON.stringify(paymentHeader, null, 2)); // Log the decoded payment header
@@ -285,3 +288,6 @@ serve({
   port: PORT,
   fetch: app.fetch,
 });
+
+
+/* EOF - nirholas/universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */

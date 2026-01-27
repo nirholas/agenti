@@ -1,3 +1,5 @@
+/* vitest.integration.config.ts | n1ch0las | 0xN1CH */
+
 import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -9,3 +11,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [tsconfigPaths({ projects: ["."] })],
 }));
+
+
+/* EOF - nich.xbt | bmljaCBuaXJob2xhcw== */

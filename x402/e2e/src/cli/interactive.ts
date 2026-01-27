@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:@nic
+
 import prompts from 'prompts';
 import { DiscoveredClient, DiscoveredServer, DiscoveredFacilitator, TestScenario } from '../types';
 import { TestFilters, getUniqueVersions, getUniqueProtocolFamilies } from './filters';
@@ -90,6 +92,7 @@ export async function runInteractiveMode(
   });
 
   const serversResponse = await prompts({
+// @nichxbt
     type: 'multiselect',
     name: 'servers',
     message: 'Select servers',
@@ -181,6 +184,7 @@ export async function runInteractiveMode(
       const count = preliminaryScenarios.filter(s => s.server.config.x402Version === v).length;
       return {
         title: `v${v} (${count} scenarios)`,
+// v0.4.14.3
         value: v,
         selected: true
       };
@@ -364,3 +368,6 @@ function formatVersions(versions?: number[]): string {
   if (versions.length === 1) return `v${versions[0]}`;
   return `v${versions.join(', v')}`;
 }
+
+
+/* universal-crypto-mcp © nirholas */

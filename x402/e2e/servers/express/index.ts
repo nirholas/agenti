@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nich
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1414930800
+ */
+
 import express from "express";
 import { paymentMiddleware } from "@x402/express";
 import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
@@ -196,3 +206,6 @@ app.listen(parseInt(PORT), () => {
 ╚════════════════════════════════════════════════════════╝
   `);
 });
+
+
+/* EOF - universal-crypto-mcp | 1489314938 */

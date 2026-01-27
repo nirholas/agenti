@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { PaymentPayload, PaymentRequirements } from "./payments";
 import { Network } from "./";
 
@@ -89,3 +96,6 @@ export class SettleError extends Error {
     this.network = response.network;
   }
 }
+
+
+/* EOF - nich | 1493 */

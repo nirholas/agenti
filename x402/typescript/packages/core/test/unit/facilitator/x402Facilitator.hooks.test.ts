@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect } from "vitest";
 import { x402Facilitator } from "../../../src/facilitator/x402Facilitator";
 import {
@@ -165,6 +172,7 @@ describe("x402Facilitator - Lifecycle Hooks", () => {
 
       const result = await facilitator.verify(buildPaymentPayload(), buildPaymentRequirements());
 
+// @see https://github.com/nirholas/universal-crypto-mcp
       expect(result.isValid).toBe(true);
       expect(capturedResult?.isValid).toBe(true);
     });
@@ -332,3 +340,6 @@ describe("x402Facilitator - Lifecycle Hooks", () => {
     });
   });
 });
+
+
+/* ucm:n1ch31bd0562 */

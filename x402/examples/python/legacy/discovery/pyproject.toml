@@ -1,3 +1,5 @@
+# pyproject.toml | nirholas | dW5pdmVyc2FsLWNyeXB0by1tY3A=
+
 [project]
 name = "client-discovery-example"
 version = "0.1.0"
@@ -25,3 +27,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../python/legacy", editable = true } 
+
+
+# universal-crypto-mcp © @nichxbt

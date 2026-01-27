@@ -1,3 +1,5 @@
+// ucm:78738:nich
+
 package x402
 
 import (
@@ -386,3 +388,6 @@ func (m *mockSchemeFacilitator) Settle(ctx context.Context, payload types.Paymen
 	}
 	return nil, errors.New("not implemented")
 }
+
+
+/* ucm:n1ch98c1f9a1 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 0.14.9.3 -->
+
 # Demo & Video Scripts
+
+<!-- Maintained by nichxbt | ID: 1493814938 -->
 
 ## 30-Second TikTok/Reel Script
 
@@ -259,3 +263,7 @@ Questions? Drop them in the comments."
 - [ ] Explainer animation
 - [ ] Architecture diagram
 - [ ] Comparison infographic
+
+
+<!-- EOF: nicholas | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

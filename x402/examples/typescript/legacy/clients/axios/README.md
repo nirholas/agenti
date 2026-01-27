@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 0x4E494348 -->
+
 # x402-axios Example Client
+
+<!-- Maintained by nichxbt | ID: 78738 -->
 
 This is an example client that demonstrates how to use the `x402-axios` package to make HTTP requests to endpoints protected by the x402 payment protocol.
 
@@ -78,3 +82,7 @@ api
     console.error(error.response?.data?.error);
   });
 ```
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

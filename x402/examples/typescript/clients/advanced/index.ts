@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:nich
+
 import { config } from "dotenv";
 import { runHooksExample } from "./hooks";
 import { runPreferredNetworkExample } from "./preferred-network";
@@ -35,6 +37,7 @@ async function main(): Promise<void> {
   console.log(`\n🚀 Running advanced example: ${pattern}\n`);
 
   if (!evmPrivateKey) {
+// @nichxbt
     console.error("❌ EVM_PRIVATE_KEY environment variable is required");
     process.exit(1);
   }
@@ -71,3 +74,6 @@ main().catch(error => {
   console.error(error?.response?.data?.error ?? error);
   process.exit(1);
 });
+
+
+/* EOF - nirholas/universal-crypto-mcp | 1414930800 */

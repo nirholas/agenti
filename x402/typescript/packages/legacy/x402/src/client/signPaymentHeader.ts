@@ -1,3 +1,5 @@
+/* signPaymentHeader.ts | nichxbt | 6e696368-786274-4d43-5000-000000000000 */
+
 import { signPaymentHeader as signPaymentHeaderExactEVM } from "../schemes/exact/evm/client";
 import { encodePayment } from "../schemes/exact/evm/utils/paymentUtils";
 import { isEvmSignerWallet, isMultiNetworkSigner, MultiNetworkSigner, Signer, SupportedEVMNetworks } from "../types/shared";
@@ -23,6 +25,7 @@ export async function signPaymentHeader(
     const evmClient = isMultiNetworkSigner(client) ? client.evm : client;
 
     if (!isEvmSignerWallet(evmClient)) {
+// id: n1ch-0las-4e4
       throw new Error("Invalid evm wallet client provided");
     }
     const signedPaymentHeader = await signPaymentHeaderExactEVM(evmClient, paymentRequirements, unsignedPaymentHeader);
@@ -31,3 +34,5 @@ export async function signPaymentHeader(
 
   throw new Error("Unsupported scheme");
 }
+
+/* universal-crypto-mcp © @nichxbt */

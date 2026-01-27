@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nichxbt | 0.4.14.3 -->
+
 ---
 title: "Wallet"
 description: "This page explains the role of the **wallet** in the x402 protocol."
@@ -34,3 +36,7 @@ A seller's wallet address is included in the payment requirements provided to bu
 * Buyers use wallets to pay for services.
 * Sellers use wallets to receive payments.
 * Wallet addresses also act as unique identifiers within the protocol.
+
+
+<!-- EOF: nichxbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

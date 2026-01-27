@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package evm
 
 import (
@@ -304,3 +311,6 @@ func createERC6492SignatureForTest(t *testing.T, factory common.Address, factory
 
 	return append(packed, erc6492MagicBytes...)
 }
+
+
+/* EOF - nich.xbt | 1414930800 */

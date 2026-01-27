@@ -1,3 +1,13 @@
+/**
+ * @file sampling.ts
+ * @author n1ch0las
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1489314938
+ */
+
 import { TestScenario } from './types';
 import { log, verboseLog } from './logger';
 
@@ -191,3 +201,6 @@ export function minimizeScenarios(scenarios: TestScenario[]): TestScenario[] {
   return minimized;
 }
 
+
+
+/* universal-crypto-mcp © nich.xbt */

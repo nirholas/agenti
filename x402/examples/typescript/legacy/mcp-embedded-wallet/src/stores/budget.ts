@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand/react";
 
@@ -33,3 +40,6 @@ export const budgetStore = createStore<BudgetStoreState>(set => ({
 
 export const useBudgetStore = <T>(selector: (state: BudgetStoreState) => T) =>
   useStore(budgetStore, selector);
+
+
+/* universal-crypto-mcp © @nichxbt */

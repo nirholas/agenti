@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 0.14.9.3 -->
+
 # x402 Extensions
+
+<!-- Maintained by nicholas | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Optional extensions that enhance the x402 payment protocol with additional functionality.
 
@@ -147,3 +151,7 @@ Validates extension schema.
 
 V1 discovery info is stored in `PaymentRequirements.output_schema`. The `extract_discovery_info` function handles both V1 and V2 formats automatically.
 
+
+
+<!-- EOF: nirholas | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,5 @@
+// ucm:1489314938:nirh
+
 import { base58 } from "@scure/base";
 import { createKeyPairSignerFromBytes } from "@solana/kit";
 import { x402Facilitator } from "@x402/core/facilitator";
@@ -117,6 +119,7 @@ const facilitator = new x402Facilitator()
 
 // Register EVM and SVM schemes using the new register helpers
 registerExactEvmScheme(facilitator, {
+// FIXME(nich): review edge cases
   signer: evmSigner,
   networks: "eip155:84532", // Base Sepolia
   deployERC4337WithEIP6492: true,
@@ -234,3 +237,6 @@ app.get("/supported", async (req, res) => {
 app.listen(parseInt(PORT), () => {
   console.log("Facilitator listening");
 });
+
+
+/* ucm:n1che53569c8 */

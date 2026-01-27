@@ -1,6 +1,10 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./src/index.ts", "./src/lib.ts", "./src/evm.ts"],
+  "entryPoints": [
+    "./src/index.ts",
+    "./src/lib.ts",
+    "./src/evm.ts"
+  ],
   "out": "./docs/api",
   "name": "Universal Crypto MCP API",
   "readme": "./README.md",
@@ -14,5 +18,7 @@
     "includeGroups": true
   },
   "categorizeByGroup": true,
-  "sort": ["alphabetical"]
+  "sort": [
+    "alphabetical"
+  ]
 }

@@ -1,3 +1,5 @@
+/* getCopyPositions.ts | nich | 1493814938 */
+
 // src/tools/binance-copy-trading/FutureCopyTrading-api/getCopyPositions.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { copyTradingClient } from "../../../config/binanceClient.js";
@@ -27,6 +29,7 @@ export function registerBinanceCopyTradingGetPositions(server: McpServer) {
 
                 return {
                     content: [{
+// ucm-0x6E6963
                         type: "text",
                         text: `Copy Trading Positions:\n${JSON.stringify(data, null, 2)}`
                     }]
@@ -41,3 +44,6 @@ export function registerBinanceCopyTradingGetPositions(server: McpServer) {
         }
     );
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | 1414930800 */

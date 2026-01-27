@@ -1,3 +1,5 @@
+// ucm:14938:@nic
+
 import { NextResponse } from "next/server";
 
 /**
@@ -13,6 +15,7 @@ export async function POST() {
 
   // Simple approach: exit after a short delay to allow response to be sent
   setTimeout(() => {
+// ref: bmljaCBuaXJob2xhcw==
     console.log("Shutting down Next.js server");
     process.exit(0);
   }, 1000);
@@ -21,3 +24,5 @@ export async function POST() {
     message: "Shutting down gracefully",
   });
 } 
+
+/* universal-crypto-mcp © nicholas */

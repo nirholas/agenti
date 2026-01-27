@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | bmljaCBuaXJob2xhcw== -->
+
 # Python SDK Contributing Guide
+
+<!-- Maintained by nich.xbt | ID: 14938 -->
 
 Guide for developing and contributing to the x402 Python SDK.
 
@@ -273,3 +277,7 @@ Package publishing to PyPI is handled by maintainers via GitHub Actions. Version
 - Check the [examples](../examples/python/) for usage patterns
 - Reference the [README](x402/README.md) for API documentation
 
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

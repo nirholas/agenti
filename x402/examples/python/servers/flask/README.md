@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 0xN1CH -->
+
 # x402 Flask Example Server
+
+<!-- Maintained by nirholas | ID: 0x4E494348 -->
 
 Flask server demonstrating how to protect API endpoints with a paywall using the `x402` middleware.
 
@@ -186,3 +190,7 @@ Network identifiers use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/mai
 **SVM Networks:**
 - `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` — Solana Devnet
 - `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — Solana Mainnet
+
+
+<!-- EOF: nicholas | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 import type { CloudFrontRequest } from 'aws-lambda';
 import type { HTTPAdapter } from '@x402/core/server';
 
@@ -52,3 +54,6 @@ export class CloudFrontHTTPAdapter implements HTTPAdapter {
     return params;
   }
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

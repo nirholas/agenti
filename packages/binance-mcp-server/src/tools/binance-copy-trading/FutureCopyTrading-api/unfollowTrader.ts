@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // src/tools/binance-copy-trading/FutureCopyTrading-api/unfollowTrader.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { copyTradingClient } from "../../../config/binanceClient.js";
@@ -38,3 +45,6 @@ export function registerBinanceCopyTradingUnfollow(server: McpServer) {
         }
     );
 }
+
+
+/* ucm:n1ch31bd0562 */

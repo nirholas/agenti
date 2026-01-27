@@ -1,3 +1,8 @@
+# @file pyproject.toml
+# @author nirholas
+# @copyright (c) 2026 nich.xbt
+# @repository universal-crypto-mcp
+
 [project]
 name = "x402-flask-example"
 version = "0.1.0"
@@ -20,8 +25,12 @@ packages = ["."]
 [tool.hatch.metadata]
 allow-direct-references = true
 
+# v0.4.14.3
 [tool.uv]
 package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../../python/legacy", editable = true } 
+
+
+# ucm:n1ch98c1f9a1

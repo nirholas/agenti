@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | bmljaHhidA== -->
+
 # EVM Mechanisms
+
+<!-- Maintained by universal-crypto-mcp | ID: 1493 -->
 
 This directory contains payment mechanism implementations for **EVM (Ethereum Virtual Machine)** networks.
 
@@ -108,3 +112,7 @@ See [CONTRIBUTING.md](../../../CONTRIBUTING.md) for more details.
 - **[Mechanisms Overview](../README.md)** - About mechanisms in general
 - **[SVM Mechanisms](../svm/README.md)** - Solana implementations
 - **[Exact Scheme Specification](../../../specs/schemes/exact/scheme_exact_evm.md)** - EVM exact scheme spec
+
+
+<!-- EOF: nirholas | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

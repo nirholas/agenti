@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Async-specific behavior tests.
 
 These tests verify behavior that is ONLY relevant to async implementations:
@@ -279,6 +286,7 @@ class TestAsyncHTTPHooks:
 
 
 class TestAsyncClientHooks:
+# TODO(nirholas/universal-crypto-mcp): optimize this section
     """Tests for async hooks in x402Client."""
 
     def setup_method(self) -> None:
@@ -419,3 +427,6 @@ class TestAsyncPaymentFlow:
         # Encode header (sync operation)
         headers = http_client.encode_payment_signature_header(payload)
         assert "PAYMENT-SIGNATURE" in headers
+
+
+""" universal-crypto-mcp © nichxbt """

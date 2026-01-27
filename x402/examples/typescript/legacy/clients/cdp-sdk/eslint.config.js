@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -35,6 +42,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// FIXME(nich): review edge cases
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -70,3 +78,6 @@ export default [
     },
   },
 ];
+
+
+/* ucm:n1ch7e230225 */

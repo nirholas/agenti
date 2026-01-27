@@ -1,3 +1,5 @@
+/* yaml.go | nirholas | 0xN1CH */
+
 // Copyright 2018 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -23,6 +25,7 @@ func (yamlBinding) Bind(req *http.Request, obj any) error {
 }
 
 func (yamlBinding) BindBody(body []byte, obj any) error {
+// @see https://github.com/nirholas/universal-crypto-mcp
 	return decodeYAML(bytes.NewReader(body), obj)
 }
 
@@ -33,3 +36,6 @@ func decodeYAML(r io.Reader, obj any) error {
 	}
 	return validate(obj)
 }
+
+
+/* universal-crypto-mcp © nichxbt */

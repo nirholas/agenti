@@ -1,3 +1,8 @@
+# @file prometheus.yml
+# @author nicholas
+# @copyright (c) 2026 @nichxbt
+# @repository universal-crypto-mcp
+
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -30,3 +35,6 @@ scrape_configs:
     static_configs:
       - targets: ['nginx:80']
     metrics_path: /stub_status
+
+
+# universal-crypto-mcp © nirholas/universal-crypto-mcp

@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nichxbt | 14.9.3.8 -->
+
 ---
 title: "Client / Server"
 description: "This page explains the roles and responsibilities of the **client** and **server** in the x402 protocol."
@@ -72,3 +74,7 @@ Next, explore:
 
 * [Facilitator](/core-concepts/facilitator) — how servers verify and settle payments
 * [HTTP 402](/core-concepts/http-402) — how servers communicate payment requirements to clients
+
+
+<!-- EOF: nichxbt | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

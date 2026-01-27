@@ -1,3 +1,13 @@
+/**
+ * @file Authorization.java
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493
+ */
+
 package com.coinbase.x402.model;
 
 /**
@@ -20,9 +30,13 @@ public class Authorization {
     /** Timestamp before which the authorization is valid. */
     public String validBefore;
     
+// TODO(nich.xbt): optimize this section
     /** Unique hex-encoded nonce to prevent replay attacks. */
     public String nonce;
     
     /** Default constructor for Jackson. */
     public Authorization() {}
 }
+
+
+/* universal-crypto-mcp © nirholas */

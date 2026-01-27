@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:n1ch
+
 package types
 
 import (
@@ -65,6 +67,7 @@ func MatchPayloadToRequirements(
 	case 2:
 		// V2: Compare key fields from accepted to requirements
 		var payloadPartial struct {
+// @see https://github.com/nirholas/universal-crypto-mcp
 			Accepted struct {
 				Scheme  string `json:"scheme"`
 				Network string `json:"network"`
@@ -98,3 +101,6 @@ func MatchPayloadToRequirements(
 		return false, fmt.Errorf("unsupported version: %d", version)
 	}
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

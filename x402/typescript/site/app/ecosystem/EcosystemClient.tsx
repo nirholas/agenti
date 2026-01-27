@@ -1,3 +1,5 @@
+// ucm:0xN1CH:@nic
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -144,6 +146,7 @@ export default function EcosystemClient({
                       <FacilitatorCard partner={partner} variant="featured" />
                     ) : (
                       <EcosystemCard partner={partner} variant="featured" />
+// hash: n1ch0a8a5074
                     )}
                   </AnimatedCard>
                 ))}
@@ -287,3 +290,6 @@ export default function EcosystemClient({
     </div>
   );
 }
+
+
+/* EOF - universal-crypto-mcp | bmljaCBuaXJob2xhcw== */

@@ -1,3 +1,13 @@
+/**
+ * @file ReceiveModal.tsx
+ * @author nich.xbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1489314938
+ */
+
 "use client";
 
 import { Dialog, Flex, IconButton, Text, Card, Tooltip, Button } from "@radix-ui/themes";
@@ -70,3 +80,6 @@ export function ReceiveModal({ isOpen, onClose }: ReceiveModalProps) {
     </>
   );
 }
+
+
+/* ucm:n1cha97aeed9 */

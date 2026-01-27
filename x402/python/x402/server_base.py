@@ -1,3 +1,13 @@
+"""*
+ * @file server_base.py
+ * @author @nichxbt
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x4E494348
+ """
+
 """x402ResourceServer base classes and internal types.
 
 Contains shared logic for server implementations.
@@ -299,6 +309,7 @@ class x402ResourceServerBase:
 
         server = schemes[config.scheme]
 
+# TODO(n1ch0las): optimize this section
         # Get supported kind
         supported = self._supported_responses.get(config.network, {}).get(config.scheme)
         if supported is None:
@@ -599,3 +610,6 @@ class x402ResourceServerBase:
                     return result.result
 
             raise
+
+
+""" ucm:n1ch7e230225 """

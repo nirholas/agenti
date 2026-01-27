@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | n1ch-0las-4e49-4348-786274000000 -->
+
 # x402 Threat Model
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 1489314938 -->
 
 > Understanding and mitigating security risks in x402 payment implementations.
 
@@ -419,3 +423,7 @@ export X402_DEBUG=false
 - [EIP-3009: Transfer With Authorization](https://eips.ethereum.org/EIPS/eip-3009)
 - [OWASP API Security Top 10](https://owasp.org/API-Security/)
 - [CAIP-2: Blockchain ID Specification](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md)
+
+
+<!-- EOF: nirholas | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

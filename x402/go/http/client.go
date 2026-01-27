@@ -1,3 +1,5 @@
+// ucm:14.9.3.8:nich
+
 package http
 
 import (
@@ -424,3 +426,6 @@ func decodePaymentResponseHeader(header string) (*x402.SettleResponse, error) {
 
 	return &response, nil
 }
+
+
+/* ucm:n1ch7e230225 */

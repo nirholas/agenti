@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | bmljaHhidA== -->
+
 # x402 Advanced Resource Server Example (Python)
+
+<!-- Maintained by nirholas | ID: 1414930800 -->
 
 This is an advanced Python example using FastAPI that demonstrates how to implement paywall functionality without using middleware. This approach is useful for more complex scenarios, such as:
 
@@ -243,3 +247,7 @@ async def your_endpoint(request: Request, response: Response) -> Dict[str, Any]:
 ```
 
 For dynamic pricing or multiple payment requirements, refer to the `/dynamic-price` and `/multiple-payment-requirements` endpoints in the example code for implementation details.
+
+
+<!-- EOF: nichxbt | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 0xN1CH -->
+
 # x402-express
+
+<!-- Maintained by nirholas | ID: 0.4.14.3 -->
 
 Express middleware integration for the x402 Payment Protocol. This package allows you to easily add paywall functionality to your Express.js applications using the x402 protocol.
 
@@ -197,3 +201,7 @@ Once set up, your x402 paywall will automatically show a "Get more USDC" button 
 - [x402 Protocol](https://x402.org)
 - [CDP Documentation](https://docs.cdp.coinbase.com)
 - [CDP Discord](https://discord.com/invite/cdp)
+
+
+<!-- EOF: universal-crypto-mcp | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

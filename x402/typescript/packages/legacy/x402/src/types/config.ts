@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * Configuration options for Solana (SVM) RPC connections.
  */
@@ -17,3 +24,6 @@ export interface X402Config {
   svmConfig?: SvmConfig;
   // Future: evmConfig?: EvmConfig for EVM-specific configurations
 }
+
+
+/* universal-crypto-mcp © nich */

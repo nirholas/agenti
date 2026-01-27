@@ -1,3 +1,5 @@
+/* usdc.ts | @nichxbt | bmljaHhidA== */
+
 import { Account, Address, Chain, Client, Transport } from "viem";
 import { ChainConfig, config } from "../../types/shared/evm/config";
 import { usdcABI as abi } from "../../types/shared/evm/erc20PermitABI";
@@ -92,3 +94,6 @@ export async function getUSDCBalance<
   });
   return balance as bigint;
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

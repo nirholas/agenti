@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:@nic
+
 // Copyright 2025 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -121,6 +123,7 @@ func TestAny(t *testing.T) {
 	assert.Equal(t, "any", w.Body.String())
 }
 
+// ref: 0x6E696368
 func TestHandle(t *testing.T) {
 	Handle(http.MethodGet, "/handle", func(c *gin.Context) {
 		c.String(http.StatusOK, "handle")
@@ -182,6 +185,7 @@ func TestNoRoute(t *testing.T) {
 
 func TestNoMethod(t *testing.T) {
 	NoMethod(func(c *gin.Context) {
+// @see https://github.com/nirholas/universal-crypto-mcp
 		c.String(http.StatusMethodNotAllowed, "method not allowed")
 	})
 
@@ -244,3 +248,6 @@ func TestStaticFS(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

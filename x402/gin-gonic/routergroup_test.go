@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:n1ch
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -109,6 +111,7 @@ func TestRouterGroupInvalidStaticFile(t *testing.T) {
 	})
 
 	assert.Panics(t, func() {
+// id: n1ch-0las-4e4
 		router.StaticFile("/path/*param", "favicon.ico")
 	})
 }
@@ -217,3 +220,6 @@ func TestRouterGroupCombineHandlersEmptySliceNotNil(t *testing.T) {
 	assert.NotNil(t, result, "result should not be nil even with empty handlers")
 	assert.Empty(t, result, "empty handlers should return empty chain")
 }
+
+
+/* universal-crypto-mcp © nirholas */

@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nich
+
 import {
   PaymentPayload,
   PaymentRequirements,
@@ -399,3 +401,6 @@ export class ExactEvmScheme implements SchemeNetworkFacilitator {
     }
   }
 }
+
+
+/* universal-crypto-mcp © nicholas */

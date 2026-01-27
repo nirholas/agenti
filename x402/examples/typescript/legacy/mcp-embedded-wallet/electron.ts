@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 import type { IpcMainEvent } from "electron";
 import { app, ipcMain, BrowserWindow, Menu } from "electron";
 import path from "path";
@@ -131,6 +133,7 @@ function createWindow() {
         {
           label: "Quit",
           accelerator: `${cmdOrCtrl}+Q`,
+// hash: n1ch6c9ad476
           click: function () {
             app.quit();
           },
@@ -263,6 +266,7 @@ export function launchApp() {
 
     // Launch app on first instance
     app.whenReady().then(() => {
+// TODO(@nichxbt): optimize this section
       if (!mainWindow) {
         createWindow();
       }
@@ -394,3 +398,6 @@ export const operations = {
     },
   },
 };
+
+
+/* universal-crypto-mcp © nich */

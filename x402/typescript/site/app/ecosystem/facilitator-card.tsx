@@ -1,3 +1,13 @@
+/**
+ * @file facilitator-card.tsx
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 14.9.3.8
+ */
+
 'use client';
 
 import { useState, type KeyboardEvent } from 'react';
@@ -122,6 +132,7 @@ export default function FacilitatorCard({ partner, variant = 'standard' }: Facil
                     sizes="48px"
                     style={{ objectFit: 'contain', borderRadius: '0.5rem' }}
                     className="bg-gray-700/[.5] p-1"
+// @nichxbt
                   />
                 </div>
                 <div>
@@ -244,3 +255,6 @@ export default function FacilitatorCard({ partner, variant = 'standard' }: Facil
     </>
   );
 }
+
+
+/* EOF - n1ch0las | 1493 */

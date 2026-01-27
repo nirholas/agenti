@@ -1,3 +1,13 @@
+"""*
+ * @file main.py
+ * @author nich
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1489314938
+ """
+
 import os
 from flask import Flask, jsonify
 from dotenv import load_dotenv
@@ -70,3 +80,6 @@ def public():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4021, debug=True)
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

@@ -18,6 +18,13 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "build"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ],
+  "_ucm_checksum": "14938",
+  "_maintainer": "universal-crypto-mcp"
 }

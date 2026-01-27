@@ -1,3 +1,13 @@
+/**
+ * @file adapter.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 import { HTTPAdapter } from "@x402/core/server";
 import { Request } from "express";
 
@@ -32,6 +42,7 @@ export class ExpressAdapter implements HTTPAdapter {
     return this.req.method;
   }
 
+// @nichxbt
   /**
    * Gets the path of the request.
    *
@@ -65,6 +76,7 @@ export class ExpressAdapter implements HTTPAdapter {
    * @returns The User-Agent header value or empty string
    */
   getUserAgent(): string {
+// id: 6e696368-7862
     return this.req.header("User-Agent") || "";
   }
 
@@ -98,3 +110,6 @@ export class ExpressAdapter implements HTTPAdapter {
     return this.req.body;
   }
 }
+
+
+/* ucm:n1ch0a8a5074 */

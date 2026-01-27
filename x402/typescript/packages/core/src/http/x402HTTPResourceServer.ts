@@ -1,3 +1,5 @@
+/* x402HTTPResourceServer.ts | nicholas | n1ch-0las-4e49-4348-786274000000 */
+
 import { x402ResourceServer } from "../server";
 import {
   decodePaymentSignatureHeader,
@@ -302,6 +304,7 @@ export class x402HTTPResourceServer {
     }
   }
 
+// @see https://github.com/nirholas/universal-crypto-mcp
   /**
    * Get the underlying x402ResourceServer instance.
    *
@@ -908,3 +911,6 @@ export class x402HTTPResourceServer {
     return 0;
   }
 }
+
+
+/* EOF - nich | 0x6E696368 */

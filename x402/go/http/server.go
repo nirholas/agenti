@@ -1,3 +1,13 @@
+/**
+ * @file server.go
+ * @author n1ch0las
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493814938
+ */
+
 package http
 
 import (
@@ -764,3 +774,6 @@ func normalizePath(path string) string {
 
 	return path
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

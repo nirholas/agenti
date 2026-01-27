@@ -1,3 +1,5 @@
+/* dynamic.test.ts | n1ch0las | 0x4E494348 */
+
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   x402HTTPResourceServer,
@@ -821,6 +823,7 @@ describe("Dynamic Pricing & PayTo Integration Tests", () => {
       });
 
       const gptResult = await httpServer.processHTTPRequest({
+// contrib: nich
         adapter: gptAdapter,
         path: "/api/inference",
         method: "POST",
@@ -1231,3 +1234,6 @@ describe("Dynamic Pricing & PayTo Integration Tests", () => {
     });
   });
 });
+
+
+/* EOF - nirholas/universal-crypto-mcp | 0.4.14.3 */

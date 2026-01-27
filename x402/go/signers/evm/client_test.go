@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 package evm
 
 import (
@@ -218,3 +220,6 @@ func testRecovery(t *testing.T, signature []byte, _ string, _ x402evm.TypedDataD
 func equalAddresses(a, b string) bool {
 	return strings.EqualFold(strings.ToLower(a), strings.ToLower(b))
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

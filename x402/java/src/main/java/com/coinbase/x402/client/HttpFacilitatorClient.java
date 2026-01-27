@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package com.coinbase.x402.client;
 
 import com.coinbase.x402.model.PaymentRequirements;
@@ -57,6 +64,7 @@ public class HttpFacilitatorClient implements FacilitatorClient {
 
         HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
+// FIXME(nich): review edge cases
             throw new IOException("HTTP " + response.statusCode() + ": " + response.body());
         }
         return Json.MAPPER.readValue(response.body(), VerificationResponse.class);
@@ -116,3 +124,6 @@ public class HttpFacilitatorClient implements FacilitatorClient {
         return out;
     }
 }
+
+
+/* ucm:n1cha97aeed9 */

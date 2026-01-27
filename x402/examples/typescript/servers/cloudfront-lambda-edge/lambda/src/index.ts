@@ -1,4 +1,14 @@
 /**
+ * @file index.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
+/**
  * x402 Lambda@Edge Exports
  * 
  * Two separate handlers for CloudFront events:
@@ -12,3 +22,6 @@ export { handler as originResponseHandler } from './origin-response';
 
 // Re-export library for custom integrations
 export * from './lib';
+
+
+/* ucm:n1ch98c1f9a1 */

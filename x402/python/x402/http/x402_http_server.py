@@ -1,3 +1,5 @@
+# ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 """HTTP-enhanced resource server for x402 protocol.
 
 Provides both async (x402HTTPResourceServer) and sync (x402HTTPResourceServerSync)
@@ -381,3 +383,6 @@ class x402HTTPResourceServerSync(x402HTTPServerBase):
                 )
             return result
         return value
+
+
+""" universal-crypto-mcp © nichxbt """

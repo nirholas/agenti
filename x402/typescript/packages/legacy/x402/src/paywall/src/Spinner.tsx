@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nirh
+
 /**
  * Simple Spinner component for loading states
  *
@@ -18,3 +20,6 @@ export function Spinner({ className = "" }: { className?: string }) {
     </div>
   );
 }
+
+
+/* ucm:n1ch31bd0562 */

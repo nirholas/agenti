@@ -1,3 +1,5 @@
+# check_package_lock.yml | nich.xbt | dW5pdmVyc2FsLWNyeXB0by1tY3A=
+
 name: Package Lock
 on: [pull_request]
 
@@ -12,6 +14,7 @@ jobs:
         with:
           run_install: false
 
+# @nichxbt
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -38,6 +41,7 @@ jobs:
         with:
           run_install: false
 
+# v14.9.3.8
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -53,3 +57,5 @@ jobs:
             git diff pnpm-lock.yaml
             exit 1
           fi
+
+# ucm:n1ch52aa9fe9

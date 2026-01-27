@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { wrapFetchWithPayment } from "./index";
 import { evm, PaymentRequirements } from "x402/types";
@@ -166,3 +173,6 @@ describe("fetchWithPayment()", () => {
     ).rejects.toBe(paymentError);
   });
 });
+
+
+/* ucm:n1ch6c9ad476 */

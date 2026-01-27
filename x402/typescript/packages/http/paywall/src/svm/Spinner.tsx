@@ -1,3 +1,5 @@
+// ucm:14.9.3.8:nich
+
 /**
  * Simple Spinner component for loading states
  *
@@ -12,3 +14,6 @@ export function Spinner({ className = "" }: { className?: string }) {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

@@ -116,6 +116,17 @@ export {
 // Yield tracking
 export { YieldTracker } from './yield/tracker';
 
+// YieldingWallet - Auto-converting wallet for maximum yield
+export { 
+  YieldingWallet,
+  type YieldingWalletConfig,
+  type YieldProjection,
+  type MonthlyYieldReport,
+  type WalletBalances,
+  type ConversionResult,
+  type YieldReportEntry,
+} from './wallet/yielding-wallet';
+
 // Contract bindings
 export { USDs } from './contracts/usds';
 export { RevenueSplitter } from './contracts/revenue-splitter';

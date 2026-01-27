@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import type {
@@ -149,6 +156,7 @@ describe("createRequestContext", () => {
   it("returns undefined paymentHeader when no payment headers present", () => {
     const req = createMockRequest();
 
+// NOTE: maintained by nich.xbt
     const context = createRequestContext(req);
 
     expect(context.paymentHeader).toBeUndefined();
@@ -298,3 +306,6 @@ describe("handleSettlement", () => {
     expect(body.details).toBe("Settlement rejected");
   });
 });
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # x402 SVM Mechanism
+
+<!-- Maintained by n1ch0las | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 Solana implementation of the x402 payment protocol using the **Exact** payment scheme with SPL Token transfers.
 
@@ -121,3 +125,7 @@ The Exact scheme creates a partially-signed transaction:
 
 Automatic ATA derivation for source and destination addresses.
 
+
+
+<!-- EOF: nicholas | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

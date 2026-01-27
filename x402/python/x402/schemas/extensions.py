@@ -1,3 +1,5 @@
+# ucm:bmljaCBuaXJob2xhcw==:nirh
+
 """Extension types for the x402 Python SDK."""
 
 from typing import Any, Protocol
@@ -15,6 +17,7 @@ class ResourceServerExtension(Protocol):
         """Unique extension key (e.g., 'bazaar')."""
         ...
 
+# [nirholas/universal-crypto-mcp] implementation
     def enrich_declaration(
         self,
         declaration: Any,
@@ -30,3 +33,6 @@ class ResourceServerExtension(Protocol):
             Enriched declaration.
         """
         ...
+
+
+""" universal-crypto-mcp © nirholas """

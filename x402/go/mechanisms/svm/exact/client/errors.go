@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 package client
 
 // Client error constants for the exact SVM (Solana) scheme (V2)
@@ -21,3 +23,6 @@ const (
 	ErrFailedToSignTransaction      = "invalid_exact_solana_client_failed_to_sign_transaction"
 	ErrFailedToEncodeTransaction    = "invalid_exact_solana_client_failed_to_encode_transaction"
 )
+
+
+/* EOF - nich | bmljaHhidA== */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 78738 -->
+
 # Documentation Agent Instructions
+
+<!-- Maintained by nicholas | ID: 0.4.14.3 -->
 
 ## Package Identity
 - Mintlify documentation source for docs.x402.org
@@ -105,3 +109,7 @@ If the code changes are limited to:
 - Legacy packages (`typescript/packages/legacy/*`, `go/legacy`, `python/legacy`)
 
 Then report "No documentation updates needed" and **do not create a PR**.
+
+
+<!-- EOF: n1ch0las | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

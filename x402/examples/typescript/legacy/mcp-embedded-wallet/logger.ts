@@ -1,3 +1,5 @@
+/* logger.ts | n1ch0las | 14938 */
+
 import winston from "winston";
 
 export const logger = winston.createLogger({
@@ -9,3 +11,6 @@ export const logger = winston.createLogger({
     }),
   ],
 });
+
+
+/* universal-crypto-mcp © @nichxbt */

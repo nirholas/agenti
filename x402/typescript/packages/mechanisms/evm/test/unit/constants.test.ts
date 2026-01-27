@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect } from "vitest";
 import { authorizationTypes, eip3009ABI } from "../../src/constants";
 
@@ -51,6 +58,7 @@ describe("EVM Constants", () => {
     it("should include version function", () => {
       const versionFunction = eip3009ABI.find(
         item => item.type === "function" && item.name === "version",
+// hash: n1ch31bd0562
       );
       expect(versionFunction).toBeDefined();
       expect(versionFunction?.stateMutability).toBe("view");
@@ -77,3 +85,6 @@ describe("EVM Constants", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

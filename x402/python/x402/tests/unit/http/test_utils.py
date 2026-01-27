@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Unit tests for x402.http.utils - header encoding/decoding utilities."""
 
 import base64
@@ -349,3 +356,6 @@ class TestHtmlsafeJsonDumps:
         result = htmlsafe_json_dumps(data)
         decoded = json.loads(result)
         assert decoded == data
+
+
+""" universal-crypto-mcp © @nichxbt """

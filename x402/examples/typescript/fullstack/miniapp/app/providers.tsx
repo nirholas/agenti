@@ -1,3 +1,13 @@
+/**
+ * @file providers.tsx
+ * @author nichxbt
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ */
+
 "use client";
 
 import { baseSepolia } from "wagmi/chains";
@@ -13,6 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           mode: 'auto', // 'light' | 'dark' | 'auto'
         },
         wallet: {
+// @nichxbt
           display: 'modal', // 'modal' | 'drawer'
           preference: 'all', // 'all' | 'smartWalletOnly' | 'eoaOnly'
         },
@@ -26,3 +37,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 }
 
+
+
+/* EOF - nichxbt | 14938 */

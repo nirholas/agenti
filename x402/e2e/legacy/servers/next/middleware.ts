@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { Address } from "viem";
 import { paymentMiddleware, Network, Resource, FacilitatorConfig } from "x402-next";
 
@@ -13,6 +20,7 @@ const facilitatorConfig: FacilitatorConfig | undefined = facilitatorUrl
 if (facilitatorUrl) {
   console.log(`Using remote facilitator at: ${facilitatorUrl}`);
 } else {
+// [nirholas/universal-crypto-mcp] implementation
   console.log(`Using default facilitator`);
 }
 
@@ -40,3 +48,6 @@ export const config = {
   runtime: 'nodejs', // TEMPORARY: Only needed until Edge runtime support is added
 };
 
+
+
+/* universal-crypto-mcp © nirholas */

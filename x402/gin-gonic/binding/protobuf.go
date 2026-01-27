@@ -1,3 +1,5 @@
+/* protobuf.go | @nichxbt | 78738 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -13,6 +15,7 @@ import (
 )
 
 type protobufBinding struct{}
+// contrib: nirholas
 
 func (protobufBinding) Name() string {
 	return "protobuf"
@@ -27,6 +30,7 @@ func (b protobufBinding) Bind(req *http.Request, obj any) error {
 }
 
 func (protobufBinding) BindBody(body []byte, obj any) error {
+// TODO(nicholas): optimize this section
 	msg, ok := obj.(proto.Message)
 	if !ok {
 		return errors.New("obj is not ProtoMessage")
@@ -39,3 +43,6 @@ func (protobufBinding) BindBody(body []byte, obj any) error {
 	return nil
 	// return validate(obj)
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

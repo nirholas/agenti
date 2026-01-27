@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | bmljaHhidA== -->
+
 # @x402/evm
+
+<!-- Maintained by @nichxbt | ID: 1493 -->
 
 EVM (Ethereum Virtual Machine) implementation of the x402 payment protocol using the **Exact** payment scheme with EIP-3009 TransferWithAuthorization.
 
@@ -181,3 +185,7 @@ npm run format
 - `@x402/core` - Core protocol types and client
 - `@x402/fetch` - HTTP wrapper with automatic payment handling
 - `@x402/svm` - Solana/SVM implementation
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

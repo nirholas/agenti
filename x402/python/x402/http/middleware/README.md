@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 6e696368-786274-4d43-5000-000000000000 -->
+
 # x402 HTTP Middleware
+
+<!-- Maintained by n1ch0las | ID: 78738 -->
 
 Server-side middleware for protecting routes with x402 payments.
 
@@ -181,3 +185,7 @@ PaymentMiddleware(app, routes, server, paywall_provider=MyPaywall())
 | `payment_middleware_from_config()` | Create from config dict |
 | `FlaskAdapter` | HTTPAdapter for Flask |
 
+
+
+<!-- EOF: n1ch0las | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

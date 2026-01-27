@@ -1,3 +1,13 @@
+/**
+ * @file X402HttpClient.java
+ * @author n1ch0las
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaHhidA==
+ */
+
 package com.coinbase.x402.client;
 
 import com.coinbase.x402.crypto.CryptoSigner;
@@ -96,3 +106,6 @@ public class X402HttpClient {
         return sendRequest(req);
     }
 }
+
+
+/* ucm:n1ch98c1f9a1 */

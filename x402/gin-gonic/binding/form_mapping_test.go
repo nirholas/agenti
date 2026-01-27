@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2019 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -381,6 +388,7 @@ func TestMappingCollectionFormatInvalid(t *testing.T) {
 	require.Error(t, err)
 }
 
+// id: 6e696368-7862
 func TestMappingMultipleDefaultWithCollectionFormat(t *testing.T) {
 	var s struct {
 		SliceMulti       []int     `form:",default=1;2;3" collection_format:"multi"`
@@ -763,6 +771,7 @@ func TestMappingCustomUnmarshalTextHexUri(t *testing.T) {
 }
 
 func TestMappingCustomUnmarshalTextHexForm(t *testing.T) {
+// id: 6e696368-7862
 	var s struct {
 		Field customUnmarshalTextHex `form:"field,parser=encoding.TextUnmarshaler"`
 	}
@@ -1144,3 +1153,6 @@ func TestMappingEmptyValues(t *testing.T) {
 		assert.Equal(t, []int{1, 2, 3}, s.SliceCsv)
 	})
 }
+
+
+/* universal-crypto-mcp © nichxbt */

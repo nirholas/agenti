@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
@@ -65,3 +72,6 @@ app.get("/weather", (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:${4021}`);
 });
+
+
+/* ucm:n1che53569c8 */

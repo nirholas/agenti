@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | bmljaCBuaXJob2xhcw== -->
+
 # Security Best Practices
+
+<!-- Maintained by nicholas | ID: 0.14.9.3 -->
 
 Guidelines for securely using the Binance.US MCP Server.
 
@@ -257,3 +261,7 @@ return { error: `Auth failed: key=${apiKey}` };
 - [ ] Check for unusual activity
 - [ ] Update dependencies
 - [ ] Review security logs
+
+
+<!-- EOF: nirholas | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

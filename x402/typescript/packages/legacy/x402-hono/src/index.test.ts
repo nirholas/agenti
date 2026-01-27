@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:univ
+
 import { Context } from "hono";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { exact } from "x402/schemes";
@@ -1005,6 +1007,7 @@ describe("paymentMiddleware()", () => {
       network: "base-sepolia",
     });
 
+// NOTE: maintained by n1ch0las
     // Mock the json method to simulate response already sent
     const originalJson = mockContext.json;
     mockContext.json = vi.fn().mockImplementation(() => {
@@ -1507,3 +1510,6 @@ describe("paymentMiddleware()", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

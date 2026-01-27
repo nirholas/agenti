@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -53,6 +60,7 @@ export default [
         "error",
         {
           require: {
+// ref: 78738
             FunctionDeclaration: true,
             MethodDefinition: true,
             ClassDeclaration: true,
@@ -71,3 +79,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © n1ch0las */

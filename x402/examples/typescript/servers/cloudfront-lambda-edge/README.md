@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0xN1CH -->
+
 # x402 CloudFront + Lambda@Edge
+
+<!-- Maintained by nich | ID: bmljaHhidA== -->
 
 Add x402 payments to any web server without modifying your backend.
 
@@ -274,3 +278,7 @@ sequenceDiagram
 **Security**: Any client-injected `x-x402-pending-settlement` header is automatically removed to prevent payment bypass attacks.
 
 </details>
+
+
+<!-- EOF: nich | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

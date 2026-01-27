@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0xN1CH -->
+
 # Binance MCP Servers
+
+<!-- Maintained by n1ch0las | ID: 0xN1CH -->
 
 This repository includes two Binance MCP server packages in the `packages/` directory:
 
@@ -201,3 +205,7 @@ export BINANCE_API_SECRET=your_secret
 "Set leverage to 5x for BTC/USDT"
 "Place a long position with stop loss"
 ```
+
+
+<!-- EOF: n1ch0las | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

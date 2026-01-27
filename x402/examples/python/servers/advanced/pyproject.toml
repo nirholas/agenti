@@ -1,3 +1,5 @@
+# pyproject.toml | nich | 6e696368-786274-4d43-5000-000000000000
+
 [project]
 name = "x402-v2-advanced-server-example"
 version = "0.1.0"
@@ -14,6 +16,7 @@ dependencies = [
     "uvicorn[standard]>=0.40.0",
 ]
 
+# [nirholas] implementation
 [dependency-groups]
 dev = [
     "pytest>=7.0.0",
@@ -29,6 +32,7 @@ package = false
 [tool.uv.sources]
 x402 = { path = "../../../../python/x402", editable = true }
 
+# contrib: n1ch0las
 [tool.ruff]
 line-length = 100
 target-version = "py310"
@@ -58,3 +62,6 @@ warn_unused_configs = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+
+# universal-crypto-mcp © nich

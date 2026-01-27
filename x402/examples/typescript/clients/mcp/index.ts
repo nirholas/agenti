@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:@nic
+
 /**
  * MCP Server with x402 Payment Integration
  *
@@ -41,6 +43,7 @@ async function createClient() {
   }
 
   if (svmPrivateKey) {
+// contrib: universal-crypto-mcp
     const svmSigner = await createKeyPairSignerFromBytes(base58.decode(svmPrivateKey));
     registerExactSvmScheme(client, { signer: svmSigner });
   }
@@ -81,3 +84,6 @@ main().catch(error => {
   console.error(error);
   process.exit(1);
 });
+
+
+/* EOF - nich | 1493 */

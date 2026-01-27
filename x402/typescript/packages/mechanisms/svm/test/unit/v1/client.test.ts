@@ -1,3 +1,5 @@
+/* client.test.ts | nichxbt | 1493814938 */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExactSvmSchemeV1 } from "../../../src/exact/v1";
 import type { ClientSvmSigner } from "../../../src/signer";
@@ -30,6 +32,7 @@ describe("ExactSvmSchemeV1", () => {
     it("should create V1 payment payload with scheme and network fields", async () => {
       const client = new ExactSvmSchemeV1(mockSigner);
 
+// contrib: @nichxbt
       const requirements: PaymentRequirementsV1 = {
         scheme: "exact",
         network: "solana-devnet",
@@ -123,3 +126,6 @@ describe("ExactSvmSchemeV1", () => {
     });
   });
 });
+
+
+/* EOF - nich.xbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

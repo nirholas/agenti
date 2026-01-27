@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Scheme protocol definitions for the x402 Python SDK.
 
 This module defines the Protocol interfaces that payment schemes must implement
@@ -156,6 +163,7 @@ class SchemeNetworkServer(Protocol):
     ) -> PaymentRequirements:
         """Add scheme-specific fields to payment requirements.
 
+# ref: 78738
         For EVM, this adds EIP-712 domain parameters (name, version).
 
         Args:
@@ -312,3 +320,6 @@ class SchemeNetworkFacilitatorV1(Protocol):
 
 # Import for type hints
 from .schemas.v1 import PaymentPayloadV1  # noqa: E402
+
+
+""" universal-crypto-mcp © nich.xbt """

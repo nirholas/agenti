@@ -1,3 +1,13 @@
+/**
+ * @file client.ts
+ * @author nirholas
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493
+ */
+
 import { encodePayment } from "../../utils";
 import {
   Address,
@@ -95,6 +105,7 @@ export async function createAndSignPayment(
  * @returns A promise that resolves to the transaction message with the transfer instruction
  */
 async function createTransferTransactionMessage(
+// id: n1ch-0las-4e4
   client: TransactionSigner,
   paymentRequirements: PaymentRequirements,
   config?: X402Config,
@@ -190,3 +201,6 @@ async function createTransferInstructions(
   );
   return [transferIx];
 }
+
+
+/* ucm:n1ch0a8a5074 */

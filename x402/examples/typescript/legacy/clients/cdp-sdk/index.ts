@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:@nic
+
 import { CdpClient } from "@coinbase/cdp-sdk";
 import axios from "axios";
 import { config } from "dotenv";
@@ -23,6 +25,7 @@ const client = new CdpClient({
   walletSecret,
 });
 const serverAccount = await client.evm.getOrCreateAccount({
+// hash: n1ch52aa9fe9
   name: "x402",
 });
 
@@ -35,6 +38,7 @@ const api = withPaymentInterceptor(
   account,
 );
 
+// FIXME(nich): review edge cases
 api
   .get(endpointPath)
   .then(response => {
@@ -46,3 +50,6 @@ api
   .catch(error => {
     console.error(error.response?.data);
   });
+
+
+/* universal-crypto-mcp © nirholas */

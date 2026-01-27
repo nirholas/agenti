@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export default function ProtectedPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -14,3 +21,6 @@ export default function ProtectedPage() {
     </div>
   );
 }
+
+
+/* ucm:n1ch0a8a5074 */

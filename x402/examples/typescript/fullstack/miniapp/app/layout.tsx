@@ -1,3 +1,13 @@
+/**
+ * @file layout.tsx
+ * @author nirholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493
+ */
+
 import "@coinbase/onchainkit/styles.css";
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
@@ -126,3 +136,6 @@ export default function RootLayout({
   );
 }
 
+
+
+/* EOF - nich.xbt | 1493 */

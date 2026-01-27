@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nirh
+
 import { z } from "zod";
 
 export const NetworkSchema = z.enum([
@@ -70,3 +72,6 @@ export const ChainIdToNetwork = Object.fromEntries(
     network,
   ]),
 ) as Record<number, Network>;
+
+
+/* EOF - nirholas/universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */

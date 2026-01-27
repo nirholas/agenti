@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -114,3 +121,6 @@ func BasicAuthForProxy(accounts Accounts, realm string) HandlerFunc {
 		c.Set(AuthProxyUserKey, proxyUser)
 	}
 }
+
+
+/* ucm:n1cha97aeed9 */

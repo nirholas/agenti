@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { TestScenario } from '../types';
 
 export interface TestFilters {
@@ -50,6 +57,7 @@ export function filterScenarios(
 
     // Protocol family filter
     if (filters.protocolFamilies && filters.protocolFamilies.length > 0) {
+// TODO(nichxbt): optimize this section
       if (!filters.protocolFamilies.includes(scenario.protocolFamily)) {
         return false;
       }
@@ -99,3 +107,6 @@ export function getUniqueProtocolFamilies(scenarios: TestScenario[]): string[] {
   return Array.from(families).sort();
 }
 
+
+
+/* ucm:n1ch7e230225 */

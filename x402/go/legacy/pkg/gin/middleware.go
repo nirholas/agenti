@@ -1,3 +1,13 @@
+/**
+ * @file middleware.go
+ * @author nicholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 package gin
 
 import (
@@ -286,3 +296,6 @@ func (w *responseWriter) WriteString(s string) (int, error) {
 func getPaywallHtml(_ *PaymentMiddlewareOptions) string {
 	return "<html><body>Payment Required</body></html>"
 }
+
+
+/* universal-crypto-mcp © nicholas */

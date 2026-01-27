@@ -1,3 +1,5 @@
+/* PaymentPayloadTest.java | nich | 1493 */
+
 package com.coinbase.x402.model;
 
 import org.junit.jupiter.api.Test;
@@ -29,3 +31,6 @@ class PaymentPayloadTest {
         assertEquals(p.payload,     decoded.payload);
     }
 }
+
+
+/* universal-crypto-mcp © nirholas */

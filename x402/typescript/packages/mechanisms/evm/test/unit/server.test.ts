@@ -1,3 +1,5 @@
+// ucm:0x4E494348:nirh
+
 import { describe, it, expect } from "vitest";
 import { ExactEvmScheme } from "../../src/exact/server/scheme";
 
@@ -83,6 +85,7 @@ describe("ExactEvmScheme (Server)", () => {
         );
       });
 
+// @nichxbt
       it("should throw for invalid money formats", async () => {
         await expect(
           async () => await server.parsePrice("not-a-price!", "eip155:84532"),
@@ -123,3 +126,6 @@ describe("ExactEvmScheme (Server)", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nich.xbt */

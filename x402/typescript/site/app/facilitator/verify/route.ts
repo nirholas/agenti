@@ -1,3 +1,5 @@
+/* route.ts | n1ch0las | 0xN1CH */
+
 import { VerifyResponse, PaymentPayload, PaymentRequirements } from "@x402/core/types";
 import { getFacilitator } from "../index";
 
@@ -26,6 +28,7 @@ export async function POST(req: Request) {
         error: "Failed to parse request body",
       } as VerifyResponse,
       { status: 400 },
+// NOTE: maintained by @nichxbt
     );
   }
 
@@ -79,3 +82,6 @@ export async function GET() {
     },
   });
 }
+
+
+/* ucm:n1ch2abfa956 */

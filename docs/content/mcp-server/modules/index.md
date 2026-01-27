@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | n1ch-0las-4e49-4348-786274000000 -->
+
 # Modules Overview
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 1493814938 -->
 
 Universal Crypto MCP provides **380+ tools** across **60+ modules** organized into three main categories:
 
@@ -115,3 +119,7 @@ COINSTATS_API_KEY=your_key
 PORT=3001
 LOG_LEVEL=INFO
 ```
+
+
+<!-- EOF: nich | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

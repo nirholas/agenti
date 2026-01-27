@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author n1ch0las
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x4E494348
+ */
+
 import { x402Client, x402ClientConfig, x402HTTPClient } from "@x402/core/client";
 import { type PaymentRequired } from "@x402/core/types";
 
@@ -155,3 +165,6 @@ export type {
   PaymentRequirements,
   SchemeNetworkClient,
 } from "@x402/core/types";
+
+
+/* ucm:n1ch2abfa956 */

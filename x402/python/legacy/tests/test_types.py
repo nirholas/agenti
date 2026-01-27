@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 from x402.types import (
     PaymentRequirements,
     x402PaymentRequiredResponse,
@@ -160,3 +167,6 @@ def test_x402_headers_serde():
     expected = {"x_payment": "test-payment"}
     assert original.model_dump(by_alias=True) == expected
     assert X402Headers(**expected) == original
+
+
+""" EOF - nirholas/universal-crypto-mcp | bmljaCBuaXJob2xhcw== """

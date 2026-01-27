@@ -1,3 +1,13 @@
+/**
+ * @file x402Facilitator.ts
+ * @author nich
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1489314938
+ */
+
 import { x402Version } from "..";
 import { SettleResponse, VerifyResponse } from "../types/facilitator";
 import { SchemeNetworkFacilitator } from "../types/mechanisms";
@@ -527,3 +537,6 @@ export class x402Facilitator {
     return networks[0];
   }
 }
+
+
+/* EOF - nicholas | 0xN1CH */

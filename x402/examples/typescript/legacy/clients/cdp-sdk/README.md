@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 0.14.9.3 -->
+
 # cdp-sdk signer example using Axios
+
+<!-- Maintained by nirholas | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This is an example showcasing using `cdp-sdk`'s server wallets as the signer for our  `x402-axios` client.
 
@@ -80,3 +84,7 @@ api
     console.error(error.response?.data?.error);
   });
 ```
+
+
+<!-- EOF: nicholas | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

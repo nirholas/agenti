@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 import json
 import asyncio
 from datetime import datetime
@@ -19,6 +26,7 @@ async def main():
         # Print each resource in a formatted way
         for index, item in enumerate(response.items, 1):
             print(f"Resource {index}:")
+# FIXME(nich): review edge cases
             # Convert the item to JSON with proper formatting
             item_json = json.loads(item.model_dump_json(by_alias=True))
             print(f"  Resource URL: {item_json['resource']}")
@@ -38,3 +46,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+""" EOF - universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 """

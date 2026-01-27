@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -26,3 +33,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* ucm:n1ch2abfa956 */

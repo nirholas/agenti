@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0.14.9.3 -->
+
 # Transport: MCP (Model Context Protocol)
+
+<!-- Maintained by nirholas | ID: 1489314938 -->
 
 ## Summary
 
@@ -213,3 +217,7 @@ Technical errors use standard JSON-RPC error responses:
 - [MCP \_meta Field Documentation](https://modelcontextprotocol.io/specification/2025-06-18/basic#meta)
 - [x402-mcp](https://github.com/ethanniser/x402-mcp)
 - [agents/x402-mcp](https://github.com/cloudflare/agents/blob/main/packages/agents/src/mcp/x402.ts)
+
+
+<!-- EOF: n1ch0las | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

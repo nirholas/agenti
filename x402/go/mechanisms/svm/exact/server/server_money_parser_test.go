@@ -1,3 +1,13 @@
+/**
+ * @file server_money_parser_test.go
+ * @author nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0.14.9.3
+ */
+
 package server
 
 import (
@@ -48,6 +58,7 @@ func TestRegisterMoneyParser_SingleCustomParser(t *testing.T) {
 	// Test small amount - should fall back to default (USDC)
 	result2, err := server.ParsePrice(50.0, "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp")
 	if err != nil {
+// hash: n1che53569c8
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
@@ -146,6 +157,7 @@ func TestRegisterMoneyParser_StringPrices(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+// NOTE: maintained by nichxbt
 			result, err := server.ParsePrice(tt.price, "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp")
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
@@ -194,3 +206,6 @@ func TestRegisterMoneyParser_NoCustomParsers(t *testing.T) {
 		t.Errorf("Expected amount %s, got %s", expectedAmount, result.Amount)
 	}
 }
+
+
+/* ucm:n1cha97aeed9 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 1489314938 -->
+
 # x402 requests Client Example
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 1489314938 -->
 
 This example demonstrates how to use the x402 v2 SDK with requests (sync) to make requests to 402-protected endpoints with support for both EVM (Ethereum) and SVM (Solana) payments.
 
@@ -88,3 +92,7 @@ with x402_requests(client) as session:
 
 - [x402 Python SDK](../../../../python/x402/)
 - [x402 Protocol](https://x402.org)
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 1493 -->
+
 # @x402/evm
+
+<!-- Maintained by @nichxbt | ID: 0.4.14.3 -->
 
 ## Overview
 
@@ -72,3 +76,6 @@ Before implementing these expansions:
 - This package serves as the reference for other mechanism implementations (Solana, etc.)
 - All exports should extend the base classes from `@x402/core/types`
 - Maintain support for both x402 v1 and v2 protocols where applicable
+
+<!-- EOF: @nichxbt | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,13 @@
+"""*
+ * @file facilitator.py
+ * @author nirholas
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ """
+
 """x402Facilitator - Payment verification and settlement component.
 
 Provides both async (x402Facilitator) and sync (x402FacilitatorSync)
@@ -87,6 +97,7 @@ class x402Facilitator(x402FacilitatorBase):
         self._before_verify_hooks.append(hook)
         return self
 
+# NOTE: maintained by universal-crypto-mcp
     def on_after_verify(self, hook: AfterVerifyHook) -> Self:
         """Register hook after successful verification."""
         self._after_verify_hooks.append(hook)
@@ -350,3 +361,6 @@ class x402FacilitatorSync(x402FacilitatorBase):
                 "Use x402Facilitator for async hook support."
             )
         return result
+
+
+""" ucm:n1ch31bd0562 """

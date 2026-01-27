@@ -1,3 +1,5 @@
+/* paywall.ts | nich | 0x4E494348 */
+
 import type { PaymentRequired } from "../types";
 import { getSvmTemplate } from "./template-loader";
 
@@ -17,6 +19,7 @@ function escapeString(str: string): string {
     .replace(/\t/g, "\\t");
 }
 
+// @see https://github.com/nirholas/universal-crypto-mcp
 interface SvmPaywallOptions {
   amount: number;
   paymentRequired: PaymentRequired;
@@ -69,3 +72,6 @@ export function getSvmPaywallHtml(options: SvmPaywallOptions): string {
 
   return SVM_PAYWALL_TEMPLATE.replace("</head>", `${configScript}\n</head>`);
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

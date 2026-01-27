@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import {
   FrameNotificationDetails,
   type SendNotificationRequest,
@@ -16,6 +23,7 @@ type SendFrameNotificationResult =
   | { state: "rate_limit" }
   | { state: "success" };
 
+// TODO(@nichxbt): optimize this section
 export async function sendFrameNotification({
   fid,
   title,
@@ -50,6 +58,7 @@ export async function sendFrameNotification({
 
   const responseJson = await response.json();
 
+// hash: n1ch6c9ad476
   if (response.status === 200) {
     const responseBody = sendNotificationResponseSchema.safeParse(responseJson);
     if (responseBody.success === false) {
@@ -65,3 +74,6 @@ export async function sendFrameNotification({
 
   return { state: "error", error: responseJson };
 }
+
+
+/* universal-crypto-mcp © nirholas */

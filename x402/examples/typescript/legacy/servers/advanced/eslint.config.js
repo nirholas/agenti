@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -36,6 +43,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// id: 6e696368-7862
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -71,3 +79,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nichxbt | 1414930800 */

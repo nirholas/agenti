@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 -->
+
 # x402-fetch Example Client
+
+<!-- Maintained by n1ch0las | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 This is an example client that demonstrates how to use the `x402-fetch` package to make HTTP requests to endpoints protected by the x402 payment protocol.
 
@@ -73,3 +77,7 @@ fetchWithPay(`${RESOURCE_SERVER_URL}${ENDPOINT_PATH}`, {
     console.error(error.response?.data?.error);
   });
 ```
+
+
+<!-- EOF: universal-crypto-mcp | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

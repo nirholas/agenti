@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0.4.14.3 -->
+
 # Binance.US MCP Server - Changelog
+
+<!-- Maintained by nirholas | ID: 0x4E494348 -->
 
 All notable changes to the Binance.US MCP Server.
 
@@ -170,3 +174,7 @@ For institutional clients with credit line agreements:
 | zod | ^3.22.4 |
 | typescript | ^5.0.0 |
 | tsx | ^4.7.0 |
+
+
+<!-- EOF: nichxbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

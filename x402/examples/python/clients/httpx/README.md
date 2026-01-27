@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0.14.9.3 -->
+
 # x402 httpx Client Example
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 14.9.3.8 -->
 
 This example demonstrates how to use the x402 v2 SDK with httpx (async) to make requests to 402-protected endpoints with support for both EVM (Ethereum) and SVM (Solana) payments.
 
@@ -88,3 +92,7 @@ async with x402HttpxClient(client) as http:
 
 - [x402 Python SDK](../../../../python/x402/)
 - [x402 Protocol](https://x402.org)
+
+
+<!-- EOF: n1ch0las | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

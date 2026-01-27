@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export type ExactEIP3009Payload = {
   signature?: `0x${string}`;
   authorization: {
@@ -13,3 +20,6 @@ export type ExactEIP3009Payload = {
 export type ExactEvmPayloadV1 = ExactEIP3009Payload;
 
 export type ExactEvmPayloadV2 = ExactEIP3009Payload;
+
+
+/* universal-crypto-mcp © nich */

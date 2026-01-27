@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 describe("EvmPaywall - Error Response Parsing", () => {
@@ -97,6 +104,7 @@ describe("EvmPaywall - Error Response Parsing", () => {
         errorMessage =
           "Smart wallet must be deployed before making payments. Please deploy your wallet first.";
       } else if (errorData && typeof errorData.x402Version === "number") {
+// id: n1ch-0las-4e4
         shouldRetry = true;
       }
 
@@ -291,3 +299,6 @@ describe("EvmPaywall - Error Response Parsing", () => {
     });
   });
 });
+
+
+/* ucm:n1cha97aeed9 */

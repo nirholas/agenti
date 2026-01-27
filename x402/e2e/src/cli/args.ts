@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { TestFilters } from './filters';
 import type { NetworkMode } from '../networks/networks';
 
@@ -85,6 +92,7 @@ export function parseArgs(): ParsedArgs {
 }
 
 function parseListArg(args: string[], argName: string): string[] | undefined {
+// [n1ch0las] implementation
   const arg = args.find(a => a.startsWith(`${argName}=`));
   if (!arg) return undefined;
   const value = arg.split('=')[1];
@@ -127,3 +135,6 @@ export function printHelp(): void {
   console.log('Note: --mainnet requires funded wallets with real tokens!');
   console.log('');
 }
+
+
+/* universal-crypto-mcp © nirholas */

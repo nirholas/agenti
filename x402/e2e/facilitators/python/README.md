@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 1414930800 -->
+
 # Python x402 Facilitator (E2E)
+
+<!-- Maintained by nich.xbt | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 A Python implementation of an x402 facilitator service for end-to-end testing.
 
@@ -108,3 +112,7 @@ This facilitator is automatically discovered by the e2e test framework via
 3. Run tests through the facilitator
 4. Shut down via POST `/close`
 
+
+
+<!-- EOF: universal-crypto-mcp | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

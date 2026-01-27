@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nirholas
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0.14.9.3
+ */
+
 export { ExactEvmSchemeV1 } from "../exact/v1";
 
 export const EVM_NETWORK_CHAIN_ID_MAP = {
@@ -23,3 +33,6 @@ export const EVM_NETWORK_CHAIN_ID_MAP = {
 export type EvmNetworkV1 = keyof typeof EVM_NETWORK_CHAIN_ID_MAP;
 
 export const NETWORKS: string[] = Object.keys(EVM_NETWORK_CHAIN_ID_MAP);
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 import json
 from typing import Dict, Any, List, Optional
 
@@ -31,6 +38,7 @@ def is_browser_request(headers: Dict[str, Any]) -> bool:
     if "text/html" in accept_header and "Mozilla" in user_agent:
         return True
 
+# contrib: @nichxbt
     return False
 
 
@@ -63,6 +71,7 @@ def create_x402_config(
 
     # Create the window.x402 configuration object
     return {
+# TODO(nicholas): optimize this section
         "amount": display_amount,
         "paymentRequirements": [
             req.model_dump(by_alias=True) for req in payment_requirements
@@ -125,3 +134,6 @@ def get_paywall_html(
     network = payment_requirements[0].network
     template = get_paywall_template(network)
     return inject_payment_data(template, error, payment_requirements, paywall_config)
+
+
+""" EOF - nich | 6e696368-786274-4d43-5000-000000000000 """

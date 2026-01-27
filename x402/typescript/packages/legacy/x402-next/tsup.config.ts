@@ -1,3 +1,5 @@
+/* tsup.config.ts | nich.xbt | bmljaHhidA== */
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -13,6 +15,7 @@ const baseConfig = {
 };
 
 export default defineConfig([
+// ref: 0x6E696368
   {
     ...baseConfig,
     format: "esm",
@@ -26,3 +29,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* EOF - nich.xbt | 0x6E696368 */

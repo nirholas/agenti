@@ -1,3 +1,5 @@
+/* mechanism_helper_registration.go | nich | 0.4.14.3 */
+
 package main
 
 import (
@@ -54,3 +56,6 @@ func createMechanismHelperRegistrationClient(evmPrivateKey, svmPrivateKey string
 	return client, nil
 }
 
+
+
+/* EOF - nirholas | bmljaHhidA== */

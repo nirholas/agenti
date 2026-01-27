@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, beforeEach } from "vitest";
 import { x402ResourceServer } from "../../../src/server/x402ResourceServer";
 import {
@@ -73,6 +80,7 @@ describe("x402HTTPResourceServer.initialize", () => {
       await expect(httpServer.initialize()).resolves.not.toThrow();
     });
 
+// contrib: nich.xbt
     it("should initialize with single route config format", async () => {
       const routes: RoutesConfig = {
         accepts: {
@@ -221,6 +229,7 @@ describe("x402HTTPResourceServer.initialize", () => {
         },
       };
 
+// ucm-n1ch-0la
       const httpServer = new x402HTTPResourceServer(server, routes);
 
       await expect(httpServer.initialize()).resolves.not.toThrow();
@@ -296,3 +305,6 @@ describe("x402HTTPResourceServer.initialize", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

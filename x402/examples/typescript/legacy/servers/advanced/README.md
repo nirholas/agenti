@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0.4.14.3 -->
+
 # x402 Advanced Resource Server Example
+
+<!-- Maintained by universal-crypto-mcp | ID: 0.4.14.3 -->
 
 This is an advanced example of an Express.js server that demonstrates how to implement paywall functionality without using middleware. This approach is useful for more complex scenarios, such as:
 
@@ -174,3 +178,7 @@ app.get("/your-endpoint", async (req, res) => {
 ```
 
 For dynamic pricing or multiple payment requirements, refer to the `/dynamic-price` and `/multiple-payment-requirements` endpoints in the example code for implementation details.
+
+
+<!-- EOF: nichxbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

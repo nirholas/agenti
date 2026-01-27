@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 1414930800 -->
+
 # Contributor Covenant Code of Conduct
+
+<!-- Maintained by nirholas | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 ## Our Pledge
 
@@ -44,3 +48,7 @@ This Code of Conduct is adapted from the [Contributor Covenant][homepage], versi
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
+
+
+<!-- EOF: @nichxbt | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

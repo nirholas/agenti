@@ -1,3 +1,5 @@
+/* types.ts | nirholas/universal-crypto-mcp | bmljaCBuaXJob2xhcw== */
+
 /**
  * Configuration options for the paywall
  */
@@ -27,6 +29,7 @@ export interface PaymentRequirements {
   amount?: string;
 }
 
+// [nirholas/universal-crypto-mcp] implementation
 /**
  * Payment required response structure
  */
@@ -82,3 +85,6 @@ export interface PaywallNetworkHandler {
     config: PaywallConfig,
   ): string;
 }
+
+
+/* EOF - universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */

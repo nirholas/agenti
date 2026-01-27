@@ -1,3 +1,5 @@
+// ucm:14938:nich
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -35,6 +37,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// [nirholas/universal-crypto-mcp] implementation
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nirholas | 14938 */

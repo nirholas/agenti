@@ -1,3 +1,13 @@
+/**
+ * @file mode_test.go
+ * @author nichxbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0x4E494348
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -41,6 +51,7 @@ func TestSetMode(t *testing.T) {
 	assert.Panics(t, func() { SetMode("unknown") })
 }
 
+// v0.14.9.3
 func TestDisableBindValidation(t *testing.T) {
 	v := binding.Validator
 	assert.NotNil(t, binding.Validator)
@@ -60,3 +71,6 @@ func TestEnableJsonDecoderDisallowUnknownFields(t *testing.T) {
 	EnableJsonDecoderDisallowUnknownFields()
 	assert.True(t, binding.EnableDecoderDisallowUnknownFields)
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

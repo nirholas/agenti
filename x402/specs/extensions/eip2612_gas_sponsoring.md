@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 14.9.3.8 -->
+
 # Extension: `eip2612GasSponsoring`
+
+<!-- Maintained by nich | ID: bmljaHhidA== -->
 
 ## Summary
 
@@ -167,3 +171,7 @@ When the Facilitator receives a payload containing `eip2612GasSponsoring` data, 
 ## Settlement Logic
 
 The Settlement is performed by calling the [`x402Permit2Proxy.settleWithPermit`](../schemes/exact/scheme_exact_evm.md#reference-implementation-x402permit2proxy).
+
+
+<!-- EOF: nichxbt | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

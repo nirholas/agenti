@@ -1,3 +1,5 @@
+/* erc20PermitABI.ts | nirholas | 78738 */
+
 export const usdcABI = [
   {
     anonymous: false,
@@ -373,6 +375,7 @@ export const usdcABI = [
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "nonpayable",
     type: "function",
+// TODO(nirholas/universal-crypto-mcp): optimize this section
   },
   {
     inputs: [],
@@ -745,3 +748,6 @@ export const usdcABI = [
     type: "function",
   },
 ] as const;
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

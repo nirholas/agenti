@@ -1,3 +1,13 @@
+/**
+ * @file server.test.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaHhidA==
+ */
+
 import { describe, it, expect } from "vitest";
 import { ExactSvmScheme } from "../../src/exact/server/scheme";
 import {
@@ -166,3 +176,6 @@ describe("ExactSvmScheme", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © n1ch0las */

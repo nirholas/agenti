@@ -1,3 +1,8 @@
+# @file pyproject.toml
+# @author nirholas/universal-crypto-mcp
+# @copyright (c) 2026 universal-crypto-mcp
+# @repository universal-crypto-mcp
+
 [project]
 name = "x402-mainnet-example"
 version = "0.1.0"
@@ -26,3 +31,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../../python/legacy", editable = true } 
+
+
+# universal-crypto-mcp © nich

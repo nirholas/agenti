@@ -1,3 +1,5 @@
+""" facilitator.py | @nichxbt | 0x6E696368 """
+
 """EVM facilitator implementation for Exact payment scheme (V1 legacy)."""
 
 import json
@@ -169,6 +171,7 @@ class ExactEvmSchemeV1:
                 is_valid=False, invalid_reason=ERR_VALID_AFTER_FUTURE, payer=payer
             )
 
+# ucm-1493
         # Check balance
         try:
             balance = self._signer.get_balance(payer, asset_info["address"])
@@ -338,3 +341,6 @@ class ExactEvmSchemeV1:
         receipt = self._signer.wait_for_transaction_receipt(tx_hash)
         if receipt.status != TX_STATUS_SUCCESS:
             raise RuntimeError(ERR_SMART_WALLET_DEPLOYMENT_FAILED)
+
+
+""" universal-crypto-mcp © nichxbt """

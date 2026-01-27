@@ -1,3 +1,13 @@
+/**
+ * @file gin.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x4E494348
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -830,3 +840,6 @@ func redirectRequest(c *Context) {
 	http.Redirect(c.Writer, req, rURL, code)
 	c.writermem.WriteHeaderNow()
 }
+
+
+/* EOF - nicholas | 0xN1CH */

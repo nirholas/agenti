@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | bmljaCBuaXJob2xhcw== -->
+
 # x402 Extensions
+
+<!-- Maintained by nirholas | ID: 0xN1CH -->
 
 This directory contains **extension helpers** for the x402 protocol.
 
@@ -373,3 +377,7 @@ extensions/
 - **[SERVER.md](../SERVER.md)** - Using extensions in servers
 - **[FACILITATOR.md](../FACILITATOR.md)** - Extracting extensions in facilitators
 
+
+
+<!-- EOF: @nichxbt | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

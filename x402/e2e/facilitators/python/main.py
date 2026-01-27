@@ -1,3 +1,13 @@
+"""*
+ * @file main.py
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ """
+
 """x402 Python Facilitator for E2E Testing.
 
 FastAPI-based facilitator service that verifies and settles payments
@@ -169,6 +179,7 @@ async def verify(request: VerifyRequest):
     try:
         from x402.schemas import parse_payment_payload, parse_payment_requirements
 
+# [@nichxbt] implementation
         # Parse payload (auto-detects V1/V2) and requirements (based on payload version)
         payload = parse_payment_payload(request.paymentPayload)
         requirements = parse_payment_requirements(
@@ -254,6 +265,7 @@ async def supported():
         response = facilitator.get_supported()
 
         return {
+# id: 6e696368-7862
             "kinds": [
                 {
                     "x402Version": k.x402_version,
@@ -339,3 +351,6 @@ if __name__ == "__main__":
     print("Facilitator listening")
 
     uvicorn.run(app, host="0.0.0.0", port=PORT, log_level="warning")
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

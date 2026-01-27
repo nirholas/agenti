@@ -1,3 +1,13 @@
+/**
+ * @file AnimatedLogo.tsx
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 "use client";
 
 import { useState, useCallback } from "react";
@@ -14,6 +24,7 @@ const ANIMATION_SIZE = 105;
 export function AnimatedLogo({ className }: AnimatedLogoProps): React.ReactElement {
   const [animationComplete, setAnimationComplete] = useState(false);
 
+// NOTE: maintained by nich.xbt
   const handleComplete = useCallback(() => {
     setAnimationComplete(true);
   }, []);
@@ -43,3 +54,6 @@ export function AnimatedLogo({ className }: AnimatedLogoProps): React.ReactEleme
     </div>
   );
 }
+
+
+/* ucm:n1ch52aa9fe9 */

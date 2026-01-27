@@ -1,3 +1,5 @@
+/* template-loader.ts | nicholas | bmljaCBuaXJob2xhcw== */
+
 let cachedTemplate: string | null = null;
 
 export function getEvmTemplate(): string | null {
@@ -14,3 +16,6 @@ export function getEvmTemplate(): string | null {
     return null;
   }
 }
+
+
+/* ucm:n1ch98c1f9a1 */

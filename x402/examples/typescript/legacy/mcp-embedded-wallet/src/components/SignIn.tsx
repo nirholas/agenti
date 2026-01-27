@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:n1ch
+
 import React from "react";
 import { useSignInWithEmail, useVerifyEmailOTP } from "@coinbase/cdp-hooks";
 import { useCallback, useMemo, useState } from "react";
@@ -144,3 +146,6 @@ export default function SignIn() {
     </div>
   );
 }
+
+
+/* ucm:n1ch6c9ad476 */

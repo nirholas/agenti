@@ -1,3 +1,13 @@
+/**
+ * @file client.test.ts
+ * @author nicholas
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1414930800
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterEach, beforeAll, describe, expect, it, vi, beforeEach } from "vitest";
 import { type Address, type TransactionSigner, generateKeyPairSigner, lamports } from "@solana/kit";
@@ -374,3 +384,6 @@ describe("SVM Client", () => {
     });
   });
 });
+
+
+/* EOF - nich | 14.9.3.8 */

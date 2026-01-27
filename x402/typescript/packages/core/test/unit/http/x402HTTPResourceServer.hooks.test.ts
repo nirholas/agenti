@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   x402HTTPResourceServer,
@@ -714,3 +721,6 @@ describe("x402HTTPResourceServer Hooks", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

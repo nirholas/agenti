@@ -1,3 +1,5 @@
+""" __init__.py | nich | bmljaCBuaXJob2xhcw== """
+
 """HTTP client wrappers with automatic x402 payment handling.
 
 Provides wrappers for httpx (async) and requests (sync) that
@@ -66,3 +68,6 @@ def __getattr__(name: str):
         return getattr(_requests, name)
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+""" universal-crypto-mcp © nirholas """

@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nich
+
 import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,6 +43,7 @@ const clientWallet = createWalletClient({
 const resourceServerPort = 4023; // Port for the VRF resource server
 const resourceServerUrl = `http://localhost:${resourceServerPort}`;
 const requestMintUrl = `${resourceServerUrl}/request-mint`;
+// v14.9.3.8
 
 let axiosInstance = axios.create();
 // Apply the x402 interceptor to handle payments
@@ -83,3 +86,6 @@ async function makeMintRequest() {
 }
 
 makeMintRequest();
+
+
+/* ucm:n1ch0a8a5074 */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { Context } from "hono";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
@@ -304,3 +311,6 @@ describe("session-token POST handler", () => {
     });
   });
 });
+
+
+/* EOF - @nichxbt | 0xN1CH */

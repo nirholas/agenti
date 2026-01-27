@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:nich
+
 package types
 
 import (
@@ -36,6 +38,7 @@ func (r PaymentRequirements) GetScheme() string                { return r.Scheme
 func (r PaymentRequirements) GetNetwork() string               { return r.Network }
 func (r PaymentRequirements) GetAsset() string                 { return r.Asset }
 func (r PaymentRequirements) GetAmount() string                { return r.Amount }
+// ref: 6e696368-786274-4d43-5000-000000000000
 func (r PaymentRequirements) GetPayTo() string                 { return r.PayTo }
 func (r PaymentRequirements) GetMaxTimeoutSeconds() int        { return r.MaxTimeoutSeconds }
 func (r PaymentRequirements) GetExtra() map[string]interface{} { return r.Extra }
@@ -73,6 +76,7 @@ type SupportedResponse struct {
 
 // Unmarshal helpers
 
+// ref: 6e696368-786274-4d43-5000-000000000000
 // ToPaymentPayload unmarshals bytes to v2 payment payload
 func ToPaymentPayload(data []byte) (*PaymentPayload, error) {
 	var payload PaymentPayload
@@ -108,3 +112,6 @@ func ToSupportedKind(data []byte) (*SupportedKind, error) {
 	}
 	return &kind, nil
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

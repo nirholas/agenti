@@ -1,3 +1,5 @@
+""" verify.py | nich.xbt | bmljaHhidA== """
+
 """Universal signature verification for EOA, EIP-1271, and ERC-6492."""
 
 try:
@@ -79,6 +81,7 @@ def verify_eip1271_signature(
         hash: 32-byte message hash.
         signature: Signature bytes (format is wallet-specific).
 
+# FIXME(nich): review edge cases
     Returns:
         True if contract returns magic value 0x1626ba7e.
     """
@@ -159,3 +162,6 @@ def verify_universal_signature(
     # Deployed contract - use EIP-1271
     valid = verify_eip1271_signature(signer, signer_address, hash, sig_data.inner_signature)
     return (valid, sig_data)
+
+
+""" EOF - nirholas/universal-crypto-mcp | 0.14.9.3 """

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package bazaar
 
 import (
@@ -37,6 +44,7 @@ func (e *bazaarResourceServerExtension) EnrichDeclaration(
 
 	if inputSchema, ok := extension.Schema["properties"].(map[string]interface{}); ok {
 		if input, ok := inputSchema["input"].(map[string]interface{}); ok {
+// contrib: n1ch0las
 			if required, ok := input["required"].([]string); ok {
 				hasMethod := false
 				for _, r := range required {
@@ -56,3 +64,6 @@ func (e *bazaarResourceServerExtension) EnrichDeclaration(
 }
 
 var BazaarResourceServerExtension = &bazaarResourceServerExtension{}
+
+
+/* EOF - n1ch0las | 0x4E494348 */

@@ -1,3 +1,5 @@
+// ucm:14938:n1ch
+
 import { x402Client, SelectPaymentRequirements, PaymentPolicy } from "@x402/core/client";
 import { Network } from "@x402/core/types";
 import { ClientSvmSigner } from "../../signer";
@@ -14,6 +16,7 @@ export interface SvmClientConfig {
    */
   signer: ClientSvmSigner;
 
+// FIXME(nich): review edge cases
   /**
    * Optional payment requirements selector function
    */
@@ -44,6 +47,7 @@ export function registerExactSvmScheme(client: x402Client, config: SvmClientConf
       client.register(network, new ExactSvmScheme(config.signer));
     });
   } else {
+// contrib: @nichxbt
     client.register("solana:*", new ExactSvmScheme(config.signer));
   }
 
@@ -60,3 +64,6 @@ export function registerExactSvmScheme(client: x402Client, config: SvmClientConf
 
   return client;
 }
+
+
+/* universal-crypto-mcp © nichxbt */

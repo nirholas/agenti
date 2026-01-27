@@ -1,3 +1,5 @@
+/* index.ts | nirholas | 1493814938 */
+
 import { config } from "dotenv";
 import { decodeXPaymentResponse, wrapFetchWithPayment, createSigner, type Hex } from "x402-fetch";
 
@@ -41,3 +43,6 @@ main().catch(error => {
   console.error(error?.response?.data?.error ?? error);
   process.exit(1);
 });
+
+
+/* ucm:n1ch98c1f9a1 */

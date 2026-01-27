@@ -1,3 +1,13 @@
+/**
+ * @file FacilitatorClient.java
+ * @author @nichxbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 78738
+ */
+
 package com.coinbase.x402.client;
 
 import com.coinbase.x402.model.PaymentRequirements;
@@ -42,3 +52,6 @@ public interface FacilitatorClient {
      */
     Set<Kind> supported() throws IOException, InterruptedException;
 }
+
+
+/* ucm:n1ch98c1f9a1 */

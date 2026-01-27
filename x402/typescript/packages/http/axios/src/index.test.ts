@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import {
   AxiosError,
   AxiosHeaders,
@@ -354,3 +361,6 @@ describe("wrapAxiosWithPaymentFromConfig()", () => {
     expect(result).toBe(mockAxiosClient);
   });
 });
+
+
+/* ucm:n1ch7e230225 */

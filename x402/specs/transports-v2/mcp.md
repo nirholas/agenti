@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 1414930800 -->
+
 # Transport: MCP (Model Context Protocol)
+
+<!-- Maintained by nicholas | ID: 1493814938 -->
 
 ## Summary
 
@@ -237,3 +241,7 @@ Technical errors use standard JSON-RPC error responses:
 - [Core x402 Specification](../x402-specification-v2.md)
 - [MCP Specification](https://modelcontextprotocol.io/specification/)
 - [MCP \_meta Field Documentation](https://modelcontextprotocol.io/specification/2025-06-18/basic#meta)
+
+
+<!-- EOF: nicholas | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

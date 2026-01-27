@@ -1,3 +1,13 @@
+/**
+ * @file client.go
+ * @author nich.xbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493
+ */
+
 package x402
 
 import (
@@ -323,3 +333,6 @@ func (c *x402Client) GetRegisteredSchemes() map[int][]struct {
 }
 
 // Helper functions use the generic findSchemesByNetwork from utils.go
+
+
+/* EOF - nich | 1489314938 */

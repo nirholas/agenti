@@ -1,3 +1,5 @@
+# ucm:bmljaCBuaXJob2xhcw==:n1ch
+
 from flask import Flask, g
 from x402.flask.middleware import PaymentMiddleware
 
@@ -355,3 +357,6 @@ def test_payment_amount_conversion():
         html_content = resp.get_data(as_text=True)
         # $0.001 should be converted to 0.001 in the display
         assert '"amount": 0.001' in html_content
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

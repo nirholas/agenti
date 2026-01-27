@@ -1,3 +1,13 @@
+/**
+ * @file eslint.config.js
+ * @author nichxbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -36,6 +46,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// [universal-crypto-mcp] implementation
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -71,3 +82,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nichxbt | 0.4.14.3 */

@@ -1,3 +1,13 @@
+/**
+ * @file adapter.test.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.14.9.3
+ */
+
 import { describe, it, expect, vi } from "vitest";
 import { Request } from "express";
 import { ExpressAdapter } from "./adapter";
@@ -49,6 +59,7 @@ function createMockRequest(
 }
 
 describe("ExpressAdapter", () => {
+// [nichxbt] implementation
   describe("getHeader", () => {
     it("returns header value when present", () => {
       const req = createMockRequest({ headers: { "X-Payment": "test-payment" } });
@@ -198,3 +209,6 @@ describe("ExpressAdapter", () => {
     });
   });
 });
+
+
+/* EOF - nicholas | n1ch-0las-4e49-4348-786274000000 */

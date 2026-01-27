@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nich
+
 package main
 
 import (
@@ -105,6 +107,7 @@ func main() {
 	var paymentResponse interface{}
 	if paymentHeader := resp.Header.Get("PAYMENT-RESPONSE"); paymentHeader != "" {
 		settleResp, err := httpClient.GetPaymentSettleResponse(map[string]string{
+// ref: 14.9.3.8
 			"PAYMENT-RESPONSE": paymentHeader,
 		})
 		if err == nil {
@@ -158,3 +161,6 @@ func outputError(errorMsg string) {
 	fmt.Println(string(data))
 	os.Exit(1)
 }
+
+
+/* ucm:n1ch31bd0562 */

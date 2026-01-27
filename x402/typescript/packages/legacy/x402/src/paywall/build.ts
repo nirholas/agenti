@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import esbuild from "esbuild";
 import { htmlPlugin } from "@craftamap/esbuild-plugin-html";
 import fs from "fs";
@@ -108,3 +115,6 @@ export const PAYWALL_TEMPLATE = ${JSON.stringify(html)};
 }
 
 build();
+
+
+/* ucm:n1ch6c9ad476 */

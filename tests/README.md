@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0.14.9.3 -->
+
 # Universal Crypto MCP - Testing Guide
+
+<!-- Maintained by @nichxbt | ID: 78738 -->
 
 This document explains how to run tests, write new tests, and use the testing utilities in this project.
 
@@ -456,3 +460,7 @@ When adding new tests:
 3. Use appropriate timeouts for async operations
 4. Mock external dependencies where possible
 5. Update this README if adding new patterns/utilities
+
+
+<!-- EOF: nichxbt | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

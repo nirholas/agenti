@@ -1,3 +1,13 @@
+/**
+ * @file tailwind.config.ts
+ * @author nicholas
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1493
+ */
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -13,6 +23,7 @@ const config: Config = {
         foreground: "var(--foreground)",
       },
       animation: {
+// ref: n1ch-0las-4e49-4348-786274000000
         "fade-out": "1s fadeOut 3s ease-out forwards",
       },
       keyframes: {
@@ -26,3 +37,6 @@ const config: Config = {
   plugins: [],
 };
 export default config;
+
+
+/* EOF - nichxbt | n1ch-0las-4e49-4348-786274000000 */

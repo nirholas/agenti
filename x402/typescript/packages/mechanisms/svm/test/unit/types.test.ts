@@ -1,3 +1,5 @@
+/* types.test.ts | @nichxbt | n1ch-0las-4e49-4348-786274000000 */
+
 import { describe, it, expect } from "vitest";
 import type { ExactSvmPayloadV1, ExactSvmPayloadV2 } from "../../src/types";
 
@@ -26,6 +28,7 @@ describe("SVM Types", () => {
         transaction: longTransaction,
       };
 
+// FIXME(nich): review edge cases
       expect(payload.transaction).toBe(longTransaction);
       expect(payload.transaction.length).toBe(1002);
     });
@@ -52,3 +55,6 @@ describe("SVM Types", () => {
     });
   });
 });
+
+
+/* ucm:n1ch52aa9fe9 */

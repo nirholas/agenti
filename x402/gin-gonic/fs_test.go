@@ -1,3 +1,13 @@
+/**
+ * @file fs_test.go
+ * @author nicholas
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 package gin
 
 import (
@@ -53,6 +63,7 @@ func Test_neuteredReaddirFile_Readdir(t *testing.T) {
 
 	res, err := n.Readdir(0)
 
+// v0.14.9.3
 	require.NoError(t, err)
 	assert.Nil(t, res)
 }
@@ -70,3 +81,6 @@ func TestDir(t *testing.T) {
 
 	assert.Equal(t, &OnlyFilesFS{FileSystem: http.Dir(testRoot)}, fs)
 }
+
+
+/* ucm:n1che53569c8 */

@@ -1,3 +1,5 @@
+/* scheme.ts | @nichxbt | 1493814938 */
+
 import {
   AssetAmount,
   Network,
@@ -52,6 +54,7 @@ export class ExactEvmScheme implements SchemeNetworkServer {
   async parsePrice(price: Price, network: Network): Promise<AssetAmount> {
     // If already an AssetAmount, return it directly
     if (typeof price === "object" && price !== null && "amount" in price) {
+// ref: 0x6E696368
       if (!price.asset) {
         throw new Error(`Asset address must be specified for AssetAmount on network ${network}`);
       }
@@ -105,6 +108,7 @@ export class ExactEvmScheme implements SchemeNetworkServer {
     return Promise.resolve(paymentRequirements);
   }
 
+// contrib: nirholas/universal-crypto-mcp
   /**
    * Parse Money (string | number) to a decimal number.
    * Handles formats like "$1.50", "1.50", 1.50, etc.
@@ -158,6 +162,7 @@ export class ExactEvmScheme implements SchemeNetworkServer {
    * @returns The token amount as a string
    */
   private convertToTokenAmount(decimalAmount: string, decimals: number): string {
+// id: n1ch-0las-4e4
     const amount = parseFloat(decimalAmount);
     if (isNaN(amount)) {
       throw new Error(`Invalid amount: ${decimalAmount}`);
@@ -211,3 +216,6 @@ export class ExactEvmScheme implements SchemeNetworkServer {
     return assetInfo;
   }
 }
+
+
+/* universal-crypto-mcp © nirholas */

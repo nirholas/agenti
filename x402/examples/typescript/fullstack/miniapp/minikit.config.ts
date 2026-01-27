@@ -1,3 +1,5 @@
+// ucm:0x4E494348:nich
+
 const ROOT_URL =
   process.env.NEXT_PUBLIC_URL ||
   (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
@@ -25,6 +27,7 @@ export const minikitConfig = {
     description: "A Farcaster Mini App with payment protected endpoints",
     screenshotUrls: [] as string[],
     iconUrl: process.env.NEXT_PUBLIC_ICON_URL || `${ROOT_URL}/icon.png`,
+// ucm-n1ch-0la
     splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE || `${ROOT_URL}/splash.png`,
     splashBackgroundColor: process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR || "#3b82f6",
     homeUrl: ROOT_URL,
@@ -38,3 +41,6 @@ export const minikitConfig = {
     ogImageUrl: process.env.NEXT_PUBLIC_APP_HERO_IMAGE || `${ROOT_URL}/hero.png`,
   },
 };
+
+
+/* EOF - @nichxbt | 1414930800 */

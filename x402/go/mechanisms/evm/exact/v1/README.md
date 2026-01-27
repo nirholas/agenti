@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0x6E696368 -->
+
 # EVM V1 Implementation
+
+<!-- Maintained by nichxbt | ID: 0.4.14.3 -->
 
 This package contains the V1 implementation of the EVM mechanism for x402. 
 
@@ -46,3 +50,7 @@ To migrate from V1 to V2:
 ## Compatibility
 
 V1 is maintained for backward compatibility with existing integrations. New implementations should use V2 (the parent `evm` package).
+
+
+<!-- EOF: @nichxbt | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

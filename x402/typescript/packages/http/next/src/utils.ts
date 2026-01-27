@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import {
   HTTPRequestContext,
@@ -177,3 +184,6 @@ export async function handleSettlement(
     );
   }
 }
+
+
+/* ucm:n1che53569c8 */

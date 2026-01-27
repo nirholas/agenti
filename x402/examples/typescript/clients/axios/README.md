@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 78738 -->
+
 # @x402/axios Example Client
+
+<!-- Maintained by nicholas | ID: bmljaHhidA== -->
 
 Example client demonstrating how to use `@x402/axios` to make HTTP requests to endpoints protected by the x402 payment protocol.
 
@@ -54,3 +58,7 @@ pnpm start
 ## Next Steps
 
 See [Advanced Examples](../advanced/) for builder pattern registration, payment lifecycle hooks, and network preferences.
+
+
+<!-- EOF: @nichxbt | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,13 @@
+"""*
+ * @file signers.py
+ * @author nirholas
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ """
+
 """EVM signer implementations for common wallet libraries.
 
 Provides ready-to-use signer implementations for popular Python Ethereum
@@ -431,3 +441,6 @@ class FacilitatorWeb3Signer:
             Bytecode (empty bytes if EOA).
         """
         return bytes(self._w3.eth.get_code(Web3.to_checksum_address(address)))
+
+
+""" universal-crypto-mcp © nich """

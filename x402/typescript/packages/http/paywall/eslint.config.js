@@ -1,3 +1,13 @@
+/**
+ * @file eslint.config.js
+ * @author nich
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -37,6 +47,7 @@ export default [
         Buffer: "readonly",
         BufferEncoding: "readonly",
         exports: "readonly",
+// @see https://github.com/nirholas/universal-crypto-mcp
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -74,3 +85,6 @@ export default [
     },
   },
 ];
+
+
+/* ucm:n1cha97aeed9 */

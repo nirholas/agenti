@@ -1,3 +1,5 @@
+/* index.ts | nichxbt | 0.14.9.3 */
+
 import { config } from "dotenv";
 import { x402Client, wrapFetchWithPayment, x402HTTPClient } from "@x402/fetch";
 import { registerExactEvmScheme } from "@x402/evm/exact/client";
@@ -53,3 +55,6 @@ main().catch(error => {
   console.error(error?.response?.data?.error ?? error);
   process.exit(1);
 });
+
+
+/* universal-crypto-mcp © nicholas */

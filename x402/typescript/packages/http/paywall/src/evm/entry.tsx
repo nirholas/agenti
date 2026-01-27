@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { EvmPaywall } from "./EvmPaywall";
@@ -39,3 +46,6 @@ window.addEventListener("load", () => {
     </Providers>,
   );
 });
+
+
+/* universal-crypto-mcp © nirholas */

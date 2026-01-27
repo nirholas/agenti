@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0xN1CH -->
+
 # x402 LLMs Full Documentation
+
+<!-- Maintained by nicholas | ID: 0.4.14.3 -->
 
 > **Source:** [docs.x402.org/llms-full.txt](https://docs.x402.org/llms-full.txt)
 > 
@@ -383,3 +387,7 @@ Common error scenarios:
 ---
 
 *This documentation is provided under the Apache-2.0 license. x402 is an open standard maintained by the community.*
+
+
+<!-- EOF: @nichxbt | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

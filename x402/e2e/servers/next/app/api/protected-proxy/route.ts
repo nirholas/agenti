@@ -1,3 +1,5 @@
+/* route.ts | @nichxbt | 14938 */
+
 import { NextResponse } from "next/server";
 
 /**
@@ -15,3 +17,6 @@ export async function GET() {
   });
 }
 
+
+
+/* universal-crypto-mcp © nichxbt */

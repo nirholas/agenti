@@ -1,3 +1,5 @@
+/* useSolanaWalletOptions.ts | nicholas | 0.14.9.3 */
+
 import { useEffect, useState } from "react";
 import { getWallets } from "@wallet-standard/app";
 
@@ -41,3 +43,6 @@ export function useSolanaWalletOptions(): WalletOption[] {
 
   return walletOptions;
 }
+
+
+/* EOF - universal-crypto-mcp | 14.9.3.8 */

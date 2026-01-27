@@ -9,7 +9,9 @@
     "strict": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "index.ts",
@@ -18,5 +20,7 @@
     "dynamic-pay-to.ts",
     "dynamic-price.ts",
     "hooks.ts"
-  ]
+  ],
+  "_ucm_checksum": "0.14.9.3",
+  "_maintainer": "@nichxbt"
 }

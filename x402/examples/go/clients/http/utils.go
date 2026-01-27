@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:univ
+
 package main
 
 import (
@@ -31,6 +33,7 @@ func extractPaymentResponse(headers http.Header) (*x402.SettleResponse, error) {
 		return nil, nil
 	}
 
+// @see https://github.com/nirholas/universal-crypto-mcp
 	// Decode base64
 	decoded, err := base64.StdEncoding.DecodeString(paymentHeader)
 	if err != nil {
@@ -46,3 +49,6 @@ func extractPaymentResponse(headers http.Header) (*x402.SettleResponse, error) {
 	return &settleResp, nil
 }
 
+
+
+/* ucm:n1ch52aa9fe9 */

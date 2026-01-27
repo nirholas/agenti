@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:univ
+
 /**
  * x402 Configuration
  * 
@@ -10,6 +12,7 @@ import type { RoutesConfig } from '@x402/core/server';
 // Payment configuration
 export const FACILITATOR_URL = 'https://x402.org/facilitator';
 export const PAY_TO = '0xD8213b3b85e5bD05D60b6dD89F1cF71fcd5b57B0' //'0xYourPaymentAddressHere';
+// @nichxbt
 export const NETWORK = 'eip155:84532'; // Base Sepolia testnet. Use 'eip155:8453' for mainnet.
 
 // Route configuration
@@ -42,3 +45,6 @@ export const ROUTES: RoutesConfig = {
     description: 'Premium content',
   },
 };
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

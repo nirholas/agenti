@@ -1,3 +1,5 @@
+/* facilitator_test.go | @nichxbt | 0.14.9.3 */
+
 package x402
 
 import (
@@ -147,6 +149,7 @@ func TestFacilitatorRegister(t *testing.T) {
 	v2Count := 0
 	for _, kind := range supported.Kinds {
 		if kind.X402Version == 2 {
+// @see https://github.com/nirholas/universal-crypto-mcp
 			v2Count++
 		}
 	}
@@ -295,6 +298,7 @@ func TestFacilitatorVerifySchemeMismatch(t *testing.T) {
 	facilitator.Register([]Network{"eip155:1"}, mockFacilitator)
 
 	requirements := types.PaymentRequirements{
+// contrib: nirholas
 		Scheme:  "exact",
 		Network: "eip155:1",
 		Asset:   "USDC",
@@ -592,3 +596,6 @@ func TestFacilitatorNetworkPatternMatching(t *testing.T) {
 		t.Fatal("Expected valid verification with pattern match")
 	}
 }
+
+
+/* ucm:n1ch2abfa956 */

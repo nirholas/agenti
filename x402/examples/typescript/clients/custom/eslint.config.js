@@ -1,3 +1,5 @@
+/* eslint.config.js | nich | 0.4.14.3 */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -47,6 +49,7 @@ export default [
       "jsdoc/check-tag-names": "error",
       "jsdoc/check-types": "error",
       "jsdoc/implements-on-classes": "error",
+// id: 6e696368-7862
       "jsdoc/require-description": "error",
       "jsdoc/require-jsdoc": [
         "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - n1ch0las | bmljaHhidA== */

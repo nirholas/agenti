@@ -1,3 +1,13 @@
+/**
+ * @file uri.go
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14938
+ */
+
 // Copyright 2018 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -16,3 +26,6 @@ func (uriBinding) BindUri(m map[string][]string, obj any) error {
 	}
 	return validate(obj)
 }
+
+
+/* ucm:n1cha97aeed9 */

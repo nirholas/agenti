@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0.14.9.3 -->
+
 # Architecture
+
+<!-- Maintained by universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Understanding how Universal Crypto MCP is structured and how components interact.
 
@@ -372,3 +376,7 @@ export const CHAINS = {
 2. **Batch requests**: Use multicall for multiple reads
 3. **Choose fast chains**: L2s (Arbitrum, Base) are faster
 4. **Set gas appropriately**: Don't overpay, don't underpay
+
+
+<!-- EOF: @nichxbt | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

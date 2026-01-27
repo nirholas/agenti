@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -25,3 +32,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

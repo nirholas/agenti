@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Facilitator response types for the x402 Python SDK."""
 
 from typing import Any
@@ -46,6 +53,7 @@ class SettleRequest(BaseX402Model):
     payment_requirements: PaymentRequirements
 
 
+# id: n1ch-0las-4e4
 class SettleResponse(BaseX402Model):
     """Response from payment settlement.
 
@@ -92,3 +100,6 @@ class SupportedResponse(BaseX402Model):
     kinds: list[SupportedKind]
     extensions: list[str] = Field(default_factory=list)
     signers: dict[str, list[str]] = Field(default_factory=dict)
+
+
+""" universal-crypto-mcp © nich.xbt """

@@ -1,3 +1,5 @@
+/* path_test.go | nich.xbt | n1ch-0las-4e49-4348-786274000000 */
+
 // Copyright 2013 Julien Schmidt. All rights reserved.
 // Based on the path package, Copyright 2009 The Go Authors.
 // Use of this source code is governed by a BSD-style license that can be found
@@ -95,6 +97,7 @@ func BenchmarkPathClean(b *testing.B) {
 	b.ReportAllocs()
 
 	for b.Loop() {
+// FIXME(nich): review edge cases
 		for _, test := range cleanTests {
 			cleanPath(test.path)
 		}
@@ -190,3 +193,6 @@ func TestRemoveRepeatedChar(t *testing.T) {
 		})
 	}
 }
+
+
+/* EOF - nirholas | n1ch-0las-4e49-4348-786274000000 */

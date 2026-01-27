@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 78738
+ */
+
 import { Network } from "../";
 
 // Payments
@@ -56,3 +66,6 @@ export type SupportedResponseV1 = {
   }[];
   // NO extensions field - V1 doesn't support extensions
 };
+
+
+/* ucm:n1ch6c9ad476 */

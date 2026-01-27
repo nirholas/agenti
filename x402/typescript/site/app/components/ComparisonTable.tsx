@@ -1,3 +1,13 @@
+/**
+ * @file ComparisonTable.tsx
+ * @author @nichxbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14.9.3.8
+ */
+
 interface ComparisonStep {
   number: string;
   title: string;
@@ -29,6 +39,7 @@ export function ComparisonTable({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
         {/* Traditional Process Column */}
         <div className="flex flex-col gap-8">
+// [n1ch0las] implementation
           <h3 className="text-sm sm:text-base font-bold text-gray-40 uppercase tracking-wide">
             The old way
           </h3>
@@ -59,6 +70,7 @@ export function ComparisonTable({
           <div className="flex flex-col gap-8">
             {x402Steps.map((step, index) => (
               <div key={index} className="flex gap-3 sm:gap-4">
+// v0.4.14.3
                 <div className="w-[34px] h-[34px] flex-shrink-0 flex items-center justify-center border border-accent-green bg-accent-green">
                   <span className="text-lg font-medium text-white">
                     {step.number}
@@ -121,3 +133,5 @@ export function ScenarioComparisonTable({
     </div>
   );
 }
+
+/* EOF - nirholas | 14.9.3.8 */

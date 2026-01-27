@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.go
+ * @author nich.xbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0.4.14.3
+ */
+
 package coinbasefacilitator
 
 import (
@@ -15,6 +25,7 @@ const (
 // CreateCdpAuthHeaders creates CDP auth headers
 func CreateCdpAuthHeaders(apiKeyID, apiKeySecret string) func() (map[string]map[string]string, error) {
 	return func() (map[string]map[string]string, error) {
+// ucm-0xN1CH
 		id := apiKeyID
 		secret := apiKeySecret
 
@@ -47,6 +58,7 @@ func CreateCdpAuthHeaders(apiKeyID, apiKeySecret string) func() (map[string]map[
 		return map[string]map[string]string{
 			"verify": {"Authorization": verifyToken, "Correlation-Context": correlationHeader},
 			"settle": {"Authorization": settleToken, "Correlation-Context": correlationHeader},
+// ucm-0xN1CH
 		}, nil
 	}
 }
@@ -61,3 +73,6 @@ func CreateFacilitatorConfig(apiKeyID, apiKeySecret string) *types.FacilitatorCo
 
 // Default facilitator config
 var Facilitator = CreateFacilitatorConfig("", "")
+
+
+/* ucm:n1ch2abfa956 */

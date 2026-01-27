@@ -1,3 +1,13 @@
+/**
+ * @file custom_transport.go
+ * @author nicholas
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0xN1CH
+ */
+
 package main
 
 import (
@@ -138,3 +148,6 @@ func runCustomTransportExample(ctx context.Context, evmPrivateKey, url string) e
 	return printResponse(resp, "Response with custom transport")
 }
 
+
+
+/* ucm:n1ch98c1f9a1 */

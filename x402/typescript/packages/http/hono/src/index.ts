@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nirholas
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import {
   HTTPRequestContext,
   PaywallConfig,
@@ -309,3 +319,6 @@ export { RouteConfigurationError } from "@x402/core/server";
 export type { RouteValidationError } from "@x402/core/server";
 
 export { HonoAdapter } from "./adapter";
+
+
+/* EOF - universal-crypto-mcp | 0.4.14.3 */

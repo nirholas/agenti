@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | @nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 ---
 caip: 2
 title: Blockchain ID Specification
@@ -67,6 +69,8 @@ This is a list of manually composed examples
 
 ```
 # Ethereum mainnet
+
+<!-- Maintained by nirholas | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 eip155:1
 
 # Bitcoin mainnet (see https://github.com/bitcoin/bips/blob/master/bip-0122.mediawiki#definition-of-chain-id)
@@ -109,3 +113,7 @@ chainstd:8c3444cf8970a9e41a706fab93e7a6c4
 ## Copyright
 
 Copyright and related rights waived via [CC0](../LICENSE).
+
+
+<!-- EOF: @nichxbt | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

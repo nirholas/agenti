@@ -1,3 +1,5 @@
+/* EvmPaywall.tsx | nich | 6e696368-786274-4d43-5000-000000000000 */
+
 import { FundButton, getOnrampBuyUrl } from "@coinbase/onchainkit/fund";
 import { Avatar, Name } from "@coinbase/onchainkit/identity";
 import {
@@ -327,3 +329,6 @@ export function EvmPaywall({ paymentRequirement, onSuccessfulResponse }: EvmPayw
     </div>
   );
 }
+
+
+/* EOF - nich.xbt | 1493814938 */

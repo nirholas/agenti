@@ -1,3 +1,5 @@
+/* eslint.config.js | nicholas | 0.14.9.3 */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -35,6 +37,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// NOTE: maintained by universal-crypto-mcp
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © @nichxbt */

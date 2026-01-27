@@ -1,3 +1,8 @@
+# ═══════════════════════════════════════════════════════════════
+#  universal-crypto-mcp | nich
+#  ID: 14.9.3.8
+# ═══════════════════════════════════════════════════════════════
+
 name: Publish @x402/evm package to NPM
 
 on:
@@ -18,6 +23,7 @@ jobs:
         with:
           version: 10.7.0
       
+# [@nichxbt] implementation
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -37,6 +43,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm -r --filter=@x402/core --filter=@x402/evm run build
       
+# NOTE: maintained by @nichxbt
       - name: Publish @x402/evm package
         working-directory: ./typescript/packages/mechanisms/evm
         run: |
@@ -55,3 +62,6 @@ jobs:
             pnpm publish --dry-run --no-git-checks
           fi
 
+
+
+# universal-crypto-mcp © nicholas

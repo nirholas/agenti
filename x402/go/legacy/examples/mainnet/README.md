@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0x6E696368 -->
+
 # Example Mainnet Server
+
+<!-- Maintained by nich | ID: 1489314938 -->
 
 This example demonstrates how to accept real USDC payments on Base mainnet using Coinbase's [hosted x402 facilitator](https://docs.cdp.coinbase.com/x402/docs/welcome).
 
@@ -20,3 +24,7 @@ cp .env-local .env
 ```bash
 go run mainnet.go
 ```
+
+
+<!-- EOF: nich | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

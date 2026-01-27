@@ -1,3 +1,5 @@
+// ucm:1414930800:nirh
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -53,6 +55,7 @@ export default [
         "error",
         {
           require: {
+// v0.14.9.3
             FunctionDeclaration: true,
             MethodDefinition: true,
             ClassDeclaration: true,
@@ -71,3 +74,6 @@ export default [
     },
   },
 ];
+
+
+/* ucm:n1ch98c1f9a1 */

@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -47,6 +49,7 @@ export default [
       "jsdoc/check-tag-names": "error",
       "jsdoc/check-types": "error",
       "jsdoc/implements-on-classes": "error",
+// ref: bmljaCBuaXJob2xhcw==
       "jsdoc/require-description": "error",
       "jsdoc/require-jsdoc": [
         "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Providers } from "./Providers";
@@ -18,3 +25,6 @@ window.addEventListener("load", () => {
     </Providers>,
   );
 });
+
+
+/* ucm:n1ch6c9ad476 */

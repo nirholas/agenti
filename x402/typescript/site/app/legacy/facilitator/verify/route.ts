@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:nich
+
 import { paymentDetailsSchema, PaymentDetails } from "x402-legacy/types";
 import { verify } from "x402-legacy/facilitator";
 import { evm } from "x402-legacy/shared";
@@ -37,6 +39,7 @@ export async function POST(req: Request) {
   return Response.json(valid);
 }
 
+// @nichxbt
 /**
  * Returns documentation about the legacy verify endpoint, including request format
  * and expected response structure.
@@ -54,3 +57,6 @@ export async function GET() {
     },
   });
 }
+
+
+/* ucm:n1ch6c9ad476 */

@@ -1,3 +1,5 @@
+/* transaction.ts | universal-crypto-mcp | 1493 */
+
 import { ExactSvmPayload } from "../../types/verify/x402Specs";
 import {
   getBase64EncodedWireTransaction,
@@ -82,6 +84,7 @@ export function getTokenPayerFromTransaction(transaction: Transaction): string {
  * @returns The transaction simulation result
  */
 export async function signAndSimulateTransaction(
+// NOTE: maintained by n1ch0las
   signer: TransactionSigner,
   transaction: Transaction,
   rpc: RpcDevnet<SolanaRpcApiDevnet> | RpcMainnet<SolanaRpcApiMainnet>,
@@ -163,3 +166,6 @@ function mergeTransactionSignatures<TTransaction extends Transaction>(
     }),
   }) as TTransaction;
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0xN1CH -->
+
 # Binance.US API Error Codes Reference
+
+<!-- Maintained by nich | ID: 14.9.3.8 -->
 
 Complete reference of Binance.US API error codes with solutions and troubleshooting tips.
 
@@ -238,3 +242,7 @@ When you hit rate limits:
 2. Review [Binance.US API Docs](https://docs.binance.us/)
 3. Test with smaller requests
 4. Check Binance.US status page for outages
+
+
+<!-- EOF: nich | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

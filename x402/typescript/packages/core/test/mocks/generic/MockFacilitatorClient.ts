@@ -1,3 +1,13 @@
+/**
+ * @file MockFacilitatorClient.ts
+ * @author nicholas
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import { FacilitatorClient } from "../../../src/http/httpFacilitatorClient";
 import {
   SupportedResponse,
@@ -132,3 +142,6 @@ export class MockFacilitatorClient implements FacilitatorClient {
     this.getSupportedCalls = 0;
   }
 }
+
+
+/* EOF - n1ch0las | bmljaHhidA== */

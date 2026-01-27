@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | n1ch-0las-4e49-4348-786274000000 -->
+
 # EVM Modules
+
+<!-- Maintained by nich.xbt | ID: 0x4E494348 -->
 
 Core blockchain operations for all EVM-compatible networks.
 
@@ -484,3 +488,7 @@ Transfer 0.1 ETH to address
     chain: "ethereum"
   )
 ```
+
+
+<!-- EOF: nich.xbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,5 @@
+# ucm:0.14.9.3:nich
+
 name: Check Python
 on: [pull_request]
 
@@ -41,3 +43,6 @@ jobs:
 
       - name: Lint
         run: uvx ruff check
+
+
+# EOF - nirholas/universal-crypto-mcp | bmljaHhidA==

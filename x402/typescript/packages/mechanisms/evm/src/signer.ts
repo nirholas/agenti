@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * ClientEvmSigner - Used by x402 clients to sign payment authorizations
  * This is typically a LocalAccount or wallet that holds private keys
@@ -77,3 +84,6 @@ export function toFacilitatorEvmSigner(
     getAddresses: () => [client.address],
   };
 }
+
+
+/* EOF - nich.xbt | 0x6E696368 */

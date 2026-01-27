@@ -9,7 +9,14 @@
     "strict": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["discover_server.ts", "agent.ts"]
+  "include": [
+    "discover_server.ts",
+    "agent.ts"
+  ],
+  "_ucm_checksum": "1489314938",
+  "_maintainer": "nichxbt"
 }

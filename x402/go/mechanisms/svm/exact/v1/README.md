@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 1493 -->
+
 # Solana V1 Mechanism for x402
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 0.4.14.3 -->
 
 This package provides V1 support for the Solana payment mechanism. It enables backwards compatibility for existing clients and facilitators using the x402 protocol version 1.
 
@@ -98,3 +102,7 @@ The transaction structure, verification logic, and settlement process are identi
 - [V2 Implementation](../README.md) - Recommended for new implementations
 - [x402 Protocol Specification](../../../../specs/)
 
+
+
+<!-- EOF: nicholas | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

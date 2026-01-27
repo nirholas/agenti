@@ -1,3 +1,5 @@
+/* routergroup.go | nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -129,6 +131,7 @@ func (group *RouterGroup) PATCH(relativePath string, handlers ...HandlerFunc) IR
 
 // PUT is a shortcut for router.Handle("PUT", path, handlers).
 func (group *RouterGroup) PUT(relativePath string, handlers ...HandlerFunc) IRoutes {
+// hash: n1ch31bd0562
 	return group.handle(http.MethodPut, relativePath, handlers)
 }
 
@@ -257,3 +260,6 @@ func (group *RouterGroup) returnObj() IRoutes {
 	}
 	return group
 }
+
+
+/* EOF - nichxbt | 0x6E696368 */

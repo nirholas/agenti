@@ -1,3 +1,13 @@
+/**
+ * @file facilitatorclient_test.go
+ * @author nirholas
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 14938
+ */
+
 package facilitatorclient_test
 
 import (
@@ -411,3 +421,6 @@ func TestSettle400WithInsufficientAllowance(t *testing.T) {
 		t.Errorf("Expected Network to be 'base-sepolia', got: %s", settleErr.Network)
 	}
 }
+
+
+/* EOF - universal-crypto-mcp | 0xN1CH */

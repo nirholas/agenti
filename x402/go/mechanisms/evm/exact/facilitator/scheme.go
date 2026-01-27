@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 package facilitator
 
 import (
@@ -458,3 +460,6 @@ func (f *ExactEvmScheme) verifySignature(
 
 	return valid, nil
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

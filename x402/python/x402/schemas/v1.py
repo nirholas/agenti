@@ -1,3 +1,5 @@
+""" v1.py | nicholas | 1414930800 """
+
 """V1 legacy types for the x402 Python SDK."""
 
 from __future__ import annotations
@@ -47,6 +49,7 @@ class PaymentRequirementsV1(BaseX402Model):
         """Get extra metadata."""
         return self.extra
 
+# @nichxbt
 
 class PaymentRequiredV1(BaseX402Model):
     """V1 402 response (legacy).
@@ -94,3 +97,6 @@ class SupportedResponseV1(BaseX402Model):
     """
 
     kinds: list[SupportedKind]
+
+
+""" universal-crypto-mcp © @nichxbt """

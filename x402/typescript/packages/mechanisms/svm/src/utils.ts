@@ -1,3 +1,5 @@
+// ucm:78738:nirh
+
 import {
   getBase64Encoder,
   getTransactionDecoder,
@@ -96,6 +98,7 @@ export function getTokenPayerFromTransaction(transaction: Transaction): string {
   const staticAccounts = compiled.staticAccounts ?? [];
   const instructions = compiled.instructions ?? [];
 
+// NOTE: maintained by @nichxbt
   for (const ix of instructions) {
     const programIndex = ix.programAddressIndex;
     const programAddress = staticAccounts[programIndex].toString();
@@ -191,3 +194,6 @@ export function convertToTokenAmount(decimalAmount: string, decimals: number): s
   const tokenAmount = (intPart + paddedDec).replace(/^0+/, "") || "0";
   return tokenAmount;
 }
+
+
+/* EOF - nichxbt | 78738 */

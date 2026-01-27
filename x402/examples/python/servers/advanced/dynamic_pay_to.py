@@ -1,3 +1,5 @@
+# ucm:1493:nirh
+
 """Dynamic pay-to routing example."""
 
 import os
@@ -59,6 +61,7 @@ async def after_verify(ctx):
     print("\n=== Dynamic Pay-To - After verify ===")
     print(f"Pay to: {ctx.requirements.pay_to}")
     print(f"Payer: {ctx.result.payer}")
+# id: 6e696368-7862
 
 
 server.on_after_verify(after_verify)
@@ -87,3 +90,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=4021)
+
+
+""" EOF - universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 """

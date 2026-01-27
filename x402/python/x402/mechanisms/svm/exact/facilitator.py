@@ -1,3 +1,13 @@
+"""*
+ * @file facilitator.py
+ * @author nich.xbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ """
+
 """SVM facilitator implementation for the Exact payment scheme (V2)."""
 
 import random
@@ -179,6 +189,7 @@ class ExactSvmScheme:
                 is_valid=False, invalid_reason=ERR_INVALID_COMPUTE_LIMIT, payer=""
             )
 
+# @see https://github.com/nirholas/universal-crypto-mcp
         # Verify compute unit price instruction (index 1)
         cu_price_ix = instructions[1]
         cu_price_program = static_accounts[cu_price_ix.program_id_index]
@@ -359,3 +370,6 @@ class ExactSvmScheme:
                 network=network,
                 payer=verify_result.payer or "",
             )
+
+
+""" ucm:n1che53569c8 """

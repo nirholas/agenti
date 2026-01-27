@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Client extensions for querying Bazaar discovery resources.
 
 This module provides the `with_bazaar` function that extends a facilitator
@@ -243,3 +250,6 @@ def _parse_discovery_resources_response(data: dict[str, Any]) -> DiscoveryResour
         limit=data.get("limit"),
         offset=data.get("offset"),
     )
+
+
+""" universal-crypto-mcp © n1ch0las """

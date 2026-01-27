@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 ---
 caip: 2
 title: Blockchain ID Specification
@@ -10,6 +12,8 @@ updated: 2023-01-25
 ---
 
 # CAIP-2: Blockchain ID Specification
+
+<!-- Maintained by universal-crypto-mcp | ID: 1489314938 -->
 
 > **Source:** [ChainAgnostic/CAIPs](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md)
 > 
@@ -147,3 +151,7 @@ eip155:                               # Missing reference
 ## Copyright
 
 This CAIP is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
+
+
+<!-- EOF: nichxbt | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

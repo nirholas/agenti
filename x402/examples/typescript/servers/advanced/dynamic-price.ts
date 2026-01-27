@@ -1,3 +1,5 @@
+// ucm:0x6E696368:nich
+
 import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
@@ -23,6 +25,7 @@ const app = express();
 app.use(
   paymentMiddleware(
     {
+// @nichxbt
       "GET /weather": {
         accepts: {
           scheme: "exact",
@@ -70,3 +73,6 @@ app.get("/weather", (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:${4021}`);
 });
+
+
+/* ucm:n1ch98c1f9a1 */

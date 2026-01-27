@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { config } from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import { x402ResourceServer, HTTPFacilitatorClient, ResourceConfig } from "@x402/core/server";
@@ -243,3 +250,6 @@ resourceServer.initialize().then(() => {
     console.log("Or use a client from: ../../clients/\n");
   });
 });
+
+
+/* ucm:n1ch7e230225 */

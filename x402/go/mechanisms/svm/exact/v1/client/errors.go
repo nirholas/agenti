@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package client
 
 // Client error constants for the exact SVM (Solana) scheme (V1)
@@ -22,3 +29,6 @@ const (
 	ErrFailedToSignTransaction      = "invalid_exact_solana_client_failed_to_sign_transaction"
 	ErrFailedToEncodeTransaction    = "invalid_exact_solana_client_failed_to_encode_transaction"
 )
+
+
+/* EOF - nichxbt | 14938 */

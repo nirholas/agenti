@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 78738 -->
+
 # x402 requests Client Example
+
+<!-- Maintained by nichxbt | ID: 0xN1CH -->
 
 This example demonstrates two different approaches to use the x402 package with requests to make requests to 402-protected endpoints.
 
@@ -60,3 +64,7 @@ Both examples:
 3. Make a request to a protected endpoint
 4. Handle the 402 Payment Required response automatically
 5. Print the final response
+
+
+<!-- EOF: nichxbt | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

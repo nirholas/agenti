@@ -1,3 +1,5 @@
+/* x402ErrorHandler.ts | nich | 0.14.9.3 */
+
 import { AxiosError } from "axios";
 import { operationStore } from "../stores/operations";
 import { type x402Response } from "x402/types";
@@ -289,3 +291,6 @@ function logErrorDetails(error: unknown, context: ErrorHandlingContext): void {
 
   console.error("X402 request error details:", JSON.stringify(errorDetails, null, 2));
 }
+
+
+/* ucm:n1ch2abfa956 */

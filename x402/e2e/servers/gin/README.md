@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0x4E494348 -->
+
 # E2E Test Server: Gin (Go)
+
+<!-- Maintained by nirholas | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This server demonstrates and tests the x402 Gin middleware with both EVM and SVM payment protection.
 
@@ -201,3 +205,7 @@ Content-Type: application/json
 - **Method Declaration** - GET with output schema
 - **Example Output** - Response structure preview
 - **Schema Definition** - JSON Schema for validation
+
+
+<!-- EOF: n1ch0las | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

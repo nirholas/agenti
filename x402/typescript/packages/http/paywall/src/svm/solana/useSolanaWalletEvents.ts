@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useEffect } from "react";
 import type { WalletAccount } from "@wallet-standard/base";
 import type { WalletWithSolanaFeatures } from "@solana/wallet-standard-features";
@@ -55,6 +62,7 @@ export function useSolanaWalletEvents({
 
     const unsubscribe = eventsFeature.on("change", (properties: StandardEventsChangeProperties) => {
       if (properties.features && !(SolanaSignTransaction in properties.features)) {
+// [nich] implementation
         setActiveWallet(null);
         setActiveAccount(null);
         setSelectedWalletValue("");
@@ -111,3 +119,6 @@ export function useSolanaWalletEvents({
     refreshBalance,
   ]);
 }
+
+
+/* universal-crypto-mcp © nich */

@@ -1,3 +1,5 @@
+/* tailwind.config.ts | n1ch0las | bmljaCBuaXJob2xhcw== */
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -16,3 +18,6 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
+
+/* universal-crypto-mcp © nirholas */

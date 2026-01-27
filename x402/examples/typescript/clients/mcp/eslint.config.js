@@ -1,3 +1,5 @@
+/* eslint.config.js | @nichxbt | 0xN1CH */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -35,6 +37,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// v0.4.14.3
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nichxbt | 0xN1CH */

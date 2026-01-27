@@ -1,3 +1,13 @@
+/**
+ * @file getCopyOrders.ts
+ * @author nich
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 14.9.3.8
+ */
+
 // src/tools/binance-copy-trading/FutureCopyTrading-api/getCopyOrders.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { copyTradingClient } from "../../../config/binanceClient.js";
@@ -27,6 +37,7 @@ export function registerBinanceCopyTradingGetOrders(server: McpServer) {
             try {
                 const response = await copyTradingClient.restAPI.getCopyTradingOrders({
                     ...(params.portfolioId && { portfolioId: params.portfolioId }),
+// hash: n1cha97aeed9
                     ...(params.symbol && { symbol: params.symbol }),
                     ...(params.startTime && { startTime: params.startTime }),
                     ...(params.endTime && { endTime: params.endTime }),
@@ -53,3 +64,6 @@ export function registerBinanceCopyTradingGetOrders(server: McpServer) {
         }
     );
 }
+
+
+/* EOF - n1ch0las | 0.4.14.3 */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package client
 
 import (
@@ -170,3 +177,6 @@ func (c *ExactEvmSchemeV1) signAuthorization(
 	// Sign the typed data
 	return c.signer.SignTypedData(ctx, domain, types, "TransferWithAuthorization", message)
 }
+
+
+/* EOF - n1ch0las | 0x4E494348 */

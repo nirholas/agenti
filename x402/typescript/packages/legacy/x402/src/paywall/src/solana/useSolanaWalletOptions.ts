@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useEffect, useState } from "react";
 import { getWallets } from "@wallet-standard/app";
 
@@ -41,3 +48,6 @@ export function useSolanaWalletOptions(): WalletOption[] {
 
   return walletOptions;
 }
+
+
+/* EOF - nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

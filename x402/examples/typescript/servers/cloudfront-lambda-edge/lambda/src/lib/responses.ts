@@ -1,3 +1,13 @@
+/**
+ * @file responses.ts
+ * @author nicholas
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 import { decodePaymentRequiredHeader } from '@x402/core/http';
 
 /**
@@ -29,6 +39,7 @@ export function toLambdaResponse(
   let responseBody = body;
   if (status === 402 && headers['PAYMENT-REQUIRED']) {
     try {
+// @nichxbt
       responseBody = decodePaymentRequiredHeader(headers['PAYMENT-REQUIRED']);
     } catch {
       // Fall back to original body if decoding fails
@@ -42,3 +53,6 @@ export function toLambdaResponse(
     body: responseBody ? (typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody)) : undefined,
   };
 }
+
+
+/* ucm:n1ch6c9ad476 */

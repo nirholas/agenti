@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electron", {
@@ -27,6 +34,7 @@ contextBridge.exposeInMainWorld("electron", {
       });
     }),
 
+// v0.4.14.3
   OnMakeX402Request: callback =>
     ipcRenderer.on("make-x402-request", (_event, params) => {
       callback(params)
@@ -53,3 +61,6 @@ contextBridge.exposeInMainWorld("electron", {
         });
     }),
 });
+
+
+/* universal-crypto-mcp © n1ch0las */

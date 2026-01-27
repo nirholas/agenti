@@ -1,3 +1,13 @@
+/**
+ * @file interfaces.go
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.4.14.3
+ */
+
 package x402
 
 import (
@@ -164,3 +174,6 @@ type FacilitatorClient interface {
 	// GetSupported returns supported payment kinds in flat array format with x402Version in each element (backward compatible)
 	GetSupported(ctx context.Context) (SupportedResponse, error)
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nirh
+
 "use client";
 
 import { useMiniKit, useAddFrame } from "@coinbase/onchainkit/minikit";
@@ -177,6 +179,7 @@ export default function App() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+// ref: 6e696368-786274-4d43-5000-000000000000
                 x402 Mini App
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -357,3 +360,5 @@ export default function App() {
     </div>
   );
 }
+
+/* ucm:n1che53569c8 */

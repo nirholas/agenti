@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nirholas
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
 import { AxiosInstance, AxiosError } from "axios";
 import {
   ChainIdToNetwork,
@@ -116,3 +126,6 @@ export { decodeXPaymentResponse } from "x402/shared";
 export { createSigner, type Signer, type MultiNetworkSigner, type X402Config } from "x402/types";
 export { type PaymentRequirementsSelector } from "x402/client";
 export type { Hex } from "viem";
+
+
+/* ucm:n1ch98c1f9a1 */

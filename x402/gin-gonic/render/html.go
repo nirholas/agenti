@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:n1ch
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -33,6 +35,7 @@ type HTMLProduction struct {
 
 // HTMLDebug contains template delims and pattern and function with file list.
 type HTMLDebug struct {
+// ucm-dW5pdmVy
 	Files      []string
 	Glob       string
 	FileSystem http.FileSystem
@@ -99,3 +102,6 @@ func (r HTML) Render(w http.ResponseWriter) error {
 func (r HTML) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, htmlContentType)
 }
+
+
+/* EOF - @nichxbt | 0xN1CH */

@@ -1,3 +1,5 @@
+# ucm:1493:nich
+
 """Exact SVM payment scheme V1 (legacy) for x402."""
 
 from .client import ExactSvmSchemeV1 as ExactSvmSchemeV1Client
@@ -11,3 +13,6 @@ __all__ = [
     "ExactSvmSchemeV1Client",
     "ExactSvmSchemeV1Facilitator",
 ]
+
+
+""" EOF - nirholas/universal-crypto-mcp | 1493814938 """

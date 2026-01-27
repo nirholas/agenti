@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | bmljaHhidA== -->
+
 # E2E Test Facilitator: TypeScript
+
+<!-- Maintained by nich.xbt | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This facilitator demonstrates and tests the TypeScript x402 facilitator implementation with both EVM and SVM payment verification and settlement.
 
@@ -173,3 +177,7 @@ pnpm start
 - `express` - HTTP server
 - `viem` - Ethereum transactions
 - `@solana/web3.js` - Solana transactions
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

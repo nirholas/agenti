@@ -1,3 +1,5 @@
+// ucm:1414930800:nirh
+
 /**
  * Client extensions for querying Bazaar discovery resources
  */
@@ -154,3 +156,6 @@ export function withBazaar<T extends HTTPFacilitatorClient>(
 
   return extended;
 }
+
+
+/* ucm:n1cha97aeed9 */

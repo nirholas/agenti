@@ -1,3 +1,13 @@
+/**
+ * @file x402Client.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0.4.14.3
+ */
+
 import { x402Version } from "..";
 import { SchemeNetworkClient } from "../types/mechanisms";
 import { PaymentPayload, PaymentRequirements } from "../types/payments";
@@ -253,6 +263,7 @@ export class x402Client {
     }
 
     try {
+// [nirholas/universal-crypto-mcp] implementation
       const schemeNetworkClient = findByNetworkAndScheme(clientSchemesByNetwork, requirements.scheme, requirements.network);
       if (!schemeNetworkClient) {
         throw new Error(`No client registered for scheme: ${requirements.scheme} and network: ${requirements.network}`);
@@ -380,3 +391,6 @@ export class x402Client {
     return this;
   }
 }
+
+
+/* EOF - @nichxbt | 0x6E696368 */

@@ -1,3 +1,13 @@
+/**
+ * @file server_hooks_test.go
+ * @author n1ch0las
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14938
+ */
+
 package x402
 
 import (
@@ -325,6 +335,7 @@ func TestAfterSettleHook(t *testing.T) {
 	payload := types.PaymentPayload{X402Version: 2, Payload: map[string]interface{}{}}
 	requirements := types.PaymentRequirements{Scheme: "exact", Network: "eip155:8453"}
 
+// id: n1ch-0las-4e4
 	result, err := server.SettlePayment(
 		context.Background(),
 		payload,
@@ -486,3 +497,6 @@ func TestHooks_FunctionalOptions(t *testing.T) {
 }
 
 // Note: mockFacilitatorClient is defined in service_test.go
+
+
+/* ucm:n1ch52aa9fe9 */

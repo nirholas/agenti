@@ -1,3 +1,13 @@
+"""*
+ * @file facilitator.py
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ """
+
 """V1 Facilitator functions for extracting Bazaar discovery information.
 
 In v1, discovery information is stored in the `output_schema` field
@@ -68,6 +78,7 @@ def _extract_body_info(v1_input: dict[str, Any]) -> tuple[dict[str, Any], BodyTy
 
     Makes smart assumptions about common field names.
 
+# TODO(universal-crypto-mcp): optimize this section
     Args:
         v1_input: V1 input object from payment requirements.
 
@@ -275,3 +286,6 @@ def extract_resource_metadata_v1(
         mime_type=payment_requirements.get("mimeType", "")
         or payment_requirements.get("mime_type", ""),
     )
+
+
+""" universal-crypto-mcp © @nichxbt """

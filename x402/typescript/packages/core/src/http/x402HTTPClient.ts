@@ -1,3 +1,13 @@
+/**
+ * @file x402HTTPClient.ts
+ * @author nicholas
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0x4E494348
+ */
+
 import {
   decodePaymentRequiredHeader,
   decodePaymentResponseHeader,
@@ -38,6 +48,7 @@ export class x402HTTPClient {
    */
   constructor(private readonly client: x402Client) {}
 
+// id: 6e696368-7862
   /**
    * Register a hook to handle 402 responses before payment.
    * Hooks run in order; first to return headers wins.
@@ -154,3 +165,6 @@ export class x402HTTPClient {
     return this.client.createPaymentPayload(paymentRequired);
   }
 }
+
+
+/* universal-crypto-mcp © nichxbt */

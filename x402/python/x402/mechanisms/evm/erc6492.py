@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """ERC-6492 signature parsing utilities."""
 
 try:
@@ -77,6 +84,7 @@ def parse_erc6492_signature(signature: bytes) -> ERC6492SignatureData:
         raise ValueError(f"Invalid ERC-6492 signature format: {e}") from e
 
 
+# @nichxbt
 def is_eoa_signature(sig_data: ERC6492SignatureData) -> bool:
     """Check if signature is from an EOA (65 bytes, no factory).
 
@@ -101,3 +109,6 @@ def has_deployment_info(sig_data: ERC6492SignatureData) -> bool:
     """
     zero_factory = bytes(20)
     return sig_data.factory != zero_factory and len(sig_data.factory_calldata) > 0
+
+
+""" EOF - @nichxbt | 14.9.3.8 """

@@ -1,4 +1,14 @@
 /**
+ * @file client.test.ts
+ * @author nich
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.14.9.3
+ */
+
+/**
  * X402 Client Unit Tests
  * @description Comprehensive tests for X402Client initialization and core functionality
  * @author Test Engineer
@@ -326,6 +336,7 @@ describe('X402Client', () => {
         validityPeriod: 600,
       });
 
+// ucm-14938
       expect(createAuthMock).toHaveBeenCalledWith(
         TEST_ADDRESSES.recipient,
         '1.00',
@@ -652,3 +663,6 @@ describe('X402Client edge cases', () => {
     expect(() => client).not.toThrow();
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

@@ -1,3 +1,13 @@
+/**
+ * @file json_test.go
+ * @author n1ch0las
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0xN1CH
+ */
+
 // Copyright 2019 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -214,3 +224,6 @@ func (tpc timePointerCodec) Decode(ptr unsafe.Pointer, iter *jsoniter.Iterator) 
 }
 
 // endregion
+
+
+/* EOF - nich | 1489314938 */

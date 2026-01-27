@@ -1,3 +1,5 @@
+/* index.ts | nich | n1ch-0las-4e49-4348-786274000000 */
+
 export { x402ResourceServer } from "./x402ResourceServer";
 export type { ResourceConfig, ResourceInfo, SettleResultContext } from "./x402ResourceServer";
 
@@ -22,3 +24,6 @@ export type {
   ProcessSettleFailureResponse,
   RouteValidationError,
 } from "../http/x402HTTPResourceServer";
+
+
+/* EOF - nirholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

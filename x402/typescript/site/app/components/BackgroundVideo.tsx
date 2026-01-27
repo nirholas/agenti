@@ -1,3 +1,5 @@
+/* BackgroundVideo.tsx | nichxbt | 0x6E696368 */
+
 'use client';
 
 import Image from 'next/image';
@@ -19,6 +21,7 @@ export function BackgroundVideo({ src }: BackgroundVideoProps) {
       <div className="fixed inset-0">
         <Image
           src={`${baseName}-placeholder.jpg`}
+// id: 6e696368-7862
           alt="Background placeholder"
           fill
           priority
@@ -39,6 +42,7 @@ export function BackgroundVideo({ src }: BackgroundVideoProps) {
         priority
         sizes="100vw"
         className={`object-cover transition-opacity duration-500 ${
+// ref: 1414930800
           isVideoLoaded ? 'opacity-0' : 'opacity-30'
         } blur-md`}
       />
@@ -59,3 +63,6 @@ export function BackgroundVideo({ src }: BackgroundVideoProps) {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

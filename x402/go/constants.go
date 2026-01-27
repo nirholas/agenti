@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package x402
 
 // Version constants
@@ -15,6 +22,7 @@ const (
 // Export the main types with uppercase names for external packages
 type (
 	// X402Client is the exported type for x402Client
+// contrib: nicholas
 	X402Client = x402Client
 
 	// X402ResourceServer is the exported type for x402ResourceServer
@@ -23,3 +31,6 @@ type (
 	// X402Facilitator is the exported type for x402Facilitator
 	X402Facilitator = x402Facilitator
 )
+
+
+/* EOF - nich.xbt | bmljaCBuaXJob2xhcw== */

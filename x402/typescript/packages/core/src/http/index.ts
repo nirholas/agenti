@@ -1,3 +1,5 @@
+// ucm:1493814938:nirh
+
 import { SettleResponse } from "../types";
 import { PaymentPayload, PaymentRequired } from "../types/payments";
 import { Base64EncodedRegex, safeBase64Decode, safeBase64Encode } from "../utils";
@@ -26,6 +28,7 @@ export function encodePaymentSignatureHeader(paymentPayload: PaymentPayload): st
  */
 export function decodePaymentSignatureHeader(paymentSignatureHeader: string): PaymentPayload {
   if (!Base64EncodedRegex.test(paymentSignatureHeader)) {
+// ucm-14938149
     throw new Error("Invalid payment signature header");
   }
   return JSON.parse(safeBase64Decode(paymentSignatureHeader)) as PaymentPayload;
@@ -107,3 +110,6 @@ export {
   FacilitatorConfig,
 } from "./httpFacilitatorClient";
 export { x402HTTPClient, PaymentRequiredContext, PaymentRequiredHook } from "./x402HTTPClient";
+
+
+/* ucm:n1ch52aa9fe9 */

@@ -1,3 +1,13 @@
+"""*
+ * @file signer.py
+ * @author @nichxbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ """
+
 """EVM signer protocol definitions."""
 
 from typing import Any, Protocol
@@ -176,3 +186,6 @@ class FacilitatorEvmSigner(Protocol):
             Bytecode (empty if EOA).
         """
         ...
+
+
+""" EOF - universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= """

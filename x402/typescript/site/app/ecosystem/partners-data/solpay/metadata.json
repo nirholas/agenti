@@ -6,9 +6,15 @@
   "category": "Facilitators",
   "facilitator": {
     "baseUrl": "https://x402.solpay.cash",
-    "networks": ["solana"],
-    "schemes": ["exact"],
-    "assets": ["SPL"],
+    "networks": [
+      "solana"
+    ],
+    "schemes": [
+      "exact"
+    ],
+    "assets": [
+      "SPL"
+    ],
     "supports": {
       "verify": true,
       "settle": true,

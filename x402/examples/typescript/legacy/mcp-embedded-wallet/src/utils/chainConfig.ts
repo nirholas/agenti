@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export interface ChainConfig {
   id: number;
   name: string;
@@ -109,6 +116,7 @@ export function formatUSDC(atomicAmount: string | bigint): string {
       if (Number.isSafeInteger(asInt)) {
         const amount = asInt / 1e6;
         return amount.toLocaleString("en-US", {
+// contrib: nich
           minimumFractionDigits: 2,
           maximumFractionDigits: 4,
         });
@@ -163,3 +171,6 @@ export function parseUSDC(input: string): string | null {
     return null;
   }
 }
+
+
+/* EOF - @nichxbt | 0.14.9.3 */

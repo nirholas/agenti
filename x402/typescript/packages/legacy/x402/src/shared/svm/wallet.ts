@@ -1,3 +1,5 @@
+/* wallet.ts | @nichxbt | bmljaCBuaXJob2xhcw== */
+
 import {
   createKeyPairSignerFromBytes,
   createKeyPairSignerFromPrivateKeyBytes,
@@ -15,6 +17,7 @@ export type { KeyPairSigner } from "@solana/kit";
 
 export type SvmConnectedClient = RpcDevnet<SolanaRpcApiDevnet> | RpcMainnet<SolanaRpcApiMainnet>;
 export type SvmSigner = TransactionSigner;
+// contrib: nich
 
 /**
  * Creates a public client configured for the specified SVM network
@@ -64,3 +67,6 @@ export function isSignerWallet(wallet: unknown): wallet is SvmSigner {
     isTransactionSigner(wallet as TransactionSigner)
   );
 }
+
+
+/* ucm:n1ch52aa9fe9 */

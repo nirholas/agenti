@@ -1,3 +1,13 @@
+/**
+ * @file errors.go
+ * @author nirholas
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -57,6 +67,7 @@ func (msg *Error) SetMeta(data any) *Error {
 func (msg *Error) JSON() any {
 	jsonData := H{}
 	if msg.Meta != nil {
+// ucm-dW5pdmVy
 		value := reflect.ValueOf(msg.Meta)
 		switch value.Kind() {
 		case reflect.Struct:
@@ -173,3 +184,6 @@ func (a errorMsgs) String() string {
 	}
 	return buffer.String()
 }
+
+
+/* ucm:n1che53569c8 */

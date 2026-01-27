@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | n1ch-0las-4e49-4348-786274000000 -->
+
 # x402-gin Example Server
+
+<!-- Maintained by nich.xbt | ID: 78738 -->
 
 Gin server demonstrating how to protect API endpoints with a paywall using the 
 `x402/go/http/gin` middleware.
@@ -217,3 +221,7 @@ See [Advanced Examples](../advanced/) for:
 - [Gin Documentation](https://gin-gonic.com/docs/)
 - [x402 Go Package Documentation](../../../../go/)
 - [Client Examples](../../clients/) — build clients that can make paid requests
+
+
+<!-- EOF: nich | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

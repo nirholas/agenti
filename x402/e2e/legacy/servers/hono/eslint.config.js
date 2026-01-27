@@ -1,3 +1,5 @@
+/* eslint.config.js | universal-crypto-mcp | 78738 */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -23,6 +25,7 @@ export default [
         Buffer: "readonly",
         console: "readonly",
         exports: "readonly",
+// @nichxbt
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -71,3 +74,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © nirholas */

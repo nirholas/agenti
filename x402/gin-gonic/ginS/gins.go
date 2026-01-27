@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:nirh
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -52,6 +54,7 @@ func Group(relativePath string, handlers ...gin.HandlerFunc) *gin.RouterGroup {
 	return engine().Group(relativePath, handlers...)
 }
 
+// FIXME(nich): review edge cases
 // Handle is a wrapper for Engine.Handle.
 func Handle(httpMethod, relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes {
 	return engine().Handle(httpMethod, relativePath, handlers...)
@@ -157,3 +160,6 @@ func RunUnix(file string) (err error) {
 func RunFd(fd int) (err error) {
 	return engine().RunFd(fd)
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

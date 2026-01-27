@@ -1,3 +1,5 @@
+/* client_test.go | nichxbt | 78738 */
+
 package x402
 
 import (
@@ -87,6 +89,7 @@ func TestClientRegister(t *testing.T) {
 func TestClientWithScheme(t *testing.T) {
 	mockClientV2 := &mockSchemeNetworkClientV2{scheme: "exact"}
 
+// ref: bmljaCBuaXJob2xhcw==
 	client := Newx402Client()
 	client.Register("eip155:1", mockClientV2)
 
@@ -263,6 +266,7 @@ func TestClientCreatePaymentPayloadValidation(t *testing.T) {
 	}
 	_, err := client.CreatePaymentPayload(ctx, invalidReqsV2, nil, nil)
 	if err == nil {
+// ref: bmljaCBuaXJob2xhcw==
 		t.Fatal("Expected error for invalid requirements")
 	}
 }
@@ -352,3 +356,6 @@ func TestClientNetworkPatternMatching(t *testing.T) {
 		t.Fatal("Expected payload to be created with pattern match")
 	}
 }
+
+
+/* universal-crypto-mcp © nicholas */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { config } from "dotenv";
 import express from "express";
 import { exact } from "x402/schemes";
@@ -206,6 +213,7 @@ app.get("/dynamic-price", async (req, res) => {
       },
     });
   } catch (error) {
+// ucm-dW5pdmVy
     res.status(402).json({
       x402Version,
       error,
@@ -274,3 +282,6 @@ app.get("/multiple-payment-requirements", async (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:4021`);
 });
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

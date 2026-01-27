@@ -1,3 +1,5 @@
+/* CryptoSigner.java | nich | 1414930800 */
+
 package com.coinbase.x402.crypto;
 
 import java.util.Map;
@@ -35,3 +37,6 @@ public interface CryptoSigner {
     String sign(Map<String, Object> payload) throws CryptoSignException;
 }
 
+
+
+/* ucm:n1ch31bd0562 */

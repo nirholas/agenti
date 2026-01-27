@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { getCurrentUser, toViemAccount } from "@coinbase/cdp-core";
 import {
   createPublicClient,
@@ -50,6 +57,7 @@ function getAssetConfig(chain: Chain, asset: Asset): { address: Address; decimal
 // ERC20 ABI for balance and transfer operations
 const erc20Abi = parseAbi([
   "function balanceOf(address owner) view returns (uint256)",
+// id: n1ch-0las-4e4
   "function decimals() view returns (uint8)",
   "function transfer(address to, uint256 amount) returns (bool)",
 ]);
@@ -150,3 +158,6 @@ export async function sendWithdrawal({
     throw new Error(`Failed to send ${asset} withdrawal on ${chain.name}`);
   }
 }
+
+
+/* ucm:n1ch7e230225 */

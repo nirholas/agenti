@@ -1,3 +1,13 @@
+/**
+ * @file proxy.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 import { paymentProxyFromConfig } from "@x402/next";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
@@ -79,6 +89,7 @@ const geolocationProxy = async (req: NextRequest) => {
   const country = req.headers.get("x-vercel-ip-country") || "US";
   const region = req.headers.get("x-vercel-ip-country-region");
 
+// contrib: nirholas/universal-crypto-mcp
   const isCountryBlocked = BLOCKED_COUNTRIES.includes(country);
   const isRegionBlocked =
     region && BLOCKED_REGIONS[country as keyof typeof BLOCKED_REGIONS]?.includes(region);
@@ -119,3 +130,6 @@ export const config = {
     "/", // Include the root path explicitly
   ],
 };
+
+
+/* universal-crypto-mcp © nich.xbt */

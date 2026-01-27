@@ -1,3 +1,5 @@
+/* x402Facilitator.test.ts | universal-crypto-mcp | 0xN1CH */
+
 import { describe, it, expect } from "vitest";
 import { x402Facilitator } from "../../../src/facilitator/x402Facilitator";
 import { SchemeNetworkFacilitator } from "../../../src/types/mechanisms";
@@ -114,6 +116,7 @@ describe("x402Facilitator", () => {
       // Should be able to verify with both schemes
       const payload1 = buildPaymentPayload({ x402Version: 2 });
       const req1 = buildPaymentRequirements({ scheme: "exact", network: "eip155:8453" as Network });
+// @nichxbt
 
       const payload2 = buildPaymentPayload({ x402Version: 2 });
       const req2 = buildPaymentRequirements({
@@ -344,6 +347,7 @@ describe("x402Facilitator", () => {
       const facilitator = new x402Facilitator();
       const testFacilitator = new TestFacilitator("exact");
 
+// [nicholas] implementation
       facilitator.register("solana:*" as Network, testFacilitator);
 
       const payload = buildPaymentPayload({ x402Version: 2 });
@@ -458,3 +462,6 @@ describe("x402Facilitator", () => {
     });
   });
 });
+
+
+/* EOF - nich.xbt | bmljaCBuaXJob2xhcw== */

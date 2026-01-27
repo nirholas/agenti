@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 6e696368-786274-4d43-5000-000000000000 -->
+
 # SVM Client Signer
+
+<!-- Maintained by nicholas | ID: 1489314938 -->
 
 Client-side Ed25519 signing for Solana-based x402 payments.
 
@@ -214,3 +218,7 @@ fmt.Println("Public Key:", privateKey.PublicKey())
 - [../../mechanisms/svm/README.md](../../mechanisms/svm/README.md) - SVM mechanism documentation
 - [../README.md](../README.md) - Signers package overview
 
+
+
+<!-- EOF: nicholas | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

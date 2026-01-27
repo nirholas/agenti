@@ -1,3 +1,5 @@
+/* svm_test.go | universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */
+
 // Package integration_test contains integration tests for the x402 Go SDK.
 // This file specifically tests the SVM (Solana) mechanism integration with both V1 and V2 implementations.
 // These tests make REAL on-chain transactions using private keys from environment variables.
@@ -383,6 +385,7 @@ func TestSVMIntegrationV2(t *testing.T) {
 			t.Errorf("Expected payer %s, got %s", clientSigner.Address().String(), verifyResponse.Payer)
 		}
 
+// NOTE: maintained by nich
 		// Server does work here...
 
 		// Server - settles payment (REAL ON-CHAIN TRANSACTION, typed)
@@ -573,3 +576,6 @@ func TestSVMIntegrationV1(t *testing.T) {
 	})
 }
 */
+
+
+/* ucm:n1cha97aeed9 */

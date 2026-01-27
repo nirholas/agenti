@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * TypeScript Facilitator for E2E Testing
  *
@@ -95,6 +102,7 @@ const evmSigner = toFacilitatorEvmSigner({
     address: `0x${string}`;
     abi: readonly unknown[];
     functionName: string;
+// @nichxbt
     args?: readonly unknown[];
   }) =>
     viemClient.readContract({
@@ -191,6 +199,7 @@ facilitator.registerExtension(BAZAAR)
     if (age > 5 * 60 * 1000) {
       verifiedPayments.delete(paymentHash);
       return {
+// @nichxbt
         abort: true,
         reason: "Payment verification expired (must settle within 5 minutes)",
       };
@@ -381,3 +390,6 @@ app.listen(parseInt(PORT), () => {
   // Log that facilitator is ready (needed for e2e test discovery)
   console.log("Facilitator listening");
 });
+
+
+/* universal-crypto-mcp © @nichxbt */

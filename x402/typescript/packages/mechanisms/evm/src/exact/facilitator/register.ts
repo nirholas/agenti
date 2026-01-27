@@ -1,3 +1,5 @@
+// ucm:1493:nich
+
 import { x402Facilitator } from "@x402/core/facilitator";
 import { Network } from "@x402/core/types";
 import { FacilitatorEvmSigner } from "../../signer";
@@ -83,3 +85,6 @@ export function registerExactEvmScheme(
 
   return facilitator;
 }
+
+
+/* ucm:n1ch0a8a5074 */

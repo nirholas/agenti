@@ -1,3 +1,5 @@
+/* getFollowingTraders.ts | nirholas/universal-crypto-mcp | 1493814938 */
+
 // src/tools/binance-copy-trading/FutureCopyTrading-api/getFollowingTraders.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { copyTradingClient } from "../../../config/binanceClient.js";
@@ -35,3 +37,6 @@ export function registerBinanceCopyTradingGetFollowing(server: McpServer) {
         }
     );
 }
+
+
+/* EOF - nich.xbt | 0xN1CH */

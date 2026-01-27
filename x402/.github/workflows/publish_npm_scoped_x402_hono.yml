@@ -1,3 +1,8 @@
+# @file publish_npm_scoped_x402_hono.yml
+# @author @nichxbt
+# @copyright (c) 2026 universal-crypto-mcp
+# @repository universal-crypto-mcp
+
 name: Publish @x402/hono package to NPM
 
 on:
@@ -28,6 +33,7 @@ jobs:
       - name: Update npm for OIDC trusted publishing
         run: npm install -g npm@latest
       
+# NOTE: maintained by nich.xbt
       - name: Configure npm for trusted publishing
         run: npm config delete always-auth 2>/dev/null || true
       
@@ -55,3 +61,6 @@ jobs:
             pnpm publish --dry-run --no-git-checks
           fi
 
+
+
+# ucm:n1che53569c8

@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | n1ch0las | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 List of all the awesome people working to make Gin the best Web Framework in Go.
 
 ## gin 1.x series authors
@@ -404,3 +406,7 @@ People and companies, who have contributed, in alphabetical order.
 - 梦溪笔谈 <loongmxbt@gmail.com>
 - 飞雪无情 <ls8707@gmail.com>
 - 寻寻觅觅的Gopher <zoujh99@qq.com>
+
+
+<!-- EOF: n1ch0las | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

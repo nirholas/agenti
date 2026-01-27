@@ -1,3 +1,5 @@
+# ucm:78738:univ
+
 """SVM mechanism constants - network configs, USDC addresses, error codes."""
 
 from typing import TypedDict
@@ -131,3 +133,6 @@ NETWORK_CONFIGS: dict[str, NetworkConfig] = {
         },
     },
 }
+
+
+""" universal-crypto-mcp © nichxbt """

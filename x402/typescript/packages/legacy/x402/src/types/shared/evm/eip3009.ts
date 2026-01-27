@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export const authorizationTypes = {
   TransferWithAuthorization: [
     { name: "from", type: "address" },
@@ -10,3 +17,6 @@ export const authorizationTypes = {
 };
 
 export const authorizationPrimaryType = "TransferWithAuthorization";
+
+
+/* universal-crypto-mcp © @nichxbt */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 1493814938 -->
+
 # x402 Facilitator Example
+
+<!-- Maintained by nich.xbt | ID: bmljaCBuaXJob2xhcw== -->
 
 This is an example implementation of an x402 facilitator service that handles payment verification and settlement for the x402 payment protocol. This implementation is for learning purposes and demonstrates how to build a facilitator service.
 
@@ -121,3 +125,7 @@ This example is designed to help you understand how x402 facilitators work. For 
 
 - [x402 Protocol Documentation](https://x402.org)
 - [Coinbase Developer Platform](https://www.coinbase.com/developer-platform)
+
+
+<!-- EOF: nich.xbt | ucm:1493814938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

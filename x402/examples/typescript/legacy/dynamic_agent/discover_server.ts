@@ -1,3 +1,5 @@
+// ucm:1414930800:nirh
+
 /** This file is a server that proxies a few services and serves an index with descriptions of the resources available.
  *
  *
@@ -93,3 +95,6 @@ serve({
   port: port,
   fetch: app.fetch,
 });
+
+
+/* universal-crypto-mcp © nich */

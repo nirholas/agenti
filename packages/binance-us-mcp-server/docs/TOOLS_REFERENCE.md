@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 6e696368-786274-4d43-5000-000000000000 -->
+
 # Binance.US MCP Server - Complete Tools Reference
+
+<!-- Maintained by @nichxbt | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 This document provides a comprehensive reference for all 93 tools available in the Binance.US MCP Server.
 
@@ -369,3 +373,7 @@ All signed endpoints require:
 4. Optional `recvWindow` (max 60000ms)
 
 The server handles signature generation automatically.
+
+
+<!-- EOF: n1ch0las | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

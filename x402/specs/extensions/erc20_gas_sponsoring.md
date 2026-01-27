@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 0.14.9.3 -->
+
 # Extension: `erc20ApprovalGasSponsoring`
+
+<!-- Maintained by @nichxbt | ID: bmljaHhidA== -->
 
 ## Summary
 
@@ -229,3 +233,7 @@ The Facilitator constructs an **atomic bundle** with the following ordered opera
 2. Broadcast Approval: Broadcast the Client-provided `signedTransaction` which calls `ERC20.approve(Permit2, amount)`
 
 3. x402PermitProxy Settlement: Call `x402Permit2Proxy.settle()`
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

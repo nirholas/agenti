@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | n1ch-0las-4e49-4348-786274000000 -->
+
 # @x402/express
+
+<!-- Maintained by nich.xbt | ID: bmljaHhidA== -->
 
 Express middleware integration for the x402 Payment Protocol. This package provides a simple middleware function for adding x402 payment requirements to your Express.js applications.
 
@@ -279,3 +283,7 @@ app.use(
 ```
 
 Note: The `payTo` address is now specified within each route configuration rather than as a separate parameter.
+
+
+<!-- EOF: nich | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

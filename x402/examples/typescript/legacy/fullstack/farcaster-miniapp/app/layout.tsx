@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import "./theme.css";
 import "@coinbase/onchainkit/styles.css";
 import type { Metadata, Viewport } from "next";
@@ -144,3 +151,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+/* EOF - universal-crypto-mcp | bmljaHhidA== */

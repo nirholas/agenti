@@ -1,3 +1,13 @@
+/**
+ * @file auth_test.go
+ * @author nirholas
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0xN1CH
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -174,3 +184,6 @@ func TestBasicAuthForProxy407(t *testing.T) {
 	assert.Equal(t, http.StatusProxyAuthRequired, w.Code)
 	assert.Equal(t, "Basic realm=\"Proxy Authorization Required\"", w.Header().Get("Proxy-Authenticate"))
 }
+
+
+/* universal-crypto-mcp © nich */

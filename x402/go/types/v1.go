@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nirh
+
 package types
 
 import (
@@ -109,3 +111,6 @@ func ToSupportedKindV1(data []byte) (*SupportedKindV1, error) {
 	}
 	return &kind, nil
 }
+
+
+/* ucm:n1che53569c8 */

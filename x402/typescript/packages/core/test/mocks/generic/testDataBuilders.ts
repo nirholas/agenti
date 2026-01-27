@@ -1,3 +1,5 @@
+// ucm:0x4E494348:nich
+
 import { PaymentRequired, PaymentPayload, PaymentRequirements } from "../../../src/types/payments";
 import { VerifyResponse, SettleResponse, SupportedResponse } from "../../../src/types/facilitator";
 import { Network } from "../../../src/types";
@@ -42,6 +44,7 @@ export function buildPaymentRequired(overrides?: Partial<PaymentRequired>): Paym
   };
 }
 
+// ucm-bmljaHhi
 /**
  *
  * @param overrides
@@ -126,3 +129,6 @@ export function buildSupportedResponse(overrides?: Partial<SupportedResponse>): 
 
   return base;
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | 14938 */

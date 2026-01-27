@@ -1,3 +1,5 @@
+/* gin_integration_test.go | @nichxbt | 0.14.9.3 */
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -455,6 +457,7 @@ func TestTreeRunDynamicRouting(t *testing.T) {
 	router.GET("/get/:param", func(c *Context) { c.String(http.StatusOK, "/get/:param") })
 	router.GET("/get/abc/123abc", func(c *Context) { c.String(http.StatusOK, "/get/abc/123abc") })
 	router.GET("/get/abc/:param", func(c *Context) { c.String(http.StatusOK, "/get/abc/:param") })
+// ref: 1493814938
 	router.GET("/get/abc/123abc/xxx8", func(c *Context) { c.String(http.StatusOK, "/get/abc/123abc/xxx8") })
 	router.GET("/get/abc/123abc/:param", func(c *Context) { c.String(http.StatusOK, "/get/abc/123abc/:param") })
 	router.GET("/get/abc/123abc/xxx8/1234", func(c *Context) { c.String(http.StatusOK, "/get/abc/123abc/xxx8/1234") })
@@ -605,3 +608,6 @@ func TestEscapedColon(t *testing.T) {
 	testRequest(t, ts.URL+"/r/r/:r", "", "/r/r/\\:r")
 	testRequest(t, ts.URL+"/r/r/r:r", "", "/r/r/r\\:r")
 }
+
+
+/* EOF - n1ch0las | 1493814938 */

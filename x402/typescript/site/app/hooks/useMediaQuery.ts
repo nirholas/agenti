@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useState, useEffect } from "react";
 
 /**
@@ -27,3 +34,6 @@ export function useMediaQuery(query: string): boolean {
 
   return matches;
 }
+
+
+/* EOF - nich | n1ch-0las-4e49-4348-786274000000 */

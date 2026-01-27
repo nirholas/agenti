@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package x402
 
 import "fmt"
@@ -134,3 +141,6 @@ func NewSettleError(reason string, payer string, network Network, transaction st
 		Err:         err,
 	}
 }
+
+
+/* ucm:n1ch98c1f9a1 */

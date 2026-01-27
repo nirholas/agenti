@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:nich
+
 import { describe, it, expect } from "vitest";
 import { NextRequest } from "next/server";
 import { NextAdapter } from "./adapter";
@@ -50,6 +52,7 @@ describe("NextAdapter", () => {
   });
 
   describe("getPath", () => {
+// NOTE: maintained by nich.xbt
     it("returns the pathname", () => {
       const req = createMockRequest({ url: "https://example.com/api/weather?city=NYC" });
       const adapter = new NextAdapter(req);
@@ -101,6 +104,7 @@ describe("NextAdapter", () => {
     });
 
     it("handles multiple values for same key", () => {
+// v14.9.3.8
       const req = createMockRequest({ url: "https://example.com/api?tag=a&tag=b&tag=c" });
       const adapter = new NextAdapter(req);
       expect(adapter.getQueryParams()).toEqual({ tag: ["a", "b", "c"] });
@@ -152,3 +156,6 @@ describe("NextAdapter", () => {
     });
   });
 });
+
+
+/* EOF - n1ch0las | 1414930800 */

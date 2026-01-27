@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { defineConfig } from "vitest/config"
 import { fileURLToPath } from "url"
 import { dirname, resolve } from "path"
@@ -44,3 +51,6 @@ export default defineConfig({
     }
   }
 })
+
+
+/* EOF - nichxbt | 0.14.9.3 */

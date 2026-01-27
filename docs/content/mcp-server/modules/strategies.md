@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 1493 -->
+
 # Trading Strategies
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 0.4.14.3 -->
 
 Pre-built trading strategies powered by the `indicatorts` library.
 
@@ -394,3 +398,7 @@ For better accuracy, combine multiple strategies:
 - Never risk more than you can afford to lose
 - Combine with fundamental analysis
 - Test thoroughly before using real funds
+
+
+<!-- EOF: n1ch0las | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import type { DiscoveryInfo } from "@x402/extensions/bazaar";
 import type { PaymentRequirements } from "@x402/core/types";
 
@@ -57,3 +64,6 @@ export class BazaarCatalog {
   }
 }
 
+
+
+/* universal-crypto-mcp © @nichxbt */

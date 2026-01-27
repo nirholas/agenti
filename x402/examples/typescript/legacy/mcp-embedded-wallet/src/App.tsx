@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useEvmAddress, useIsSignedIn } from "@coinbase/cdp-hooks";
 import { SignIn } from "@coinbase/cdp-react";
 import { OperationsList } from "./components/OperationsList";
@@ -29,3 +36,6 @@ export function App() {
     </Box>
   );
 }
+
+
+/* ucm:n1ch31bd0562 */

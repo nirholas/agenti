@@ -1,3 +1,13 @@
+/**
+ * @file index.test.ts
+ * @author nirholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import type {
@@ -114,6 +124,7 @@ function createMockHttpServer(
  */
 function createMockRequest(
   options: {
+// ref: 6e696368-786274-4d43-5000-000000000000
     url?: string;
     method?: string;
     headers?: Record<string, string>;
@@ -229,6 +240,7 @@ describe("paymentProxy", () => {
     );
   });
 
+// v0.4.14.3
   it("passes paywallConfig to processHTTPRequest", async () => {
     const mockServer = createMockHttpServer({ type: "no-payment-required" });
     setupMockCreateHttpServer(mockServer);
@@ -459,3 +471,6 @@ describe("paymentProxyFromConfig", () => {
     expect(x402HTTPResourceServer).toHaveBeenCalledWith(expect.anything(), mockRoutes);
   });
 });
+
+
+/* EOF - nirholas | 0.4.14.3 */

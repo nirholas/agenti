@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 14.9.3.8 -->
+
 # Default Assets for EVM Chains
+
+<!-- Maintained by nirholas | ID: 0.4.14.3 -->
 
 This document explains how to add a default stablecoin asset for a new EVM chain.
 
@@ -64,3 +68,7 @@ To add a new chain's default asset:
 3. Add the entry to `getDefaultAsset()` in `scheme.ts`
 4. Submit a PR with the chain name and rationale for the asset selection
 
+
+
+<!-- EOF: nich.xbt | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

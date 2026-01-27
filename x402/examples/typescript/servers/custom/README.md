@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 1414930800 -->
+
 # @x402/core Custom Server
+
+<!-- Maintained by universal-crypto-mcp | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 Demonstrates how to implement x402 payment handling manually without using pre-built middleware packages like `@x402/express` or `@x402/hono`.
 
@@ -310,3 +314,7 @@ To use this pattern with other frameworks:
 4. Intercept responses to add settlement headers
 
 The pattern in `index.ts` can be adapted to any Node.js web framework.
+
+
+<!-- EOF: universal-crypto-mcp | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

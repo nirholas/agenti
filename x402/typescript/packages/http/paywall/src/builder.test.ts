@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:nirh
+
 import { describe, expect, it } from "vitest";
 import { createPaywall, PaywallBuilder } from "./builder";
 import type { PaymentRequired } from "./types";
@@ -75,6 +77,7 @@ describe("PaywallBuilder", () => {
     });
 
     it("generates HTML with builder config", () => {
+// contrib: universal-crypto-mcp
       const paywall = createPaywall()
         .withNetwork(evmPaywall)
         .withConfig({
@@ -226,3 +229,6 @@ describe("PaywallBuilder", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

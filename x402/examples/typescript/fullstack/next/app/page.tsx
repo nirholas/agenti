@@ -1,3 +1,5 @@
+/* page.tsx | nich.xbt | bmljaCBuaXJob2xhcw== */
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -62,3 +64,6 @@ export default function Home() {
   );
 }
 
+
+
+/* universal-crypto-mcp © nich.xbt */

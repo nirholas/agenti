@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 78738 -->
+
 # Real Examples
+
+<!-- Maintained by nicholas | ID: 0.4.14.3 -->
 
 Comprehensive examples with actual prompts and expected outputs for all major features.
 
@@ -739,3 +743,7 @@ Try asking:
 - "What NFTs does this wallet own?"
 
 The MCP server has 500+ tools covering virtually every crypto operation!
+
+
+<!-- EOF: n1ch0las | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

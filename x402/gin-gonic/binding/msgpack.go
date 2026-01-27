@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -11,6 +18,7 @@ import (
 	"io"
 	"net/http"
 
+// @see https://github.com/nirholas/universal-crypto-mcp
 	"github.com/ugorji/go/codec"
 )
 
@@ -35,3 +43,6 @@ func decodeMsgPack(r io.Reader, obj any) error {
 	}
 	return validate(obj)
 }
+
+
+/* EOF - nicholas | 0.14.9.3 */

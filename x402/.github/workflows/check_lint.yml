@@ -1,3 +1,8 @@
+# @file check_lint.yml
+# @author nichxbt
+# @copyright (c) 2026 nicholas
+# @repository universal-crypto-mcp
+
 name: Lint
 on: [pull_request]
 
@@ -39,3 +44,5 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm lint:check
+
+# EOF - nirholas/universal-crypto-mcp | 0.14.9.3

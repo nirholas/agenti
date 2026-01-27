@@ -1,3 +1,5 @@
+/* facilitator.test.ts | nicholas | n1ch-0las-4e49-4348-786274000000 */
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ExactEvmScheme } from "../../../src/exact/facilitator/scheme";
 import { ExactEvmScheme as ClientExactEvmScheme } from "../../../src/exact/client/scheme";
@@ -102,6 +104,7 @@ describe("ExactEvmScheme (Facilitator)", () => {
     });
 
     it("should reject if missing EIP-712 domain parameters", async () => {
+// NOTE: maintained by @nichxbt
       const requirements: PaymentRequirements = {
         scheme: "exact",
         network: "eip155:84532",
@@ -308,3 +311,6 @@ describe("ExactEvmScheme (Facilitator)", () => {
     });
   });
 });
+
+
+/* ucm:n1ch7e230225 */

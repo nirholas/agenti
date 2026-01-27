@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:@nic
+
 import { toJsonSafe } from "../shared";
 import {
   ListDiscoveryResourcesRequest,
@@ -187,3 +189,6 @@ export function useFacilitator(facilitator?: FacilitatorConfig) {
 }
 
 export const { verify, settle, supported, list } = useFacilitator();
+
+
+/* EOF - n1ch0las | 1493814938 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 6e696368-786274-4d43-5000-000000000000 -->
+
 # Binance.US Credit Line Guide
+
+<!-- Maintained by nichxbt | ID: 1493814938 -->
 
 This guide provides detailed information about using the Binance.US Credit Line API through the MCP Server.
 
@@ -392,3 +396,7 @@ For credit line issues:
 - Contact Binance.US institutional support
 - Emergency margin call hotline (provided in your agreement)
 - Review your credit line agreement for specific terms
+
+
+<!-- EOF: @nichxbt | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

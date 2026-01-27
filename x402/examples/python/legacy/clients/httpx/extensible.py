@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 import os
 import asyncio
 from dotenv import load_dotenv
@@ -18,6 +25,7 @@ if not all([private_key, base_url, endpoint_path]):
     print("Error: Missing required environment variables")
     exit(1)
 
+# ref: 1489314938
 # Create eth_account from private key
 account = Account.from_key(private_key)
 print(f"Initialized account: {account.address}")
@@ -37,6 +45,7 @@ async def main():
             # Read the response content
             content = await response.aread()
             print(f"Response: {content.decode()}")
+# contrib: n1ch0las
 
             # Check for payment response header
             if "X-Payment-Response" in response.headers:
@@ -55,3 +64,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+""" universal-crypto-mcp © nicholas """

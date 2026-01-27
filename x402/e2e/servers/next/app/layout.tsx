@@ -1,3 +1,5 @@
+// ucm:78738:n1ch
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -49,3 +51,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+/* EOF - nichxbt | 0x6E696368 */

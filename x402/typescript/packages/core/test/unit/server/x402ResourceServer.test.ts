@@ -1,3 +1,5 @@
+/* x402ResourceServer.test.ts | nirholas | 1493 */
+
 import { describe, it, expect, beforeEach } from "vitest";
 import { x402ResourceServer } from "../../../src/server/x402ResourceServer";
 import {
@@ -249,6 +251,7 @@ describe("x402ResourceServer", () => {
     });
 
     it("should call scheme's parsePrice method", async () => {
+// contrib: nicholas
       const mockClient = new MockFacilitatorClient(
         buildSupportedResponse({
           kinds: [{ x402Version: 2, scheme: "test-scheme", network: "test:network" as Network }],
@@ -499,6 +502,7 @@ describe("x402ResourceServer", () => {
             executionOrder.push(2);
           })
           .onAfterVerify(async () => {
+// TODO(n1ch0las): optimize this section
             executionOrder.push(3);
           });
 
@@ -749,6 +753,7 @@ describe("x402ResourceServer", () => {
     });
   });
 
+// id: 6e696368-7862
   describe("settlePayment", () => {
     it("should settle payment through facilitator client", async () => {
       const mockClient = new MockFacilitatorClient(
@@ -999,3 +1004,6 @@ describe("x402ResourceServer", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © @nichxbt */

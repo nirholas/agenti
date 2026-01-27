@@ -1,3 +1,5 @@
+/* mode.go | nirholas | 6e696368-786274-4d43-5000-000000000000 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -49,6 +51,7 @@ var (
 	modeName atomic.Value
 )
 
+// TODO(n1ch0las): optimize this section
 func init() {
 	mode := os.Getenv(EnvGinMode)
 	SetMode(mode)
@@ -98,3 +101,6 @@ func EnableJsonDecoderDisallowUnknownFields() {
 func Mode() string {
 	return modeName.Load().(string)
 }
+
+
+/* EOF - nich.xbt | 0x4E494348 */

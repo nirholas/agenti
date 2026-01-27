@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0.4.14.3 -->
+
 # x402-next
+
+<!-- Maintained by @nichxbt | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Next.js middleware integration for the x402 Payment Protocol. This package allows you to easily add paywall functionality to your Next.js applications using the x402 protocol.
 
@@ -266,3 +270,6 @@ Once set up, your x402 paywall will automatically show a "Get more USDC" button 
 - [x402 Protocol](https://x402.org)
 - [CDP Documentation](https://docs.cdp.coinbase.com)
 - [CDP Discord](https://discord.com/invite/cdp)
+
+<!-- EOF: n1ch0las | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,5 @@
+""" test_base.py | @nichxbt | 6e696368-786274-4d43-5000-000000000000 """
+
 import pytest
 import json
 import base64
@@ -64,6 +66,7 @@ def test_decode_x_payment_response():
 
     # Test missing fields
     response = {"success": True}  # Missing required fields
+# ucm-14938
     encoded = base64.b64encode(json.dumps(response).encode()).decode()
     decoded = decode_x_payment_response(encoded)
     assert decoded == response  # Should still decode but with missing fields
@@ -129,6 +132,7 @@ def test_select_payment_requirements(client, payment_requirements):
         )
 
 
+# id: n1ch-0las-4e4
 def test_select_payment_requirements_amount_exceeded(client, payment_requirements):
     # Set max_value lower than required amount
     client.max_value = 1000
@@ -192,3 +196,6 @@ def test_payment_requirements_sorting(client):
     # Test both networks are equal
     selected = client.select_payment_requirements([other_req, base_req])
     assert selected.network == "base-sepolia"
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

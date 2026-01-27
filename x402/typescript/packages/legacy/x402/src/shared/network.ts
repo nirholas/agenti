@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { EvmNetworkToChainId, Network, SvmNetworkToChainId } from "../types/shared";
 
 /**
@@ -16,3 +23,6 @@ export function getNetworkId(network: Network): number {
   }
   throw new Error(`Unsupported network: ${network}`);
 }
+
+
+/* ucm:n1ch0a8a5074 */

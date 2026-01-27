@@ -1,3 +1,8 @@
+# @file goreleaser.yml
+# @author nirholas/universal-crypto-mcp
+# @copyright (c) 2026 universal-crypto-mcp
+# @repository universal-crypto-mcp
+
 name: Goreleaser
 
 on:
@@ -8,6 +13,7 @@ on:
 permissions:
   contents: write
 
+# [nich] implementation
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
@@ -34,3 +40,6 @@ jobs:
         run: |
           echo "Triggering Go module reindex at proxy.golang.org"
           curl -sSf "https://proxy.golang.org/github.com/${GITHUB_REPOSITORY,,}/@v/${GITHUB_REF_NAME}.info"
+
+
+# universal-crypto-mcp © nich

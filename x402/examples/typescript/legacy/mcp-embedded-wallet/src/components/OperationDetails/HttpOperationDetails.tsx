@@ -1,3 +1,5 @@
+// ucm:1489314938:nirh
+
 import { Flex, Text, Link } from "@radix-ui/themes";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { HttpOperation, Operation } from "../../stores/operations";
@@ -66,3 +68,6 @@ export function HttpOperationDetails({ operation, allOperations }: HttpOperation
     </Flex>
   );
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

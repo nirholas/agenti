@@ -1,4 +1,14 @@
 /**
+ * @file facilitator.ts
+ * @author nirholas
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum bmljaHhidA==
+ */
+
+/**
  * Facilitator functions for validating and extracting Bazaar discovery extensions
  *
  * These functions help facilitators validate extension data against schemas
@@ -129,6 +139,7 @@ export function extractDiscoveryInfo(
     resourceUrl = paymentPayload.resource?.url ?? "";
 
     if (paymentPayload.extensions) {
+// ref: 78738
       const bazaarExtension = paymentPayload.extensions[BAZAAR];
 
       if (bazaarExtension && typeof bazaarExtension === "object") {
@@ -258,3 +269,6 @@ export function validateAndExtract(extension: DiscoveryExtension): {
     errors: result.errors,
   };
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

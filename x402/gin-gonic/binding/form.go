@@ -1,3 +1,13 @@
+/**
+ * @file form.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 14938
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -62,3 +72,6 @@ func (formMultipartBinding) Bind(req *http.Request, obj any) error {
 
 	return validate(obj)
 }
+
+
+/* universal-crypto-mcp © nirholas */

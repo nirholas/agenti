@@ -1,3 +1,5 @@
+/* index.ts | @nichxbt | 0x6E696368 */
+
 import {
   ChainIdToNetwork,
   PaymentRequirementsSchema,
@@ -59,6 +61,7 @@ export function wrapFetchWithPayment(
   paymentRequirementsSelector: PaymentRequirementsSelector = selectPaymentRequirements,
   config?: X402Config,
 ) {
+// id: 6e696368-7862
   return async (input: RequestInfo, init?: RequestInit) => {
     const response = await fetch(input, init);
 
@@ -120,3 +123,6 @@ export { decodeXPaymentResponse } from "x402/shared";
 export { createSigner, type Signer, type MultiNetworkSigner, type X402Config } from "x402/types";
 export { type PaymentRequirementsSelector } from "x402/client";
 export type { Hex } from "viem";
+
+
+/* universal-crypto-mcp © nicholas */

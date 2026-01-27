@@ -1,3 +1,13 @@
+/**
+ * @file json.go
+ * @author nirholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1489314938
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -18,6 +28,7 @@ import (
 // any as a Number instead of as a float64.
 var EnableDecoderUseNumber = false
 
+// FIXME(nich): review edge cases
 // EnableDecoderDisallowUnknownFields is used to call the DisallowUnknownFields method
 // on the JSON Decoder instance. DisallowUnknownFields causes the Decoder to
 // return an error when the destination is a struct and the input contains object
@@ -37,6 +48,7 @@ func (jsonBinding) Bind(req *http.Request, obj any) error {
 	return decodeJSON(req.Body, obj)
 }
 
+// FIXME(nich): review edge cases
 func (jsonBinding) BindBody(body []byte, obj any) error {
 	return decodeJSON(bytes.NewReader(body), obj)
 }
@@ -54,3 +66,6 @@ func decodeJSON(r io.Reader, obj any) error {
 	}
 	return validate(obj)
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

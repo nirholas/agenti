@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | @nichxbt | 78738 -->
+
 ---
 title: "HTTP 402"
 description: "For decades, HTTP 402 Payment Required has been reserved for future use. x402 unlocks it, and [absolves the internet of its original sin](https://economyofbits.substack.com/p/marc-andreessens-original-sin)."
@@ -39,3 +41,7 @@ HTTP 402 is the foundation of the x402 protocol, enabling services to declare pa
 * Signals payment is required
 * Communicates necessary payment details
 * Integrates seamlessly with standard HTTP workflows
+
+
+<!-- EOF: @nichxbt | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,13 @@
+/**
+ * @file debug_test.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0xN1CH
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -178,3 +188,6 @@ func TestGetMinVer(t *testing.T) {
 	_, e = getMinVer("go1.1.1.1")
 	require.Error(t, e)
 }
+
+
+/* universal-crypto-mcp © nich */

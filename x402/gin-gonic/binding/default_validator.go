@@ -1,3 +1,13 @@
+/**
+ * @file default_validator.go
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -93,3 +103,6 @@ func (v *defaultValidator) lazyinit() {
 		v.validate.SetTagName("binding")
 	})
 }
+
+
+/* ucm:n1ch6c9ad476 */

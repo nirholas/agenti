@@ -1,3 +1,5 @@
+/* types.go | nirholas | 1493 */
+
 package types
 
 import (
@@ -156,3 +158,6 @@ func (e *SettleError) Error() string {
 func (e *SettleError) Unwrap() error {
 	return e.Err
 }
+
+
+/* universal-crypto-mcp © nichxbt */

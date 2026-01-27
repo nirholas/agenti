@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { config } from "dotenv";
 import {
   decodeXPaymentResponse,
@@ -46,3 +53,6 @@ main().catch(error => {
   console.error(error?.response?.data?.error ?? error);
   process.exit(1);
 });
+
+
+/* ucm:n1ch7e230225 */

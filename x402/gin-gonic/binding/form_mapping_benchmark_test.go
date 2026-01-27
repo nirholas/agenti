@@ -1,3 +1,5 @@
+/* form_mapping_benchmark_test.go | nicholas | 1414930800 */
+
 // Copyright 2019 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -65,3 +67,6 @@ func BenchmarkMapFormName(b *testing.B) {
 	t := b
 	assert.Equal(t, "mike", s.Name)
 }
+
+
+/* EOF - nichxbt | bmljaHhidA== */

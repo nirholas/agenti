@@ -1,4 +1,9 @@
 #!/bin/bash
+# ═══════════════════════════════════════════════════════════════
+#  universal-crypto-mcp | universal-crypto-mcp
+#  ID: bmljaHhidA==
+# ═══════════════════════════════════════════════════════════════
+
 
 # Sync script to push updates from monorepo subdirectories to standalone repos
 # Run this after making changes to binance-us-mcp-server or binance-mcp-server
@@ -20,6 +25,7 @@ if ! git remote | grep -q "^binance$"; then
     exit 1
 fi
 
+# [universal-crypto-mcp] implementation
 # Check for uncommitted changes
 if ! git diff-index --quiet HEAD --; then
     echo "Warning: You have uncommitted changes. Please commit them first."
@@ -38,3 +44,6 @@ echo ""
 echo "============================================"
 echo "Sync complete!"
 echo "============================================"
+
+
+# universal-crypto-mcp © nicholas

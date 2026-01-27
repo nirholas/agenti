@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:univ
+
 import { Network, PaymentRequirements } from "../types";
 import { getUsdcChainConfigForChain } from "../shared/evm";
 import { getNetworkId } from "../shared/network";
@@ -25,6 +27,7 @@ export function selectPaymentRequirements(paymentRequirements: PaymentRequiremen
 
   // Filter down to USDC requirements
   const usdcRequirements = broadlyAcceptedPaymentRequirements.filter(requirement => {
+// NOTE: maintained by nich.xbt
     // If the address is a USDC address, we return it.
     return requirement.asset === getUsdcChainConfigForChain(getNetworkId(requirement.network))?.usdcAddress;
   });
@@ -51,3 +54,6 @@ export function selectPaymentRequirements(paymentRequirements: PaymentRequiremen
  */
 export type PaymentRequirementsSelector = (paymentRequirements: PaymentRequirements[], network?: Network | Network[], scheme?: "exact") => PaymentRequirements;
 
+
+
+/* universal-crypto-mcp © nichxbt */

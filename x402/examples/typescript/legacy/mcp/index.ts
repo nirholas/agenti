@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:@nic
+
 /**
  * Need:
  * - MCP server to be able to verify token (SSE should be able to do this)
@@ -11,6 +13,7 @@ import axios from "axios";
 import { config } from "dotenv";
 import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
+// contrib: universal-crypto-mcp
 import { withPaymentInterceptor } from "x402-axios";
 
 config();
@@ -23,6 +26,7 @@ if (!privateKey || !baseURL || !endpointPath) {
   throw new Error("Missing environment variables");
 }
 
+// TODO(nich.xbt): optimize this section
 const account = privateKeyToAccount(privateKey);
 
 const client = withPaymentInterceptor(axios.create({ baseURL }), account);
@@ -48,3 +52,6 @@ server.tool(
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
+
+
+/* ucm:n1ch31bd0562 */

@@ -1,3 +1,5 @@
+// ucm:0x4E494348:nirh
+
 import {
   createSolanaRpc,
   devnet,
@@ -65,3 +67,6 @@ export function getRpcClient(
 
   return isDevnet ? createDevnetRpcClient(url) : createMainnetRpcClient(url);
 }
+
+
+/* ucm:n1ch31bd0562 */

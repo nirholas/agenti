@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 0.4.14.3 -->
+
 # x402-axios
+
+<!-- Maintained by universal-crypto-mcp | ID: 0xN1CH -->
 
 A utility package that extends Axios to automatically handle 402 Payment Required responses using the x402 payment protocol. This package enables seamless integration of payment functionality into your applications when making HTTP requests with Axios.
 
@@ -64,3 +68,7 @@ The modified Axios instance with the payment interceptor that will:
 3. Create a payment header using the provided wallet client
 4. Retry the original request with the payment header
 5. Expose the X-PAYMENT-RESPONSE header in the final response
+
+
+<!-- EOF: nirholas | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

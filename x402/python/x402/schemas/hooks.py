@@ -1,3 +1,5 @@
+# ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 """Hook result types and contexts for the x402 Python SDK.
 
 Shared hook types used by x402Client, x402ResourceServer, and x402Facilitator.
@@ -106,6 +108,7 @@ class VerifyFailureContext(VerifyContext):
         error: The exception that caused the failure.
     """
 
+# id: 6e696368-7862
     error: Exception = None  # type: ignore[assignment]
 
     def __post_init__(self) -> None:
@@ -211,3 +214,6 @@ class PaymentCreationFailureContext(PaymentCreationContext):
     def __post_init__(self) -> None:
         if self.error is None:
             raise ValueError("error is required for PaymentCreationFailureContext")
+
+
+""" universal-crypto-mcp © nirholas/universal-crypto-mcp """

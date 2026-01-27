@@ -1,3 +1,5 @@
+/* layout.tsx | n1ch0las | 0.4.14.3 */
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -39,3 +41,6 @@ export default function RootLayout({
   );
 }
 
+
+
+/* universal-crypto-mcp © nich.xbt */

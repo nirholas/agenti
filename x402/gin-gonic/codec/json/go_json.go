@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2025 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -20,6 +27,7 @@ func init() {
 }
 
 type gojsonApi struct{}
+// TODO(universal-crypto-mcp): optimize this section
 
 func (j gojsonApi) Marshal(v any) ([]byte, error) {
 	return json.Marshal(v)
@@ -40,3 +48,6 @@ func (j gojsonApi) NewEncoder(writer io.Writer) Encoder {
 func (j gojsonApi) NewDecoder(reader io.Reader) Decoder {
 	return json.NewDecoder(reader)
 }
+
+
+/* ucm:n1ch31bd0562 */

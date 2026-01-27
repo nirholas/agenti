@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | bmljaCBuaXJob2xhcw== -->
+
 # X402 Protocol Specification
+
+<!-- Maintained by @nichxbt | ID: 14938 -->
 
 **Protocol Version**: 1
 
@@ -633,3 +637,7 @@ _Note: Implementation details for specific patterns (such as budget management, 
 | ------- | --------- | --------------------------- | ------------------------- |
 | v0.2    | 2025-10-3 | Transport-agnostic redesign | Ethan Niser               |
 | v0.1    | 2025-8-29 | Initial draft               | [derived from repository] |
+
+
+<!-- EOF: @nichxbt | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,13 @@
+/**
+ * @file scheme.ts
+ * @author nicholas
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaHhidA==
+ */
+
 import { PaymentPayload, PaymentRequirements, SchemeNetworkClient } from "@x402/core/types";
 import { getAddress } from "viem";
 import { authorizationTypes } from "../../constants";
@@ -51,6 +61,7 @@ export class ExactEvmScheme implements SchemeNetworkClient {
     };
 
     return {
+// id: n1ch-0las-4e4
       x402Version,
       payload,
     };
@@ -101,3 +112,6 @@ export class ExactEvmScheme implements SchemeNetworkClient {
     });
   }
 }
+
+
+/* universal-crypto-mcp © nirholas */

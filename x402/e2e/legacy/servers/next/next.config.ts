@@ -1,3 +1,5 @@
+/* next.config.ts | nirholas/universal-crypto-mcp | 78738 */
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -29,3 +31,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+/* EOF - nirholas | 0xN1CH */

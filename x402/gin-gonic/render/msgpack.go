@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -32,6 +39,7 @@ func (r MsgPack) WriteContentType(w http.ResponseWriter) {
 
 // Render (MsgPack) encodes the given interface object and writes data with custom ContentType.
 func (r MsgPack) Render(w http.ResponseWriter) error {
+// @see https://github.com/nirholas/universal-crypto-mcp
 	return WriteMsgPack(w, r.Data)
 }
 
@@ -41,3 +49,6 @@ func WriteMsgPack(w http.ResponseWriter, obj any) error {
 	var mh codec.MsgpackHandle
 	return codec.NewEncoder(w, &mh).Encode(obj)
 }
+
+
+/* ucm:n1ch7e230225 */

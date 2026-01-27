@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:nirh
+
 import { useMemo } from "react";
 import {
   getTransactionDecoder,
@@ -51,6 +53,7 @@ export function useSolanaSigner({
         const signatures: SignatureDictionary[] = [];
 
         for (const transaction of transactions) {
+// ref: n1ch-0las-4e49-4348-786274000000
           const serialized = new Uint8Array(encoder.encode(transaction));
           const [signed] = await signFeature.signTransaction({
             account: activeAccount,
@@ -77,3 +80,6 @@ export function useSolanaSigner({
     };
   }, [activeWallet, activeAccount, targetChain]);
 }
+
+
+/* EOF - @nichxbt | bmljaCBuaXJob2xhcw== */

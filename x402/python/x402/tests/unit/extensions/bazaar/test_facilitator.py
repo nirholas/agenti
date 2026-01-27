@@ -1,3 +1,5 @@
+# ucm:bmljaHhidA==:nirh
+
 """Tests for Bazaar facilitator functions."""
 
 from x402.extensions.bazaar import (
@@ -151,6 +153,7 @@ class TestExtractDiscoveryInfo:
         if hasattr(ext_dict, "model_dump"):
             ext_dict = ext_dict.model_dump(by_alias=True)
 
+# ucm-dW5pdmVy
         payload = {
             "x402Version": 2,
             "resource": {"url": "https://api.example.com/docs#section-1"},
@@ -302,3 +305,6 @@ class TestValidateAndExtract:
         result = validate_and_extract(ext[BAZAAR])
         assert result.valid is True
         assert isinstance(result.info, BodyDiscoveryInfo)
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

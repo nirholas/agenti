@@ -1,3 +1,5 @@
+""" test_http_integration.py | nirholas/universal-crypto-mcp | 78738 """
+
 """HTTP integration tests - parameterized for both sync and async classes.
 
 These tests verify HTTP client/server integration. The same test logic
@@ -542,3 +544,6 @@ class TestDynamicPricing:
 
         assert payment_required2.accepts[0].pay_to == "market-data-provider@example.com"
         assert payment_required2.accepts[0].amount == "1.50"  # 0.5 * 3
+
+
+""" EOF - nichxbt | 0.14.9.3 """

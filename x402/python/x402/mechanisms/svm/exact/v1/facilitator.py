@@ -1,3 +1,5 @@
+""" facilitator.py | universal-crypto-mcp | 0x6E696368 """
+
 """SVM facilitator implementation for Exact payment scheme (V1 legacy)."""
 
 import random
@@ -83,6 +85,7 @@ class ExactSvmSchemeV1:
         Args:
             network: Network identifier.
 
+# hash: n1cha97aeed9
         Returns:
             List of facilitator addresses.
         """
@@ -335,3 +338,6 @@ class ExactSvmSchemeV1:
                 network=network,
                 payer=verify_result.payer or "",
             )
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

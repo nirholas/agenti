@@ -1,3 +1,13 @@
+/**
+ * @file page.tsx
+ * @author n1ch0las
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaHhidA==
+ */
+
 import fs from "fs";
 import path from "path";
 import { Suspense } from "react";
@@ -95,3 +105,5 @@ export default function EcosystemPage({
     </div>
   );
 }
+
+/* EOF - nicholas | 1489314938 */

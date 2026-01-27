@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """HTTP middleware for x402 payment handling.
 
 Provides server-side middleware for FastAPI and Flask that
@@ -70,3 +77,6 @@ def __getattr__(name: str):
             return _flask.payment_middleware_from_config
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+""" ucm:n1ch31bd0562 """

@@ -11,13 +11,26 @@
     "format": "turbo run format",
     "format:check": "turbo run format:check"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nichxbt"
+  ],
+  "author": "universal-crypto-mcp",
   "license": "ISC",
   "packageManager": "pnpm@10.7.0",
   "devDependencies": {
     "tsup": "^8.4.0",
     "turbo": "^2.5.0",
     "typescript": "^5.8.3"
+  },
+  "contributors": [
+    {
+      "name": "nich.xbt",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "n1ch-0las-4e49-4348-786274000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
   }
 }

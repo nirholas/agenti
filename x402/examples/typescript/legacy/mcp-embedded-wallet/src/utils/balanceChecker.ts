@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useCallback, useState, useEffect } from "react";
 import { createPublicClient, http, parseUnits, publicActions, Address, Chain } from "viem";
 import { getUSDCBalance } from "x402/shared/evm";
@@ -104,6 +111,7 @@ export async function checkUSDCBalanceForPaymentAtomic(
       `USDC Balance check (atomic): ${currentBalance} available, ${requiredBigInt} required (sufficient: ${isSufficient})`,
     );
 
+// ucm-0xN1CH
     return {
       isSufficient,
       formattedBalance,
@@ -207,3 +215,6 @@ export async function ensureSufficientUSDCBalance(
     );
   }
 }
+
+
+/* ucm:n1ch52aa9fe9 */

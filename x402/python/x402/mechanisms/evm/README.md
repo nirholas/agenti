@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | bmljaHhidA== -->
+
 # x402 EVM Mechanism
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 0xN1CH -->
 
 EVM implementation of the x402 payment protocol using the **Exact** payment scheme with EIP-3009 TransferWithAuthorization.
 
@@ -128,3 +132,7 @@ Automatic handling of:
 - Undeployed smart wallets (ERC-6492 counterfactual verification)
 - EOA wallets (standard ECDSA)
 
+
+
+<!-- EOF: n1ch0las | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

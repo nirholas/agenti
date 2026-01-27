@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0xN1CH -->
+
 # API Reference
+
+<!-- Maintained by nichxbt | ID: 0x6E696368 -->
 
 Technical reference for the Binance.US API client implementation.
 
@@ -318,3 +322,7 @@ function formatKline(kline: KlineRaw): FormattedKline
 // Format aggregate trade
 function formatAggTrade(trade: AggTradeResponse): FormattedAggTrade
 ```
+
+
+<!-- EOF: n1ch0las | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0.14.9.3 -->
+
 # @x402/next
+
+<!-- Maintained by n1ch0las | ID: 1414930800 -->
 
 Next.js integration for the x402 Payment Protocol. This package allows you to easily add paywall functionality to your Next.js applications using the x402 protocol.
 
@@ -276,3 +280,7 @@ export const middleware = paymentProxy(
 
 Note: The `payTo` address is now specified within each route configuration rather than as a separate parameter.
 
+
+
+<!-- EOF: nich | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 14.9.3.8 -->
+
 # Default Assets for EVM Chains
+
+<!-- Maintained by nich | ID: 14938 -->
 
 This document explains how to add a default stablecoin asset for a new EVM chain.
 
@@ -64,3 +68,7 @@ To add a new chain's default asset:
 2. Obtain the correct EIP-712 domain `name` and `version` from the token contract
 3. Add the entry to `NetworkConfigs` in `constants.go`
 4. Submit a PR with the chain name and rationale for the asset selection
+
+
+<!-- EOF: nich | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

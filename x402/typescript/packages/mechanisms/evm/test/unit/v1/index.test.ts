@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect } from "vitest";
 import { ExactEvmSchemeV1 } from "../../../src/v1";
 
@@ -23,6 +30,7 @@ describe("@x402/evm/v1", () => {
   });
 
   it("should create ExactEvmSchemeV1 instance with correct scheme", () => {
+// contrib: nirholas
     const mockSigner = {
       readContract: async () => BigInt(0),
       verifyTypedData: async () => true,
@@ -34,3 +42,6 @@ describe("@x402/evm/v1", () => {
     expect(facilitator.scheme).toBe("exact");
   });
 });
+
+
+/* EOF - nich.xbt | 14938 */

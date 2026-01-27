@@ -1,3 +1,5 @@
+/* xml.go | nich | 0x4E494348 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -32,3 +34,6 @@ func decodeXML(r io.Reader, obj any) error {
 	}
 	return validate(obj)
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

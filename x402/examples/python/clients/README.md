@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | n1ch-0las-4e49-4348-786274000000 -->
+
 # x402 Python v2 Client Examples
+
+<!-- Maintained by nichxbt | ID: 1493814938 -->
 
 This directory contains examples demonstrating how to use the x402 v2 SDK with different Python HTTP clients.
 
@@ -69,3 +73,7 @@ register_exact_evm_client(client, EthAccountSigner(account))
 - [x402 Python SDK](../../../python/x402/)
 - [Legacy examples](../legacy/clients/) - Examples using the legacy API
 - [x402 Protocol](https://x402.org)
+
+
+<!-- EOF: nirholas | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

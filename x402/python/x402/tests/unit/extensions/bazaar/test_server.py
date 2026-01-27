@@ -1,3 +1,13 @@
+"""*
+ * @file test_server.py
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 78738
+ """
+
 """Tests for Bazaar server extension."""
 
 from x402.extensions.bazaar import (
@@ -133,3 +143,6 @@ class TestBazaarResourceServerExtension:
         query_params = enriched["info"]["input"].get("queryParams")
         if query_params:
             assert "city" in query_params or "city" in str(query_params)
+
+
+""" universal-crypto-mcp © nichxbt """

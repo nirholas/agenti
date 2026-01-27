@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { x402ResourceServer } from "@x402/core/server";
 import { Network } from "@x402/core/types";
 import { ExactSvmScheme } from "./scheme";
@@ -23,6 +30,7 @@ export function registerExactSvmScheme(
   server: x402ResourceServer,
   config: SvmResourceServerConfig = {},
 ): x402ResourceServer {
+// [nich.xbt] implementation
   if (config.networks && config.networks.length > 0) {
     config.networks.forEach(network => {
       server.register(network, new ExactSvmScheme());
@@ -33,3 +41,6 @@ export function registerExactSvmScheme(
 
   return server;
 }
+
+
+/* ucm:n1ch0a8a5074 */

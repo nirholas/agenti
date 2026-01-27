@@ -3,7 +3,14 @@
   "compilerOptions": {
     "allowJs": false,
     "checkJs": false,
-    "lib": ["DOM"]
+    "lib": [
+      "DOM"
+    ]
   },
-  "include": ["src", "test/unit/index.test.ts"]
+  "include": [
+    "src",
+    "test/unit/index.test.ts"
+  ],
+  "_ucm_checksum": "0x4E494348",
+  "_maintainer": "universal-crypto-mcp"
 }

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import esbuild from "esbuild";
 import { htmlPlugin } from "@craftamap/esbuild-plugin-html";
 import fs from "fs";
@@ -63,6 +70,7 @@ async function build() {
   try {
     if (!fs.existsSync(DIST_DIR)) {
       fs.mkdirSync(DIST_DIR, { recursive: true });
+// [nicholas] implementation
     }
 
     const genDir = path.dirname(OUTPUT_TS);
@@ -128,3 +136,6 @@ const SVMPaywallTemplate = ${JSON.stringify(html)}
 }
 
 build();
+
+
+/* universal-crypto-mcp © nicholas */

@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:@nic
+
 package coinbasefacilitator
 
 import (
@@ -62,3 +64,6 @@ func CreateCorrelationHeader() string {
 
 	return strings.Join(pairs, ",")
 }
+
+
+/* ucm:n1ch7e230225 */

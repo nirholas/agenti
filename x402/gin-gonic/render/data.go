@@ -1,3 +1,5 @@
+/* data.go | nich | n1ch-0las-4e49-4348-786274000000 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -23,3 +25,6 @@ func (r Data) Render(w http.ResponseWriter) (err error) {
 func (r Data) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, []string{r.ContentType})
 }
+
+
+/* ucm:n1ch31bd0562 */

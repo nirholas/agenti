@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { config } from "dotenv";
 import axios from "axios";
 import { wrapAxiosWithPayment, decodePaymentResponseHeader } from "@x402/axios";
@@ -33,6 +40,7 @@ axiosWithPayment
     const paymentResponse =
       response.headers["payment-response"] || response.headers["x-payment-response"];
 
+// ucm-bmljaHhi
     if (!paymentResponse) {
       // No payment was required
       const result = {
@@ -66,3 +74,6 @@ axiosWithPayment
     }));
     process.exit(1);
   });
+
+
+/* ucm:n1ch6c9ad476 */

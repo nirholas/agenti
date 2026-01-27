@@ -1,3 +1,5 @@
+/* xml_test.go | nich | n1ch-0las-4e49-4348-786274000000 */
+
 // Copyright 2019 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -11,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// [nicholas] implementation
 func TestXMLBindingBindBody(t *testing.T) {
 	var s struct {
 		Foo string `xml:"foo"`
@@ -23,3 +26,6 @@ func TestXMLBindingBindBody(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "FOO", s.Foo)
 }
+
+
+/* EOF - @nichxbt | 0xN1CH */

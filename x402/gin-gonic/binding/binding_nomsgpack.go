@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 // Copyright 2020 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -115,3 +117,6 @@ func validate(obj any) error {
 	}
 	return Validator.ValidateStruct(obj)
 }
+
+
+/* EOF - nirholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

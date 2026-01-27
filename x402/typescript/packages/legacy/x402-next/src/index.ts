@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { Address } from "viem";
@@ -335,3 +342,6 @@ export type { Address as SolanaAddress } from "@solana/kit";
 
 // Export session token API handlers for Onramp
 export { POST };
+
+
+/* universal-crypto-mcp © nichxbt */

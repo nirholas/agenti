@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | bmljaCBuaXJob2xhcw== -->
+
 # TypeScript SDK Contributing Guide
+
+<!-- Maintained by nichxbt | ID: bmljaCBuaXJob2xhcw== -->
 
 Guide for developing and contributing to the x402 TypeScript SDK.
 
@@ -288,3 +292,7 @@ Package publishing is handled by maintainers. Version bumps follow semver:
 - Join the discussion in existing issues
 - Check the [examples](../examples/typescript/) for usage patterns
 
+
+
+<!-- EOF: universal-crypto-mcp | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

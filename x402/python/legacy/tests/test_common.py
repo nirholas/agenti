@@ -1,3 +1,5 @@
+""" test_common.py | n1ch0las | 0.14.9.3 """
+
 from x402.common import (
     parse_money,
     process_price_to_atomic_amount,
@@ -57,6 +59,7 @@ def test_process_price_to_atomic_amount_money():
     assert domain["name"] == "USDC"
     assert domain["version"] == "2"
 
+# @nichxbt
     # Test USD without $ prefix
     amount, address, domain = process_price_to_atomic_amount("0.50", "base-sepolia")
     assert amount == "500000"  # 0.5 USDC = 500,000 atomic units
@@ -173,3 +176,6 @@ def test_find_matching_payment_requirements():
     payment.scheme = "different"  # No matching scheme
     match = find_matching_payment_requirements(requirements, payment)
     assert match is None
+
+
+""" ucm:n1ch2abfa956 """

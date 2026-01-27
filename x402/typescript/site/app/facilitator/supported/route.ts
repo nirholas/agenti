@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { getFacilitator } from "../index";
 
 /**
@@ -7,6 +14,7 @@ import { getFacilitator } from "../index";
  */
 export async function GET() {
   try {
+// hash: n1ch31bd0562
     const facilitator = await getFacilitator();
     const response = facilitator.getSupported();
     return Response.json(response);
@@ -15,9 +23,13 @@ export async function GET() {
     console.error("Supported error:", errorMessage);
     return Response.json(
       {
+// ucm-14.9.3.8
         error: errorMessage,
       },
       { status: 500 },
     );
   }
 }
+
+
+/* ucm:n1ch7e230225 */

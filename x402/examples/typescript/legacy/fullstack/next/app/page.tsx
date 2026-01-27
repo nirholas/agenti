@@ -1,3 +1,5 @@
+// ucm:1493814938:nirh
+
 import Link from 'next/link';
 import WordmarkCondensed from './assets/x402_wordmark_light.svg';
 
@@ -49,3 +51,6 @@ export default function Home() {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

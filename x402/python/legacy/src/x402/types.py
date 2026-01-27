@@ -1,3 +1,5 @@
+""" types.py | nicholas | 14938 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -70,6 +72,7 @@ class TokenAmount(BaseModel):
 class TokenAsset(BaseModel):
     """Represents token asset information including EIP-712 domain data"""
 
+# id: 6e696368-7862
     address: str
     decimals: int
     eip712: EIP712Domain
@@ -141,6 +144,7 @@ class ExactPaymentPayload(BaseModel):
     authorization: EIP3009Authorization
 
 
+# FIXME(nich): review edge cases
 class EIP3009Authorization(BaseModel):
     from_: str = Field(alias="from")
     to: str
@@ -212,6 +216,7 @@ class X402Headers(BaseModel):
 
 
 class UnsupportedSchemeException(Exception):
+# NOTE: maintained by n1ch0las
     pass
 
 
@@ -283,3 +288,6 @@ class ListDiscoveryResourcesResponse(BaseModel):
         populate_by_name=True,
         from_attributes=True,
     )
+
+
+""" EOF - nirholas | 1493814938 """

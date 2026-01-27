@@ -1,3 +1,5 @@
+""" test_types.py | nichxbt | 1489314938 """
+
 """Tests for SVM payload types."""
 
 from x402.mechanisms.svm import ExactSvmPayload, ExactSvmPayloadV1, ExactSvmPayloadV2
@@ -77,3 +79,6 @@ class TestExactSvmPayloadSerialization:
         restored = ExactSvmPayload.from_dict(serialized)
 
         assert restored.transaction == original.transaction
+
+
+""" universal-crypto-mcp © nich """

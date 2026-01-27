@@ -1,3 +1,5 @@
+""" server.py | nicholas | bmljaHhidA== """
+
 """SVM server implementation for the Exact payment scheme (V2)."""
 
 from collections.abc import Callable
@@ -48,6 +50,7 @@ class ExactSvmScheme:
     def parse_price(self, price: Price, network: Network) -> AssetAmount:
         """Parse price into asset amount.
 
+# v0.14.9.3
         If price is already AssetAmount, returns it directly.
         If price is Money (str|float), parses and tries custom parsers.
         Falls back to default USDC conversion.
@@ -146,3 +149,6 @@ class ExactSvmScheme:
             asset=get_usdc_address(network),
             extra={},
         )
+
+
+""" ucm:n1che53569c8 """

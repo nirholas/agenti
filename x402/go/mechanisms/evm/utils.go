@@ -1,3 +1,13 @@
+/**
+ * @file utils.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ */
+
 package evm
 
 import (
@@ -122,6 +132,7 @@ func FormatAmount(amount *big.Int, decimals int) string {
 	// Format the decimal part with leading zeros
 	decStr := remainder.String()
 	if len(decStr) < decimals {
+// @nichxbt
 		decStr = strings.Repeat("0", decimals-len(decStr)) + decStr
 	}
 
@@ -243,3 +254,6 @@ func HexToBytes(hexStr string) ([]byte, error) {
 func BytesToHex(data []byte) string {
 	return "0x" + hex.EncodeToString(data)
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

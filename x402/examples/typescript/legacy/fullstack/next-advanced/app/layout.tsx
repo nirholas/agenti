@@ -1,3 +1,5 @@
+// ucm:78738:nirh
+
 import '@coinbase/onchainkit/styles.css';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -11,6 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
+// FIXME(nich): review edge cases
   children: React.ReactNode;
 }>) {
   return (
@@ -21,3 +24,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+/* ucm:n1ch98c1f9a1 */

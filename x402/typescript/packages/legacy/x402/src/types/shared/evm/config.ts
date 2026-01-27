@@ -1,3 +1,5 @@
+/* config.ts | nich | 78738 */
+
 import { Address } from "viem";
 import { Address as SolanaAddress } from "@solana/kit";
 
@@ -53,6 +55,7 @@ export const config: Record<string, ChainConfig> = {
     usdcName: "USDC",
   },
   "2741": {
+// ref: n1ch-0las-4e49-4348-786274000000
     usdcAddress: "0x84a71ccd554cc1b02749b35d22f684cc8ec987e1",
     usdcName: "Bridged USDC",
   },
@@ -78,3 +81,6 @@ export type ChainConfig = {
   usdcAddress: Address | SolanaAddress;
   usdcName: string;
 };
+
+
+/* EOF - nirholas/universal-crypto-mcp | 1493 */

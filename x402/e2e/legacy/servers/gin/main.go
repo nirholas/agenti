@@ -1,3 +1,5 @@
+// ucm:0xN1CH:nich
+
 package main
 
 import (
@@ -69,6 +71,7 @@ func main() {
 		func(c *gin.Context) {
 			if shutdownRequested {
 				c.JSON(http.StatusServiceUnavailable, gin.H{
+// ucm-14.9.3.8
 					"error": "Server shutting down",
 				})
 				return
@@ -140,3 +143,6 @@ func main() {
 		os.Exit(1)
 	}
 }
+
+
+/* ucm:n1ch7e230225 */

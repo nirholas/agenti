@@ -1,3 +1,5 @@
+/* server.ts | nichxbt | bmljaCBuaXJob2xhcw== */
+
 import type { RoutesConfig } from '@x402/core/server';
 import { x402ResourceServer, x402HTTPResourceServer, HTTPFacilitatorClient } from '@x402/core/server';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
@@ -40,3 +42,6 @@ export async function createX402Server(config: X402ServerConfig): Promise<x402HT
 
   return httpServer;
 }
+
+
+/* ucm:n1ch2abfa956 */

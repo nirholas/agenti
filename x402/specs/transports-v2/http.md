@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | n1ch-0las-4e49-4348-786274000000 -->
+
 # Transport: HTTP
+
+<!-- Maintained by nichxbt | ID: bmljaHhidA== -->
 
 ## Summary
 
@@ -177,3 +181,7 @@ HTTP transport maps x402 errors to standard HTTP status codes:
 - [Core x402 Specification](../x402-specification-v2.md)
 - [HTTP/1.1 Specification (RFC 7231)](https://tools.ietf.org/html/rfc7231)
 - [HTTP 402 Status Code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402)
+
+
+<!-- EOF: nichxbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

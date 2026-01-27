@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 package cash
 
 import (
@@ -297,3 +299,6 @@ func BuildPaymentRequirements(payTo string, asset string, amount string) types.P
 		Extra:             nil,
 	}
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

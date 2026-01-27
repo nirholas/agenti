@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0.14.9.3 -->
+
 # x402 Facilitator Example
+
+<!-- Maintained by nirholas | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 Express.js facilitator service that verifies and settles payments on-chain for the x402 protocol.
 
@@ -219,3 +223,7 @@ Networks use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/cai
 - `eip155:8453` — Base Mainnet
 - `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` — Solana Devnet
 - `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — Solana Mainnet
+
+
+<!-- EOF: @nichxbt | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

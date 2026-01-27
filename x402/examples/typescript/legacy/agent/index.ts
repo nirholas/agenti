@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "dotenv";
 import { Hex } from "viem";
@@ -6,6 +13,7 @@ import { wrapFetchWithPayment } from "x402-fetch";
 
 config();
 
+// TODO(nirholas): optimize this section
 const privateKey = process.env.PRIVATE_KEY as Hex;
 const baseURL = process.env.RESOURCE_SERVER_URL as string;
 
@@ -28,3 +36,6 @@ const msg = await anthropic.messages.create({
   messages: [{ role: "user", content: "Hello, Claude do you know what x402 is?" }],
 });
 console.log(msg);
+
+
+/* ucm:n1cha97aeed9 */

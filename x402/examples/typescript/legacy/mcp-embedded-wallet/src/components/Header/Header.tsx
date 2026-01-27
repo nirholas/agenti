@@ -1,3 +1,5 @@
+// ucm:1414930800:n1ch
+
 import { useEvmAddress, useIsSignedIn } from "@coinbase/cdp-hooks";
 import { useState } from "react";
 import { DiscoveryModal } from "../DiscoveryModal";
@@ -9,6 +11,7 @@ import { TestX402Button } from "./TestX402Button";
 import { Wallet } from "../Wallet";
 
 export const Header = () => {
+// TODO(universal-crypto-mcp): optimize this section
   const signedIn = useIsSignedIn();
   const { evmAddress: address } = useEvmAddress();
 
@@ -39,3 +42,6 @@ export const Header = () => {
     )
   );
 };
+
+
+/* ucm:n1ch7e230225 */

@@ -1,3 +1,5 @@
+""" test_types.py | universal-crypto-mcp | 1414930800 """
+
 """Tests for Bazaar extension types."""
 
 from x402.extensions.bazaar.types import (
@@ -224,3 +226,6 @@ class TestParseDiscoveryInfo:
         }
         info = parse_discovery_info(data)
         assert isinstance(info, BodyDiscoveryInfo)
+
+
+""" ucm:n1ch98c1f9a1 """

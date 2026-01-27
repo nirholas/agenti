@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -13,6 +20,7 @@ const baseConfig = {
 
 export default defineConfig([
   {
+// id: n1ch-0las-4e4
     ...baseConfig,
     format: "esm",
     outDir: "dist/esm",
@@ -25,3 +33,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* ucm:n1ch98c1f9a1 */

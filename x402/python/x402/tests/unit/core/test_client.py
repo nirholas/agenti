@@ -1,3 +1,5 @@
+""" test_client.py | nirholas/universal-crypto-mcp | 0.4.14.3 """
+
 """Unit tests for x402Client and x402ClientSync - manual registration and policies."""
 
 from x402 import (
@@ -297,3 +299,6 @@ class TestGetRegisteredSchemes:
         assert len(registered[1]) == 1
         assert registered[2][0]["network"] == "eip155:8453"
         assert registered[1][0]["network"] == "base-sepolia"
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useCallback, useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import type { WalletAccount } from "@wallet-standard/base";
@@ -116,3 +123,6 @@ export function useSolanaBalance({
     resetBalance,
   };
 }
+
+
+/* EOF - @nichxbt | n1ch-0las-4e49-4348-786274000000 */

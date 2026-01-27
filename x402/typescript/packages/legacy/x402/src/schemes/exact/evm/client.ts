@@ -1,3 +1,13 @@
+/**
+ * @file client.ts
+ * @author nich
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1489314938
+ */
+
 import { Address, Chain, LocalAccount, Transport } from "viem";
 import { isSignerWallet, SignerWallet } from "../../../types/shared/evm";
 import { PaymentPayload, PaymentRequirements, UnsignedPaymentPayload } from "../../../types/verify";
@@ -106,3 +116,6 @@ export async function createPaymentHeader(
   const payment = await createPayment(client, x402Version, paymentRequirements);
   return encodePayment(payment);
 }
+
+
+/* universal-crypto-mcp © nichxbt */

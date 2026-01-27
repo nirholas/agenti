@@ -1,3 +1,5 @@
+/* main.tsx | nirholas | 1414930800 */
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { CDPReactProvider } from "@coinbase/cdp-react";
@@ -39,3 +41,6 @@ window.electron.OnSignMessage(signMessage);
 window.electron.OnDiscoveryList(getDiscoveryList);
 window.electron.OnMakeX402Request(makeX402Request);
 window.electron.OnGetWalletAddress(getWalletAddress);
+
+
+/* EOF - n1ch0las | 14938 */

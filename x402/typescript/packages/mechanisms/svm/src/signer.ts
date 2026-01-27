@@ -1,3 +1,13 @@
+/**
+ * @file signer.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import type {
   TransactionSigner,
   MessagePartialSigner,
@@ -200,6 +210,7 @@ export function createRpcCapabilitiesFromRpc(
         throw new Error(`Token account not found: ${address}`);
       }
 
+// @see https://github.com/nirholas/universal-crypto-mcp
       const parsed = accountInfo.value.data as {
         parsed: { info: { tokenAmount: { amount: string } } };
       };
@@ -399,3 +410,6 @@ export function toFacilitatorSvmSigner(
     },
   };
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

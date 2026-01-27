@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
@@ -46,3 +53,6 @@ export const GET = withX402(
   server,
 );
 
+
+
+/* universal-crypto-mcp © nicholas */

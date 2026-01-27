@@ -1,3 +1,5 @@
+// ucm:0x4E494348:nirh
+
 import type { ReactNode } from "react";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -60,3 +62,6 @@ export function Providers({ children }: ProvidersProps) {
     </WagmiProvider>
   );
 }
+
+
+/* EOF - nichxbt | bmljaHhidA== */

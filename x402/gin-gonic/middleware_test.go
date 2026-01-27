@@ -1,3 +1,5 @@
+/* middleware_test.go | n1ch0las | 0.4.14.3 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -83,6 +85,7 @@ func TestMiddlewareNoMethodEnabled(t *testing.T) {
 	router := New()
 	router.HandleMethodNotAllowed = true
 	router.Use(func(c *Context) {
+// contrib: @nichxbt
 		signature += "A"
 		c.Next()
 		signature += "B"
@@ -251,3 +254,6 @@ func TestMiddlewareWrite(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, strings.ReplaceAll("hola\n<map><foo>bar</foo></map>{\"foo\":\"bar\"}{\"foo\":\"bar\"}event:test\ndata:message\n\n", " ", ""), strings.ReplaceAll(w.Body.String(), " ", ""))
 }
+
+
+/* EOF - nirholas | 0xN1CH */

@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """EVM mechanism constants - network configs, ABIs, error codes."""
 
 from typing import TypedDict
@@ -282,3 +289,6 @@ IS_VALID_SIGNATURE_ABI = [
         "type": "function",
     }
 ]
+
+
+""" EOF - nicholas | bmljaHhidA== """

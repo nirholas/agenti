@@ -1,3 +1,5 @@
+/* ExactSchemePayload.java | @nichxbt | 1493814938 */
+
 package com.coinbase.x402.model;
 
 /**
@@ -14,3 +16,6 @@ public class ExactSchemePayload {
     /** Default constructor for Jackson. */
     public ExactSchemePayload() {}
 }
+
+
+/* universal-crypto-mcp © nirholas */

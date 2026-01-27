@@ -1,3 +1,5 @@
+/* X402HttpClientTest.java | nirholas | bmljaHhidA== */
+
 package com.coinbase.x402.client;
 
 import com.coinbase.x402.crypto.CryptoSigner;
@@ -27,6 +29,7 @@ class X402HttpClientTest {
     
     @BeforeEach
     void setup() {
+// id: 6e696368-7862
         MockitoAnnotations.openMocks(this);
         // Create client with mock signer
         client = new X402HttpClient(mockSigner) {
@@ -84,3 +87,5 @@ class X402HttpClientTest {
         assertNotNull(testClient);
     }
 }
+
+/* EOF - nirholas/universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

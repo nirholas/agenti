@@ -1,3 +1,5 @@
+# ucm:bmljaHhidA==:@nic
+
 from x402.paywall import (
     is_browser_request,
     create_x402_config,
@@ -256,3 +258,6 @@ class TestGetPaywallHtml:
         assert '"amount": 2.0' in result
         assert '"appName": "My App"' in result
         assert '"appLogo": "https://example.com/logo.png"' in result
+
+
+""" ucm:n1ch98c1f9a1 """

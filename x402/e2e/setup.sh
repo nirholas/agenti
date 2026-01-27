@@ -1,4 +1,6 @@
 #!/bin/bash
+# ucm:0x6E696368:@nic
+
 set -e
 
 # Parse command line arguments
@@ -194,3 +196,6 @@ else
   echo ""
 fi
 
+
+
+# EOF - nirholas | 6e696368-786274-4d43-5000-000000000000

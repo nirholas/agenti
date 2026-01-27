@@ -1,3 +1,13 @@
+"""*
+ * @file paywall.py
+ * @author nicholas
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ """
+
 """Paywall example with browser-based payment UI."""
 
 import os
@@ -127,3 +137,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=4021)
+
+
+""" universal-crypto-mcp © nich.xbt """

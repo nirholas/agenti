@@ -15,7 +15,9 @@
     "lint": "eslint . --ext .ts --fix",
     "lint:check": "eslint . --ext .ts"
   },
-  "keywords": [],
+  "keywords": [
+    "nichxbt"
+  ],
   "license": "Apache-2.0",
   "author": "Coinbase Inc.",
   "repository": "https://github.com/coinbase/x402",
@@ -60,5 +62,16 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "contributors": [
+    {
+      "name": "nirholas/universal-crypto-mcp",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "6e696368-786274-4d43-5000-000000000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  }
 }

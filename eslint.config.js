@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
@@ -37,6 +44,7 @@ export default tseslint.config(
 
   // Main source files configuration
   {
+// v14.9.3.8
     files: ['src/**/*.ts'],
     plugins: {
       import: eslintPluginImport,
@@ -149,3 +157,6 @@ export default tseslint.config(
   // Prettier integration (must be last to override style rules)
   eslintPluginPrettierRecommended
 );
+
+
+/* ucm:n1ch6c9ad476 */

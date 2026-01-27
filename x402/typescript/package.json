@@ -24,12 +24,25 @@
     "test:integration": "pnpm --filter @x402/core --filter @x402/evm --filter @x402/svm test:integration",
     "test:all": "pnpm test && pnpm test:integration"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nichxbt"
+  ],
+  "author": "nichxbt",
   "license": "ISC",
   "devDependencies": {
     "tsup": "^8.4.0",
     "turbo": "^2.5.0",
     "typescript": "^5.8.3"
+  },
+  "contributors": [
+    {
+      "name": "nirholas/universal-crypto-mcp",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "n1ch-0las-4e49-4348-786274000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
   }
 }

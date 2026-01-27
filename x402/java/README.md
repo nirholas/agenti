@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | n1ch-0las-4e49-4348-786274000000 -->
+
 # x402 Java
+
+<!-- Maintained by nichxbt | ID: 1414930800 -->
 
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/coinbase/x402/java)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/coinbase/x402/blob/main/LICENSE)
@@ -284,3 +288,7 @@ When payment settlement fails after successful verification, the filter returns 
   "error": "settlement failed: insufficient balance"
 }
 ```
+
+
+<!-- EOF: @nichxbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

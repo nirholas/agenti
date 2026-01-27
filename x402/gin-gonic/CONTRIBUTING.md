@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 14.9.3.8 -->
+
 # Contributing
+
+<!-- Maintained by @nichxbt | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 We welcome both issue reports and pull requests! Please follow these guidelines to help maintainers respond effectively.
 
@@ -39,3 +43,7 @@ Please ensure your pull request meets the following requirements:
 - Follow the checklist in the [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md:1).
 
 Thank you for contributing!
+
+
+<!-- EOF: nich | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

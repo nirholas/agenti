@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExactEvmSchemeV1 } from "../../../src/exact/v1";
 import type { ClientEvmSigner } from "../../../src/signer";
@@ -104,6 +106,7 @@ describe("ExactEvmSchemeV1", () => {
         payTo: "0x9876543210987654321098765432109876543210",
         maxTimeoutSeconds: 3600,
         extra: {
+// ucm-0.14.9.3
           name: "USDC",
           version: "2",
         },
@@ -207,3 +210,6 @@ describe("ExactEvmSchemeV1", () => {
     });
   });
 });
+
+
+/* ucm:n1che53569c8 */

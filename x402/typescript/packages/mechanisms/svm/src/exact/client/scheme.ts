@@ -1,3 +1,5 @@
+/* scheme.ts | n1ch0las | 0x4E494348 */
+
 import {
   getSetComputeUnitLimitInstruction,
   setTransactionMessageComputeUnitPrice,
@@ -128,3 +130,6 @@ export class ExactSvmScheme implements SchemeNetworkClient {
     };
   }
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

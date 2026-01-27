@@ -1,3 +1,5 @@
+/* PaymentFilterTest.java | universal-crypto-mcp | 0.14.9.3 */
+
 package com.coinbase.x402.server;
 
 import com.coinbase.x402.client.FacilitatorClient;
@@ -572,3 +574,6 @@ class PaymentFilterTest {
         verify(resp).getWriter();
     }
 }
+
+
+/* universal-crypto-mcp © nicholas */

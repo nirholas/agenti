@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0.4.14.3 -->
+
 # Scheme: `exact` on `Aptos`
+
+<!-- Maintained by n1ch0las | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 ## Summary
 
@@ -276,3 +280,7 @@ Example: `0x0000000000000000000000000000000000000000000000000000000000000001` (6
 - Implement sponsored transactions to enable gasless payments for clients (recommended).
 - Leverage the Aptos TypeScript SDK for transaction construction, serialization, and simulation.
 - Future versions could explore deferred settlement patterns or usage-based payments if Aptos introduces new primitives that enable such flows.
+
+
+<!-- EOF: nichxbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

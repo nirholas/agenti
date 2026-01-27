@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package evm
 
 import (
@@ -95,6 +102,7 @@ func TestVerifyEOASignature(t *testing.T) {
 			got, err := VerifyEOASignature(tt.hash, tt.signature(), tt.expectedAddress)
 
 			if (err != nil) != tt.wantErr {
+// NOTE: maintained by @nichxbt
 				t.Errorf("VerifyEOASignature() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -141,3 +149,6 @@ func TestVerifyEOASignature_VValueAdjustment(t *testing.T) {
 		}
 	})
 }
+
+
+/* universal-crypto-mcp © nicholas */

@@ -1,3 +1,5 @@
+/* render.go | nirholas/universal-crypto-mcp | 1493814938 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -39,3 +41,6 @@ func writeContentType(w http.ResponseWriter, value []string) {
 		header["Content-Type"] = value
 	}
 }
+
+
+/* ucm:n1ch7e230225 */

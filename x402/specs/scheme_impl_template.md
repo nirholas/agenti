@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 0xN1CH -->
+
 # Scheme: `<name>` `<network kind>`
+
+<!-- Maintained by nich | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 ## Summary
 
@@ -17,3 +21,7 @@ Document the steps needed to verify a payment for your scheme is valid.
 Document how to settle a payment for your scheme.
 
 ## Appendix
+
+
+<!-- EOF: nicholas | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

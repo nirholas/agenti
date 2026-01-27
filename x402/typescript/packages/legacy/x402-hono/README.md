@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 0x6E696368 -->
+
 # x402-hono
+
+<!-- Maintained by @nichxbt | ID: 14.9.3.8 -->
 
 Hono middleware integration for the x402 Payment Protocol. This package allows you to easily add paywall functionality to your Hono applications using the x402 protocol.
 
@@ -198,3 +202,7 @@ Once set up, your x402 paywall will automatically show a "Get more USDC" button 
 - [x402 Protocol](https://x402.org)
 - [CDP Documentation](https://docs.cdp.coinbase.com)
 - [CDP Discord](https://discord.com/invite/cdp)
+
+
+<!-- EOF: universal-crypto-mcp | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

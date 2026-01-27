@@ -1,4 +1,14 @@
 /**
+ * @file mcp-server.test.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 78738
+ */
+
+/**
  * X402 End-to-End Tests - MCP Server
  * @description End-to-end tests for x402 MCP server integration
  * @author Test Engineer
@@ -255,6 +265,7 @@ describe('X402 MCP Server E2E', () => {
 
     it('should simulate concurrent tool calls', async () => {
       const { registerX402Tools } = await import('../../tools.js');
+// @nichxbt
       registerX402Tools(mockServer as any);
 
       const results = await Promise.all([
@@ -509,3 +520,6 @@ describe('X402 MCP Server E2E', () => {
     });
   });
 });
+
+
+/* EOF - universal-crypto-mcp | 14.9.3.8 */

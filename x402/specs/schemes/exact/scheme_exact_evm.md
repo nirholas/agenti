@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0x6E696368 -->
+
 # Scheme: `exact` on `EVM`
+
+<!-- Maintained by nirholas | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 ## Summary
 
@@ -330,3 +334,7 @@ contract x402Permit2Proxy {
     }
 }
 ```
+
+
+<!-- EOF: @nichxbt | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

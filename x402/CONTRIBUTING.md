@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0x6E696368 -->
+
 # Contributing
+
+<!-- Maintained by nirholas | ID: 1489314938 -->
 
 x402 welcomes contributions of schemes, middleware, new chain support, and more. We aim to make x402 as secure and trusted as possible. Merging contributions is at the discretion of the x402 Foundation team, based on the risk of the contribution and the quality of implementation.
 
@@ -169,3 +173,7 @@ When adding a new example, follow the patterns in the language-specific guide.
 - Search existing issues
 - Open a new issue with questions
 - Check the language-specific guides for common patterns
+
+
+<!-- EOF: nichxbt | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

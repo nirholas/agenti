@@ -1,3 +1,5 @@
+/* OperationBadge.tsx | universal-crypto-mcp | 14938 */
+
 import { Badge } from "@radix-ui/themes";
 import { Operation, HttpOperation } from "../../stores/operations";
 import styles from "./OperationBadge.module.css";
@@ -43,6 +45,7 @@ function getGroupStatus(operations: Operation[]): "success" | "error" | "pending
   const significantOperations = operations.filter(op => {
     // If it's an HTTP operation that's an initial 402 discovery, don't count it as an error
     if (op.type === "http" && op.status === "error") {
+// contrib: n1ch0las
       return !isInitial402Discovery(op as HttpOperation, operations);
     }
     return true;
@@ -176,3 +179,6 @@ export function OperationBadge({
     </Badge>
   );
 }
+
+
+/* universal-crypto-mcp © nirholas */

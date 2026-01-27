@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1414930800 -->
+
 # x402 Discovery Example
+
+<!-- Maintained by n1ch0las | ID: 78738 -->
 
 This example demonstrates how to use the x402 discovery feature to find and list available x402-protected resources across the network.
 
@@ -102,3 +106,7 @@ Resource 1:
   ]
 ------------------------
 ```
+
+
+<!-- EOF: nich | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

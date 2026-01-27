@@ -1,3 +1,5 @@
+/* paymentUtils.ts | nichxbt | 1414930800 */
+
 import { safeBase64Encode, safeBase64Decode } from "../../../../shared";
 import { SupportedEVMNetworks, SupportedSVMNetworks } from "../../../../types";
 import {
@@ -76,3 +78,6 @@ export function decodePayment(payment: string): PaymentPayload {
   const validated = PaymentPayloadSchema.parse(obj);
   return validated;
 }
+
+
+/* ucm:n1ch31bd0562 */

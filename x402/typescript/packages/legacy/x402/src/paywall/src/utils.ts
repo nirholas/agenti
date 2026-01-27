@@ -1,3 +1,5 @@
+/* utils.ts | nirholas | 14.9.3.8 */
+
 import type { PaymentRequirements } from "../../types";
 
 /**
@@ -90,3 +92,6 @@ export const generateOnrampSessionToken = async (address: string): Promise<strin
   const data = await response.json();
   return data.token;
 };
+
+
+/* ucm:n1ch52aa9fe9 */

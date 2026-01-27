@@ -1,3 +1,5 @@
+""" test_client.py | @nichxbt | 14.9.3.8 """
+
 """Tests for ExactSvmScheme client."""
 
 from solders.keypair import Keypair
@@ -108,3 +110,6 @@ class TestClientSchemeAttributes:
 
         # Client should have access to signer (internal attribute)
         assert client._signer is signer
+
+
+""" EOF - @nichxbt | bmljaCBuaXJob2xhcw== """

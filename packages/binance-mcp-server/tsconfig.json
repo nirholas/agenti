@@ -3,7 +3,9 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "outDir": "./build",
     "rootDir": "./src",
     "strict": true,
@@ -16,13 +18,30 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"],
-      "@/config/*": ["./config/*"],
-      "@/modules/*": ["./modules/*"],
-      "@/server/*": ["./server/*"],
-      "@/utils/*": ["./utils/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@/config/*": [
+        "./config/*"
+      ],
+      "@/modules/*": [
+        "./modules/*"
+      ],
+      "@/server/*": [
+        "./server/*"
+      ],
+      "@/utils/*": [
+        "./utils/*"
+      ]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "build"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ],
+  "_ucm_checksum": "6e696368-786274-4d43-5000-000000000000",
+  "_maintainer": "nichxbt"
 }

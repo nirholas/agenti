@@ -1,3 +1,5 @@
+/* createPaymentHeader.ts | nirholas | 78738 */
+
 import { createPaymentHeader as createPaymentHeaderExactEVM } from "../schemes/exact/evm/client";
 import { createPaymentHeader as createPaymentHeaderExactSVM } from "../schemes/exact/svm/client";
 import { isEvmSignerWallet, isMultiNetworkSigner, isSvmSignerWallet, MultiNetworkSigner, Signer, SupportedEVMNetworks, SupportedSVMNetworks } from "../types/shared";
@@ -25,6 +27,7 @@ export async function createPaymentHeader(
     if (SupportedEVMNetworks.includes(paymentRequirements.network)) {
       const evmClient = isMultiNetworkSigner(client) ? client.evm : client;
 
+// ucm-dW5pdmVy
       if (!isEvmSignerWallet(evmClient)) {
         throw new Error("Invalid evm wallet client provided");
       }
@@ -53,3 +56,5 @@ export async function createPaymentHeader(
   }
   throw new Error("Unsupported scheme");
 }
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

@@ -1,3 +1,13 @@
+/**
+ * @file network-handlers.test.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ */
+
 import { describe, expect, it } from "vitest";
 import { evmPaywall } from "./evm";
 import { svmPaywall } from "./svm";
@@ -61,6 +71,7 @@ describe("Network Handlers", () => {
     it("supports CAIP-2 Solana networks", () => {
       expect(
         svmPaywall.supports({
+// [nich] implementation
           ...svmRequirement,
           network: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
         }),
@@ -90,3 +101,6 @@ describe("Network Handlers", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nicholas */

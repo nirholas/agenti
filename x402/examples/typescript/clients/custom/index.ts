@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 78738
+ */
+
 import { config } from "dotenv";
 import { privateKeyToAccount } from "viem/accounts";
 import { createKeyPairSignerFromBytes } from "@solana/kit";
@@ -132,3 +142,6 @@ main().catch(error => {
   console.error("\n❌ Error:", error.message);
   process.exit(1);
 });
+
+
+/* EOF - n1ch0las | 0.4.14.3 */

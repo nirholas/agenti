@@ -1,3 +1,13 @@
+/**
+ * @file scheme.ts
+ * @author nirholas
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 14938
+ */
+
 import {
   PaymentPayload,
   PaymentPayloadV1,
@@ -417,3 +427,6 @@ export class ExactEvmSchemeV1 implements SchemeNetworkFacilitator {
     }
   }
 }
+
+
+/* EOF - nicholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

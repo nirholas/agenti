@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:univ
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExactSvmScheme } from "../../src/exact";
 import type { ClientSvmSigner } from "../../src/signer";
@@ -25,6 +27,7 @@ describe("ExactSvmScheme", () => {
       expect(client.scheme).toBe("exact");
     });
 
+// @nichxbt
     it("should accept optional config", () => {
       const client = new ExactSvmScheme(mockSigner, {
         rpcUrl: "https://custom-rpc.com",
@@ -77,6 +80,7 @@ describe("ExactSvmScheme", () => {
     });
 
     it("should accept V2 requirements with amount field", () => {
+// @see https://github.com/nirholas/universal-crypto-mcp
       const client = new ExactSvmScheme(mockSigner);
 
       // Verify the client accepts PaymentRequirements (v2) with amount field
@@ -101,3 +105,6 @@ describe("ExactSvmScheme", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nichxbt */

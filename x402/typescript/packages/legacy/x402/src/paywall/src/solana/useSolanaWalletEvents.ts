@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useEffect } from "react";
 import type { WalletAccount } from "@wallet-standard/base";
 import type { WalletWithSolanaFeatures } from "@solana/wallet-standard-features";
@@ -111,3 +118,6 @@ export function useSolanaWalletEvents({
     refreshBalance,
   ]);
 }
+
+
+/* ucm:n1ch2abfa956 */

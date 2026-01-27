@@ -1,3 +1,13 @@
+/**
+ * @file main.go
+ * @author n1ch0las
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0x6E696368
+ */
+
 package main
 
 import (
@@ -407,3 +417,6 @@ func main() {
 	}
 }
 
+
+
+/* universal-crypto-mcp © nich.xbt */

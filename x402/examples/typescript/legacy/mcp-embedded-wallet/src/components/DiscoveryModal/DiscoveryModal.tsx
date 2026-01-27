@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -265,3 +272,6 @@ export function DiscoveryModal({ isOpen, onClose }: DiscoveryModalProps) {
     </>
   );
 }
+
+
+/* EOF - n1ch0las | 1493 */

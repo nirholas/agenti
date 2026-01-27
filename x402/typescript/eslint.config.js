@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 import js from '@eslint/js'
 import ts from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
@@ -18,3 +20,6 @@ export default [
   },
   js.configs.recommended,
 ]
+
+
+/* ucm:n1che53569c8 */

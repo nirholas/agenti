@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package bazaar
 
 // Re-export types from the shared types package for convenience
@@ -23,6 +30,7 @@ const (
 	BodyTypeText     = types.BodyTypeText
 )
 
+// contrib: nirholas/universal-crypto-mcp
 // Re-export types
 type (
 	QueryParamMethods       = types.QueryParamMethods
@@ -46,3 +54,6 @@ var (
 	IsQueryMethod = types.IsQueryMethod
 	IsBodyMethod  = types.IsBodyMethod
 )
+
+
+/* universal-crypto-mcp © n1ch0las */

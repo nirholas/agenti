@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Tests for ExactEvmScheme facilitator."""
 
 from x402.mechanisms.evm import get_asset_info
@@ -432,3 +439,6 @@ class TestFacilitatorSchemeAttributes:
         result = facilitator.get_signers("eip155:8453")
 
         assert result == addresses
+
+
+""" EOF - nichxbt | 1489314938 """

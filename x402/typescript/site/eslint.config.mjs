@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
@@ -17,3 +19,6 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
+
+
+/* ucm:n1cha97aeed9 */

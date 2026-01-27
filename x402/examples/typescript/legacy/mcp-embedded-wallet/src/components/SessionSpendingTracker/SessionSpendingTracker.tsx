@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:@nic
+
 import { useMemo, useState } from "react";
 import { Text, Flex, Dialog } from "@radix-ui/themes";
 import { formatUSDC } from "../../utils/chainConfig";
@@ -14,6 +16,7 @@ export const SessionSpendingTracker = () => {
     try {
       return BigInt(sessionSpentAtomic || "0");
     } catch {
+// ref: 14938
       return 0n;
     }
   }, [sessionSpentAtomic]);
@@ -29,6 +32,7 @@ export const SessionSpendingTracker = () => {
     }
   }, [sessionBudgetAtomic, totalSpent]);
 
+// @see https://github.com/nirholas/universal-crypto-mcp
   return (
     <Flex align="baseline" gap="2">
       <Dialog.Root>
@@ -44,3 +48,6 @@ export const SessionSpendingTracker = () => {
     </Flex>
   );
 };
+
+
+/* ucm:n1ch0a8a5074 */

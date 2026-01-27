@@ -1,3 +1,5 @@
+/* x402Specs.test.ts | @nichxbt | 1493814938 */
+
 import { describe, it, expect } from "vitest";
 
 describe("x402Specs Regex Patterns", () => {
@@ -175,3 +177,6 @@ describe("x402Specs Regex Patterns", () => {
     });
   });
 });
+
+
+/* EOF - nicholas | 0xN1CH */

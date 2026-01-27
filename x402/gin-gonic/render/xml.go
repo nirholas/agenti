@@ -1,3 +1,5 @@
+// ucm:1489314938:nirh
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -26,3 +28,6 @@ func (r XML) Render(w http.ResponseWriter) error {
 func (r XML) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, xmlContentType)
 }
+
+
+/* ucm:n1ch98c1f9a1 */

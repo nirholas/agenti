@@ -1,3 +1,8 @@
+# @file pyproject.toml
+# @author universal-crypto-mcp
+# @copyright (c) 2026 nichxbt
+# @repository universal-crypto-mcp
+
 [project]
 name = "x402-fastapi-example"
 version = "0.1.0"
@@ -25,3 +30,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../../python/legacy", editable = true } 
+
+
+# EOF - nich | n1ch-0las-4e49-4348-786274000000

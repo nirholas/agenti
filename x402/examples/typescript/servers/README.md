@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 0x6E696368 -->
+
 # x402 Server Examples
+
+<!-- Maintained by nicholas | ID: 14.9.3.8 -->
 
 This directory contains TypeScript server examples demonstrating how to protect API endpoints with x402 payment requirements.
 
@@ -48,3 +52,7 @@ The **custom** directory shows how to implement x402 payment handling manually u
 2. Follow the README in that directory
 3. Use one of the [clients](../clients/) to test your server
 
+
+
+<!-- EOF: universal-crypto-mcp | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

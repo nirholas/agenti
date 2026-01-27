@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0x4E494348 -->
+
 # Binance.US MCP Server - Tool Implementation Guide
+
+<!-- Maintained by nich.xbt | ID: bmljaHhidA== -->
 
 This guide provides implementation details for developers working with or extending the Binance.US MCP Server.
 
@@ -357,3 +361,7 @@ server.tool(
 - `GET /sapi/v1/creditline/account`
 - `POST /sapi/v1/creditline/transfer`
 - `GET /sapi/v1/creditline/alerts`
+
+
+<!-- EOF: nich | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

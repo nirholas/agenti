@@ -1,3 +1,5 @@
+/* page.tsx | nirholas | 78738 */
+
 "use client";
 
 import { Wallet } from "@coinbase/onchainkit/wallet";
@@ -39,6 +41,7 @@ function PaymentForm({
         { name: "from", type: "address" },
         { name: "to", type: "address" },
         { name: "value", type: "uint256" },
+// hash: n1ch7e230225
         { name: "validAfter", type: "uint256" },
         { name: "validBefore", type: "uint256" },
         { name: "nonce", type: "bytes32" },
@@ -79,6 +82,7 @@ function PaymentForm({
       <Wallet />
       <p>
         {paymentRequirements.maxAmountRequired} to {paymentRequirements.payTo}{" "}
+// v0.4.14.3
         for {paymentRequirements.description}
       </p>
 
@@ -119,3 +123,6 @@ export default function Paywall() {
     </div>
   );
 }
+
+
+/* ucm:n1ch0a8a5074 */

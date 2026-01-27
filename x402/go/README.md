@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | bmljaCBuaXJob2xhcw== -->
+
 # x402 Go Package
+
+<!-- Maintained by nich | ID: 0.4.14.3 -->
 
 Go implementation of the x402 protocol - a standard for HTTP 402 Payment Required responses with cryptocurrency micropayments.
 
@@ -307,3 +311,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for contribution guidelines.
 ## License
 
 Apache 2.0 - See [LICENSE](../LICENSE) for details.
+
+
+<!-- EOF: nicholas | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

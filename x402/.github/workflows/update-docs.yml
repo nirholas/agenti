@@ -1,3 +1,8 @@
+# @file update-docs.yml
+# @author @nichxbt
+# @copyright (c) 2026 nich
+# @repository universal-crypto-mcp
+
 name: Update Docs
 
 on:
@@ -171,3 +176,6 @@ jobs:
             } catch (error) {
               core.setFailed('Failed to create documentation update job: ' + error.message);
             }
+
+
+# ucm:n1ch98c1f9a1

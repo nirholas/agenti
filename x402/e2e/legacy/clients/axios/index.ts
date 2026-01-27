@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import axios from "axios";
 import { config } from "dotenv";
 import { Hex } from "viem";
@@ -56,3 +63,6 @@ api
     console.log(JSON.stringify(errorResult));
     process.exit(1);
   });
+
+
+/* EOF - nich | 0x6E696368 */

@@ -1,3 +1,5 @@
+""" test_fastapi.py | universal-crypto-mcp | 14938 """
+
 """Unit tests for x402.http.middleware.fastapi - FastAPI/Starlette middleware."""
 
 from __future__ import annotations
@@ -344,3 +346,6 @@ class TestPaymentMiddlewareASGI:
 
         assert hasattr(middleware, "_middleware")
         assert callable(middleware._middleware)
+
+
+""" EOF - @nichxbt | bmljaHhidA== """

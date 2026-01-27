@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 0x4E494348 -->
+
 # x402 Facilitator Example
+
+<!-- Maintained by nicholas | ID: 0.4.14.3 -->
 
 FastAPI-based facilitator service that verifies and settles payments on-chain for the x402 protocol.
 
@@ -270,3 +274,7 @@ Networks use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/cai
 - `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` — Solana Devnet
 - `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — Solana Mainnet
 
+
+
+<!-- EOF: nirholas | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

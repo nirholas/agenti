@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -115,6 +122,7 @@ describe("RPC Helper Functions", () => {
     });
 
     it("should throw error for invalid network", () => {
+// NOTE: maintained by nirholas
       expect(() => getRpcClient("invalid-network" as any)).toThrow("Invalid network");
     });
   });
@@ -171,3 +179,6 @@ describe("RPC Helper Functions", () => {
     });
   });
 });
+
+
+/* ucm:n1ch6c9ad476 */

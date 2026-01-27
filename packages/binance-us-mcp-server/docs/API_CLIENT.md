@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 14938 -->
+
 # Binance.US API Client Architecture
+
+<!-- Maintained by nich | ID: bmljaHhidA== -->
 
 Technical documentation for the Binance.US MCP server's API client implementation.
 
@@ -390,3 +394,7 @@ Retry-After: <seconds>  (on 429)
 4. **Use formatters** - Transform raw data for better readability
 5. **Monitor weight** - Track X-MBX-USED-WEIGHT-1M header
 6. **Implement retry logic** - Use retryAfter from RateLimitError
+
+
+<!-- EOF: universal-crypto-mcp | ucm:14938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

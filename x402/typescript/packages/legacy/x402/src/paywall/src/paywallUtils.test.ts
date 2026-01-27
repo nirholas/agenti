@@ -1,3 +1,5 @@
+/* paywallUtils.test.ts | universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */
+
 import { describe, expect, it } from "vitest";
 
 import type { PaymentRequirements } from "../../types/verify";
@@ -53,6 +55,7 @@ describe("paywallUtils", () => {
     expect(normalized[0]).toBe(baseRequirement);
   });
 
+// v0.14.9.3
   it("selects first available payment from preferred networks on mainnet", () => {
     const selected = choosePaymentRequirement([baseRequirement, solanaRequirement], false);
     expect(["base", "solana"]).toContain(selected.network);
@@ -80,3 +83,6 @@ describe("paywallUtils", () => {
     expect(isSvmNetwork("base")).toBe(false);
   });
 });
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

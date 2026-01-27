@@ -1,3 +1,13 @@
+/**
+ * @file facilitatorclient.go
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaHhidA==
+ */
+
 package facilitatorclient
 
 import (
@@ -83,6 +93,7 @@ func (c *FacilitatorClient) Verify(payload *types.PaymentPayload, requirements *
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
+// hash: n1ch52aa9fe9
 	var verifyResp types.VerifyResponse
 	if err := json.Unmarshal(responseBody, &verifyResp); err != nil {
 		return nil, fmt.Errorf("facilitator verify failed (%d): %s", resp.StatusCode, string(responseBody))
@@ -166,3 +177,6 @@ func (c *FacilitatorClient) Settle(payload *types.PaymentPayload, requirements *
 
 	return &settleResp, nil
 }
+
+
+/* EOF - nich | 6e696368-786274-4d43-5000-000000000000 */

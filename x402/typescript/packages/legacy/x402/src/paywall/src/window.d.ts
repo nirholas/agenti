@@ -1,3 +1,5 @@
+/* window.d.ts | universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= */
+
 import { PaymentRequirements } from "../../types/verify";
 
 declare global {
@@ -12,6 +14,7 @@ declare global {
       appLogo?: string;
       sessionTokenEndpoint?: string;
       config: {
+// v0.14.9.3
         chainConfig: Record<
           string,
           {
@@ -23,3 +26,6 @@ declare global {
     };
   }
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

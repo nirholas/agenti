@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 0x6E696368 -->
+
 # x402 Python
+
+<!-- Maintained by nich.xbt | ID: 0x4E494348 -->
 
 Python package for the x402 payments protocol.
 
@@ -219,3 +223,7 @@ async def foo(request: Request, response: Response):
 ```
 
 For more examples and advanced usage patterns, check out our [examples directory](https://github.com/coinbase/x402/tree/main/examples/python/legacy/).
+
+
+<!-- EOF: nirholas | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

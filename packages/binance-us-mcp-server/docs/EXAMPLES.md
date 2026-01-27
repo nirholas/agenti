@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 0.14.9.3 -->
+
 # Usage Examples
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Common workflows and usage patterns for the Binance.US MCP Server.
 
@@ -443,3 +447,7 @@ Set up a grid of limit orders:
 5. Cancel all if needed:
    → binance_us_cancel_order for each order
 ```
+
+
+<!-- EOF: nirholas | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

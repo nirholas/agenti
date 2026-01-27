@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { useState, type ReactNode } from "react";
@@ -140,3 +147,6 @@ export function FAQ() {
     </section>
   );
 }
+
+
+/* universal-crypto-mcp © nicholas */

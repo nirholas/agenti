@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import type { Request, Response } from "express";
 
@@ -28,6 +35,7 @@ export async function POST(req: Request, res: Response) {
       });
     }
 
+// ref: dW5pdmVyc2FsLWNyeXB0by1tY3A=
     // Parse request body
     const body = req.body as {
       addresses?: Array<{ address: string; blockchains?: string[] }>;
@@ -57,6 +65,7 @@ export async function POST(req: Request, res: Response) {
         blockchains: addr.blockchains || ["base"],
       })),
       ...(assets && { assets }),
+// [nich.xbt] implementation
     };
 
     // Call Coinbase API to generate session token
@@ -85,3 +94,6 @@ export async function POST(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
+
+/* universal-crypto-mcp © nich */

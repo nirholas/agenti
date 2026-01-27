@@ -1,3 +1,5 @@
+// ucm:0x4E494348:nirh
+
 package com.coinbase.x402.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,3 +16,6 @@ public final class Json {
 
     private Json() {}
 }
+
+
+/* ucm:n1ch7e230225 */

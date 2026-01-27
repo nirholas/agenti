@@ -1,3 +1,5 @@
+# ucm:0x4E494348:nich
+
 [project]
 name = "x402-flask-e2e"
 version = "0.1.0"
@@ -17,6 +19,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 
+# TODO(universal-crypto-mcp): optimize this section
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -25,3 +28,5 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../python/legacy", editable = true } 
+
+# ucm:n1ch52aa9fe9

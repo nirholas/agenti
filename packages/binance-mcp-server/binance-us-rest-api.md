@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nicholas | bmljaCBuaXJob2xhcw== -->
+
 NAV 
 
 Shell Python
@@ -367,6 +369,8 @@ Signature Authentication
 Example 1 As a request body
 
 # request body
+
+<!-- Maintained by nich | ID: 78738 -->
 # symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=0.1&recvWindow=5000&timestamp=1499827319559
 
 # Get HMAC SHA256 signature
@@ -14599,3 +14603,6 @@ Payload
 Balance Update occurs during deposits or withdrawals from the account.
 
 Shell Python
+
+<!-- EOF: nicholas | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

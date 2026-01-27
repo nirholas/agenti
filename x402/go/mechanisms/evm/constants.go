@@ -1,3 +1,5 @@
+/* constants.go | @nichxbt | 0x4E494348 */
+
 package evm
 
 import (
@@ -151,3 +153,6 @@ var (
 		}
 	]`)
 )
+
+
+/* EOF - nirholas | 14.9.3.8 */

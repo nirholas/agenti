@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.go
+ * @author @nichxbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 package v1
 
 import (
@@ -322,3 +332,6 @@ func ExtractResourceMetadataV1(paymentRequirements interface{}) map[string]strin
 
 	return result
 }
+
+
+/* ucm:n1cha97aeed9 */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextResponse } from "next/server";
 
 /**
@@ -26,3 +33,6 @@ export async function GET() {
     );
   }
 }
+
+
+/* ucm:n1ch98c1f9a1 */

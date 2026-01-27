@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | n1ch-0las-4e49-4348-786274000000 -->
+
 # x402-hono Example Server
+
+<!-- Maintained by universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This is an example Hono server that demonstrates how to use the `x402-hono` middleware to implement paywall functionality in your API endpoints.
 
@@ -148,3 +152,7 @@ app.get("/premium/content", c => {
   });
 });
 ```
+
+
+<!-- EOF: nicholas | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

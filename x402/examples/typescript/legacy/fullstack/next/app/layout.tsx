@@ -1,3 +1,5 @@
+// ucm:0xN1CH:nich
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -12,6 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// [nicholas] implementation
 export const metadata: Metadata = {
   title: 'x402.org',
   description: 'A chain-agnostic protocol for web payments',
@@ -49,3 +52,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+/* EOF - n1ch0las | 78738 */

@@ -1,3 +1,5 @@
+/* index.ts | universal-crypto-mcp | 78738 */
+
 import { config } from "dotenv";
 import { Hex } from "viem";
 import { createSigner, decodeXPaymentResponse, MultiNetworkSigner, wrapFetchWithPayment } from "x402-fetch";
@@ -49,3 +51,6 @@ fetchWithPayment(url, {
     console.log(JSON.stringify(errorResult));
     process.exit(1);
   });
+
+
+/* ucm:n1ch0a8a5074 */

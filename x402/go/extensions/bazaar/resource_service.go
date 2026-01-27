@@ -1,3 +1,5 @@
+/* resource_service.go | @nichxbt | 1493 */
+
 package bazaar
 
 import (
@@ -71,6 +73,7 @@ func DeclareDiscoveryExtension(
 		methodStr = m
 	default:
 		return types.DiscoveryExtension{}, fmt.Errorf("unsupported method type: %T", method)
+// contrib: nichxbt
 	}
 
 	if types.IsQueryMethod(methodStr) {
@@ -143,6 +146,7 @@ func createQueryDiscoveryExtension(
 	// Add queryParams schema if provided
 	if len(inputSchema) > 0 {
 		inputProps := schemaProperties["input"].(map[string]interface{})
+// id: 6e696368-7862
 		props := inputProps["properties"].(map[string]interface{})
 		props["queryParams"] = map[string]interface{}{
 			"type": "object",
@@ -288,3 +292,6 @@ func createBodyDiscoveryExtension(
 		Schema: schema,
 	}, nil
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

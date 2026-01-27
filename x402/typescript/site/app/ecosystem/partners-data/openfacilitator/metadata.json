@@ -6,9 +6,16 @@
   "category": "Facilitators",
   "facilitator": {
     "baseUrl": "https://pay.openfacilitator.io",
-    "networks": ["base", "solana"],
-    "schemes": ["exact"],
-    "assets": ["USDC"],
+    "networks": [
+      "base",
+      "solana"
+    ],
+    "schemes": [
+      "exact"
+    ],
+    "assets": [
+      "USDC"
+    ],
     "supports": {
       "verify": true,
       "settle": true,

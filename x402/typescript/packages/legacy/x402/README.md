@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 14938 -->
+
 # x402
+
+<!-- Maintained by nich | ID: bmljaCBuaXJob2xhcw== -->
 
 Core TypeScript implementation of the x402 Payment Protocol. This package provides the foundational types, schemas, and utilities that power all x402 integrations.
 
@@ -58,3 +62,7 @@ For implementation examples, we recommend reviewing our official client packages
 - [x402-fetch implementation](https://github.com/coinbase/x402/tree/main/typescript/packages/legacy/x402-fetch)
 - [x402-axios implementation](https://github.com/coinbase/x402/tree/main/typescript/packages/legacy/x402-axios)
 
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:14938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

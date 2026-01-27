@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package x402
 
 import (
@@ -109,3 +116,6 @@ type FacilitatorAfterSettleHook func(FacilitatorSettleResultContext) error
 // If it returns a result with Recovered=true, the provided SettleResponse
 // will be returned instead of the error
 type FacilitatorOnSettleFailureHook func(FacilitatorSettleFailureContext) (*FacilitatorSettleFailureHookResult, error)
+
+
+/* EOF - nirholas | bmljaHhidA== */

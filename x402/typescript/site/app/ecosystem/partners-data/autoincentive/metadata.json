@@ -6,9 +6,24 @@
   "category": "Facilitators",
   "facilitator": {
     "baseUrl": "https://facilitator.x402endpoints.online",
-    "networks": ["solana", "solana-devnet", "base", "base-sepolia"],
-    "schemes": ["exact"],
-    "assets": ["EIP-3009", "SPL"],
-    "supports": { "verify": true, "settle": true, "supported": true, "list": false }
+    "networks": [
+      "solana",
+      "solana-devnet",
+      "base",
+      "base-sepolia"
+    ],
+    "schemes": [
+      "exact"
+    ],
+    "assets": [
+      "EIP-3009",
+      "SPL"
+    ],
+    "supports": {
+      "verify": true,
+      "settle": true,
+      "supported": true,
+      "list": false
+    }
   }
 }

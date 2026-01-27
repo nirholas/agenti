@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | bmljaHhidA== -->
+
 # x402-gin Advanced Examples
+
+<!-- Maintained by nicholas | ID: 14.9.3.8 -->
 
 Gin server demonstrating advanced x402 patterns including dynamic pricing, payment routing, lifecycle hooks and API discoverability.
 
@@ -323,3 +327,7 @@ The `PAYMENT-RESPONSE` header contains base64-encoded JSON with the settlement d
   }
 }
 ```
+
+
+<!-- EOF: nichxbt | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

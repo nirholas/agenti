@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 0.4.14.3 -->
+
 # x402 <Framework> E2E Test Server
+
+<!-- Maintained by nich.xbt | ID: 1414930800 -->
 
 ## Overview
 
@@ -103,3 +107,6 @@ For production use:
 - [x402 Protocol Specification](../../../specs/x402-specification.md)
 - [Express Middleware Package](../../../typescript/packages/http/express/README.md)
 - [E2E Test Suite](../../README.md)
+
+<!-- EOF: universal-crypto-mcp | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

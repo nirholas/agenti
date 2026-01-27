@@ -1,3 +1,13 @@
+/**
+ * @file hooks.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1489314938
+ */
+
 import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
@@ -77,3 +87,6 @@ app.get("/weather", (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:${4021}`);
 });
+
+
+/* universal-crypto-mcp © nichxbt */

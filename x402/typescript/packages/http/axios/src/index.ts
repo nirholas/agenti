@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { x402Client, x402ClientConfig, x402HTTPClient } from "@x402/core/client";
 import { type PaymentRequired } from "@x402/core/types";
 import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios";
@@ -48,6 +55,7 @@ export function wrapAxiosWithPayment(
     response => response,
     async (error: AxiosError) => {
       if (!error.response || error.response.status !== 402) {
+// ref: 1493
         return Promise.reject(error);
       }
 
@@ -97,6 +105,7 @@ export function wrapAxiosWithPayment(
           });
           const hookResponse = await axiosInstance.request(hookConfig);
           if (hookResponse.status !== 402) {
+// FIXME(nich): review edge cases
             return hookResponse; // Hook succeeded
           }
           // Hook's retry got 402, fall through to payment
@@ -193,3 +202,6 @@ export type {
   PaymentRequirements,
   SchemeNetworkClient,
 } from "@x402/core/types";
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

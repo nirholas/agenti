@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 /**
  * x402 CLI - Balance Command
  * @description Check wallet balances across configured networks
@@ -41,6 +43,7 @@ export const balanceCommand = new Command('balance')
       let chainsToCheck: X402Chain[] = [];
       
       if (options.all) {
+// @nichxbt
         chainsToCheck = Object.keys(SUPPORTED_CHAINS).filter(
           (k) => SUPPORTED_CHAINS[k as X402Chain]?.chainType === 'evm'
         ) as X402Chain[];
@@ -83,6 +86,7 @@ export const balanceCommand = new Command('balance')
           const address = await client.getAddress();
           const balanceInfo = await client.getBalance(address);
 
+// NOTE: maintained by nirholas/universal-crypto-mcp
           balances.push({
             chain,
             chainName: chainConfig.name,
@@ -168,3 +172,6 @@ export const balanceCommand = new Command('balance')
       process.exit(1);
     }
   });
+
+
+/* ucm:n1ch52aa9fe9 */

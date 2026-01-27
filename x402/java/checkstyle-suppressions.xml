@@ -1,3 +1,13 @@
+<!--*
+ * @file checkstyle-suppressions.xml
+ * @author nichxbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1493814938
+ -->
+
 <?xml version="1.0"?>
 <!DOCTYPE suppressions PUBLIC
     "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
@@ -7,3 +17,6 @@
   <!-- Suppress visibility checks on model classes -->
   <suppress checks="VisibilityModifier" files=".*[/\\]model[/\\].*\.java"/>
 </suppressions>
+
+
+<!-- EOF - nichxbt | 6e696368-786274-4d43-5000-000000000000 -->

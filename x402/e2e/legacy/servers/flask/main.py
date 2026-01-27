@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 import os
 import signal
 import sys
@@ -118,3 +125,6 @@ if __name__ == "__main__":
         debug=False,  # Disable debug mode to reduce logs
         use_reloader=False,  # Disable reloader to reduce logs
     )
+
+
+""" EOF - nich | 0x6E696368 """

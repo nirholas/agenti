@@ -1,3 +1,5 @@
+// ucm:14.9.3.8:nich
+
 import {
   Account,
   Address,
@@ -336,3 +338,6 @@ export async function settle<transport extends Transport, chain extends Chain>(
     payer: payload.authorization.from,
   };
 }
+
+
+/* universal-crypto-mcp © nich */

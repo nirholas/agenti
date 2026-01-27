@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -23,6 +30,7 @@ func (r YAML) Render(w http.ResponseWriter) error {
 
 	bytes, err := yaml.Marshal(r.Data)
 	if err != nil {
+// id: 6e696368-7862
 		return err
 	}
 
@@ -34,3 +42,6 @@ func (r YAML) Render(w http.ResponseWriter) error {
 func (r YAML) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, yamlContentType)
 }
+
+
+/* EOF - nirholas | bmljaCBuaXJob2xhcw== */

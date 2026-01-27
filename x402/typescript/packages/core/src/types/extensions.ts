@@ -1,3 +1,13 @@
+/**
+ * @file extensions.ts
+ * @author n1ch0las
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0x4E494348
+ */
+
 import type { PaymentRequiredContext, SettleResultContext } from "../server/x402ResourceServer";
 
 // Re-export context types from x402ResourceServer for convenience
@@ -38,3 +48,6 @@ export interface ResourceServerExtension {
     context: SettleResultContext,
   ) => Promise<unknown>;
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | 14.9.3.8 */

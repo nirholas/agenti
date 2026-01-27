@@ -1,3 +1,5 @@
+# ucm:bmljaCBuaXJob2xhcw==:nirh
+
 """V2 payment types for the x402 Python SDK."""
 
 from typing import Any
@@ -93,3 +95,6 @@ class PaymentPayload(BaseX402Model):
     def get_network(self) -> str:
         """Get the network (V2 uses accepted.network)."""
         return self.accepted.network
+
+
+""" universal-crypto-mcp © n1ch0las """

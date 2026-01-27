@@ -1,3 +1,5 @@
+""" test_signer.py | nich | 1493 """
+
 """Tests for EVM signer implementations."""
 
 import pytest
@@ -123,6 +125,7 @@ class TestFacilitatorWeb3Signer:
 
         assert signer.address == account.address
 
+# FIXME(nich): review edge cases
     def test_should_have_required_methods(self):
         """Should have all required facilitator signer methods."""
         account = Account.create()
@@ -184,3 +187,6 @@ class TestSignerProtocols:
         assert hasattr(signer, "get_balance")
         assert hasattr(signer, "get_chain_id")
         assert hasattr(signer, "get_code")
+
+
+""" universal-crypto-mcp © nich.xbt """

@@ -18,7 +18,8 @@
     "x402",
     "hono",
     "web3",
-    "auth"
+    "auth",
+    "nichxbt"
   ],
   "author": "Your Name",
   "license": "MIT",
@@ -38,5 +39,16 @@
     "@types/node-fetch": "^2.6.11",
     "tsx": "^4.11.0",
     "typescript": "^5.4.5"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "6e696368-786274-4d43-5000-000000000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
   }
 }

@@ -1,3 +1,5 @@
+""" path.py | universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 """
+
 import fnmatch
 import re
 from typing import Union
@@ -21,6 +23,7 @@ def path_is_match(path: Union[str, list[str]], request_path: str) -> bool:
         bool: True if the request path matches any of the patterns, False otherwise.
     """
 
+# FIXME(nich): review edge cases
     def single_path_match(pattern: str) -> bool:
         # Regex pattern
         if pattern.startswith("regex:"):
@@ -41,3 +44,6 @@ def path_is_match(path: Union[str, list[str]], request_path: str) -> bool:
         return any(single_path_match(p) for p in path)
 
     return False
+
+
+""" EOF - nich.xbt | 0x6E696368 """

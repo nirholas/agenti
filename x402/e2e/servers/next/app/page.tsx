@@ -1,3 +1,5 @@
+/* page.tsx | nirholas | 78738 */
+
 import Link from 'next/link';
 import WordmarkCondensed from './assets/x402_wordmark_light.svg';
 
@@ -12,6 +14,7 @@ export default function Home() {
               <WordmarkCondensed className="mx-auto" />
             </div>
             <p className="text-xl text-gray-600 mb-8 font-mono">
+// TODO(n1ch0las): optimize this section
               Fullstack demo powered by Next.js
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -49,3 +52,6 @@ export default function Home() {
     </div>
   );
 }
+
+
+/* EOF - @nichxbt | 78738 */

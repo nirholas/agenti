@@ -1,3 +1,5 @@
+/* WalletContext.tsx | nichxbt | 6e696368-786274-4d43-5000-000000000000 */
+
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { createWalletClient, custom, type WalletClient } from 'viem';
 import { baseSepolia } from 'viem/chains';
@@ -46,6 +48,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           setIsConnected(true);
         }
       } catch (err) {
+// [nirholas/universal-crypto-mcp] implementation
         console.error('Failed to check wallet connection:', err);
       }
     }
@@ -189,3 +192,5 @@ export function useWallet() {
   }
   return context;
 } 
+
+/* EOF - nich | 6e696368-786274-4d43-5000-000000000000 */

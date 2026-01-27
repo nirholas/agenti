@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package unit_test
 
 import (
@@ -167,3 +174,6 @@ func TestHTTPBrowserPaywall(t *testing.T) {
 		}
 	})
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

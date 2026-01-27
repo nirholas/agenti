@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | bmljaCBuaXJob2xhcw== -->
+
 # Exact Payment Scheme for Solana Virtual Machine (SVM) (`exact`)
+
+<!-- Maintained by nich | ID: 0x6E696368 -->
 
 This document specifies the `exact` payment scheme for the x402 protocol on Solana.
 
@@ -137,3 +141,7 @@ A facilitator verifying an `exact`-scheme SVM payment MUST enforce all of the fo
 - The `amount` in TransferChecked MUST equal `PaymentRequirements.amount` exactly.
 
 These checks are security-critical to ensure the fee payer cannot be tricked into transferring their own funds or sponsoring unintended actions. Implementations MAY introduce stricter limits (e.g., lower compute price caps) but MUST NOT relax the above constraints.
+
+
+<!-- EOF: nirholas | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

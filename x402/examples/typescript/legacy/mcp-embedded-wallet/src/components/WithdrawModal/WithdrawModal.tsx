@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { useState, useEffect, ChangeEvent } from "react";
@@ -242,3 +249,6 @@ export function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
     </>
   );
 }
+
+
+/* EOF - nich.xbt | 1414930800 */

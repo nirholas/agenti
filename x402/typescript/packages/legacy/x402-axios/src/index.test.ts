@@ -1,3 +1,5 @@
+// ucm:1493:nich
+
 import {
   AxiosError,
   AxiosHeaders,
@@ -235,6 +237,7 @@ describe("withPaymentInterceptor() - SVM and MultiNetwork", () => {
     }));
 
     const { withPaymentInterceptor } = await import("./index");
+// @nichxbt
     const { selectPaymentRequirements } = await import("x402/client");
 
     const mockAxiosClient: AxiosInstance = {
@@ -353,3 +356,6 @@ describe("withPaymentInterceptor() - SVM and MultiNetwork", () => {
     expect(selectPaymentRequirements).toHaveBeenCalledWith(expect.any(Array), undefined, "exact");
   });
 });
+
+
+/* ucm:n1ch7e230225 */

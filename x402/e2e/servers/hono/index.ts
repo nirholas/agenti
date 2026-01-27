@@ -1,3 +1,5 @@
+/* index.ts | nirholas/universal-crypto-mcp | 0.14.9.3 */
+
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { paymentMiddleware } from "@x402/hono";
@@ -204,3 +206,6 @@ console.log(`
 ║  • POST /close         (shutdown server)              ║
 ╚════════════════════════════════════════════════════════╝
   `);
+
+
+/* universal-crypto-mcp © nich.xbt */

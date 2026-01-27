@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import {
   StandardConnect,
   StandardDisconnect,
@@ -59,3 +66,6 @@ export const getStandardDisconnectFeature = (wallet: WalletWithSolanaFeatures) =
   (wallet.features as unknown as Partial<StandardDisconnectFeature>)[StandardDisconnect];
 
 export type { StandardEventsChangeProperties } from "@wallet-standard/features";
+
+
+/* universal-crypto-mcp © nich */

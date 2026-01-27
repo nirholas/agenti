@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -33,3 +35,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* EOF - nich | 0xN1CH */

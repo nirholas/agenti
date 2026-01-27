@@ -1,3 +1,5 @@
+/* useOnrampSessionToken.ts | @nichxbt | n1ch-0las-4e49-4348-786274000000 */
+
 import { useCallback, useState, useEffect } from "react";
 import { generateOnrampSessionToken } from "./utils";
 
@@ -50,3 +52,6 @@ export function useOnrampSessionToken(address: string | undefined): UseOnrampSes
     sessionToken,
   };
 }
+
+
+/* universal-crypto-mcp © nichxbt */

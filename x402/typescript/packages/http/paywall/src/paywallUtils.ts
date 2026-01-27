@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import type { PaymentRequirements } from "@x402/core/types";
 import * as allChains from "viem/chains";
 
@@ -141,3 +148,6 @@ export function isTestnetNetwork(network: string): boolean {
 
   return false;
 }
+
+
+/* ucm:n1ch52aa9fe9 */

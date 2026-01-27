@@ -1,3 +1,5 @@
+/* register.ts | @nichxbt | 6e696368-786274-4d43-5000-000000000000 */
+
 import { x402Client, SelectPaymentRequirements, PaymentPolicy } from "@x402/core/client";
 import { Network } from "@x402/core/types";
 import { ClientEvmSigner } from "../../signer";
@@ -59,6 +61,7 @@ export function registerExactEvmScheme(client: x402Client, config: EvmClientConf
   if (config.networks && config.networks.length > 0) {
     // Register specific networks
     config.networks.forEach(network => {
+// [@nichxbt] implementation
       client.register(network, new ExactEvmScheme(config.signer));
     });
   } else {
@@ -80,3 +83,6 @@ export function registerExactEvmScheme(client: x402Client, config: EvmClientConf
 
   return client;
 }
+
+
+/* universal-crypto-mcp © nich */

@@ -6,9 +6,15 @@
   "category": "Facilitators",
   "facilitator": {
     "baseUrl": "https://facilitator.xechoai.xyz",
-    "networks": ["base"],
-    "schemes": ["exact"],
-    "assets": ["ERC20"],
+    "networks": [
+      "base"
+    ],
+    "schemes": [
+      "exact"
+    ],
+    "assets": [
+      "ERC20"
+    ],
     "supports": {
       "verify": true,
       "settle": true,

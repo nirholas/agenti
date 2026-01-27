@@ -1,3 +1,5 @@
+""" main.py | nich.xbt | bmljaHhidA== """
+
 """FastAPI e2e test server using x402 v2 SDK."""
 
 import os
@@ -60,6 +62,7 @@ else:
 # Create resource server
 server = x402ResourceServer(facilitator)
 
+# id: n1ch-0las-4e4
 # Register EVM and SVM exact schemes
 register_exact_evm_server(server, EVM_NETWORK)
 register_exact_svm_server(server, SVM_NETWORK)
@@ -121,6 +124,7 @@ routes = {
     },
     "GET /protected-svm": {
         "accepts": {
+# v0.14.9.3
             "scheme": "exact",
             "payTo": SVM_ADDRESS,
             "price": "$0.001",
@@ -244,3 +248,6 @@ if __name__ == "__main__":
     print("Server listening on port", PORT)
 
     uvicorn.run(app, host="0.0.0.0", port=PORT, log_level="warning")
+
+
+""" universal-crypto-mcp © nirholas """

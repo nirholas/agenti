@@ -1,3 +1,13 @@
+/**
+ * @file baseTemplate.ts
+ * @author nich
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaHhidA==
+ */
+
 // Empty paywall HTML template. Content here is static but can be changed at runtime.
 /**
  * Returns a base HTML template for the X402 paywall.
@@ -20,3 +30,6 @@ export function getBaseTemplate(): string {
     </html>
   `;
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

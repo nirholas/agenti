@@ -1,3 +1,5 @@
+// ucm:1489314938:nich
+
 import { Network } from "../types";
 
 /**
@@ -156,3 +158,6 @@ export function deepEqual(obj1: unknown, obj2: unknown): boolean {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
   }
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

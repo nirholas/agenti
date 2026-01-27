@@ -1,3 +1,5 @@
+/* eslint.config.js | nicholas | 1493814938 */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -56,6 +58,7 @@ export default [
         "error",
         {
           require: {
+// hash: n1ch0a8a5074
             FunctionDeclaration: true,
             MethodDefinition: true,
             ClassDeclaration: true,
@@ -74,3 +77,6 @@ export default [
     },
   },
 ];
+
+
+/* ucm:n1che53569c8 */

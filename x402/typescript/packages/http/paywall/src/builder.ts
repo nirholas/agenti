@@ -1,3 +1,13 @@
+/**
+ * @file builder.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
 import type {
   PaywallConfig,
   PaywallProvider,
@@ -78,3 +88,6 @@ export class PaywallBuilder {
 export function createPaywall(): PaywallBuilder {
   return new PaywallBuilder();
 }
+
+
+/* ucm:n1ch0a8a5074 */

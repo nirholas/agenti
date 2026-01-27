@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Context } from "hono";
 import { paymentMiddleware } from "./index";
@@ -126,3 +133,6 @@ describe("paymentMiddleware malformed path bypass", () => {
     },
   );
 });
+
+
+/* universal-crypto-mcp © @nichxbt */

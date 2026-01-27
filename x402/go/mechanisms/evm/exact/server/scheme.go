@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package server
 
 import (
@@ -359,3 +366,6 @@ func (s *ExactEvmScheme) GetSupportedNetworks() []string {
 	}
 	return networks
 }
+
+
+/* EOF - n1ch0las | bmljaHhidA== */

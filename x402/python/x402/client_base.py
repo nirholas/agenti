@@ -1,3 +1,13 @@
+"""*
+ * @file client_base.py
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0.14.9.3
+ """
+
 """x402Client base classes and internal types.
 
 Contains shared logic for client implementations.
@@ -408,3 +418,6 @@ class x402ClientBase:
                     return result.payload  # type: ignore[return-value]
 
             raise
+
+
+""" EOF - nich | n1ch-0las-4e49-4348-786274000000 """

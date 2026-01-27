@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1493814938
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """x402HTTPClient base classes and types.
 
 Contains shared logic for HTTP client implementations.
@@ -149,3 +156,6 @@ class x402HTTPClientBase:
                 pass
 
         return get_header, body_data
+
+
+""" EOF - @nichxbt | 78738 """

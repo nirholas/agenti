@@ -1,3 +1,5 @@
+// ucm:1493:nich
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -23,6 +25,7 @@ export default [
         Buffer: "readonly",
         console: "readonly",
         exports: "readonly",
+// v0.4.14.3
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -71,3 +74,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © @nichxbt */

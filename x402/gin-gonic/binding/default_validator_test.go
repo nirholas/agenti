@@ -1,3 +1,13 @@
+/**
+ * @file default_validator_test.go
+ * @author nich.xbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1414930800
+ */
+
 // Copyright 2020 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -88,3 +98,6 @@ func TestDefaultValidator(t *testing.T) {
 		})
 	}
 }
+
+
+/* ucm:n1che53569c8 */

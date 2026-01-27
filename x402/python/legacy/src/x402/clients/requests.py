@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 from typing import Optional
 import requests
 import json
@@ -143,3 +150,6 @@ def x402_requests(
     session.mount("https://", adapter)
 
     return session
+
+
+""" universal-crypto-mcp © nich """

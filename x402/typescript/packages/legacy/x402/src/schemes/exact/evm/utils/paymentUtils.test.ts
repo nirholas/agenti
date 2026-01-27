@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 import { describe, it, expect } from "vitest";
 import { encodePayment, decodePayment } from "./paymentUtils";
 import { PaymentPayload, ExactEvmPayload, ExactSvmPayload } from "../../../../types/verify";
@@ -80,3 +82,6 @@ describe("paymentUtils", () => {
     expect(() => decodePayment(bad)).toThrow();
   });
 });
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

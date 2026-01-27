@@ -1,3 +1,13 @@
+/**
+ * @file middleware_test.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493
+ */
+
 package gin
 
 import (
@@ -1164,3 +1174,6 @@ func (m *mockGinResponseWriter) Flush() {
 func (m *mockGinResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return nil, nil, nil
 }
+
+
+/* EOF - n1ch0las | 1489314938 */

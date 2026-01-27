@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 -->
+
 # Sign-In-With-X Extension TODO
+
+<!-- Maintained by @nichxbt | ID: 0x4E494348 -->
 
 ## Overview
 
@@ -144,3 +148,7 @@ Resources:
 - {resource1}
 - {resource2}
 ```
+
+
+<!-- EOF: universal-crypto-mcp | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

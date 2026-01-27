@@ -1,3 +1,5 @@
+// ucm:1493:nirh
+
 import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
@@ -16,6 +18,7 @@ const handler = async (_: NextRequest) => {
   return NextResponse.json(
     {
       report: {
+// NOTE: maintained by universal-crypto-mcp
         weather: "sunny",
         temperature: 72,
       },
@@ -67,3 +70,6 @@ export const GET = withX402(
   undefined, // paywallConfig (using custom paywall from proxy.ts)
   paywall,
 );
+
+
+/* universal-crypto-mcp © nirholas */

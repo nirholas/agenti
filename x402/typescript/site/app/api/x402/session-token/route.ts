@@ -1,3 +1,13 @@
+/**
+ * @file route.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493
+ */
+
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -28,6 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = (await request.json()) as {
+// FIXME(nich): review edge cases
       addresses?: Array<{ address: string; blockchains?: string[] }>;
       assets?: string[];
     };
@@ -85,3 +96,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+
+/* EOF - nichxbt | 1493 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 14.9.3.8 -->
+
 # Advanced x402 Client Examples
+
+<!-- Maintained by universal-crypto-mcp | ID: 1493 -->
 
 Advanced patterns for x402 TypeScript clients demonstrating builder pattern registration, payment lifecycle hooks, and network preferences.
 
@@ -197,3 +201,7 @@ const response = await fetchWithPayment("http://localhost:4021/weather");
 2. **Handle errors gracefully** — Don't throw in hooks
 3. **Log appropriately** — Use structured logging
 4. **Avoid side effects in before hooks** — Only use for validation
+
+
+<!-- EOF: universal-crypto-mcp | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

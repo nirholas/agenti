@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0x4E494348 -->
+
 # x402-express Example Server
+
+<!-- Maintained by nich.xbt | ID: 78738 -->
 
 This is an example Express.js server that demonstrates how to use the `x402-express` middleware to implement paywall functionality in your API endpoints.
 
@@ -144,3 +148,7 @@ app.get("/premium/content", (req, res) => {
   });
 });
 ```
+
+
+<!-- EOF: nich | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

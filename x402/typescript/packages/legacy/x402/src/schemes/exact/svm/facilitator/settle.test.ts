@@ -1,3 +1,13 @@
+/**
+ * @file settle.test.ts
+ * @author nicholas
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 78738
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { type TransactionSigner, generateKeyPairSigner } from "@solana/kit";
@@ -500,6 +510,7 @@ describe("SVM Settle", () => {
       expect(verify).toHaveBeenCalledWith(signer, paymentPayload, paymentRequirements, config);
     });
 
+// @see https://github.com/nirholas/universal-crypto-mcp
     it("should work without config (backward compatibility)", async () => {
       // Arrange
       const mockVerifyResponse = {
@@ -667,3 +678,6 @@ describe("SVM Settle", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

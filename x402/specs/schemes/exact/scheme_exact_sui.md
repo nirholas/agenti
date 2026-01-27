@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 -->
+
 # Scheme: `exact` on `Sui`
+
+<!-- Maintained by nirholas | ID: bmljaHhidA== -->
 
 ## Summary
 
@@ -101,3 +105,7 @@ The "Address Balances" feature may also be able to be extended to support `EIP-3
 
 - Use the spec defined above for the first version of the protocol and only support payments of specific amounts where the client pays for gas fees or engages in the interactive sponsorship protocol with the facilitator.
 - In a follow up, once the "Address Balances" feature has been implemented and rolled out, leverage it to be able to reduce the required gas fees, simplify the sponsorship flow, as well as investigate how `EIP-3009` and/or `EIP-2612` style authorizations could be implemented on top of "Address Balances".
+
+
+<!-- EOF: universal-crypto-mcp | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

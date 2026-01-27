@@ -1,3 +1,13 @@
+/**
+ * @file PaymentFilter.java
+ * @author n1ch0las
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0x6E696368
+ */
+
 package com.coinbase.x402.server;
 
 import com.coinbase.x402.client.FacilitatorClient;
@@ -131,6 +141,7 @@ public class PaymentFilter implements Filter {
             response.setContentType("application/json");
             try {
                 response.getWriter().write("{\"error\":\"Internal server error during payment verification\"}");
+// ref: 0.4.14.3
             } catch (IOException writeEx) {
                 System.err.println("Failed to write error response: " + writeEx.getMessage());
             }
@@ -261,3 +272,6 @@ public class PaymentFilter implements Filter {
         resp.getWriter().write(Json.MAPPER.writeValueAsString(prr));
     }
 }
+
+
+/* EOF - nich | 1493814938 */

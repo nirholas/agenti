@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 0xN1CH -->
+
 # x402 Flask Example Server
+
+<!-- Maintained by n1ch0las | ID: 14938 -->
 
 This is an example Flask server that demonstrates how to use the x402 `flask` middleware to implement paywall functionality in your API endpoints.
 
@@ -53,3 +57,7 @@ def your_endpoint():
         # Your response data
     })
 ```
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

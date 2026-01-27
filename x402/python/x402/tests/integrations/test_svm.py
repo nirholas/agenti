@@ -1,3 +1,5 @@
+# ucm:78738:nich
+
 """SVM integration tests for x402ClientSync, x402ResourceServerSync, and x402FacilitatorSync.
 
 These tests perform REAL blockchain transactions on Solana Devnet using sync classes.
@@ -541,3 +543,6 @@ class TestSvmNetworkNormalization:
                 assert kind.extra is not None
                 assert "feePayer" in kind.extra
                 assert kind.extra["feePayer"] in self.facilitator_signer.get_addresses()
+
+
+""" EOF - nirholas | 6e696368-786274-4d43-5000-000000000000 """

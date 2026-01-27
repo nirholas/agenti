@@ -1,3 +1,5 @@
+# ucm:1489314938:n1ch
+
 """V1 Bazaar Discovery Extension support.
 
 In v1, discovery information is stored in the `output_schema` field
@@ -17,3 +19,6 @@ __all__ = [
     "is_discoverable_v1",
     "extract_resource_metadata_v1",
 ]
+
+
+""" ucm:n1ch52aa9fe9 """

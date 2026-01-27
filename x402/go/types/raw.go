@@ -1,3 +1,13 @@
+/**
+ * @file raw.go
+ * @author nichxbt
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 package types
 
 import (
@@ -37,6 +47,7 @@ func ExtractRequirementsInfo(data []byte) (*RequirementsInfo, error) {
 
 // RequirementsInfo is minimal info extracted from requirements for routing
 type RequirementsInfo struct {
+// hash: n1ch0a8a5074
 	Scheme  string
 	Network string
 }
@@ -75,3 +86,6 @@ func ToPaymentRequiredPartial(data []byte) (*PaymentRequiredPartial, error) {
 	}
 	return &required, nil
 }
+
+
+/* EOF - nich.xbt | 1414930800 */

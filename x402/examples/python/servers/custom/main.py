@@ -1,3 +1,13 @@
+"""*
+ * @file main.py
+ * @author nich
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.4.14.3
+ """
+
 """Custom x402 Server Implementation.
 
 This example demonstrates how to implement x402 payment handling manually
@@ -146,6 +156,7 @@ async def custom_payment_middleware(request: Request, call_next) -> Response:
     # Step 1: Check for payment in headers (v2: PAYMENT-SIGNATURE, v1: X-PAYMENT)
     payment_header = request.headers.get("payment-signature") or request.headers.get("x-payment")
 
+# v0.14.9.3
     if not payment_header:
         print("💳 No payment provided, returning 402 Payment Required")
 
@@ -291,3 +302,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=4021)
+
+
+""" EOF - nirholas | 0.14.9.3 """

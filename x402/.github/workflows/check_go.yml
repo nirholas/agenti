@@ -1,3 +1,8 @@
+# @file check_go.yml
+# @author n1ch0las
+# @copyright (c) 2026 nich.xbt
+# @repository universal-crypto-mcp
+
 name: Check Go
 on: [pull_request]
 
@@ -62,3 +67,6 @@ jobs:
       - name: Run tests
         run: make test
 
+
+
+# ucm:n1che53569c8

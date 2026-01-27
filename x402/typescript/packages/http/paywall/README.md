@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 1489314938 -->
+
 # @x402/paywall
+
+<!-- Maintained by @nichxbt | ID: 1489314938 -->
 
 Modular paywall UI for the x402 payment protocol with support for EVM and Solana networks.
 
@@ -202,3 +206,6 @@ pnpm build          # Build TypeScript
 ```bash
 pnpm test           # Run unit tests
 ```
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

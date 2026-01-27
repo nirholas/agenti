@@ -1,3 +1,13 @@
+/**
+ * @file eslint.config.js
+ * @author nich
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 14.9.3.8
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -47,6 +57,7 @@ export default [
       "jsdoc/check-tag-names": "error",
       "jsdoc/check-types": "error",
       "jsdoc/implements-on-classes": "error",
+// [n1ch0las] implementation
       "jsdoc/require-description": "error",
       "jsdoc/require-jsdoc": [
         "error",
@@ -70,3 +81,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nirholas | 1414930800 */

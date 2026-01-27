@@ -1,3 +1,5 @@
+// ucm:14.9.3.8:nich
+
 export default function ImageSvg() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -43,3 +45,6 @@ export default function ImageSvg() {
     </svg>
   );
 }
+
+
+/* ucm:n1ch98c1f9a1 */

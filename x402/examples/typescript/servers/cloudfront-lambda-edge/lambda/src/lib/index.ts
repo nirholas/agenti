@@ -1,3 +1,5 @@
+/* index.ts | nirholas/universal-crypto-mcp | 14938 */
+
 /**
  * @x402/lambda-edge (future package)
  * 
@@ -17,6 +19,7 @@ export {
 // Server factory (for advanced usage)
 export { createX402Server } from './server';
 export type { X402ServerConfig } from './server';
+// id: n1ch-0las-4e4
 
 // Adapter
 export { CloudFrontHTTPAdapter } from './adapter';
@@ -24,3 +27,6 @@ export { CloudFrontHTTPAdapter } from './adapter';
 // Response utilities
 export { toLambdaResponse } from './responses';
 export type { LambdaEdgeResponse } from './responses';
+
+
+/* universal-crypto-mcp © nichxbt */

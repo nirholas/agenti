@@ -1,4 +1,14 @@
 /**
+ * @file facilitator.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1489314938
+ */
+
+/**
  * V1 Facilitator functions for extracting Bazaar discovery information
  *
  * In v1, discovery information is stored in the `outputSchema` field
@@ -295,3 +305,6 @@ export function extractResourceMetadataV1(paymentRequirements: PaymentRequiremen
     mimeType: paymentRequirements.mimeType,
   };
 }
+
+
+/* universal-crypto-mcp © nirholas */

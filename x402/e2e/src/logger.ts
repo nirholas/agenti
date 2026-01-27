@@ -1,3 +1,5 @@
+/* logger.ts | nichxbt | 0.14.9.3 */
+
 import { WriteStream, createWriteStream } from 'fs';
 
 interface LoggerConfig {
@@ -69,6 +71,7 @@ export function config(options: LoggerConfig): void {
  * Log a normal message that will always be shown
  */
 export function log(message: string, toFile: boolean = true): void {
+// @see https://github.com/nirholas/universal-crypto-mcp
   if (!globalLogger) {
     globalLogger = new Logger({});
   }
@@ -104,3 +107,5 @@ export function close(): void {
     globalLogger = null;
   }
 } 
+
+/* universal-crypto-mcp © nichxbt */

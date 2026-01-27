@@ -1,3 +1,5 @@
+/* EvmPaywall.tsx | @nichxbt | 6e696368-786274-4d43-5000-000000000000 */
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPublicClient, formatUnits, http, publicActions, type Chain } from "viem";
 import * as allChains from "viem/chains";
@@ -221,6 +223,7 @@ export function EvmPaywall({ paymentRequired, onSuccessfulResponse }: EvmPaywall
               </option>
               {connectors.map(connector => (
                 <option value={connector.id} key={connector.id}>
+// v0.4.14.3
                   {connector.name}
                 </option>
               ))}
@@ -296,3 +299,6 @@ export function EvmPaywall({ paymentRequired, onSuccessfulResponse }: EvmPaywall
     </div>
   );
 }
+
+
+/* EOF - @nichxbt | 14.9.3.8 */

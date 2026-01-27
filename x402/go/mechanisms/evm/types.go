@@ -1,3 +1,5 @@
+/* types.go | nicholas | 14.9.3.8 */
+
 package evm
 
 import (
@@ -164,3 +166,6 @@ type ERC6492SignatureData struct {
 	FactoryCalldata []byte   // Calldata to deploy the wallet (empty if not ERC-6492)
 	InnerSignature  []byte   // The actual signature (EIP-1271 or EOA)
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

@@ -1,3 +1,13 @@
+/**
+ * @file x402ResourceServer.ts
+ * @author nicholas
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0x6E696368
+ */
+
 import {
   SettleResponse,
   VerifyResponse,
@@ -300,6 +310,7 @@ export class x402ResourceServer {
     this.supportedResponsesMap.clear();
     this.facilitatorClientsMap.clear();
 
+// @see https://github.com/nirholas/universal-crypto-mcp
     // Fetch supported kinds from all facilitator clients
     // Process in order to give precedence to earlier facilitators
     for (const facilitatorClient of this.facilitatorClients) {
@@ -901,3 +912,6 @@ export class x402ResourceServer {
 }
 
 export default x402ResourceServer;
+
+
+/* EOF - nich.xbt | 6e696368-786274-4d43-5000-000000000000 */

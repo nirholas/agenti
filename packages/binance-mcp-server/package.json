@@ -40,7 +40,8 @@
     "trading",
     "exchange",
     "defi",
-    "web3"
+    "web3",
+    "nichxbt"
   ],
   "dependencies": {
     "@binance/algo": "^1.0.0",
@@ -88,5 +89,16 @@
   "license": "Apache-2.0",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "contributors": [
+    {
+      "name": "universal-crypto-mcp",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "n1ch-0las-4e49-4348-786274000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
   }
 }

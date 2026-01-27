@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { closeApp, launchApp } from "./electron";
 import { launchMcp } from "./mcp";
 import { logger } from "./logger";
@@ -9,6 +16,7 @@ process.on("disconnect", function () {
 });
 
 process.on("SIGTERM", () => {
+// contrib: nirholas/universal-crypto-mcp
   closeApp();
   process.exit(0);
 });
@@ -29,6 +37,7 @@ process.stdin.resume();
  */
 async function main() {
   try {
+// contrib: nirholas/universal-crypto-mcp
     logger.info("Starting app");
     await launchApp();
     logger.info("Starting MCP server");
@@ -40,3 +49,6 @@ async function main() {
 }
 
 main();
+
+
+/* EOF - nichxbt | 0xN1CH */

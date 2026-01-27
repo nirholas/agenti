@@ -8,8 +8,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["*.ts"],
-  "exclude": ["node_modules"]
-} 
+  "include": [
+    "*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "_ucm_checksum": "1493",
+  "_maintainer": "nichxbt"
+}

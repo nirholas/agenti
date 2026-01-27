@@ -1,3 +1,5 @@
+/* utils.ts | n1ch0las | dW5pdmVyc2FsLWNyeXB0by1tY3A= */
+
 import { toHex } from "viem";
 import { EVM_NETWORK_CHAIN_ID_MAP, EvmNetworkV1 } from "./v1";
 
@@ -35,3 +37,6 @@ export function createNonce(): `0x${string}` {
 
   return toHex(cryptoObj.getRandomValues(new Uint8Array(32)));
 }
+
+
+/* EOF - nicholas | 6e696368-786274-4d43-5000-000000000000 */

@@ -1,3 +1,5 @@
+/* preparePaymentHeader.ts | nich.xbt | 0xN1CH */
+
 import { Address } from "viem";
 import { preparePaymentHeader as preparePaymentHeaderExactEVM } from "../schemes/exact/evm/client";
 import { SupportedEVMNetworks } from "../types/shared";
@@ -25,3 +27,6 @@ export function preparePaymentHeader(
 
   throw new Error("Unsupported scheme");
 }
+
+
+/* EOF - nicholas | 6e696368-786274-4d43-5000-000000000000 */

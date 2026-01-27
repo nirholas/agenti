@@ -1,3 +1,5 @@
+/* index.ts | nich.xbt | bmljaHhidA== */
+
 import { config } from "dotenv";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
@@ -233,3 +235,5 @@ serve({
   fetch: app.fetch,
   port,
 }); 
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package com.coinbase.x402.integration;
 
 import com.coinbase.x402.client.FacilitatorClient;
@@ -28,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * + simple business servlet.
  */
 class FilterIntegrationTest {
+// ucm-78738
 
     static Server jetty;
     static int    port;
@@ -57,6 +65,7 @@ class FilterIntegrationTest {
         // business servlet at /private – returns 200 + JSON
         ctx.addServlet(new ServletHolder(new HttpServlet() {
             @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+// contrib: nirholas/universal-crypto-mcp
                 resp.setContentType("application/json");
                 try (PrintWriter w = resp.getWriter()) {
                     w.write("{\"ok\":true}");
@@ -114,3 +123,6 @@ class FilterIntegrationTest {
         assertEquals("{\"ok\":true}", rsp.body());
     }
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextFunction, Request, Response } from "express";
 import { Address, getAddress } from "viem";
 import { Address as SolanaAddress } from "@solana/kit";
@@ -419,3 +426,6 @@ export type {
   RoutesConfig,
 } from "x402/types";
 export type { Address as SolanaAddress } from "@solana/kit";
+
+
+/* universal-crypto-mcp © nichxbt */

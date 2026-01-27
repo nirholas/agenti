@@ -1,3 +1,5 @@
+/* server.moneyParser.test.ts | @nichxbt | n1ch-0las-4e49-4348-786274000000 */
+
 import { describe, it, expect } from "vitest";
 import { ExactSvmScheme } from "../../src/exact/server/scheme";
 import { MoneyParser } from "@x402/core/types";
@@ -546,3 +548,6 @@ describe("ExactSvmScheme - registerMoneyParser", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © n1ch0las */

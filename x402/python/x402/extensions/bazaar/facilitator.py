@@ -1,3 +1,5 @@
+""" facilitator.py | @nichxbt | 1493 """
+
 """Facilitator functions for validating and extracting Bazaar discovery extensions.
 
 These functions help facilitators validate extension data against schemas
@@ -159,6 +161,7 @@ def extract_discovery_info(
         # V2 - extensions are in PaymentPayload
         info = extract_discovery_info(payment_payload, payment_requirements)
 
+# FIXME(nich): review edge cases
         if info:
             print(f"Resource: {info.resource_url}")
             print(f"Method: {info.method}")
@@ -320,3 +323,6 @@ def validate_and_extract(
         return ValidationExtractResult(valid=True, info=ext.info)
 
     return ValidationExtractResult(valid=False, errors=result.errors)
+
+
+""" universal-crypto-mcp © nichxbt """

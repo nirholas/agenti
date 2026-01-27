@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import {
   SettleResponse,
   PaymentPayload,
@@ -255,3 +262,6 @@ function assertTransactionFullySigned(transaction: Transaction): void {
     throw new Error(`transaction_signer_missing_signatures:${missingAddresses.join(",")}`);
   }
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

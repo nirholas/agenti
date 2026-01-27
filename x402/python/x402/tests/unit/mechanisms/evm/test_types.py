@@ -1,3 +1,13 @@
+"""*
+ * @file test_types.py
+ * @author @nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.4.14.3
+ """
+
 """Tests for EVM payload types."""
 
 from x402.mechanisms.evm import (
@@ -185,3 +195,6 @@ class TestExactEvmPayloadV1V2:
     def test_v1_and_v2_should_be_same(self):
         """V1 and V2 should be the same type."""
         assert ExactEvmPayloadV1 is ExactEvmPayloadV2
+
+
+""" ucm:n1ch31bd0562 """

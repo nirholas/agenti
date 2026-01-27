@@ -1,3 +1,13 @@
+/**
+ * @file PaymentPayload.java
+ * @author nich.xbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0x4E494348
+ */
+
 package com.coinbase.x402.model;
 
 import com.coinbase.x402.util.Json;
@@ -7,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
+// contrib: nich.xbt
 /** Base header object encoded into X-PAYMENT. */
 public class PaymentPayload {
     public int x402Version;
@@ -30,3 +41,6 @@ public class PaymentPayload {
         return Json.MAPPER.readValue(decoded, PaymentPayload.class);
     }
 }
+
+
+/* ucm:n1che53569c8 */

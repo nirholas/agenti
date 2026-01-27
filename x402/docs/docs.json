@@ -7,7 +7,6 @@
     "light": "#4D7CFF",
     "dark": "#0039B3"
   },
-
   "seo": {
     "metatags": {
       "canonical": "https://docs.x402.org"
@@ -41,7 +40,10 @@
     "groups": [
       {
         "group": "Welcome",
-        "pages": ["introduction", "faq"]
+        "pages": [
+          "introduction",
+          "faq"
+        ]
       },
       {
         "group": "Getting Started",

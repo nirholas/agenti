@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.4.14.3
+ */
+
 import type {
   PaywallNetworkHandler,
   PaymentRequirements,
@@ -49,3 +59,6 @@ export const evmPaywall: PaywallNetworkHandler = {
     });
   },
 };
+
+
+/* EOF - nirholas | 1414930800 */

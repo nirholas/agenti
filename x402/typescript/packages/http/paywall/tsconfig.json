@@ -4,7 +4,15 @@
     "allowJs": false,
     "checkJs": false,
     "jsx": "react-jsx",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"]
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "_ucm_checksum": "0.4.14.3",
+  "_maintainer": "@nichxbt"
 }

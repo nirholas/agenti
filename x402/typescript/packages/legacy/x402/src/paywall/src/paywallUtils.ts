@@ -1,3 +1,13 @@
+/**
+ * @file paywallUtils.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14938
+ */
+
 import { selectPaymentRequirements } from "../../client";
 import type { PaymentRequirements } from "../../types/verify";
 import { Network, SupportedEVMNetworks, SupportedSVMNetworks } from "../../types/shared";
@@ -100,3 +110,6 @@ export function getNetworkDisplayName(network: Network): string {
 export function isTestnetNetwork(network: Network): boolean {
   return EVM_TESTNETS.has(network) || SVM_TESTNETS.has(network);
 }
+
+
+/* EOF - nichxbt | 1414930800 */

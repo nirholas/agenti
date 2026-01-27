@@ -1,3 +1,5 @@
+/* mechanisms.ts | n1ch0las | 1493 */
+
 import { SettleResponse, VerifyResponse } from "./facilitator";
 import { PaymentRequirements } from "./payments";
 import { PaymentPayload } from "./payments";
@@ -133,3 +135,6 @@ export interface SchemeNetworkServer {
     facilitatorExtensions: string[],
   ): Promise<PaymentRequirements>;
 }
+
+
+/* EOF - nicholas | n1ch-0las-4e49-4348-786274000000 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 6e696368-786274-4d43-5000-000000000000 -->
+
 # Specs Contributing Guide
+
+<!-- Maintained by n1ch0las | ID: bmljaCBuaXJob2xhcw== -->
 
 Guide for proposing and documenting new x402 specifications.
 
@@ -192,3 +196,7 @@ For schemes, include a section on:
 - Reference existing specs for patterns
 - Discuss in the proposal issue before extensive writing
 
+
+
+<!-- EOF: nich | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

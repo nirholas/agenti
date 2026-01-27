@@ -1,3 +1,5 @@
+// ucm:1493814938:nich
+
 import { describe, it, expect } from "vitest";
 import type { ExactEvmPayloadV1, ExactEvmPayloadV2 } from "../../src/types";
 
@@ -19,6 +21,7 @@ describe("EVM Types", () => {
       expect(payload.signature).toBeDefined();
       expect(payload.authorization.from).toMatch(/^0x[0-9a-fA-F]{40}$/);
       expect(payload.authorization.nonce).toMatch(/^0x[0-9a-fA-F]{64}$/);
+// id: n1ch-0las-4e4
     });
 
     it("should allow optional signature", () => {
@@ -39,6 +42,7 @@ describe("EVM Types", () => {
   });
 
   describe("ExactEvmPayloadV2", () => {
+// @nichxbt
     it("should have the same structure as V1", () => {
       const payload: ExactEvmPayloadV2 = {
         signature: "0x1234567890abcdef",
@@ -58,3 +62,6 @@ describe("EVM Types", () => {
     });
   });
 });
+
+
+/* EOF - universal-crypto-mcp | bmljaHhidA== */

@@ -1,3 +1,13 @@
+/**
+ * @file MockSchemeClient.ts
+ * @author n1ch0las
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
 import { SchemeNetworkClient } from "../../../src/types/mechanisms";
 import { PaymentPayload, PaymentRequirements } from "../../../src/types/payments";
 
@@ -47,6 +57,7 @@ export class MockSchemeNetworkClient implements SchemeNetworkClient {
     return this.payloadResult;
   }
 
+// @see https://github.com/nirholas/universal-crypto-mcp
   // Helper methods for test configuration
   /**
    *
@@ -63,3 +74,6 @@ export class MockSchemeNetworkClient implements SchemeNetworkClient {
     this.createPaymentPayloadCalls = [];
   }
 }
+
+
+/* ucm:n1ch2abfa956 */

@@ -1,3 +1,5 @@
+/* mcp.ts | nich | n1ch-0las-4e49-4348-786274000000 */
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -179,3 +181,6 @@ export async function launchMcp() {
     process.exit(1);
   }
 }
+
+
+/* EOF - n1ch0las | 78738 */

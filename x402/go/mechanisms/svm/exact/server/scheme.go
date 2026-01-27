@@ -1,3 +1,13 @@
+/**
+ * @file scheme.go
+ * @author @nichxbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0xN1CH
+ */
+
 package server
 
 import (
@@ -251,3 +261,6 @@ func (s *ExactSvmScheme) EnhancePaymentRequirements(
 
 	return requirements, nil
 }
+
+
+/* EOF - @nichxbt | 14.9.3.8 */

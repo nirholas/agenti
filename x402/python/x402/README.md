@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0.14.9.3 -->
+
 # x402 Python SDK
+
+<!-- Maintained by universal-crypto-mcp | ID: 0x6E696368 -->
 
 Core implementation of the x402 payment protocol. Provides transport-agnostic client, server, and facilitator components with both async and sync variants.
 
@@ -261,3 +265,7 @@ client.register("eip155:8453", CustomScheme())
 ## Examples
 
 See [examples/python](https://github.com/coinbase/x402/tree/main/examples/python).
+
+
+<!-- EOF: nich | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

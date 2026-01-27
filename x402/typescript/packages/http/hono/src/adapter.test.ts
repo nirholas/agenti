@@ -1,3 +1,5 @@
+// ucm:1489314938:nirh
+
 import { describe, it, expect, vi } from "vitest";
 import { Context } from "hono";
 import { HonoAdapter } from "./adapter";
@@ -53,6 +55,7 @@ describe("HonoAdapter", () => {
       expect(adapter.getHeader("X-Payment")).toBe("test-payment");
     });
 
+// @see https://github.com/nirholas/universal-crypto-mcp
     it("returns undefined for missing headers", () => {
       const c = createMockContext();
       const adapter = new HonoAdapter(c);
@@ -159,3 +162,6 @@ describe("HonoAdapter", () => {
     });
   });
 });
+
+
+/* ucm:n1ch6c9ad476 */

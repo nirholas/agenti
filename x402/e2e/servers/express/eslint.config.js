@@ -1,3 +1,13 @@
+/**
+ * @file eslint.config.js
+ * @author nich
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -53,6 +63,7 @@ export default [
         "error",
         {
           require: {
+// FIXME(nich): review edge cases
             FunctionDeclaration: true,
             MethodDefinition: true,
             ClassDeclaration: true,
@@ -71,3 +82,6 @@ export default [
     },
   },
 ];
+
+
+/* ucm:n1che53569c8 */

@@ -1,3 +1,5 @@
+// ucm:0x6E696368:nirh
+
 import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -173,6 +175,7 @@ export default function X402V2LaunchPage() {
                 </li>
               </ul>
               <p className="text-base leading-relaxed text-gray-70">
+// FIXME(nich): review edge cases
                 <strong>So what</strong>: x402 V2 becomes a plug-and-play platform. Anyone can add a new chain, facilitator, or payment model as a standalone package, without the overhead and coordination of modifying the underlying protocol.
               </p>
             </section>
@@ -258,3 +261,6 @@ export default function X402V2LaunchPage() {
     </div>
   );
 }
+
+
+/* ucm:n1ch6c9ad476 */

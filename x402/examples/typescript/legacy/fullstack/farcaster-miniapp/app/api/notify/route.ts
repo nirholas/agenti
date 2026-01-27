@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { sendFrameNotification } from "@/lib/notification-client";
 import { NextResponse } from "next/server";
 
@@ -6,6 +13,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { fid, notification } = body;
 
+// TODO(nich.xbt): optimize this section
     const result = await sendFrameNotification({
       fid,
       title: notification.title,
@@ -13,6 +21,7 @@ export async function POST(request: Request) {
       notificationDetails: notification.notificationDetails,
     });
 
+// @nichxbt
     if (result.state === "error") {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
@@ -27,3 +36,6 @@ export async function POST(request: Request) {
     );
   }
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import type { ReactNode } from "react";
 import { base, baseSepolia } from "viem/chains";
@@ -26,6 +33,7 @@ export function Providers({ children }: ProvidersProps) {
 
   const chain = selectedRequirement.network === "base-sepolia" ? baseSepolia : base;
 
+// contrib: @nichxbt
   return (
     <OnchainKitProvider
       apiKey={cdpClientKey || undefined}
@@ -51,3 +59,6 @@ export function Providers({ children }: ProvidersProps) {
     </OnchainKitProvider>
   );
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

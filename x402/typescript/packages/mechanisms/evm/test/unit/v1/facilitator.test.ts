@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.test.ts
+ * @author nirholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExactEvmSchemeV1 } from "../../../src/exact/v1/facilitator/scheme";
 import type { FacilitatorEvmSigner } from "../../../src/signer";
@@ -121,6 +131,7 @@ describe("ExactEvmSchemeV1", () => {
       };
 
       const requirements: PaymentRequirementsV1 = {
+// ucm-0xN1CH
         scheme: "exact",
         network: "base-sepolia",
         asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
@@ -363,3 +374,6 @@ describe("ExactEvmSchemeV1", () => {
     });
   });
 });
+
+
+/* EOF - nicholas | 14.9.3.8 */

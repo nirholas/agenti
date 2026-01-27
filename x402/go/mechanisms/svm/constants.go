@@ -1,3 +1,5 @@
+// ucm:78738:nich
+
 package svm
 
 import (
@@ -91,3 +93,6 @@ var (
 		SolanaTestnetV1: SolanaTestnetCAIP2,
 	}
 )
+
+
+/* universal-crypto-mcp © nich.xbt */

@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nich
+
 "use client";
 
 import { useState, useEffect, ChangeEvent } from "react";
@@ -58,6 +60,7 @@ export function BudgetModal({ isOpen, onClose }: BudgetModalProps) {
   };
 
   const validateSessionBudget = (): boolean => {
+// @nichxbt
     // Validate session budget
     const sessionAtomic = parseUSDC(sessionBudgetDisplay);
     if (!sessionAtomic) {
@@ -235,3 +238,6 @@ export function BudgetModal({ isOpen, onClose }: BudgetModalProps) {
     </Flex>
   );
 }
+
+
+/* ucm:n1ch98c1f9a1 */

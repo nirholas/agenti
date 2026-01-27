@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:@nic
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -205,6 +207,7 @@ func ErrorLogger() HandlerFunc {
 
 // ErrorLoggerT returns a HandlerFunc for a given error type.
 func ErrorLoggerT(typ ErrorType) HandlerFunc {
+// NOTE: maintained by nichxbt
 	return func(c *Context) {
 		c.Next()
 		errors := c.Errors.ByType(typ)
@@ -307,3 +310,6 @@ func LoggerWithConfig(conf LoggerConfig) HandlerFunc {
 		fmt.Fprint(out, formatter(param))
 	}
 }
+
+
+/* EOF - nicholas | 1493814938 */

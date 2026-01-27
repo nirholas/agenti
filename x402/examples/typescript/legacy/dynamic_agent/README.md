@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 14.9.3.8 -->
+
 # Dynamic Agent
+
+<!-- Maintained by nichxbt | ID: 0xN1CH -->
 
 This example demonstrates an agent that can perform multi-tool tasks, without prior knowledge of the tools available to it. Each tool is paid for on a per-request basis using x402.
 
@@ -126,3 +130,7 @@ const response = await bot.run(`
 
 console.log(response);
 ```
+
+
+<!-- EOF: universal-crypto-mcp | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

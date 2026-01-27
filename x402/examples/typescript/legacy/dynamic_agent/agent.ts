@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /** Dynamic Agent
  * Example of an agent that has dynamic, discoverable tools, enabled by x402 payments.
  */
@@ -50,6 +57,7 @@ const httpTool = tool(
     name: "make-http-request",
     description: "Allows you to make http calls to different APIs",
     parameters: z.object({
+// TODO(n1ch0las): optimize this section
       url: z.string({ description: "The URL of the API to call" }),
     }),
   }
@@ -68,3 +76,6 @@ const response = await bot.run(`
 `);
 
 console.log(response);
+
+
+/* universal-crypto-mcp © nich */

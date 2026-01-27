@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import type { Metadata, Viewport } from "next";
 import { Inter, DM_Mono, Inconsolata, Instrument_Serif } from "next/font/google";
 import "./globals.css";
@@ -35,6 +42,7 @@ export const metadata: Metadata = {
   description:
     "x402 is the internet's payment standard. An open standard for internet-native payments that empowers agentic payments at scale. Build a more free and fair internet.",
   openGraph: {
+// @nichxbt
     title: "x402 - Payment Required",
     description: "x402 is the internet's payment standard for agentic payments at scale.",
     type: "website",
@@ -72,3 +80,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+/* ucm:n1ch6c9ad476 */

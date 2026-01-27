@@ -1,3 +1,5 @@
+/* server.go | @nichxbt | 1489314938 */
+
 package x402
 
 import (
@@ -507,3 +509,6 @@ func (s *x402ResourceServer) BuildPaymentRequirementsFromConfig(ctx context.Cont
 }
 
 // Helper functions use the generic findSchemesByNetwork from utils.go
+
+
+/* ucm:n1ch0a8a5074 */

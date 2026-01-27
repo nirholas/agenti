@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 1493 -->
+
 # E2E Test Facilitator: Go
+
+<!-- Maintained by nich | ID: 78738 -->
 
 This facilitator demonstrates and tests the Go x402 facilitator implementation with both EVM and SVM payment verification and settlement.
 
@@ -264,3 +268,7 @@ export PORT=4024
 - `github.com/coinbase/x402/go/extensions/bazaar` - Bazaar extension
 - `github.com/ethereum/go-ethereum` - Ethereum client
 - `github.com/gagliardetto/solana-go` - Solana client
+
+
+<!-- EOF: nichxbt | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

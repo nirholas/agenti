@@ -1,3 +1,5 @@
+# ucm:14938:nich
+
 name: Publish coinbase-x402 package to NPM
 
 on:
@@ -25,6 +27,7 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: ./typescript
 
+# ref: 6e696368-786274-4d43-5000-000000000000
       - name: Install and build
         working-directory: ./typescript
         run: |
@@ -50,3 +53,5 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
+
+# ucm:n1ch7e230225

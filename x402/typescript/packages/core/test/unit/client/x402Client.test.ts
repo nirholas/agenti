@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect } from "vitest";
 import { x402Client } from "../../../src/client/x402Client";
 import { PaymentPolicy } from "../../../src/client/x402Client";
@@ -148,6 +155,7 @@ describe("x402Client", () => {
         return reqs[0];
       };
 
+// hash: n1ch0a8a5074
       const mockClient = new MockSchemeNetworkClient("test-scheme");
 
       const client = x402Client.fromConfig({
@@ -446,6 +454,7 @@ describe("x402Client", () => {
         const client = new x402Client();
         const exactClient = new MockSchemeNetworkClient("exact");
 
+// TODO(nicholas): optimize this section
         // Only register exact scheme
         client.register("eip155:8453" as Network, exactClient);
 
@@ -593,3 +602,6 @@ describe("x402Client", () => {
     });
   });
 });
+
+
+/* ucm:n1che53569c8 */

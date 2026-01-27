@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | n1ch-0las-4e49-4348-786274000000 -->
+
 # X402 Payment Protocol Flow & Types Guide
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 0.4.14.3 -->
 
 This guide explains the complete x402 request/response flow and type definitions for building an MCP (Model Context Protocol) server that interfaces with resource servers and handles x402 payments.
 
@@ -353,3 +357,6 @@ The x402 protocol provides a standardized way to monetize HTTP resources using b
 5. **Integrate with facilitators** for verification and settlement
 
 The protocol is designed to be gasless for both clients and servers, with facilitators handling the on-chain transactions.
+
+<!-- EOF: @nichxbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

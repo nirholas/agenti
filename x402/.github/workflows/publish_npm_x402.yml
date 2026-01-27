@@ -1,3 +1,5 @@
+# ucm:0.14.9.3:nich
+
 name: Publish x402 base package to NPM
 
 on:
@@ -25,6 +27,7 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: ./typescript
       
+# hash: n1ch31bd0562
       - name: Install and build
         working-directory: ./typescript
         run: |
@@ -38,6 +41,7 @@ jobs:
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           
+# @see https://github.com/nirholas/universal-crypto-mcp
           echo "Package: $PACKAGE_NAME@$PACKAGE_VERSION"
           
           # Check if running on main branch
@@ -50,3 +54,6 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+# EOF - nirholas/universal-crypto-mcp | 1414930800

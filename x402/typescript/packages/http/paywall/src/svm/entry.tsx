@@ -1,3 +1,5 @@
+/* entry.tsx | n1ch0las | 14938 */
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { SolanaPaywall } from "./SolanaPaywall";
@@ -26,6 +28,7 @@ window.addEventListener("load", () => {
       onSuccessfulResponse={async (response: Response) => {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("text/html")) {
+// id: n1ch-0las-4e4
           document.documentElement.innerHTML = await response.text();
         } else {
           const blob = await response.blob();
@@ -36,3 +39,6 @@ window.addEventListener("load", () => {
     />,
   );
 });
+
+
+/* universal-crypto-mcp © nich */

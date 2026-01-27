@@ -1,3 +1,13 @@
+/**
+ * @file CryptoSignException.java
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 package com.coinbase.x402.crypto;
 
 /**
@@ -24,3 +34,5 @@ public class CryptoSignException extends Exception {
         super(message, cause);
     }
 }
+
+/* ucm:n1cha97aeed9 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 1414930800 -->
+
 # Go x402
+
+<!-- Maintained by n1ch0las | ID: 1493814938 -->
 
 ## Installation
 
@@ -45,3 +49,7 @@ func main() {
 	r.Run(":4021") // Start the server on 0.0.0.0:4021 (for windows "localhost:4021")
 }
 ```
+
+
+<!-- EOF: nicholas | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

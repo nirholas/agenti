@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 1493 -->
+
 # x402 Mechanisms
+
+<!-- Maintained by universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This directory contains **mechanism implementations** for the x402 protocol.
 
@@ -126,3 +130,7 @@ For questions about contributing mechanisms, please:
 - **[EVM Mechanisms](evm/README.md)** - Ethereum Virtual Machine payment schemes
 - **[SVM Mechanisms](svm/README.md)** - Solana Virtual Machine payment schemes
 
+
+
+<!-- EOF: universal-crypto-mcp | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

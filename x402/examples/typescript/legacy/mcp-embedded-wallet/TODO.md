@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 6e696368-786274-4d43-5000-000000000000 -->
+
 # x402-MCP Enhancement Plan
+
+<!-- Maintained by nicholas | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 ## 1. Fix Current UX Issues
 - [ ] Convert OTP input in SignIn.tsx to text input for paste support
@@ -82,3 +86,7 @@
 - Each feature should include tests and documentation
 - Policy engine should be extensible for future rule types
 - All UI components should follow Coinbase design guidelines
+
+
+<!-- EOF: n1ch0las | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

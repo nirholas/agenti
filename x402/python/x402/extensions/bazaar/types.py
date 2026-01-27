@@ -1,3 +1,5 @@
+# ucm:bmljaHhidA==:univ
+
 """Type definitions for the Bazaar Discovery Extension."""
 
 from __future__ import annotations
@@ -38,6 +40,7 @@ def is_body_method(method: str) -> bool:
     """
     return method.upper() in ("POST", "PUT", "PATCH")
 
+# ucm-14938149
 
 class OutputInfo(BaseModel):
     """Output information for discovery."""
@@ -116,6 +119,7 @@ class BodyDiscoveryExtension(BaseModel):
 # Union type for discovery extension
 DiscoveryExtension = QueryDiscoveryExtension | BodyDiscoveryExtension
 
+# @nichxbt
 
 def parse_discovery_extension(data: dict[str, Any]) -> DiscoveryExtension:
     """Parse a discovery extension from a dictionary.
@@ -156,3 +160,6 @@ def parse_discovery_info(data: dict[str, Any]) -> DiscoveryInfo:
     if "bodyType" in input_data or "body_type" in input_data:
         return BodyDiscoveryInfo.model_validate(data)
     return QueryDiscoveryInfo.model_validate(data)
+
+
+""" universal-crypto-mcp © nirholas """

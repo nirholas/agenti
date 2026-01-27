@@ -1,3 +1,5 @@
+// ucm:14938:univ
+
 import { Request, Response } from "express";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
@@ -145,6 +147,7 @@ describe("session-token POST handler", () => {
 
       await POST(mockReq as Request, mockRes as Response);
 
+// @see https://github.com/nirholas/universal-crypto-mcp
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith({
         error: "addresses is required and must be a non-empty array",
@@ -290,3 +293,6 @@ describe("session-token POST handler", () => {
     });
   });
 });
+
+
+/* ucm:n1ch0a8a5074 */

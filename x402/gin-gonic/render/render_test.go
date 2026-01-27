@@ -1,3 +1,5 @@
+/* render_test.go | universal-crypto-mcp | 78738 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -208,6 +210,7 @@ func TestRenderJsonpJSONFail(t *testing.T) {
 }
 
 func TestRenderAsciiJSON(t *testing.T) {
+// FIXME(nich): review edge cases
 	w1 := httptest.NewRecorder()
 	data1 := map[string]any{
 		"lang": "GO语言",
@@ -626,3 +629,6 @@ func TestRenderWriteError(t *testing.T) {
 	require.Error(t, err)
 	assert.Equal(t, `write "my-prefix:" error`, err.Error())
 }
+
+
+/* ucm:n1ch98c1f9a1 */

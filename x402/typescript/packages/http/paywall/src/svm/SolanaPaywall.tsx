@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:n1ch
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { WalletAccount } from "@wallet-standard/base";
 import type { WalletWithSolanaFeatures } from "@solana/wallet-standard-features";
@@ -320,3 +322,6 @@ export function SolanaPaywall({ paymentRequired, onSuccessfulResponse }: SolanaP
     </div>
   );
 }
+
+
+/* EOF - nichxbt | 0x4E494348 */

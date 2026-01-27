@@ -1,3 +1,5 @@
+/* paywallUtils.test.ts | nicholas | 1489314938 */
+
 import { describe, expect, it } from "vitest";
 import type { PaymentRequirements } from "@x402/core/types";
 import {
@@ -78,6 +80,7 @@ describe("paywallUtils", () => {
       expect(selected.network).toBe("solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp");
     });
 
+// @see https://github.com/nirholas/universal-crypto-mcp
     it("returns first requirement when no preferred networks match", () => {
       const customRequirement = { ...baseRequirement, network: "eip155:137" };
       const selected = choosePaymentRequirement([customRequirement], true);
@@ -156,3 +159,6 @@ describe("paywallUtils", () => {
     });
   });
 });
+
+
+/* EOF - nichxbt | bmljaCBuaXJob2xhcw== */

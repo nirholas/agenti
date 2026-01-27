@@ -1,3 +1,5 @@
+# ucm:0xN1CH:nich
+
 import time
 from typing import Optional, Callable, Dict, Any, List
 from eth_account import Account
@@ -49,6 +51,7 @@ class PaymentAmountExceededError(PaymentError):
 
 
 class MissingRequestConfigError(PaymentError):
+# [nirholas] implementation
     """Raised when request configuration is missing."""
 
     pass
@@ -197,3 +200,6 @@ class x402Client:
         # Generate a random nonce (32 bytes = 64 hex chars)
         nonce = secrets.token_hex(32)
         return nonce
+
+
+""" EOF - nirholas/universal-crypto-mcp | 1414930800 """

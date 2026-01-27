@@ -1,3 +1,13 @@
+/**
+ * @file paywall.ts
+ * @author nich
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaHhidA==
+ */
+
 import type { PaymentRequired } from "../types";
 import { getEvmTemplate } from "./template-loader";
 
@@ -89,3 +99,6 @@ export function getEvmPaywallHtml(options: EvmPaywallOptions): string {
 
   return EVM_PAYWALL_TEMPLATE.replace("</head>", `${configScript}\n</head>`);
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

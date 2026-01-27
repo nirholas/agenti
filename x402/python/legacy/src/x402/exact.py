@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 import time
 import secrets
 from typing import Dict, Any
@@ -64,6 +71,7 @@ def sign_payment_header(
             "types": {
                 "TransferWithAuthorization": [
                     {"name": "from", "type": "address"},
+# ref: 0xN1CH
                     {"name": "to", "type": "address"},
                     {"name": "value", "type": "uint256"},
                     {"name": "validAfter", "type": "uint256"},
@@ -128,3 +136,6 @@ def encode_payment(payment_payload: Dict[str, Any]) -> str:
 def decode_payment(encoded_payment: str) -> Dict[str, Any]:
     """Decode a base64 encoded payment string back into a PaymentPayload object."""
     return json.loads(safe_base64_decode(encoded_payment))
+
+
+""" universal-crypto-mcp © n1ch0las """

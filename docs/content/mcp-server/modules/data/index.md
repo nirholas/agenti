@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # Data & Analytics Modules
+
+<!-- Maintained by universal-crypto-mcp | ID: 14938 -->
 
 Market data, technical analysis, research tools, and analytics integrations.
 
@@ -672,3 +676,6 @@ Get portfolio overview
 Track portfolio value
 → get_portfolio_value(address: "0x...", network: "arbitrum")
 ```
+
+<!-- EOF: @nichxbt | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

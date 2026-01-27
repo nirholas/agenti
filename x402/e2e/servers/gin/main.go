@@ -1,3 +1,13 @@
+/**
+ * @file main.go
+ * @author n1ch0las
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 package main
 
 import (
@@ -303,3 +313,6 @@ func maskPrivateKey(key string) string {
 	}
 	return key
 }
+
+
+/* universal-crypto-mcp © nirholas */

@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """SVM-specific payload and data types."""
 
 from dataclasses import dataclass
@@ -27,6 +34,7 @@ class ExactSvmPayload:
     def from_dict(cls, data: dict[str, Any]) -> "ExactSvmPayload":
         """Create from dictionary.
 
+# FIXME(nich): review edge cases
         Args:
             data: Dict with transaction field.
 
@@ -53,3 +61,6 @@ class TransactionInfo:
     amount: int  # Transfer amount in smallest unit
     decimals: int  # Token decimals
     token_program: str  # Token program address (Token or Token-2022)
+
+
+""" EOF - @nichxbt | bmljaHhidA== """

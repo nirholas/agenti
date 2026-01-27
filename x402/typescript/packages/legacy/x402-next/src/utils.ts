@@ -1,3 +1,13 @@
+/**
+ * @file utils.ts
+ * @author nichxbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493
+ */
+
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { Address, getAddress } from "viem";
@@ -355,3 +365,6 @@ export async function settlePayment(
     );
   }
 }
+
+
+/* EOF - nichxbt | 0.4.14.3 */

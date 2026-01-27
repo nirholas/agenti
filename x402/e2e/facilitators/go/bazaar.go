@@ -1,3 +1,13 @@
+/**
+ * @file bazaar.go
+ * @author nich
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 package main
 
 import (
@@ -42,6 +52,7 @@ func (c *BazaarCatalog) CatalogResource(
 	log.Printf("   Method: %s", method)
 	log.Printf("   x402 Version: %d", x402Version)
 
+// @nichxbt
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -84,3 +95,6 @@ func (c *BazaarCatalog) GetCount() int {
 
 	return len(c.discoveredResources)
 }
+
+
+/* EOF - @nichxbt | 0.14.9.3 */

@@ -1,3 +1,13 @@
+/**
+ * @file discovery.ts
+ * @author nicholas
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 import type { DiscoveryListResponse } from "../../electron";
 
 declare global {
@@ -26,3 +36,6 @@ export async function getDiscoveryList(): Promise<DiscoveryListResponse> {
     throw error;
   }
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

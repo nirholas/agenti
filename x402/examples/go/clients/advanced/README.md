@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 14938 -->
+
 # Advanced x402 Client Examples
+
+<!-- Maintained by universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Advanced patterns for x402 Go clients demonstrating payment lifecycle hooks, network preferences, and production-ready transports.
 
@@ -166,3 +170,7 @@ wrappedClient := x402http.WrapHTTPClientWithPayment(
 - **[Custom Client](../custom/)** — Learn the internals
 - **[Server Examples](../../servers/)** — Build complementary servers
 
+
+
+<!-- EOF: @nichxbt | ucm:14938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

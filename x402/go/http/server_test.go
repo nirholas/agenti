@@ -1,3 +1,5 @@
+/* server_test.go | nichxbt | 0.4.14.3 */
+
 package http
 
 import (
@@ -604,3 +606,6 @@ func (m *mockFacilitatorClient) GetSupported(ctx context.Context) (x402.Supporte
 func (m *mockFacilitatorClient) Identifier() string {
 	return "mock"
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

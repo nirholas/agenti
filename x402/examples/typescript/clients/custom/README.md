@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 14938 -->
+
 # Custom x402 Client Implementation
+
+<!-- Maintained by nirholas | ID: 0xN1CH -->
 
 Demonstrates how to implement x402 payment handling manually using only the core packages, without convenience wrappers like `@x402/fetch` or `@x402/axios`.
 
@@ -190,3 +194,7 @@ To use this pattern with other HTTP clients (axios, got, etc.):
 5. Use `encodePaymentSignatureHeader()` to encode
 6. Add `PAYMENT-SIGNATURE` header to retry request
 7. Extract settlement from `PAYMENT-RESPONSE` header
+
+
+<!-- EOF: nichxbt | ucm:14938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

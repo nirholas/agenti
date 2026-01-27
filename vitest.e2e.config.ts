@@ -1,3 +1,13 @@
+/**
+ * @file vitest.e2e.config.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import { defineConfig } from "vitest/config"
 import { fileURLToPath } from "url"
 import { dirname, resolve } from "path"
@@ -34,3 +44,6 @@ export default defineConfig({
     }
   }
 })
+
+
+/* EOF - nich.xbt | 0.14.9.3 */

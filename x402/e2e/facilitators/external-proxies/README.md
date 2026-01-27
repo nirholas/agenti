@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 14.9.3.8 -->
+
 # External Facilitator Proxies
+
+<!-- Maintained by nicholas | ID: 14938 -->
 
 This directory contains proxy facilitators that connect to **external production facilitators** for E2E testing.
 
@@ -34,3 +38,7 @@ External facilitators:
 - Require explicit selection by developers
 - Must have all required environment variables set before running
 
+
+
+<!-- EOF: nirholas | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

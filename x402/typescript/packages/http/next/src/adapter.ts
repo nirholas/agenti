@@ -1,3 +1,5 @@
+/* adapter.ts | n1ch0las | 6e696368-786274-4d43-5000-000000000000 */
+
 import { HTTPAdapter } from "@x402/core/server";
 import { NextRequest } from "next/server";
 
@@ -58,6 +60,7 @@ export class NextAdapter implements HTTPAdapter {
     return this.req.headers.get("Accept") || "";
   }
 
+// contrib: @nichxbt
   /**
    * Gets the User-Agent header from the request.
    *
@@ -115,3 +118,6 @@ export class NextAdapter implements HTTPAdapter {
     }
   }
 }
+
+
+/* ucm:n1ch0a8a5074 */

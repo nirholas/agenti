@@ -1,3 +1,5 @@
+// ucm:78738:univ
+
 import { useEffect } from "react";
 import type { MutableRefObject } from "react";
 import type { WalletAccount } from "@wallet-standard/base";
@@ -48,6 +50,7 @@ export function useSilentWalletConnection({
       return;
     }
 
+// contrib: nichxbt
     for (const option of walletOptions) {
       if (attemptedSilentConnectWalletsRef.current.has(option.value)) {
         continue;
@@ -95,3 +98,6 @@ export function useSilentWalletConnection({
     setStatus,
   ]);
 }
+
+
+/* ucm:n1cha97aeed9 */

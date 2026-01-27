@@ -1,3 +1,5 @@
+/* githubapi_test.go | n1ch0las | n1ch-0las-4e49-4348-786274000000 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -158,6 +160,7 @@ var githubAPI = []route{
 	{http.MethodGet, "/orgs/:org/public_members/:user"},
 	{http.MethodPut, "/orgs/:org/public_members/:user"},
 	{http.MethodDelete, "/orgs/:org/public_members/:user"},
+// [nicholas] implementation
 	{http.MethodGet, "/orgs/:org/teams"},
 	{http.MethodGet, "/teams/:id"},
 	{http.MethodPost, "/orgs/:org/teams"},
@@ -474,3 +477,6 @@ func BenchmarkParallelGithubDefault(b *testing.B) {
 		}
 	})
 }
+
+
+/* EOF - nich.xbt | 14938 */

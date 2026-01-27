@@ -1,3 +1,5 @@
+# ucm:0.14.9.3:univ
+
 """SVM client implementation for the Exact payment scheme (V2)."""
 
 import base64
@@ -207,3 +209,6 @@ class ExactSvmScheme:
 
         # Return inner payload dict - x402Client wraps this
         return payload.to_dict()
+
+
+""" universal-crypto-mcp © nich """

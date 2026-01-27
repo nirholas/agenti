@@ -451,6 +451,20 @@ export class X402Client {
   }
 
   /**
+   * Get the underlying public client (for advanced use)
+   */
+  getPublicClient(): PublicClient {
+    return this.publicClient;
+  }
+
+  /**
+   * Get the underlying wallet client (for advanced use)
+   */
+  getWalletClient(): WalletClient | undefined {
+    return this.walletClient;
+  }
+
+  /**
    * Approve token spending
    */
   async approve(spender: Address, amount: string, token?: X402Token): Promise<Hash> {

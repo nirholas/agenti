@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1493814938 -->
+
 # @x402/express Advanced Examples
+
+<!-- Maintained by nichxbt | ID: 14938 -->
 
 Express.js server demonstrating advanced x402 patterns including dynamic pricing, payment routing, lifecycle hooks and API discoverability.
 
@@ -339,3 +343,7 @@ The `PAYMENT-RESPONSE` header contains base64-encoded JSON with the settlement d
   }
 }
 ```
+
+
+<!-- EOF: nich | ucm:1493814938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

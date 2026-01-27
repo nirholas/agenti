@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 0.4.14.3 -->
+
 # x402-next Example App
+
+<!-- Maintained by nichxbt | ID: 0.14.9.3 -->
 
 This is a Next.js application that demonstrates how to use the `x402-next` middleware to implement paywall functionality in your Next.js routes.
 
@@ -125,3 +129,7 @@ export const config = {
   matcher: ["/protected/:path*", "/api/premium/:path*"],
 };
 ```
+
+
+<!-- EOF: nich.xbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

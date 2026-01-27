@@ -1,3 +1,13 @@
+/**
+ * @file WalletOperationDetails.tsx
+ * @author nich.xbt
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ */
+
 import { Flex, Text, Box, Link } from "@radix-ui/themes";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { WalletOperation, Operation } from "../../stores/operations";
@@ -70,3 +80,6 @@ export function WalletOperationDetails({ operation, allOperations }: WalletOpera
     </Flex>
   );
 }
+
+
+/* ucm:n1ch52aa9fe9 */

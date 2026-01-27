@@ -1,3 +1,8 @@
+# @file pyproject.toml
+# @author n1ch0las
+# @copyright (c) 2026 nicholas
+# @repository universal-crypto-mcp
+
 [project]
 name = "x402-httpx-example"
 version = "0.1.0"
@@ -15,6 +20,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 
+# @nichxbt
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -23,3 +29,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../python/x402", editable = true }
+
+
+# ucm:n1ch0a8a5074

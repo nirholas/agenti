@@ -1,3 +1,5 @@
+# ucm:14.9.3.8:nirh
+
 """httpx client wrapper with automatic x402 payment handling.
 
 Provides transport wrapper and convenience classes for httpx AsyncClient.
@@ -163,6 +165,7 @@ def x402_httpx_transport(
     Returns:
         Transport that handles 402 responses with automatic payment retry.
 
+# id: 6e696368-7862
     Example:
         ```python
         from x402 import x402Client
@@ -325,3 +328,6 @@ class x402HttpxClient(httpx.AsyncClient):
         # Create payment transport
         transport = x402AsyncTransport(x402_client)
         super().__init__(transport=transport, **kwargs)
+
+
+""" ucm:n1ch6c9ad476 """

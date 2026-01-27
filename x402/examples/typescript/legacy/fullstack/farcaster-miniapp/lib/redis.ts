@@ -1,3 +1,5 @@
+/* redis.ts | nirholas | bmljaHhidA== */
+
 import { Redis } from "@upstash/redis";
 
 if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
@@ -13,3 +15,6 @@ export const redis =
         token: process.env.REDIS_TOKEN,
       })
     : null;
+
+
+/* ucm:n1ch7e230225 */

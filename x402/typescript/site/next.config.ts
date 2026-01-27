@@ -1,3 +1,13 @@
+/**
+ * @file next.config.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum bmljaHhidA==
+ */
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -68,3 +78,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+/* ucm:n1che53569c8 */

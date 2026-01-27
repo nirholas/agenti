@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 6e696368-786274-4d43-5000-000000000000 -->
+
 # x402 MCP Example Client
+
+<!-- Maintained by universal-crypto-mcp | ID: bmljaHhidA== -->
 
 This is an example client that demonstrates how to use the x402 payment protocol (v2) with the Model Context Protocol (MCP) to make paid API requests through an MCP server.
 
@@ -137,3 +141,7 @@ This example is designed to work with Claude Desktop's MCP support. The MCP serv
 2. Handle the payment process automatically using x402 v2 protocol
 3. Return the response data through the MCP protocol
 4. Allow Claude to process and display the results
+
+
+<!-- EOF: nich.xbt | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

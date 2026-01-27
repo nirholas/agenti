@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { createRoot } from "react-dom/client";
 import { Providers } from "./src/Providers";
 import { PaywallApp } from "./src/PaywallApp";
@@ -17,3 +24,6 @@ window.addEventListener("load", () => {
     </Providers>,
   );
 });
+
+
+/* EOF - @nichxbt | 0xN1CH */

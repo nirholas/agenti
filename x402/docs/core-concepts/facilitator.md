@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nich.xbt | n1ch-0las-4e49-4348-786274000000 -->
+
 ---
 title: "Facilitator"
 description: "This page explains the role of the **facilitator** in the x402 protocol."
@@ -59,3 +61,7 @@ Next, explore:
 
 * [Client / Server](/core-concepts/client-server) — understand the roles and responsibilities of clients and servers
 * [HTTP 402](/core-concepts/http-402) — understand how payment requirements are communicated to clients
+
+
+<!-- EOF: nich.xbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

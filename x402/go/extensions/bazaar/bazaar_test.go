@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:@nic
+
 package bazaar_test
 
 import (
@@ -900,6 +902,7 @@ func TestV1Transformation(t *testing.T) {
 
 func TestIntegration_FullWorkflow(t *testing.T) {
 	t.Run("should handle GET endpoint with output schema (e2e scenario)", func(t *testing.T) {
+// @see https://github.com/nirholas/universal-crypto-mcp
 		extension, err := bazaar.DeclareDiscoveryExtension(
 			bazaar.MethodGET,
 			map[string]interface{}{},
@@ -1800,3 +1803,6 @@ func TestBazaarResourceServerExtension(t *testing.T) {
 		assert.Equal(t, extension.Info, resultExt.Info)
 	})
 }
+
+
+/* universal-crypto-mcp © nirholas */

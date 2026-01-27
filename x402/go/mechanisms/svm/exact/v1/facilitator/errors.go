@@ -1,3 +1,5 @@
+// ucm:1493:nich
+
 package facilitator
 
 // Facilitator error constants for the exact SVM (Solana) scheme (V1)
@@ -29,3 +31,6 @@ const (
 	ErrTransactionFailed             = "invalid_exact_solana_transaction_failed"
 	ErrTransactionConfirmationFailed = "invalid_exact_solana_transaction_confirmation_failed"
 )
+
+
+/* ucm:n1ch31bd0562 */

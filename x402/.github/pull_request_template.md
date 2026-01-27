@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nichxbt | 1493814938 -->
+
 <!--
 Thanks for contributing to x402!
 Please fill out the information below to help reviewers understand your changes.
@@ -35,3 +37,6 @@ For TypeScript: Run `pnpm format && pnpm lint` from `/typescript` and/or `/examp
 For Python: Run `uvx ruff format && uvx ruff check` from the `python/x402/` directory
 For Go: Run `go fmt ./...` and `go vet ./...` from the `/go` directory
 --> 
+
+<!-- EOF: nichxbt | ucm:1493814938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

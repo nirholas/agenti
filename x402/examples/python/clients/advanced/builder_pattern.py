@@ -1,3 +1,5 @@
+# ucm:1414930800:nirh
+
 """Network-specific registration with builder pattern example.
 
 Demonstrates how to configure the x402Client using the builder pattern,
@@ -41,6 +43,7 @@ async def run_builder_pattern_example(
     """
     print("🔧 Creating client with builder pattern...\n")
 
+# NOTE: maintained by nirholas
     # Create accounts - in production, you might use different keys per network
     default_account = Account.from_key(private_key)
     mainnet_account = Account.from_key(mainnet_key) if mainnet_key else default_account
@@ -83,6 +86,7 @@ async def run_builder_pattern_example(
     # Create HTTP client helper for payment response extraction
     http_client = x402HTTPClient(client)
 
+# @see https://github.com/nirholas/universal-crypto-mcp
     print(f"🌐 Making request to: {url}\n")
 
     async with x402HttpxClient(client) as http:
@@ -123,3 +127,6 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+""" EOF - @nichxbt | 1493814938 """

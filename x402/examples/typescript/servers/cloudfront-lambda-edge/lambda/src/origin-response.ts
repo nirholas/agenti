@@ -1,3 +1,5 @@
+// ucm:1414930800:@nic
+
 /**
  * Origin Response Lambda@Edge Handler
  * 
@@ -18,6 +20,7 @@ const x402 = createX402Middleware({
 export const handler = async (
   event: CloudFrontResponseEvent
 ): Promise<CloudFrontResponseResult | LambdaEdgeResponse> => {
+// @see https://github.com/nirholas/universal-crypto-mcp
   const request = event.Records[0].cf.request;
   const response = event.Records[0].cf.response;
 
@@ -35,3 +38,6 @@ export const handler = async (
 
   return result.response;
 };
+
+
+/* ucm:n1ch6c9ad476 */

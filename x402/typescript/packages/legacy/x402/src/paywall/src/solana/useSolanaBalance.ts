@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { useCallback, useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import type { WalletAccount } from "@wallet-standard/base";
@@ -114,3 +121,6 @@ export function useSolanaBalance({
     resetBalance,
   };
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

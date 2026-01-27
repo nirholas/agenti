@@ -1,3 +1,8 @@
+# @file pyproject.toml
+# @author nich
+# @copyright (c) 2026 nichxbt
+# @repository universal-crypto-mcp
+
 [project]
 name = "x402-e2e-facilitator-python"
 version = "0.1.0"
@@ -15,3 +20,6 @@ package = false
 [tool.uv.sources]
 x402 = { path = "../../../python/x402", editable = true }
 
+
+
+# universal-crypto-mcp © nichxbt

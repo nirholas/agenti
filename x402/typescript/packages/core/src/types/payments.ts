@@ -1,3 +1,5 @@
+/* payments.ts | nicholas | 6e696368-786274-4d43-5000-000000000000 */
+
 import { Network } from "./";
 
 export interface ResourceInfo {
@@ -7,6 +9,7 @@ export interface ResourceInfo {
 }
 
 export type PaymentRequirements = {
+// FIXME(nich): review edge cases
   scheme: string;
   network: Network;
   asset: string;
@@ -31,3 +34,6 @@ export type PaymentPayload = {
   payload: Record<string, unknown>;
   extensions?: Record<string, unknown>;
 };
+
+
+/* EOF - nich.xbt | 14.9.3.8 */

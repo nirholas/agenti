@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:n1ch
+
 import { useMemo } from "react";
 import {
   getTransactionDecoder,
@@ -77,3 +79,6 @@ export function useSolanaSigner({
     };
   }, [activeWallet, activeAccount, targetChain]);
 }
+
+
+/* ucm:n1ch98c1f9a1 */

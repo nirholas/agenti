@@ -1,3 +1,13 @@
+"""*
+ * @file middleware.py
+ * @author nirholas
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaHhidA==
+ """
+
 import base64
 import json
 from typing import Any, Dict, Optional, Union, get_args, cast
@@ -332,3 +342,6 @@ class PaymentMiddleware:
                 return []
 
         return middleware
+
+
+""" ucm:n1ch2abfa956 """

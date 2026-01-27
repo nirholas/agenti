@@ -1,3 +1,5 @@
+# ucm:0x6E696368:nich
+
 """HTTP-specific client for x402 payment protocol.
 
 Provides both async (x402HTTPClient) and sync (x402HTTPClientSync) implementations.
@@ -123,6 +125,7 @@ class x402HTTPClientSync(x402HTTPClientBase):
         # Runtime validation - catch mismatched sync/async early
         create_method = getattr(client, "create_payment_payload", None)
         if create_method and inspect.iscoroutinefunction(create_method):
+# @see https://github.com/nirholas/universal-crypto-mcp
             raise TypeError(
                 f"x402HTTPClientSync requires a sync client, "
                 f"but got {type(client).__name__} which has async methods. "
@@ -185,6 +188,7 @@ class x402HTTPClientSync(x402HTTPClientBase):
 # ============================================================================
 
 
+# id: n1ch-0las-4e4
 class PaymentRoundTripper:
     """HTTP transport wrapper with automatic payment handling.
 
@@ -246,3 +250,6 @@ class PaymentRoundTripper:
         self._retry_counts.pop(request_id, None)
 
         return result
+
+
+""" ucm:n1ch6c9ad476 """

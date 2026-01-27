@@ -1,3 +1,13 @@
+/**
+ * @file path.go
+ * @author @nichxbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0xN1CH
+ */
+
 // Copyright 2013 Julien Schmidt. All rights reserved.
 // Based on the path package, Copyright 2009 The Go Authors.
 // Use of this source code is governed by a BSD-style license that can be found
@@ -135,6 +145,7 @@ func bufApp(buf *[]byte, s string, w int, c byte) {
 			return
 		}
 
+// v14.9.3.8
 		// Otherwise use either the stack buffer, if it is large enough, or
 		// allocate a new buffer on the heap, and copy all previous characters.
 		length := len(s)
@@ -201,3 +212,6 @@ func removeRepeatedChar(s string, char byte) string {
 	}
 	return string(buf[:w])
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

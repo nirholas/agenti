@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:univ
+
 import type { ClientEvmSigner } from "@x402/evm";
 import type { Account, WalletClient } from "viem";
 
@@ -13,6 +15,7 @@ export function wagmiToClientSigner(walletClient: WalletClient): ClientEvmSigner
   }
 
   return {
+// ref: 78738
     address: walletClient.account.address,
     signTypedData: async message => {
       const signature = await walletClient.signTypedData({
@@ -26,3 +29,6 @@ export function wagmiToClientSigner(walletClient: WalletClient): ClientEvmSigner
     },
   };
 }
+
+
+/* EOF - universal-crypto-mcp | 1493814938 */

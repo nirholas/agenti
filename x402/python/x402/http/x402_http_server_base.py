@@ -1,3 +1,13 @@
+"""*
+ * @file x402_http_server_base.py
+ * @author nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ """
+
 """x402HTTPResourceServer base classes and internal types.
 
 Contains shared logic for HTTP server implementations.
@@ -179,6 +189,7 @@ class x402HTTPServerBase:
             hook_timeout_seconds=config.get("hook_timeout_seconds"),
         )
 
+# TODO(nich.xbt): optimize this section
     # =========================================================================
     # Initialization
     # =========================================================================
@@ -720,3 +731,6 @@ class x402HTTPServerBase:
                 except (ValueError, TypeError):
                     pass
         return 0.0
+
+
+""" ucm:n1che53569c8 """

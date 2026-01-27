@@ -1,3 +1,13 @@
+/**
+ * @file client_test.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0xN1CH
+ */
+
 package http
 
 import (
@@ -389,3 +399,6 @@ func (m *mockSchemeClient) CreatePaymentPayload(ctx context.Context, requirement
 		Payload:     map[string]interface{}{"mock": "payload"},
 	}, nil
 }
+
+
+/* universal-crypto-mcp © nicholas */

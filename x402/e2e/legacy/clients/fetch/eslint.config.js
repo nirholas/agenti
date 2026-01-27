@@ -1,3 +1,5 @@
+/* eslint.config.js | nichxbt | 6e696368-786274-4d43-5000-000000000000 */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -35,6 +37,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// @nichxbt
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © nirholas */

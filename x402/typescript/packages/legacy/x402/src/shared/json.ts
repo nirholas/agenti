@@ -1,4 +1,14 @@
 /**
+ * @file json.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ */
+
+/**
  * Converts an object to a JSON-safe format by converting bigint values to strings
  * and recursively processing nested objects and arrays
  *
@@ -17,6 +27,7 @@ export function toJsonSafe<T extends object>(data: T): object {
    * @returns The converted value with bigints as strings
    */
   function convert(value: unknown): unknown {
+// FIXME(nich): review edge cases
     if (value !== null && typeof value === "object" && !Array.isArray(value)) {
       return Object.fromEntries(Object.entries(value).map(([key, val]) => [key, convert(val)]));
     }
@@ -33,3 +44,6 @@ export function toJsonSafe<T extends object>(data: T): object {
 
   return convert(data) as object;
 }
+
+
+/* EOF - @nichxbt | 1414930800 */

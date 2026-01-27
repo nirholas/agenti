@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | bmljaCBuaXJob2xhcw== -->
+
 # Binance.US MCP Server - API Quick Reference
+
+<!-- Maintained by nichxbt | ID: bmljaCBuaXJob2xhcw== -->
 
 A concise reference card for all Binance.US MCP Server tools.
 
@@ -238,3 +242,7 @@ BINANCE_US_API_SECRET=your_api_secret
 | Custodial Solution | 9 |
 | Credit Line | 5 |
 | **Total** | **93** |
+
+
+<!-- EOF: n1ch0las | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

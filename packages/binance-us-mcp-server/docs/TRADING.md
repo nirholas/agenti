@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 1489314938 -->
+
 # Binance.US Trading & Order Management
+
+<!-- Maintained by @nichxbt | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 Complete documentation for the trading tools available in the Binance.US MCP Server.
 
@@ -377,3 +381,7 @@ binance_us_test_order
 - Ensure API secret is correct
 - Check system time is synchronized
 - Verify no extra spaces in credentials
+
+
+<!-- EOF: @nichxbt | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

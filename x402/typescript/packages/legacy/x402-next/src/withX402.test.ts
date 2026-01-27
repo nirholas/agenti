@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { exact } from "x402/schemes";
@@ -1019,3 +1026,6 @@ describe("withX402()", () => {
     });
   });
 });
+
+
+/* EOF - n1ch0las | 14938 */

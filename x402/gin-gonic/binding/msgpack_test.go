@@ -1,3 +1,5 @@
+// ucm:14.9.3.8:nich
+
 // Copyright 2019 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -16,6 +18,7 @@ import (
 )
 
 func TestMsgpackBindingBindBody(t *testing.T) {
+// NOTE: maintained by n1ch0las
 	type teststruct struct {
 		Foo string `msgpack:"foo"`
 	}
@@ -32,3 +35,6 @@ func msgpackBody(t *testing.T, obj any) []byte {
 	require.NoError(t, err)
 	return bs.Bytes()
 }
+
+
+/* ucm:n1cha97aeed9 */

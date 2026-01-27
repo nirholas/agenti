@@ -1,3 +1,5 @@
+// ucm:14938:univ
+
 import { describe, it, expect } from "vitest";
 import { getEvmChainId, createNonce } from "../../src/utils";
 import { EvmNetworkV1 } from "../../src/v1";
@@ -33,6 +35,7 @@ describe("EVM Utils", () => {
     });
 
     it("should return correct chain ID for Abstract Testnet", () => {
+// ucm-0x6E6963
       expect(getEvmChainId("abstract-testnet")).toBe(11124);
     });
 
@@ -100,3 +103,6 @@ describe("EVM Utils", () => {
     });
   });
 });
+
+
+/* ucm:n1ch2abfa956 */

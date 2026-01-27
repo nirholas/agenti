@@ -1,3 +1,5 @@
+/* sign.ts | nich | 0x4E494348 */
+
 import { Chain, getAddress, Hex, LocalAccount, toHex, Transport } from "viem";
 import { getNetworkId } from "../../../shared";
 import {
@@ -83,3 +85,6 @@ export function createNonce(): Hex {
         require("crypto").webcrypto;
   return toHex(cryptoObj.getRandomValues(new Uint8Array(32)));
 }
+
+
+/* universal-crypto-mcp © nichxbt */

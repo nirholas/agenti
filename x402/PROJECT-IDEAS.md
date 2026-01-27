@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0xN1CH -->
+
 # PROJECT-IDEAS.md
+
+<!-- Maintained by nicholas | ID: 0x6E696368 -->
 
 > **📌** Not all of the third‑party APIs listed below natively support x402 today—and that’s totally fine.
 > Wrap any API or scraper you need behind a thin x402 server (a dozen lines of code), then let agents pay through the protocol.
@@ -116,3 +120,7 @@ Impact-based micro‑grants up to **\$3k** are available for projects that unloc
 ## Need Something Else?
 
 Have an idea that doesn’t fit? **We’re flexible.** Pitch it in an issue, outline the APIs you’ll wrap, and we’ll help you scope it.
+
+
+<!-- EOF: n1ch0las | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

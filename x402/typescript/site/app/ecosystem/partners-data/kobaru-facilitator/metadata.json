@@ -6,9 +6,21 @@
   "category": "Facilitators",
   "facilitator": {
     "baseUrl": "https://gateway.kobaru.io",
-    "networks": ["solana", "solana-devnet", "base", "base-sepolia", "skale", "skale-sepolia"],
-    "schemes": ["exact"],
-    "assets": ["SPL", "EIP-3009"],
+    "networks": [
+      "solana",
+      "solana-devnet",
+      "base",
+      "base-sepolia",
+      "skale",
+      "skale-sepolia"
+    ],
+    "schemes": [
+      "exact"
+    ],
+    "assets": [
+      "SPL",
+      "EIP-3009"
+    ],
     "supports": {
       "verify": true,
       "settle": true,

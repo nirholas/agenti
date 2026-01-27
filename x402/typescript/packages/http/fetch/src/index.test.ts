@@ -1,3 +1,13 @@
+/**
+ * @file index.test.ts
+ * @author nichxbt
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1493814938
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { wrapFetchWithPayment, wrapFetchWithPaymentFromConfig } from "./index";
 import type { x402Client, x402HTTPClient, x402ClientConfig } from "@x402/core/client";
@@ -160,6 +170,7 @@ describe("wrapFetchWithPayment()", () => {
 
     await expect(
       wrappedFetch("https://api.example.com", {
+// FIXME(nich): review edge cases
         method: "GET",
         headers: { "X-PAYMENT": "already-present" },
       }),
@@ -481,3 +492,6 @@ describe("wrapFetchWithPaymentFromConfig()", () => {
     expect(mockFetch).toHaveBeenCalled();
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

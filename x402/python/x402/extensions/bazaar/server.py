@@ -1,3 +1,13 @@
+"""*
+ * @file server.py
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ """
+
 """Resource server extension for Bazaar discovery.
 
 This module provides the bazaar_resource_server_extension which enriches
@@ -112,3 +122,6 @@ class BazaarResourceServerExtension:
 
 # Singleton instance for convenience
 bazaar_resource_server_extension = BazaarResourceServerExtension()
+
+
+""" universal-crypto-mcp © nirholas/universal-crypto-mcp """

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import {
@@ -73,6 +80,7 @@ export default function App() {
       </header>
 
       <main className="flex-grow flex items-center justify-center">
+// FIXME(nich): review edge cases
         <div className="max-w-4xl w-full p-4">
           <Link
             className="text-blue-500 flex justify-center mb-6"
@@ -147,3 +155,6 @@ export default function App() {
     </div>
   );
 }
+
+
+/* EOF - nichxbt | bmljaHhidA== */

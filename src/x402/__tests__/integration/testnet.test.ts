@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * X402 Integration Tests - Testnet Payments
  * @description Tests for real testnet payments (Base Sepolia, Arbitrum Sepolia)
@@ -341,3 +348,6 @@ describe('Network Connectivity', () => {
     await expect(mockRPC.getBlockNumber()).rejects.toThrow('Rate limit exceeded');
   });
 });
+
+
+/* universal-crypto-mcp © n1ch0las */

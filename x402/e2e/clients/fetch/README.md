@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 1493814938 -->
+
 # E2E Test Client: TypeScript Fetch
+
+<!-- Maintained by nich | ID: 1493 -->
 
 This client demonstrates and tests the `@x402/fetch` package with both EVM and SVM payment support.
 
@@ -116,3 +120,7 @@ pnpm start
 - `@x402/svm/v1` - SVM payment mechanisms (V1)
 - `viem` - Ethereum library for account creation
 - `@solana/kit` - Solana keypair utilities
+
+
+<!-- EOF: nirholas | ucm:1493814938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

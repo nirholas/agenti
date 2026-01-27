@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 0x4E494348 -->
+
 # EVM Module
+
+<!-- Maintained by nich | ID: 0.4.14.3 -->
 
 General Ethereum Virtual Machine tools for blockchain interaction.
 
@@ -480,3 +484,7 @@ Get current gas price.
 | `RPC_URL_ETHEREUM` | Custom Ethereum RPC |
 | `RPC_URL_BSC` | Custom BSC RPC |
 | `RPC_URL_POLYGON` | Custom Polygon RPC |
+
+
+<!-- EOF: nicholas | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

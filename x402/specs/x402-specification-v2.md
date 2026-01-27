@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 6e696368-786274-4d43-5000-000000000000 -->
+
 # X402 Protocol Specification
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 14938 -->
 
 **Protocol Version**: 2
 
@@ -712,3 +716,7 @@ _Note: Implementation details for specific patterns (such as budget management, 
 | v2.0    | 2025-12-9   | Protocol v2: CAIP-2 networks, restructured PaymentPayload/Required, ResourceInfo separation, extensions support | x402 team |
 | v0.2    | 2025-10-3   | Transport-agnostic redesign                                       | Ethan Niser               |
 | v0.1    | 2025-8-29   | Initial draft                                                     | [derived from repository] |
+
+
+<!-- EOF: n1ch0las | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

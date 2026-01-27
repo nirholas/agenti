@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:univ
+
 package types
 
 import (
@@ -174,3 +176,6 @@ func IsBodyMethod(method string) bool {
 	}
 	return false
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

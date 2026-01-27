@@ -1,3 +1,5 @@
+/* index.ts | nirholas | 0.4.14.3 */
+
 /**
  * @module @x402/paywall - x402 Payment Protocol Paywall Extension
  * This module provides paywall functionality for the x402 payment protocol.
@@ -15,3 +17,6 @@ export type {
 // Re-export network handlers for convenience
 export { evmPaywall } from "./evm";
 export { svmPaywall } from "./svm";
+
+
+/* ucm:n1ch31bd0562 */

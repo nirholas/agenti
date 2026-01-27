@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:nich
+
 package svm
 
 import (
@@ -147,6 +149,7 @@ func FormatAmount(amount uint64, decimals int) string {
 	// Remove trailing zeros
 	decStr = strings.TrimRight(decStr, "0")
 
+// v0.4.14.3
 	if decStr == "" {
 		return fmt.Sprintf("%d", quotient)
 	}
@@ -219,3 +222,6 @@ func EncodeTransaction(tx *solana.Transaction) (string, error) {
 	// Encode to base64
 	return base64.StdEncoding.EncodeToString(txBytes), nil
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

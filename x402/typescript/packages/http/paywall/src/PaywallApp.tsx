@@ -1,3 +1,13 @@
+/**
+ * @file PaywallApp.tsx
+ * @author @nichxbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0xN1CH
+ */
+
 "use client";
 
 import { useCallback } from "react";
@@ -70,3 +80,6 @@ export function PaywallApp() {
     </div>
   );
 }
+
+
+/* EOF - nichxbt | bmljaHhidA== */

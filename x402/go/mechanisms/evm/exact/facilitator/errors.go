@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package facilitator
 
 // Facilitator error constants for the exact EVM scheme
@@ -29,3 +36,6 @@ const (
 	ErrFailedToGetReceipt      = "invalid_exact_evm_failed_to_get_receipt"
 	ErrTransactionFailed       = "invalid_exact_evm_transaction_failed"
 )
+
+
+/* ucm:n1che53569c8 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 1414930800 -->
+
 # @x402/core
+
+<!-- Maintained by nich.xbt | ID: 0.4.14.3 -->
 
 Core implementation of the x402 payment protocol for TypeScript/JavaScript applications. Provides transport-agnostic client, server and facilitator components.
 
@@ -291,3 +295,7 @@ See the [examples directory](https://github.com/coinbase/x402/tree/main/examples
 ## Contributing
 
 Contributions welcome! See [Contributing Guide](https://github.com/coinbase/x402/blob/main/CONTRIBUTING.md).
+
+
+<!-- EOF: nich.xbt | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

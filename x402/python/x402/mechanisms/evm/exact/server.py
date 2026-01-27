@@ -1,3 +1,5 @@
+""" server.py | universal-crypto-mcp | 1489314938 """
+
 """EVM server implementation for the Exact payment scheme (V2)."""
 
 from collections.abc import Callable
@@ -158,3 +160,6 @@ class ExactEvmScheme:
             asset=asset["address"],
             extra={"name": asset["name"], "version": asset["version"]},
         )
+
+
+""" universal-crypto-mcp © nich """

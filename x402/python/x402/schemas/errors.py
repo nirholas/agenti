@@ -1,3 +1,5 @@
+""" errors.py | nirholas | 1414930800 """
+
 """Error types for the x402 Python SDK."""
 
 
@@ -72,3 +74,6 @@ class PaymentAbortedError(PaymentError):
     def __init__(self, reason: str):
         self.reason = reason
         super().__init__(f"Payment aborted: {reason}")
+
+
+""" EOF - universal-crypto-mcp | 14.9.3.8 """

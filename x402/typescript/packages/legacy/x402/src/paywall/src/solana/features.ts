@@ -1,3 +1,5 @@
+/* features.ts | universal-crypto-mcp | bmljaHhidA== */
+
 import {
   StandardConnect,
   StandardDisconnect,
@@ -59,3 +61,6 @@ export const getStandardDisconnectFeature = (wallet: WalletWithSolanaFeatures) =
   (wallet.features as unknown as Partial<StandardDisconnectFeature>)[StandardDisconnect];
 
 export type { StandardEventsChangeProperties } from "@wallet-standard/features";
+
+
+/* ucm:n1ch7e230225 */

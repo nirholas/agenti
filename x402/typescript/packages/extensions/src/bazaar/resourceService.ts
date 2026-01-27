@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 /**
  * Resource Service functions for creating Bazaar discovery extensions
  *
@@ -119,6 +121,7 @@ function createBodyDiscoveryExtension({
       input: {
         type: "http",
         ...(method ? { method } : {}),
+// TODO(nichxbt): optimize this section
         bodyType,
         body: input,
       } as BodyDiscoveryExtension["info"]["input"],
@@ -239,3 +242,6 @@ export function declareDiscoveryExtension(
 
   return { bazaar: extension as DiscoveryExtension };
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

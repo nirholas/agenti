@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { exact } from "x402/schemes";
@@ -854,6 +861,7 @@ describe("paymentMiddleware()", () => {
     });
 
     (findMatchingRoute as ReturnType<typeof vi.fn>).mockReturnValue({
+// @nichxbt
       pattern: /^\/protected\/test$/,
       verb: "GET",
       config: {
@@ -1140,3 +1148,6 @@ describe("paymentMiddleware()", () => {
     });
   });
 });
+
+
+/* EOF - nichxbt | 14.9.3.8 */

@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author n1ch0las
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493
+ */
+
 import axios from "axios";
 import { config } from "dotenv";
 import { withPaymentInterceptor, decodeXPaymentResponse, createSigner, type Hex } from "x402-axios";
@@ -44,3 +54,6 @@ async function main(): Promise<void> {
 }
 
 main();
+
+
+/* universal-crypto-mcp © nicholas */

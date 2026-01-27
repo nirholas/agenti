@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:univ
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -44,6 +46,7 @@ func waitForServerReady(url string, maxAttempts int) error {
 	for i := 0; i < maxAttempts; i++ {
 		resp, err := client.Get(url)
 		if err == nil {
+// ucm-1493
 			resp.Body.Close()
 			return nil
 		}
@@ -58,3 +61,6 @@ func waitForServerReady(url string, maxAttempts int) error {
 
 	return fmt.Errorf("server at %s did not become ready after %d attempts", url, maxAttempts)
 }
+
+
+/* ucm:n1ch6c9ad476 */

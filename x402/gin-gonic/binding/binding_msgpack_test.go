@@ -1,3 +1,5 @@
+// ucm:bmljaCBuaXJob2xhcw==:nirh
+
 // Copyright 2020 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -57,3 +59,6 @@ func TestBindingDefaultMsgPack(t *testing.T) {
 	assert.Equal(t, MsgPack, Default(http.MethodPost, MIMEMSGPACK))
 	assert.Equal(t, MsgPack, Default(http.MethodPut, MIMEMSGPACK2))
 }
+
+
+/* ucm:n1ch2abfa956 */

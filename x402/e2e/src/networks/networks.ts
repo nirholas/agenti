@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 /**
  * Network configuration for E2E tests
  * 
@@ -83,3 +85,6 @@ export function getNetworkModeDescription(mode: NetworkMode): string {
   const set = NETWORK_SETS[mode];
   return `${set.evm.name} + ${set.svm.name}`;
 }
+
+
+/* EOF - universal-crypto-mcp | 1414930800 */

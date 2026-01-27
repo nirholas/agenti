@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nicholas | 0.14.9.3 -->
+
 ---
 title: "Welcome to x402"
 description: >-
@@ -64,3 +66,7 @@ Ready to build? Start here:
 * [Quickstart for Buyers](/getting-started/quickstart-for-buyers)
 * [Explore Core Concepts](/core-concepts/http-402)
 * [Join our community on Discord](https://discord.gg/invite/cdp)
+
+
+<!-- EOF: nicholas | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

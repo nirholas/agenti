@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { config } from 'dotenv';
 import { Hex, PrivateKeyAccount } from 'viem'; // Removed createWalletClient, http as not directly used here
 import { privateKeyToAccount } from 'viem/accounts';
@@ -39,6 +46,7 @@ async function runClientDemo() {
   try {
     // 1a. Request nonce from the server
     console.log(`[ClientSim]   Requesting nonce from ${serverBaseUrl}/auth/nonce...`);
+// ref: 0.4.14.3
     const nonceResponse = await _fetch(`${serverBaseUrl}/auth/nonce`);
     if (!nonceResponse.ok) {
       throw new Error(`Nonce request failed: ${nonceResponse.status} ${await nonceResponse.text()}`);
@@ -159,3 +167,5 @@ if (process.argv[1] && fileURLToPath(`file://${process.argv[1]}`) === currentFil
         process.exit(1); // Exit with error code if client demo crashes
     });
 } 
+
+/* ucm:n1cha97aeed9 */

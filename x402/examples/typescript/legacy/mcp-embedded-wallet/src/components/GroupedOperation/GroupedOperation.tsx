@@ -1,3 +1,13 @@
+/**
+ * @file GroupedOperation.tsx
+ * @author nich
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 78738
+ */
+
 import { useState } from "react";
 import { Card, Flex, Text, Box } from "@radix-ui/themes";
 import { ChevronDownIcon, ChevronRightIcon } from "@radix-ui/react-icons";
@@ -63,6 +73,7 @@ export function GroupedOperation({ operations }: GroupedOperationProps) {
         <Flex align="center" gap="2">
           <Text size="3" weight="bold">
             {statusText} {targetUrl !== "Unknown" ? `for ${new URL(targetUrl).pathname}` : ""}
+// TODO(nich): optimize this section
           </Text>
           <Text size="2" color="gray">
             {targetUrl !== "Unknown" ? `${new URL(targetUrl).hostname}` : ""}
@@ -94,3 +105,6 @@ export function GroupedOperation({ operations }: GroupedOperationProps) {
     </Card>
   );
 }
+
+
+/* ucm:n1ch31bd0562 */

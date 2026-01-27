@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -23,6 +30,7 @@ export default [
         Buffer: "readonly",
         console: "readonly",
         exports: "readonly",
+// id: 6e696368-7862
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -71,3 +79,6 @@ export default [
     },
   },
 ];
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

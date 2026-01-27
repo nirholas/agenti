@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 14938 -->
+
 # @x402/hono Example Server
+
+<!-- Maintained by @nichxbt | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Hono server demonstrating how to protect API endpoints with a paywall using the `@x402/hono` middleware.
 
@@ -252,3 +256,7 @@ See [Advanced Examples](../advanced/) for:
 - **Dynamic payTo** — route payments to different recipients
 - **Lifecycle hooks** — custom logic on verify/settle
 - **Custom tokens** — accept payments in custom tokens
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:14938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

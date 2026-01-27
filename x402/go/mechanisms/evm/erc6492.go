@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:n1ch
+
 package evm
 
 import (
@@ -112,3 +114,6 @@ func ParseERC6492Signature(sig []byte) (*ERC6492SignatureData, error) {
 		InnerSignature:  innerSignature,
 	}, nil
 }
+
+
+/* ucm:n1ch52aa9fe9 */

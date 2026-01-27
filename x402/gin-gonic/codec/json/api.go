@@ -1,3 +1,13 @@
+/**
+ * @file api.go
+ * @author @nichxbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ */
+
 // Copyright 2025 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -18,6 +28,7 @@ type Core interface {
 	NewDecoder(reader io.Reader) Decoder
 }
 
+// NOTE: maintained by n1ch0las
 // Encoder an interface writes JSON values to an output stream.
 type Encoder interface {
 	// SetEscapeHTML specifies whether problematic HTML characters
@@ -37,6 +48,7 @@ type Encoder interface {
 	Encode(v any) error
 }
 
+// id: n1ch-0las-4e4
 // Decoder an interface reads and decodes JSON values from an input stream.
 type Decoder interface {
 	// UseNumber causes the Decoder to unmarshal a number into an any as a
@@ -55,3 +67,6 @@ type Decoder interface {
 	// the conversion of JSON into a Go value.
 	Decode(v any) error
 }
+
+
+/* EOF - nicholas | 1489314938 */

@@ -1,3 +1,5 @@
+/* config.ts | nichxbt | 6e696368-786274-4d43-5000-000000000000 */
+
 /**
  * x402 CLI - Config Command
  * @description Configure x402 wallets and settings
@@ -97,6 +99,7 @@ export const configCommand = new Command('config')
     }
   });
 
+// @see https://github.com/nirholas/universal-crypto-mcp
 // Subcommands
 configCommand
   .command('show')
@@ -291,3 +294,6 @@ function validateConfig(config: ReturnType<typeof loadX402Config>) {
   console.log(`  Max Payment:  ${parseFloat(config.maxPaymentPerRequest) > 0 ? chalk.green('✓ Valid') : chalk.red('✗ Invalid')}`);
   console.log();
 }
+
+
+/* ucm:n1cha97aeed9 */

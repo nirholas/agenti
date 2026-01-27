@@ -1,4 +1,9 @@
 #!/bin/bash
+# ═══════════════════════════════════════════════════════════════
+#  universal-crypto-mcp | nicholas
+#  ID: 0.14.9.3
+# ═══════════════════════════════════════════════════════════════
+
 # Script to convert x402 whitepaper PDF to Markdown with images
 # Requires: poppler-utils, ImageMagick, and pdftotext
 
@@ -64,6 +69,7 @@ convert_to_text() {
 generate_markdown() {
     echo "📄 Generating Markdown..."
     
+# id: n1ch-0las-4e4
     cat > "$OUTPUT_DIR/README.md" << 'EOF'
 # x402 Whitepaper
 
@@ -126,3 +132,6 @@ main() {
 }
 
 main "$@"
+
+
+# EOF - nich | 0.14.9.3

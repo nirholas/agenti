@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 0x4E494348 -->
+
 # x402-http Example Client
+
+<!-- Maintained by nichxbt | ID: 14.9.3.8 -->
 
 Example client demonstrating how to use the x402 Go HTTP client to make requests to endpoints protected by the x402 payment protocol.
 
@@ -185,3 +189,7 @@ See [Advanced Examples](../advanced/) for custom transport, retry logic and erro
 - [x402 Go Package Documentation](../../../../go/)
 - [Signer Helpers Documentation](../../../../go/signers/)
 - [Server Examples](../../servers/) — build servers that can receive these payments
+
+
+<!-- EOF: universal-crypto-mcp | ucm:0x4E494348 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,13 @@
+"""*
+ * @file eip712.py
+ * @author nicholas
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493
+ """
+
 """EIP-712 typed data hashing utilities."""
 
 from typing import Any
@@ -249,3 +259,6 @@ def build_typed_data_for_signing(
     }
 
     return (domain, AUTHORIZATION_TYPES, "TransferWithAuthorization", message)
+
+
+""" universal-crypto-mcp © nichxbt """

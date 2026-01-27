@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 78738 -->
+
 # Transport: HTTP
+
+<!-- Maintained by nichxbt | ID: 0x4E494348 -->
 
 ## Summary
 
@@ -158,3 +162,7 @@ HTTP transport maps x402 errors to standard HTTP status codes:
 - [HTTP 402 Status Code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402)
 - [Express.js x402 Integration](../../examples/typescript/legacy/servers/express)
 - [Fetch API x402 Client](../../examples/typescript/legacy/clients/fetch)
+
+
+<!-- EOF: @nichxbt | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

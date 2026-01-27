@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:nich
+
 export default function ProtectedPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -14,3 +16,6 @@ export default function ProtectedPage() {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © n1ch0las */

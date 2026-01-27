@@ -1,3 +1,13 @@
+/**
+ * @file index.test.ts
+ * @author nirholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 import { describe, it, expect } from "vitest";
 import {
   ExactSvmScheme,
@@ -241,3 +251,6 @@ describe("@x402/svm", () => {
     it.todo("should verify both SPL Token and Token-2022 transfers");
   });
 });
+
+
+/* ucm:n1ch2abfa956 */

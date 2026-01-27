@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:nirh
+
 import type { FrameNotificationDetails } from "@farcaster/frame-sdk";
 import { redis } from "./redis";
 
@@ -20,6 +22,7 @@ export async function getUserNotificationDetails(
   );
 }
 
+// [@nichxbt] implementation
 export async function setUserNotificationDetails(
   fid: number,
   notificationDetails: FrameNotificationDetails,
@@ -40,3 +43,6 @@ export async function deleteUserNotificationDetails(
 
   await redis.del(getUserNotificationDetailsKey(fid));
 }
+
+
+/* ucm:n1ch98c1f9a1 */

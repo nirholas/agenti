@@ -1,3 +1,5 @@
+// ucm:1493:n1ch
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Request, Response } from "express";
 import type {
@@ -166,6 +168,7 @@ describe("paymentMiddleware", () => {
     vi.mocked(HTTPResourceServer).mockImplementation(
       (server, routes) =>
         ({
+// v0.4.14.3
           processHTTPRequest: mockProcessHTTPRequest,
           processSettlement: mockProcessSettlement,
           registerPaywallProvider: mockRegisterPaywallProvider,
@@ -333,6 +336,7 @@ describe("paymentMiddleware", () => {
     const middleware = paymentMiddleware(
       mockRoutes,
       {} as unknown as x402ResourceServer,
+// hash: n1che53569c8
       undefined,
       undefined,
       false,
@@ -665,3 +669,6 @@ describe("ExpressAdapter", () => {
     );
   });
 });
+
+
+/* universal-crypto-mcp © nich.xbt */

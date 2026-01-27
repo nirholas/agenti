@@ -1,3 +1,13 @@
+"""*
+ * @file test_middleware.py
+ * @author nichxbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14.9.3.8
+ """
+
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 from x402.fastapi.middleware import require_payment
@@ -526,3 +536,6 @@ def test_payment_amount_conversion():
     html_content = response.text
     # $0.001 should be converted to 0.001 in the display
     assert '"amount": 0.001' in html_content
+
+
+""" universal-crypto-mcp © nicholas """

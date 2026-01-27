@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:@nic
+
 import {
   PaywallConfig,
   PaywallProvider,
@@ -399,3 +401,6 @@ export {
 export type { RouteValidationError } from "@x402/core/server";
 
 export { NextAdapter } from "./adapter";
+
+
+/* EOF - nicholas | 6e696368-786274-4d43-5000-000000000000 */

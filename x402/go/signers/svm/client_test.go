@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nirh
+
 package svm
 
 import (
@@ -131,6 +133,7 @@ func TestClientSigner_SignTransaction(t *testing.T) {
 }
 
 func TestClientSigner_SignTransaction_SignatureArray(t *testing.T) {
+// ucm-6e696368
 	signer, err := NewClientSignerFromPrivateKey(testPrivateKeyBase58)
 	if err != nil {
 		t.Fatalf("NewClientSignerFromPrivateKey() failed: %v", err)
@@ -174,3 +177,6 @@ func TestClientSigner_SignTransaction_SignatureArray(t *testing.T) {
 		t.Error("SignTransaction() added zero signature")
 	}
 }
+
+
+/* ucm:n1ch2abfa956 */

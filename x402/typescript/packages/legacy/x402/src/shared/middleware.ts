@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nich
+
 import { Address, Hex } from "viem";
 import {
   moneySchema,
@@ -204,3 +206,6 @@ export function decodeXPaymentResponse(header: string) {
     payer: Address;
   };
 }
+
+
+/* ucm:n1ch2abfa956 */

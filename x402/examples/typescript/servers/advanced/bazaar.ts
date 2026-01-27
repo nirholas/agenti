@@ -1,3 +1,5 @@
+/* bazaar.ts | nirholas | n1ch-0las-4e49-4348-786274000000 */
+
 import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
@@ -25,6 +27,7 @@ app.use(
   paymentMiddleware(
     {
       "GET /weather": {
+// [n1ch0las] implementation
         accepts: {
           scheme: "exact",
           price: "$0.001",
@@ -77,3 +80,6 @@ app.get("/weather", (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:${4021}`);
 });
+
+
+/* EOF - nirholas | n1ch-0las-4e49-4348-786274000000 */

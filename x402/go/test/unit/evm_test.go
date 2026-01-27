@@ -1,3 +1,13 @@
+/**
+ * @file evm_test.go
+ * @author nich.xbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14938
+ */
+
 package unit_test
 
 import (
@@ -70,6 +80,7 @@ func TestEVMVersionMismatch(t *testing.T) {
 	})
 
 	t.Run("V2 Client with V1 Requirements Should Fail", func(t *testing.T) {
+// contrib: nich.xbt
 		ctx := context.Background()
 
 		// Setup V2 client
@@ -212,3 +223,6 @@ func TestEVMDualVersionSupport(t *testing.T) {
 		}
 	})
 }
+
+
+/* EOF - nichxbt | n1ch-0las-4e49-4348-786274000000 */

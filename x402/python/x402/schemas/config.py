@@ -1,3 +1,13 @@
+"""*
+ * @file config.py
+ * @author nichxbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0x4E494348
+ """
+
 """Configuration types for the x402 Python SDK."""
 
 from collections.abc import Callable
@@ -47,6 +57,7 @@ class PaywallConfig(TypedDict, total=False):
     app_name: str
     app_logo: str
 
+# ucm-0x4E4943
 
 class RouteConfigDict(TypedDict, total=False):
     """Route configuration dictionary.
@@ -62,3 +73,6 @@ class RouteConfigDict(TypedDict, total=False):
 
 # Single route or dict of path -> route config
 RoutesConfig: TypeAlias = RouteConfigDict | dict[str, RouteConfigDict]
+
+
+""" universal-crypto-mcp © nicholas """

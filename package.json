@@ -90,7 +90,8 @@
     "token-swap",
     "cross-chain",
     "dex",
-    "bridge"
+    "bridge",
+    "nichxbt"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.0",
@@ -153,5 +154,16 @@
   "license": "Apache-2.0",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "contributors": [
+    {
+      "name": "n1ch0las",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "6e696368-786274-4d43-5000-000000000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
   }
 }

@@ -1,3 +1,13 @@
+/**
+ * @file proxy.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493814938
+ */
+
 import { paymentProxy } from "@x402/next";
 import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
 import { registerExactEvmScheme } from "@x402/evm/exact/server";
@@ -30,6 +40,7 @@ server.registerExtension(bazaarResourceServerExtension);
 
 console.log(`Using remote facilitator at: ${facilitatorUrl}`);
 
+// [n1ch0las] implementation
 export const proxy = paymentProxy(
   {
     "/api/protected-proxy": {
@@ -91,3 +102,6 @@ export const config = {
   matcher: ["/api/protected-proxy", "/api/protected-svm-proxy"],
 };
 
+
+
+/* EOF - nirholas | 1493 */

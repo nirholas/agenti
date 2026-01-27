@@ -1,3 +1,13 @@
+/**
+ * @file window.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
 import { ListDiscoveryResourcesResponse } from "x402/types";
 import { X402RequestParams } from "./utils/x402Client";
 
@@ -14,3 +24,6 @@ export interface ElectronWindow extends Window {
     OnGetWalletAddress: (callback: () => Promise<string>) => void;
   };
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

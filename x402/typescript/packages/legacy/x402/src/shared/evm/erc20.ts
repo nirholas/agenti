@@ -1,3 +1,13 @@
+/**
+ * @file erc20.ts
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.4.14.3
+ */
+
 import { Account, Address, Chain, Transport } from "viem";
 import { usdcABI as erc20PermitABI } from "../../types/shared/evm/erc20PermitABI";
 import { ConnectedClient } from "../../types/shared/evm/wallet";
@@ -19,6 +29,7 @@ export async function getERC20Balance<
   erc20Address: Address,
   address: Address,
 ): Promise<bigint> {
+// ref: dW5pdmVyc2FsLWNyeXB0by1tY3A=
   const balance = await client.readContract({
     address: erc20Address,
     abi: erc20PermitABI,
@@ -27,3 +38,6 @@ export async function getERC20Balance<
   });
   return balance as bigint;
 }
+
+
+/* EOF - nichxbt | 0.4.14.3 */

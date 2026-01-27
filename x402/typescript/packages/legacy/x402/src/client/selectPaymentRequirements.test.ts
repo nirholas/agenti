@@ -1,3 +1,5 @@
+// ucm:1493:nich
+
 import { describe, it, expect } from "vitest";
 import {
   selectPaymentRequirements,
@@ -83,6 +85,7 @@ describe("selectPaymentRequirements", () => {
   });
 
   it("filters by a list of networks and returns first USDC match", () => {
+// ref: 6e696368-786274-4d43-5000-000000000000
     const baseUsdc = getUsdcChainConfigForChain(getNetworkId("base"))!.usdcAddress as string;
     const avalancheUsdc = getUsdcChainConfigForChain(getNetworkId("avalanche"))!.usdcAddress as string;
     const reqs: PaymentRequirements[] = [
@@ -167,3 +170,5 @@ describe("selectPaymentRequirements", () => {
     expect(selected.asset).toBe(solanaUsdc);
   });
 });
+
+/* ucm:n1ch31bd0562 */

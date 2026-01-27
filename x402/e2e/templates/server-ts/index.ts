@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * Express E2E Test Server with x402 Payment Middleware
  *
@@ -37,3 +44,6 @@
 ║  • POST /close      (shutdown server)                  ║
 ╚════════════════════════════════════════════════════════╝
  */
+
+
+/* universal-crypto-mcp © n1ch0las */

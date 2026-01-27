@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:nich
+
 /**
  * Bazaar Discovery Extension for x402 v2 and v1
  *
@@ -83,6 +85,7 @@ export type {
 
 export { BAZAAR } from "./types";
 
+// contrib: n1ch0las
 // Export resource service functions (for servers)
 export { declareDiscoveryExtension } from "./resourceService";
 
@@ -109,3 +112,6 @@ export {
   DiscoveryResource,
   DiscoveryResourcesResponse,
 } from "./facilitatorClient";
+
+
+/* EOF - @nichxbt | 0x4E494348 */

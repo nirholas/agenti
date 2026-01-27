@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2025 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -42,3 +49,6 @@ func (j jsoniterApi) NewEncoder(writer io.Writer) Encoder {
 func (j jsoniterApi) NewDecoder(reader io.Reader) Decoder {
 	return json.NewDecoder(reader)
 }
+
+
+/* ucm:n1che53569c8 */

@@ -1,3 +1,13 @@
+/**
+ * @file client_hooks.go
+ * @author nich.xbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493814938
+ */
+
 package x402
 
 import (
@@ -88,3 +98,6 @@ func WithOnPaymentCreationFailureHook(hook OnPaymentCreationFailureHook) ClientO
 		c.onPaymentCreationFailureHooks = append(c.onPaymentCreationFailureHooks, hook)
 	}
 }
+
+
+/* EOF - n1ch0las | 0x6E696368 */

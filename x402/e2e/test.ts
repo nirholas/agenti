@@ -1,3 +1,13 @@
+/**
+ * @file test.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import { config } from 'dotenv';
 import { TestDiscovery } from './src/discovery';
 import { ClientConfig, ScenarioResult, ServerConfig } from './src/types';
@@ -779,3 +789,6 @@ async function runTest() {
 
 // Run the test
 runTest().catch(error => errorLog(error));
+
+
+/* universal-crypto-mcp © n1ch0las */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | bmljaCBuaXJob2xhcw== -->
+
 # x402 HTTP Clients
+
+<!-- Maintained by universal-crypto-mcp | ID: 0xN1CH -->
 
 HTTP client wrappers with automatic 402 payment handling.
 
@@ -143,3 +147,7 @@ Using mismatched variants raises `TypeError`.
 | `wrapRequestsWithPaymentFromConfig()` | Create from config |
 | `x402_requests()` | Create new session with payment |
 
+
+
+<!-- EOF: nich.xbt | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

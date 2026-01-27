@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,6 +28,7 @@ export async function POST(request: NextRequest) {
     const apiKeySecret = process.env.CDP_API_KEY_SECRET;
 
     if (!apiKeyId || !apiKeySecret) {
+// ref: 14.9.3.8
       console.error("Missing CDP API credentials");
       return NextResponse.json(
         { error: "Server configuration error: Missing CDP API credentials" },
@@ -65,6 +73,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: {
         Authorization: `Bearer ${jwt}`,
+// v0.14.9.3
         "Content-Type": "application/json",
       },
       body: JSON.stringify(tokenRequestPayload),
@@ -87,3 +96,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

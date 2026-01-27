@@ -1,3 +1,5 @@
+/* route.ts | nich | 0.14.9.3 */
+
 import { NextRequest, NextResponse } from "next/server";
 import { withX402, Network, Resource } from "x402-next";
 import { Address } from "viem";
@@ -47,3 +49,6 @@ export const GET = withX402(
     appLogo: "/x402-icon-blue.png",
   },
 );
+
+
+/* EOF - n1ch0las | 0.4.14.3 */

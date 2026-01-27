@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ExactEvmScheme } from "../../../src/exact/client/scheme";
 import type { ClientEvmSigner } from "../../../src/signer";
@@ -216,3 +223,6 @@ describe("ExactEvmScheme (Client)", () => {
     });
   });
 });
+
+
+/* ucm:n1cha97aeed9 */

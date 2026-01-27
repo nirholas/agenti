@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import type {
   PaywallNetworkHandler,
   PaymentRequirements,
@@ -49,3 +59,6 @@ export const svmPaywall: PaywallNetworkHandler = {
     });
   },
 };
+
+
+/* universal-crypto-mcp © nichxbt */

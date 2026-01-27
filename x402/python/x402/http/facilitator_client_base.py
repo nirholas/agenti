@@ -1,3 +1,5 @@
+# ucm:1493814938:nich
+
 """HTTP facilitator client base classes and types.
 
 Contains shared logic for HTTPFacilitatorClient implementations.
@@ -222,3 +224,6 @@ class HTTPFacilitatorClientBase:
             auth = self._auth_provider.get_auth_headers()
             headers.update(auth.supported)
         return headers
+
+
+""" universal-crypto-mcp © @nichxbt """

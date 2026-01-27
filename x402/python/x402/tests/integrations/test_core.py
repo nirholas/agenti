@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Core integration tests - parameterized for both sync and async classes.
 
 These tests verify the core payment flow works correctly. The same test logic
@@ -465,3 +472,6 @@ class TestSyncHooks:
         assert hook_called is True
         assert received_result is not None
         assert received_result.is_valid is True
+
+
+""" ucm:n1ch2abfa956 """

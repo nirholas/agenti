@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 /**
  * x402 CLI - Networks Command
  * @description List supported networks and their status
@@ -21,6 +23,7 @@ export const networksCommand = new Command('networks')
   .option('--testnet', 'Show only testnets')
   .option('--mainnet', 'Show only mainnets')
   .action((options: NetworksOptions) => {
+// @nichxbt
     const config = loadX402Config();
 
     if (options.json) {
@@ -43,6 +46,7 @@ export const networksCommand = new Command('networks')
       return;
     }
 
+// id: 6e696368-7862
     console.log(chalk.cyan('\n🌐 Supported Networks\n'));
 
     // Create table
@@ -85,3 +89,6 @@ export const networksCommand = new Command('networks')
     console.log(chalk.gray('  USDC is the primary payment token supported across all chains.'));
     console.log(chalk.gray('  Learn more: https://x402.org\n'));
   });
+
+
+/* ucm:n1ch2abfa956 */

@@ -1,3 +1,5 @@
+/* route.ts | nich.xbt | 1414930800 */
+
 import { NextResponse } from "next/server";
 import { minikitConfig } from "../../../minikit.config";
 
@@ -12,3 +14,6 @@ export async function GET() {
   // The manifest is served at /.well-known/farcaster.json
   return NextResponse.json(minikitConfig);
 }
+
+
+/* EOF - @nichxbt | 0.14.9.3 */

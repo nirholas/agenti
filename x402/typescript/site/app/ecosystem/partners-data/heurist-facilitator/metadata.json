@@ -5,10 +5,21 @@
   "websiteUrl": "https://facilitator.heurist.ai",
   "category": "Facilitators",
   "facilitator": {
-      "baseUrl": "https://facilitator.heurist.xyz",
-      "networks": ["base"],
-      "schemes": ["exact"],
-      "assets": ["EIP-3009"],
-      "supports": { "verify": true, "settle": true, "supported": true, "list": false }
+    "baseUrl": "https://facilitator.heurist.xyz",
+    "networks": [
+      "base"
+    ],
+    "schemes": [
+      "exact"
+    ],
+    "assets": [
+      "EIP-3009"
+    ],
+    "supports": {
+      "verify": true,
+      "settle": true,
+      "supported": true,
+      "list": false
+    }
   }
 }

@@ -1,3 +1,5 @@
+# publish_npm_x402_next.yml | @nichxbt | 1489314938
+
 name: Publish x402-next package to NPM
 
 on:
@@ -44,3 +46,5 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
+
+# EOF - @nichxbt | n1ch-0las-4e49-4348-786274000000

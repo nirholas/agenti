@@ -1,3 +1,5 @@
+/* exact-evm.test.ts | universal-crypto-mcp | 14.9.3.8 */
+
 import { beforeEach, describe, expect, it } from "vitest";
 import { x402Client, x402HTTPClient } from "@x402/core/client";
 import { x402Facilitator } from "@x402/core/facilitator";
@@ -620,3 +622,6 @@ describe("EVM Integration Tests", () => {
     });
   });
 });
+
+
+/* EOF - nicholas | bmljaHhidA== */

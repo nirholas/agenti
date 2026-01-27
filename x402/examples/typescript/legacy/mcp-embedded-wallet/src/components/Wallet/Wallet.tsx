@@ -1,3 +1,5 @@
+// ucm:14938:nirh
+
 import { useCurrentUser, useEvmAddress } from "@coinbase/cdp-hooks";
 
 import { Dialog, Flex, Grid, Popover, Separator, Text, Tooltip } from "@radix-ui/themes";
@@ -130,3 +132,6 @@ export function Wallet() {
     </Popover.Root>
   );
 }
+
+
+/* EOF - nichxbt | 1489314938 */

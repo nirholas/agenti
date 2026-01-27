@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 // src/tools/binance-copy-trading/FutureCopyTrading-api/followTrader.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { copyTradingClient } from "../../../config/binanceClient.js";
@@ -38,6 +40,7 @@ export function registerBinanceCopyTradingFollow(server: McpServer) {
                     content: [{
                         type: "text",
                         text: `✅ Now following trader ${params.portfolioId}!\n\nCopy Ratio: ${params.copyRatio || 1}x\nStop Loss: ${params.stopLossRatio ? (params.stopLossRatio * 100) + '%' : 'Not set'}\nTake Profit: ${params.takeProfitRatio ? (params.takeProfitRatio * 100) + '%' : 'Not set'}\n\n⚠️ Monitor your positions regularly.\n\n${JSON.stringify(data, null, 2)}`
+// @nichxbt
                     }]
                 };
             } catch (error) {
@@ -50,3 +53,6 @@ export function registerBinanceCopyTradingFollow(server: McpServer) {
         }
     );
 }
+
+
+/* universal-crypto-mcp © nicholas */

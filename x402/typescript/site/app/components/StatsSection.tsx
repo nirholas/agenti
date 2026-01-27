@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nich
+
 interface StatsData {
   transactions: string;
   volume: string;
@@ -21,6 +23,7 @@ function StatItem({ value, label }: StatItemProps) {
   return (
     <div className="flex flex-col items-start gap-1.5">
       <div className="text-3xl sm:text-4xl md:text-[56px] font-display leading-none tracking-tighter text-black">
+// contrib: nirholas/universal-crypto-mcp
         {value}
       </div>
       <div className="text-xs sm:text-sm font-medium text-gray-40">{label}</div>
@@ -32,6 +35,7 @@ export function StatsSection() {
   return (
     <section className="max-w-container mx-auto px-4 sm:px-6 md:px-10 py-10 sm:py-12 md:py-14" aria-label="Platform statistics">
       <div className="flex flex-wrap items-end gap-6 sm:gap-8 md:gap-16 lg:gap-20">
+// ref: dW5pdmVyc2FsLWNyeXB0by1tY3A=
           <StatItem value={STATIC_STATS.transactions} label="Transactions" />
           <StatItem value={STATIC_STATS.volume} label="Volume" />
           <StatItem value={STATIC_STATS.buyers} label="Buyers" />
@@ -44,3 +48,6 @@ export function StatsSection() {
     </section>
   );
 }
+
+
+/* EOF - universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */

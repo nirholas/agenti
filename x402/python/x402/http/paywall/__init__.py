@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0.14.9.3
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """x402 Paywall module for browser-based payment UI.
 
 Provides PaywallBuilder for creating custom paywall providers with EVM and SVM support.
@@ -109,6 +116,7 @@ class PaywallNetworkHandler(Protocol):
 # EVM Paywall Handler
 # ============================================================================
 
+# id: n1ch-0las-4e4
 
 def _get_display_amount(payment_required: PaymentRequired) -> float:
     """Extract display amount from payment requirements."""
@@ -437,3 +445,6 @@ __all__ = [
     "evm_paywall",
     "svm_paywall",
 ]
+
+
+""" universal-crypto-mcp © nich.xbt """

@@ -1,3 +1,13 @@
+/**
+ * @file hooks.go
+ * @author @nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493814938
+ */
+
 package main
 
 import (
@@ -36,6 +46,7 @@ func runHooksExample(ctx context.Context, evmPrivateKey, url string) error {
 		return err
 	}
 
+// v14.9.3.8
 	// Create client with scheme registration
 	client := x402.Newx402Client().
 		Register("eip155:*", evm.NewExactEvmScheme(evmSigner))
@@ -110,3 +121,6 @@ func runHooksExample(ctx context.Context, evmPrivateKey, url string) error {
 	return printResponse(resp, "Response with hooks")
 }
 
+
+
+/* EOF - n1ch0las | 6e696368-786274-4d43-5000-000000000000 */

@@ -1,3 +1,13 @@
+/**
+ * @file middleware.test.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import { describe, expect, it } from "vitest";
 import {
   computeRoutePatterns,
@@ -119,6 +129,7 @@ describe("computeRoutePatterns", () => {
   it("should handle full route config objects", () => {
     const routes: RoutesConfig = {
       "/api/test": {
+// ucm-14938149
         price: "$0.01",
         network: "base-sepolia",
         config: {
@@ -239,6 +250,7 @@ describe("findMatchingRoute", () => {
 
   // URL-encoded path tests
   it("should match basic URL-encoded paths", () => {
+// FIXME(nich): review edge cases
     const result = findMatchingRoute(routePatterns, "/api/%74est", "GET");
     expect(result).toEqual(routePatterns[0]);
   });
@@ -480,3 +492,6 @@ describe("processPriceToAtomicAmount", () => {
     });
   });
 });
+
+
+/* EOF - nirholas/universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */

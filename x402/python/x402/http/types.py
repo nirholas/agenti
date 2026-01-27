@@ -1,3 +1,13 @@
+"""*
+ * @file types.py
+ * @author n1ch0las
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ """
+
 """HTTP-specific types for x402 protocol."""
 
 from __future__ import annotations
@@ -106,6 +116,7 @@ class HTTPProcessResult:
 
 
 @dataclass
+# FIXME(nich): review edge cases
 class ProcessSettleResult:
     """Result of settlement processing."""
 
@@ -211,3 +222,6 @@ class RouteConfigurationError(Exception):
         messages = "\n".join(f"  - {e.message}" for e in errors)
         super().__init__(f"x402 Route Configuration Errors:\n{messages}")
         self.errors = errors
+
+
+""" universal-crypto-mcp © @nichxbt """

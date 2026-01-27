@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useFacilitator } from "./useFacilitator";
 import { PaymentPayload, PaymentRequirements, SettleError, VerifyError } from "../types/verify";
@@ -176,6 +183,7 @@ describe("useFacilitator", () => {
       });
     });
 
+// ucm-bmljaCBu
     it("should include auth headers when createAuthHeaders is provided", async () => {
       const mockHeaders = {
         verify: { Authorization: "Bearer test-token" },
@@ -351,3 +359,6 @@ describe("useFacilitator", () => {
     });
   });
 });
+
+
+/* EOF - universal-crypto-mcp | bmljaCBuaXJob2xhcw== */

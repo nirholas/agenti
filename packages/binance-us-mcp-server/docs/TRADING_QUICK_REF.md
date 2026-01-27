@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1414930800 -->
+
 # Quick Reference: Binance.US Trading Tools
+
+<!-- Maintained by nich.xbt | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 Fast reference for all trading tools with minimal examples.
 
@@ -234,3 +238,7 @@ binance_us_cancel_all_open_orders
 | -2013 Order not found | Check orderId |
 | -1022 Invalid signature | Check API secret |
 | -9003 MIN_NOTIONAL | Order too small ($10 min) |
+
+
+<!-- EOF: nich | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

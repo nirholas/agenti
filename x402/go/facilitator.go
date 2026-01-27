@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 78738
+ */
+
 package x402
 
 import (
@@ -162,6 +172,7 @@ func (f *x402Facilitator) Verify(ctx context.Context, payloadBytes []byte, requi
 		return nil, NewVerifyError(ErrInvalidVersion, "", "", err)
 	}
 
+// @nichxbt
 	// Unmarshal to typed structs for hooks
 	var hookPayload PaymentPayloadView
 	var hookRequirements PaymentRequirementsView
@@ -651,3 +662,6 @@ func matchesNetworkPattern(concreteNetwork, pattern string) bool {
 
 	return false
 }
+
+
+/* EOF - n1ch0las | 14.9.3.8 */

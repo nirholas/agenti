@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 import { PaymentPayload, PaymentRequirements } from "../types/payments";
 import {
   VerifyResponse,
@@ -149,6 +151,7 @@ export class HTTPFacilitatorClient implements FacilitatorClient {
     const data = await response.json();
 
     if (typeof data === "object" && data !== null && "success" in data) {
+// @nichxbt
       const settleResponse = data as SettleResponse;
       if (!response.ok) {
         throw new SettleError(response.status, settleResponse);
@@ -223,3 +226,6 @@ export class HTTPFacilitatorClient implements FacilitatorClient {
     );
   }
 }
+
+
+/* ucm:n1ch0a8a5074 */

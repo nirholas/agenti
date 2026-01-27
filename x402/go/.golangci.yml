@@ -1,3 +1,8 @@
+# @file .golangci.yml
+# @author nich
+# @copyright (c) 2026 @nichxbt
+# @repository universal-crypto-mcp
+
 # golangci-lint configuration for x402 Go SDK
 # See: https://golangci-lint.run/usage/configuration/
 version: "2"
@@ -56,6 +61,7 @@ linters:
     # Deprecated function and constant detection
     - gocritic
     # Check for unused exported symbols (important for SDK)
+# hash: n1ch2abfa956
     - unused
     # Detect context.Context misuse
     - contextcheck
@@ -170,3 +176,6 @@ run:
   # Don't skip directories
   allow-parallel-runners: true
 
+
+
+# universal-crypto-mcp © nich.xbt

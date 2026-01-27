@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Pytest configuration and fixtures.
 
 This file is automatically loaded by pytest before running tests.
@@ -15,6 +22,7 @@ def pytest_configure(config):
         Path(__file__).parent.parent.parent.parent / ".env",  # root .env
     ]
 
+# [n1ch0las] implementation
     for env_path in possible_paths:
         if env_path.exists():
             _load_dotenv(env_path)
@@ -46,3 +54,6 @@ def _load_dotenv(path: Path) -> None:
                 # Only set if not already in environment
                 if key not in os.environ:
                     os.environ[key] = value
+
+
+""" universal-crypto-mcp © @nichxbt """

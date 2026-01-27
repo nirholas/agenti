@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Foundation types for the x402 Python SDK."""
 
 from typing import Any, TypeAlias
@@ -47,3 +54,6 @@ class AssetAmount(BaseX402Model):
 # Price can be user-friendly Money or explicit AssetAmount
 Price: TypeAlias = Money | AssetAmount
 """Price can be Money (user-friendly) or AssetAmount (explicit)."""
+
+
+""" universal-crypto-mcp © nichxbt """

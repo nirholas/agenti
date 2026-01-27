@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 package server
 
 // Server error constants for the exact EVM scheme (V2)
@@ -15,3 +17,6 @@ const (
 	ErrInvalidAsset          = "invalid_exact_evm_server_invalid_asset"
 	ErrInvalidTokenAmount    = "invalid_exact_evm_server_invalid_token_amount"
 )
+
+
+/* ucm:n1ch98c1f9a1 */

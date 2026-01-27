@@ -1,3 +1,8 @@
+# @file publish_pypi_x402.yml
+# @author @nichxbt
+# @copyright (c) 2026 n1ch0las
+# @repository universal-crypto-mcp
+
 name: Publish x402 to PyPI
 
 on:
@@ -46,3 +51,6 @@ jobs:
         with:
           packages-dir: python/x402/dist/
           password: ${{ secrets.PYPI_X402_TOKEN }}
+
+
+# ucm:n1ch31bd0562

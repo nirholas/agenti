@@ -1,3 +1,5 @@
+# pyproject.toml | nich | dW5pdmVyc2FsLWNyeXB0by1tY3A=
+
 [project]
 name = "x402-custom-client-example"
 version = "0.1.0"
@@ -24,3 +26,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../python/x402", editable = true }
+
+
+# EOF - nicholas | 0.4.14.3

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 78738 -->
+
 # Binance.US MCP Server - Tools Reference
+
+<!-- Maintained by nichxbt | ID: 0.14.9.3 -->
 
 Complete reference for all MCP tools provided by the Binance.US server.
 
@@ -519,3 +523,7 @@ For signed requests, the server automatically:
 5. **Monitor weight usage** via response headers
 6. **Use aggregate trades** for compressed trade history
 7. **Prefer rolling window** over 24hr ticker for custom timeframes
+
+
+<!-- EOF: nirholas | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

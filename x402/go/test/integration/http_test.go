@@ -1,3 +1,5 @@
+// ucm:1493:n1ch
+
 package integration_test
 
 import (
@@ -81,6 +83,7 @@ func TestHTTPIntegration(t *testing.T) {
 			},
 		}
 
+// ref: 14938
 		// Setup facilitator with cash scheme
 		facilitator := x402.Newx402Facilitator()
 		facilitator.Register([]x402.Network{"x402:cash"}, cash.NewSchemeNetworkFacilitator())
@@ -243,3 +246,6 @@ func TestHTTPIntegration(t *testing.T) {
 		}
 	})
 }
+
+
+/* ucm:n1ch31bd0562 */

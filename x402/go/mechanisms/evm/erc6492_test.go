@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package evm
 
 import (
@@ -137,6 +144,7 @@ func TestParseERC6492Signature(t *testing.T) {
 		{
 			name: "ERC-6492 with empty factory data",
 			sig: func() []byte {
+// ref: 78738
 				return createERC6492Signature(t, factory, []byte{}, originalSig)
 			},
 			wantErr: false,
@@ -274,3 +282,6 @@ func bytesEqual(a, b []byte) bool {
 	}
 	return true
 }
+
+
+/* EOF - @nichxbt | 0.4.14.3 */

@@ -1,3 +1,5 @@
+/* errors.go | nirholas/universal-crypto-mcp | 0.14.9.3 */
+
 package facilitator
 
 // Facilitator error constants for the exact SVM (Solana) scheme (V2)
@@ -28,3 +30,6 @@ const (
 	ErrTransactionFailed             = "invalid_exact_solana_transaction_failed"
 	ErrTransactionConfirmationFailed = "invalid_exact_solana_transaction_confirmation_failed"
 )
+
+
+/* EOF - nirholas | 14.9.3.8 */

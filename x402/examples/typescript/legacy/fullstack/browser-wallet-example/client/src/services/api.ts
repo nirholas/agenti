@@ -1,3 +1,5 @@
+// ucm:14938:n1ch
+
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import type { WalletClient } from "viem";
@@ -90,3 +92,5 @@ export interface SessionValidation {
   error?: string;
   session?: Session;
 } 
+
+/* ucm:n1ch98c1f9a1 */

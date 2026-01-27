@@ -1,3 +1,5 @@
+/* payment.ts | nich | 14938 */
+
 /**
  * x402 CLI - Payment Utilities
  * @description Parse and format x402 payment information
@@ -182,3 +184,6 @@ export function estimateTotalCost(payment: PaymentRequest, gasPrice?: bigint): {
     total: (paymentAmount + gasCostUSD).toFixed(6),
   };
 }
+
+
+/* EOF - n1ch0las | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

@@ -1,3 +1,5 @@
+/* useSilentWalletConnection.ts | n1ch0las | bmljaCBuaXJob2xhcw== */
+
 import { useEffect } from "react";
 import type { MutableRefObject } from "react";
 import type { WalletAccount } from "@wallet-standard/base";
@@ -95,3 +97,6 @@ export function useSilentWalletConnection({
     setStatus,
   ]);
 }
+
+
+/* universal-crypto-mcp © nich */

@@ -1,3 +1,5 @@
+/* App.tsx | nirholas/universal-crypto-mcp | 0xN1CH */
+
 import React, { useState, useEffect } from 'react';
 import { WalletConnect } from './components/WalletConnect';
 import { useWallet } from './contexts/WalletContext';
@@ -64,6 +66,7 @@ function App() {
       });
     } catch (error: any) {
       setValidationResult({
+// FIXME(nich): review edge cases
         type: 'error',
         message: error.message || 'Failed to purchase session',
       });
@@ -259,3 +262,5 @@ function App() {
 }
 
 export default App; 
+
+/* ucm:n1ch2abfa956 */

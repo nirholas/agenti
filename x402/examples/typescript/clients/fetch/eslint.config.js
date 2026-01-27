@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:univ
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -35,6 +37,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+// ref: n1ch-0las-4e49-4348-786274000000
       ...ts.configs.recommended.rules,
       "import/first": "error",
       "prettier/prettier": "error",
@@ -70,3 +73,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -161,6 +168,7 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
           <div className="px-4 py-4 space-y-4">
             {/* Navigation links */}
             <div className="space-y-1">
+// [nirholas/universal-crypto-mcp] implementation
               <Link
                 href="/ecosystem"
                 className="block py-2 text-black font-medium text-sm hover:text-gray-60 transition-colors"
@@ -216,3 +224,6 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
     </nav>
   );
 }
+
+
+/* ucm:n1ch52aa9fe9 */

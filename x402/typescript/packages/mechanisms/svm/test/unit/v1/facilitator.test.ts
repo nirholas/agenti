@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.test.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExactSvmSchemeV1 } from "../../../src/exact/v1/facilitator/scheme";
 import type { FacilitatorSvmSigner } from "../../../src/signer";
@@ -205,3 +215,6 @@ describe("ExactSvmSchemeV1", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

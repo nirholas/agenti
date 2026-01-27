@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:nich
+
 import { describe, it, expect } from "vitest";
 import { X402Config, SvmConfig } from "./config";
 
@@ -55,3 +57,6 @@ describe("X402Config Types", () => {
     });
   });
 });
+
+
+/* EOF - nirholas/universal-crypto-mcp | 1493 */

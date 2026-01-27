@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 78738 -->
+
 # @x402/hono
+
+<!-- Maintained by nich | ID: bmljaHhidA== -->
 
 Hono middleware integration for the x402 Payment Protocol. This package provides a simple middleware function for adding x402 payment requirements to your Hono applications.
 
@@ -253,3 +257,7 @@ const resourceServer = new x402ResourceServer(customFacilitator)
 
 app.use(paymentMiddleware(routes, resourceServer, paywallConfig));
 ```
+
+
+<!-- EOF: nicholas | ucm:78738 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

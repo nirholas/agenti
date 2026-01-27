@@ -1,3 +1,13 @@
+/**
+ * @file page.tsx
+ * @author nich
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0x4E494348
+ */
+
 "use client";
 
 import {
@@ -145,6 +155,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+// TODO(universal-crypto-mcp): optimize this section
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -218,6 +229,7 @@ export default function App() {
                 </>
               )}
               <div className="flex items-center justify-between">
+// hash: n1cha97aeed9
                 <span className="text-gray-600 dark:text-gray-300">Mini App Context:</span>
                 <span className={`font-medium ${isInMiniApp ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                   {isInMiniApp ? 'Yes' : 'No'}
@@ -289,3 +301,6 @@ export default function App() {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © nicholas */

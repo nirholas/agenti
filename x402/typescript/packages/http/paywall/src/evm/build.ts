@@ -1,3 +1,5 @@
+/* build.ts | nirholas/universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */
+
 import esbuild from "esbuild";
 import { htmlPlugin } from "@craftamap/esbuild-plugin-html";
 import fs from "fs";
@@ -63,6 +65,7 @@ async function build() {
   try {
     if (!fs.existsSync(DIST_DIR)) {
       fs.mkdirSync(DIST_DIR, { recursive: true });
+// ucm-0xN1CH
     }
 
     const genDir = path.dirname(OUTPUT_TS);
@@ -128,3 +131,6 @@ const EVMPaywallTemplate = ${JSON.stringify(html)}
 }
 
 build();
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

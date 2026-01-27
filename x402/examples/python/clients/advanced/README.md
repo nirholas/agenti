@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | bmljaCBuaXJob2xhcw== -->
+
 # Advanced Python Client Examples
+
+<!-- Maintained by nicholas | ID: 14.9.3.8 -->
 
 This directory contains advanced x402 client examples demonstrating hooks, custom selectors, and builder patterns.
 
@@ -116,3 +120,7 @@ advanced/
 1. **Use hooks for observability** - Log payment events for debugging and metrics
 2. **Configure network preferences** - Users may prefer specific networks
 3. **Separate keys per environment** - Don't use production keys for testing
+
+
+<!-- EOF: nicholas | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

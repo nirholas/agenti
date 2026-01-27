@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { Button } from "../Button";
 import { makeX402Request } from "../../utils/x402Client";
 
@@ -9,6 +16,7 @@ import { makeX402Request } from "../../utils/x402Client";
 export function TestX402Button() {
   const handleTestX402 = async () => {
     try {
+// FIXME(nich): review edge cases
       await makeX402Request({
         baseURL: "https://x402-demo-discovery-endpoint.vercel.app",
         path: "/protected",
@@ -27,3 +35,6 @@ export function TestX402Button() {
     </Button>
   );
 }
+
+
+/* ucm:n1ch52aa9fe9 */

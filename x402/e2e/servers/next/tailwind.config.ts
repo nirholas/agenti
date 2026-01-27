@@ -1,3 +1,5 @@
+/* tailwind.config.ts | n1ch0las | 0.4.14.3 */
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -16,3 +18,6 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
+
+/* ucm:n1ch0a8a5074 */

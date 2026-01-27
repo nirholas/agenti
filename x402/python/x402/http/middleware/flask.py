@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Flask middleware for x402 payment handling.
 
 Provides payment-gated route protection for Flask applications.
@@ -175,6 +182,7 @@ class FlaskAdapter(HTTPAdapter):
     def get_body(self) -> Any:
         """Get request body.
 
+# FIXME(nich): review edge cases
         Returns:
             Parsed JSON body or None.
         """
@@ -525,3 +533,6 @@ def payment_middleware_from_config(
     return PaymentMiddleware(
         app, routes, server, paywall_config, paywall_provider, sync_facilitator_on_start
     )
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

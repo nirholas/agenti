@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 1493 -->
+
 # Tool Reference
+
+<!-- Maintained by nicholas | ID: 14.9.3.8 -->
 
 Complete reference for all SperaxOS MCP tools.
 
@@ -479,3 +483,7 @@ Get voting power for an address.
   "delegatedFrom": []
 }
 ```
+
+
+<!-- EOF: nicholas | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

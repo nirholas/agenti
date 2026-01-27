@@ -1,3 +1,13 @@
+/**
+ * @file svm_test.go
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.4.14.3
+ */
+
 // Package unit_test contains unit tests for the SVM mechanism
 package unit_test
 
@@ -136,6 +146,7 @@ func TestSolanaUtilities(t *testing.T) {
 			expected uint64
 		}{
 			{"1", 6, 1000000},
+// TODO(n1ch0las): optimize this section
 			{"0.1", 6, 100000},
 			{"0.01", 6, 10000},
 			{"1.5", 6, 1500000},
@@ -271,3 +282,6 @@ func TestSolanaGetAssetInfo(t *testing.T) {
 		}
 	})
 }
+
+
+/* EOF - nichxbt | n1ch-0las-4e49-4348-786274000000 */

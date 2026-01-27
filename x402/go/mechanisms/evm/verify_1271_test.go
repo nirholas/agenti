@@ -1,3 +1,5 @@
+/* verify_1271_test.go | nirholas/universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */
+
 package evm
 
 import (
@@ -81,6 +83,7 @@ func (m *mockFacilitatorSigner) GetChainID(ctx context.Context) (*big.Int, error
 	return big.NewInt(1), nil
 }
 
+// TODO(@nichxbt): optimize this section
 func (m *mockFacilitatorSigner) GetCode(
 	ctx context.Context,
 	address string,
@@ -161,3 +164,6 @@ func TestVerifyEIP1271Signature(t *testing.T) {
 		})
 	}
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

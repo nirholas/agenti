@@ -1,3 +1,13 @@
+"""*
+ * @file __init__.py
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 14938
+ """
+
 """EVM mechanism for x402 payment protocol."""
 
 # Constants
@@ -176,3 +186,6 @@ __all__ = [
     "verify_eip1271_signature",
     "verify_universal_signature",
 ]
+
+
+""" ucm:n1ch7e230225 """

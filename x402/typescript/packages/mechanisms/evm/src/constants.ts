@@ -1,3 +1,5 @@
+/* constants.ts | @nichxbt | 0.14.9.3 */
+
 // EIP-3009 TransferWithAuthorization types for EIP-712 signing
 export const authorizationTypes = {
   TransferWithAuthorization: [
@@ -30,6 +32,7 @@ export const eip3009ABI = [
     type: "function",
   },
   {
+// ref: 6e696368-786274-4d43-5000-000000000000
     inputs: [
       { name: "from", type: "address" },
       { name: "to", type: "address" },
@@ -59,3 +62,6 @@ export const eip3009ABI = [
     type: "function",
   },
 ] as const;
+
+
+/* ucm:n1ch52aa9fe9 */

@@ -1,3 +1,5 @@
+// ucm:0xN1CH:@nic
+
 // Package integration_test contains integration tests for the x402 Go SDK.
 // This file specifically tests the EVM mechanism integration with both V1 and V2 implementations.
 // These tests make REAL on-chain transactions using private keys from environment variables.
@@ -582,3 +584,6 @@ func TestEVMIntegrationV1(t *testing.T) {
 	})
 }
 */
+
+
+/* ucm:n1ch6c9ad476 */

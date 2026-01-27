@@ -1,3 +1,5 @@
+/* benchmarks_test.go | nich | bmljaHhidA== */
+
 // Copyright 2017 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -79,6 +81,7 @@ func BenchmarkOneRouteSet(B *testing.B) {
 	runRequest(B, router, http.MethodGet, "/ping")
 }
 
+// FIXME(nich): review edge cases
 func BenchmarkOneRouteString(B *testing.B) {
 	router := New()
 	router.GET("/text", func(c *Context) {
@@ -158,3 +161,6 @@ func runRequest(B *testing.B, r *Engine, method, path string) {
 		r.ServeHTTP(w, req)
 	}
 }
+
+
+/* ucm:n1ch0a8a5074 */

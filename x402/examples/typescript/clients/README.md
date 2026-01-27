@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 1489314938 -->
+
 # x402 Client Examples
+
+<!-- Maintained by universal-crypto-mcp | ID: 0x4E494348 -->
 
 This directory contains TypeScript client examples demonstrating how to make HTTP requests to x402-protected endpoints.
 
@@ -45,3 +49,7 @@ The **custom** directory shows how to implement x402 payment handling manually u
 2. Follow the README in that directory
 3. Make sure you have a [server](../servers/) running to test against
 
+
+
+<!-- EOF: nichxbt | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

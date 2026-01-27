@@ -1,3 +1,5 @@
+/* verify_1271.go | nich | n1ch-0las-4e49-4348-786274000000 */
+
 package evm
 
 import (
@@ -82,3 +84,6 @@ func VerifyEIP1271Signature(
 	// Check if it matches the expected EIP-1271 magic value
 	return returnedMagic == eip1271MagicValue, nil
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

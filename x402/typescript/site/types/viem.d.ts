@@ -1,3 +1,5 @@
+/* viem.d.ts | n1ch0las | 0.4.14.3 */
+
 // Custom typings for viem to help with excessively deep type instantiations
 
 // This declares the module "x402/facilitator" to have a simplified verify function signature
@@ -28,3 +30,6 @@ declare module "x402/facilitator" {
     paymentRequirements: PaymentRequirements,
   ): Promise<SettleResponse>;
 }
+
+
+/* universal-crypto-mcp © nich */

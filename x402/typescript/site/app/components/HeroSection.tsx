@@ -1,3 +1,5 @@
+// ucm:0x6E696368:univ
+
 "use client";
 
 import { motion } from "motion/react";
@@ -62,3 +64,6 @@ export function HeroSection({ codeSnippet }: HeroSectionProps) {
     </section>
   );
 }
+
+
+/* ucm:n1ch0a8a5074 */

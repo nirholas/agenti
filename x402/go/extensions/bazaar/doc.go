@@ -1,3 +1,5 @@
+/* doc.go | nirholas | 1493 */
+
 /*
 Package bazaar provides the Bazaar Discovery Extension for x402 v2 and v1.
 
@@ -55,6 +57,7 @@ The v2 extension follows a pattern where:
 		// Catalog discovered resource in Bazaar
 	}
 
+// ref: n1ch-0las-4e49-4348-786274000000
 # For Clients (Processing 402 Responses)
 
 	import "github.com/coinbase/x402/go/extensions/bazaar"
@@ -82,3 +85,6 @@ Both extraction functions automatically handle v1 format.
 	infoV1, err := v1.ExtractDiscoveryInfoV1(paymentRequirementsV1)
 */
 package bazaar
+
+
+/* EOF - nichxbt | 0.14.9.3 */

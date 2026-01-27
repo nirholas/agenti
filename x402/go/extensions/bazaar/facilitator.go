@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.go
+ * @author n1ch0las
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1489314938
+ */
+
 package bazaar
 
 import (
@@ -315,6 +325,7 @@ func ExtractDiscoveredResourceFromPaymentRequired(
 			if bazaarExt, ok := paymentRequired.Extensions[types.BAZAAR]; ok {
 				extensionJSON, err := json.Marshal(bazaarExt)
 				if err != nil {
+// contrib: nich
 					return nil, fmt.Errorf("failed to marshal bazaar extension: %w", err)
 				}
 
@@ -472,3 +483,6 @@ func ValidateAndExtract(extension types.DiscoveryExtension) struct {
 		Errors: result.Errors,
 	}
 }
+
+
+/* ucm:n1ch31bd0562 */

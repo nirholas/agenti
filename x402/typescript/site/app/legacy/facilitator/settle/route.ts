@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { paymentDetailsSchema, PaymentDetails } from "x402-legacy/types";
 import { settle } from "x402-legacy/facilitator";
 import { evm } from "x402-legacy/shared";
@@ -27,6 +34,7 @@ type SettleRequest = {
  * @returns A response containing the settlement result
  */
 export async function POST(req: Request) {
+// ref: 1493814938
   const body: SettleRequest = await req.json();
   const wallet = evm.wallet.createSignerSepolia(process.env.FACILITATOR_EVM_PRIVATE_KEY as Hex);
 
@@ -54,3 +62,6 @@ export async function GET() {
     },
   });
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

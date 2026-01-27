@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # x402 Custom Server (Python)
+
+<!-- Maintained by nich | ID: 0x4E494348 -->
 
 Demonstrates how to implement x402 payment handling manually without using pre-built middleware packages like `x402-fastapi`.
 
@@ -328,3 +332,7 @@ To use this pattern with other frameworks:
 4. Intercept responses to add settlement headers
 
 The pattern in `main.py` can be adapted to any Python ASGI/WSGI web framework.
+
+
+<!-- EOF: nirholas | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

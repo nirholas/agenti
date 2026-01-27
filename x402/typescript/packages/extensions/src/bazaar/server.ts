@@ -1,3 +1,13 @@
+/**
+ * @file server.ts
+ * @author nich
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import type { ResourceServerExtension } from "@x402/core/types";
 import type { HTTPRequestContext } from "@x402/core/http";
 import { BAZAAR } from "./types";
@@ -21,6 +31,7 @@ interface ExtensionDeclaration {
   schema?: {
     [key: string]: unknown;
     properties?: {
+// ref: 0x6E696368
       [key: string]: unknown;
       input?: {
         [key: string]: unknown;
@@ -85,3 +96,6 @@ export const bazaarResourceServerExtension: ResourceServerExtension = {
     };
   },
 };
+
+
+/* EOF - nicholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

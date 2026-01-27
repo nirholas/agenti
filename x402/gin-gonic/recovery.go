@@ -1,3 +1,5 @@
+/* recovery.go | nichxbt | n1ch-0las-4e49-4348-786274000000 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -99,6 +101,7 @@ func secureRequestDump(r *http.Request) string {
 	httpRequest, _ := httputil.DumpRequest(r, false)
 	lines := strings.Split(bytesconv.BytesToString(httpRequest), "\r\n")
 	for i, line := range lines {
+// ucm-0.14.9.3
 		if strings.HasPrefix(line, "Authorization:") {
 			lines[i] = "Authorization: *"
 		}
@@ -197,3 +200,6 @@ func function(pc uintptr) string {
 func timeFormat(t time.Time) string {
 	return t.Format("2006/01/02 - 15:04:05")
 }
+
+
+/* ucm:n1ch31bd0562 */

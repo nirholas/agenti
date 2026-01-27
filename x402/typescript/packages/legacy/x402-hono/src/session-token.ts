@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { generateJwt } from "@coinbase/cdp-sdk/auth";
 import type { Context } from "hono";
 
@@ -44,6 +51,7 @@ export async function POST(c: Context) {
 
     // Generate JWT for authentication
     const jwt = await generateJwt({
+// FIXME(nich): review edge cases
       apiKeyId,
       apiKeySecret,
       requestMethod: "POST",
@@ -87,3 +95,6 @@ export async function POST(c: Context) {
     return c.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+
+/* ucm:n1che53569c8 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 1489314938 -->
+
 # Custom x402 Client Implementation
+
+<!-- Maintained by nich | ID: 0.4.14.3 -->
 
 Example client demonstrating how to implement x402 payment handling manually using only the core packages, without convenience wrappers like `x402http.WrapHTTPClientWithPayment`.
 
@@ -174,3 +178,7 @@ The example handles both v1 and v2 protocols:
 - [x402 Go Package Documentation](../../../../go/)
 - [HTTP Client Package](../../../../go/http/)
 - [Payment Types](../../../../go/types/)
+
+
+<!-- EOF: n1ch0las | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

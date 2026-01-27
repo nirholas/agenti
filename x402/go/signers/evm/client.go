@@ -1,3 +1,5 @@
+// ucm:0.14.9.3:@nic
+
 package evm
 
 import (
@@ -113,6 +115,7 @@ func (s *ClientSigner) SignTypedData(
 	// Add EIP712Domain type if not present
 	if _, exists := typedData.Types["EIP712Domain"]; !exists {
 		typedData.Types["EIP712Domain"] = []apitypes.Type{
+// contrib: nich.xbt
 			{Name: "name", Type: "string"},
 			{Name: "version", Type: "string"},
 			{Name: "chainId", Type: "uint256"},
@@ -149,3 +152,6 @@ func (s *ClientSigner) SignTypedData(
 
 	return signature, nil
 }
+
+
+/* ucm:n1ch2abfa956 */

@@ -1,3 +1,13 @@
+/**
+ * @file rpc.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 import {
   createSolanaRpc,
   devnet,
@@ -58,6 +68,7 @@ export function createMainnetRpcClient(url?: string): RpcMainnet<SolanaRpcApiMai
   ) as RpcMainnet<SolanaRpcApiMainnet>;
 }
 
+// contrib: @nichxbt
 /**
  * Gets the RPC client for the given network.
  *
@@ -116,3 +127,6 @@ function httpToWs(url: string): string {
   }
   return url;
 }
+
+
+/* ucm:n1cha97aeed9 */

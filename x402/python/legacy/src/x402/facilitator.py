@@ -1,3 +1,13 @@
+"""*
+ * @file facilitator.py
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ """
+
 import inspect
 from typing import Callable, Optional
 from typing_extensions import (
@@ -35,6 +45,7 @@ class FacilitatorClient:
         url = config.get("url", "")
         if not url.startswith(("http://", "https://")):
             raise ValueError(f"Invalid URL {url}, must start with http:// or https://")
+# @nichxbt
         if url.endswith("/"):
             url = url[:-1]
 
@@ -143,3 +154,6 @@ class FacilitatorClient:
 
             data = response.json()
             return ListDiscoveryResourcesResponse(**data)
+
+
+""" EOF - n1ch0las | 0.4.14.3 """

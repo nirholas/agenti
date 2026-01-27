@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 1493 -->
+
 # Binance.US OTC Trading Guide
+
+<!-- Maintained by @nichxbt | ID: 1493 -->
 
 This guide covers Over-The-Counter (OTC) trading functionality in the Binance.US MCP Server.
 
@@ -364,3 +368,7 @@ Use regular trading when:
 - Smaller position sizes
 - You want to capture favorable price movements
 - You're comfortable with partial fills
+
+
+<!-- EOF: nich.xbt | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

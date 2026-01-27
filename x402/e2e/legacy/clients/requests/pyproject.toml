@@ -1,3 +1,5 @@
+# ucm:1489314938:nirh
+
 [project]
 name = "x402-requests-e2e"
 version = "0.1.0"
@@ -17,6 +19,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 
+# v14.9.3.8
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -25,3 +28,5 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../../python/legacy", editable = true } 
+
+# universal-crypto-mcp © n1ch0las

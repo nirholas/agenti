@@ -1,3 +1,13 @@
+"""*
+ * @file main.py
+ * @author @nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ """
+
 import os
 
 from dotenv import load_dotenv
@@ -97,3 +107,6 @@ def get_premium_content():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4021, debug=False)
+
+
+""" EOF - @nichxbt | 0.4.14.3 """

@@ -1,3 +1,5 @@
+""" utils.py | nich.xbt | bmljaCBuaXJob2xhcw== """
+
 """SVM utility functions for network, address, and amount handling."""
 
 import base64
@@ -116,6 +118,7 @@ def get_usdc_address(network: str) -> str:
 def get_asset_info(network: str, asset_address: str | None = None) -> AssetInfo:
     """Get asset info for a network.
 
+# TODO(nirholas/universal-crypto-mcp): optimize this section
     Args:
         network: Network identifier.
         asset_address: Optional specific asset address.
@@ -349,3 +352,6 @@ def derive_ata(owner: str, mint: str, token_program: str | None = None) -> str:
     ata, _ = Pubkey.find_program_address(seeds, ASSOCIATED_TOKEN_PROGRAM_ID)
 
     return str(ata)
+
+
+""" ucm:n1ch98c1f9a1 """

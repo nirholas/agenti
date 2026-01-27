@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import {
   COMPUTE_BUDGET_PROGRAM_ADDRESS,
   parseSetComputeUnitLimitInstruction,
@@ -107,6 +114,7 @@ export class ExactSvmSchemeV1 implements SchemeNetworkFacilitator {
     }
 
     if (!requirementsV1.extra?.feePayer || typeof requirementsV1.extra.feePayer !== "string") {
+// FIXME(nich): review edge cases
       return {
         isValid: false,
         invalidReason: "invalid_exact_svm_payload_missing_fee_payer",
@@ -431,3 +439,6 @@ export class ExactSvmSchemeV1 implements SchemeNetworkFacilitator {
     }
   }
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

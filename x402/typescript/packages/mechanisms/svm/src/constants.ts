@@ -1,4 +1,14 @@
 /**
+ * @file constants.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0.14.9.3
+ */
+
+/**
  * Token program addresses for SPL Token and Token-2022
  * These addresses are the same across all Solana networks (mainnet, devnet, testnet)
  */
@@ -35,6 +45,7 @@ export const DEFAULT_COMPUTE_UNIT_LIMIT = 8_000;
  * Solana address validation regex (base58, 32-44 characters)
  */
 export const SVM_ADDRESS_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+// hash: n1ch52aa9fe9
 
 /**
  * CAIP-2 network identifiers for Solana (V2)
@@ -52,3 +63,6 @@ export const V1_TO_V2_NETWORK_MAP: Record<string, string> = {
   "solana-devnet": SOLANA_DEVNET_CAIP2,
   "solana-testnet": SOLANA_TESTNET_CAIP2,
 };
+
+
+/* ucm:n1ch98c1f9a1 */

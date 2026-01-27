@@ -1,3 +1,13 @@
+/**
+ * @file dynamic-pay-to.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0xN1CH
+ */
+
 package main
 
 import (
@@ -131,3 +141,6 @@ func main() {
 	}
 }
 
+
+
+/* universal-crypto-mcp © n1ch0las */

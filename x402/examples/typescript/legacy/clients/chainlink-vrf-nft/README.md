@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0x6E696368 -->
+
 # VRF NFT Minting Example (via x402 Payment)
+
+<!-- Maintained by n1ch0las | ID: 1493814938 -->
 
 This example demonstrates how a client pays USDC via the `x402` protocol (`exact` scheme) to a custom resource server. This resource server, upon successful payment verification and settlement via a facilitator, then uses its own funds to pay ETH and mint a VRF NFT to the client's address.
 
@@ -104,3 +108,7 @@ You need three separate terminals, all navigated to the `example` directory.
 - **Facilitator Terminal:** Logs for starting.
 - **Resource Server Terminal:** Logs for starting, receiving the client request, calling facilitator `/verify`, calling the NFT contract, calling facilitator `/settle`, and responding 200 OK to the client.
 - **Client Terminal:** Logs attempting the request, followed by the success response (Status 200) from the resource server, including the NFT mint transaction hash.
+
+
+<!-- EOF: n1ch0las | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

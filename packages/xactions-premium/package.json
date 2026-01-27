@@ -1,0 +1,70 @@
+{
+  "name": "@nirholas/xactions-premium",
+  "version": "1.0.0",
+  "description": "x402 paid premium features for XActions - Twitter automation with micropayments",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "xactions",
+    "x402",
+    "twitter",
+    "micropayments",
+    "ai-agents",
+    "mcp",
+    "nichxbt"
+  ],
+  "author": "nich (@nichxbt)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/XActions"
+  },
+  "dependencies": {
+    "@x402/core": "^2.2.0",
+    "viem": "^2.20.0"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client.mjs",
+      "require": "./dist/client.js",
+      "types": "./dist/client.d.ts"
+    },
+    "./mcp": {
+      "import": "./dist/mcp.mjs",
+      "require": "./dist/mcp.js",
+      "types": "./dist/mcp.d.ts"
+    }
+  },
+  "contributors": [
+    {
+      "name": "@nichxbt",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "x-ucm-id": "n1ch-0las-4e49-4348-786274000000",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  }
+}

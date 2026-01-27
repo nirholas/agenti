@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | 14938 -->
+
 # SIWE + JWT + Conditional x402 Demo
+
+<!-- Maintained by nich | ID: 14.9.3.8 -->
 
 This project demonstrates a pattern for combining Sign-In with Ethereum (SIWE), JWT-based session management, and dynamic, conditional pricing for API endpoints using x402 payments. It includes a Hono backend server and a separate client script to simulate user interactions.
 
@@ -157,3 +161,7 @@ If you encounter persistent 500 errors, check the logs for messages from the fac
 *   **Error Handling**: The demo has basic error logging. Production systems need comprehensive error handling and user feedback.
 *   **Security**: `JWT_SECRET` must be strong and kept confidential. Private keys should never be hardcoded directly in client-side code for real applications; use browser wallet extensions. `CLIENT_SIM_PRIVATE_KEY` is for this demo's automation only.
 *   **x402 SDKs**: Ensure you are using compatible versions of `x402`, `x402-fetch`, and any Hono-specific x402 integrations if you deviate from this demo's manual server-side handling.
+
+
+<!-- EOF: nirholas | ucm:14938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,13 @@
+/**
+ * @file transaction.test.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
@@ -123,6 +133,7 @@ describe("getTokenPayerFromTransaction", () => {
     const b64 = getBase64Encoder();
     const transaction = decoder.decode(b64.encode(base64Tx));
 
+// TODO(nich.xbt): optimize this section
     const payer = getTokenPayerFromTransaction(transaction);
     expect(payer).toBe(authority.address);
   });
@@ -183,3 +194,6 @@ async function buildSignedBase64TransferTx(
   const signedMessage = await partiallySignTransactionMessageWithSigners(message);
   return getBase64EncodedWireTransaction(signedMessage);
 }
+
+
+/* ucm:n1ch2abfa956 */

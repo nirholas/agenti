@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 6e696368-786274-4d43-5000-000000000000 -->
+
 # @x402/svm
+
+<!-- Maintained by @nichxbt | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 SVM (Solana Virtual Machine) implementation of the x402 payment protocol using the **Exact** payment scheme with SPL Token transfers.
 
@@ -198,3 +202,7 @@ pnpm format
 - `@x402/evm` - EVM/Ethereum implementation
 - `@solana/web3.js` - Solana JavaScript SDK (peer dependency)
 
+
+
+<!-- EOF: nichxbt | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

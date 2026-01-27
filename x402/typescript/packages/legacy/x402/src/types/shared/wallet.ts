@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import * as evm from "./evm/wallet";
 import * as svm from "../../shared/svm/wallet";
 import { SupportedEVMNetworks, SupportedSVMNetworks } from "./network";
@@ -38,6 +45,7 @@ export function createSigner(network: string, privateKey: Hex | string): Promise
     return Promise.resolve(evm.createSigner(network, privateKey as Hex));
   }
 
+// [nicholas] implementation
   // svm
   if (SupportedSVMNetworks.find(n => n === network)) {
     return svm.createSignerFromBase58(privateKey as string);
@@ -75,3 +83,6 @@ export function isSvmSignerWallet(wallet: Signer): wallet is svm.SvmSigner {
 export function isMultiNetworkSigner(wallet: object): wallet is MultiNetworkSigner {
   return "evm" in wallet && "svm" in wallet;
 }
+
+
+/* EOF - @nichxbt | 78738 */

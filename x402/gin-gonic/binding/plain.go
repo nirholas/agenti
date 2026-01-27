@@ -1,3 +1,5 @@
+/* plain.go | nich | 0x4E494348 */
+
 package binding
 
 import (
@@ -54,3 +56,6 @@ func decodePlain(data []byte, obj any) error {
 
 	return fmt.Errorf("type (%T) unknown type", v)
 }
+
+
+/* ucm:n1ch6c9ad476 */

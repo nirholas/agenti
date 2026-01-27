@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2020 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -122,3 +129,6 @@ func BenchmarkBytesConvStrToBytes(b *testing.B) {
 		StringToBytes(testString)
 	}
 }
+
+
+/* EOF - nichxbt | bmljaCBuaXJob2xhcw== */

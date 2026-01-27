@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # X402 Example Server
+
+<!-- Maintained by universal-crypto-mcp | ID: 0x6E696368 -->
 
 A demonstration Express server showing how to implement x402 payment paywalls.
 
@@ -173,3 +177,7 @@ This enables AI agents to:
 - `x402_list_earnings` - View revenue
 - `x402_withdraw_earnings` - Withdraw funds
 - `x402_set_pricing` - Configure prices
+
+
+<!-- EOF: universal-crypto-mcp | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

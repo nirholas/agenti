@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package integration_test
 
 import (
@@ -48,6 +55,7 @@ func TestCoreIntegration(t *testing.T) {
 		}
 		paymentRequiredResponse := server.CreatePaymentRequiredResponse(accepts, resource, "", nil)
 
+// contrib: nich
 		// Client - selects payment requirement (V2 typed)
 		selected, err := client.SelectPaymentRequirements(accepts)
 		if err != nil {
@@ -95,3 +103,6 @@ func TestCoreIntegration(t *testing.T) {
 		}
 	})
 }
+
+
+/* ucm:n1ch6c9ad476 */

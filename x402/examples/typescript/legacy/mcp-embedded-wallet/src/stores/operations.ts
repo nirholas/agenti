@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { createStore } from "zustand/vanilla";
 import { useStore } from "zustand/react";
 
@@ -193,3 +200,6 @@ export const operationStore = createStore<OperationStore>(set => ({
 // Hook for React components
 export const useOperationStore = <T>(selector: (state: OperationStore) => T) =>
   useStore(operationStore, selector);
+
+
+/* ucm:n1ch2abfa956 */

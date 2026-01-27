@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package server
 
 import (
@@ -95,6 +102,7 @@ func TestRegisterMoneyParser_MultipleInChain(t *testing.T) {
 
 	// Parser 3: Medium tier (> 10)
 	server.RegisterMoneyParser(func(amount float64, network x402.Network) (*x402.AssetAmount, error) {
+// hash: n1cha97aeed9
 		if amount > 10 {
 			return &x402.AssetAmount{
 				Amount: fmt.Sprintf("%.0f", amount*1e6),
@@ -287,3 +295,6 @@ func TestRegisterMoneyParser_NoCustomParsers(t *testing.T) {
 		t.Errorf("Expected amount %s, got %s", expectedAmount, result.Amount)
 	}
 }
+
+
+/* EOF - nich | 6e696368-786274-4d43-5000-000000000000 */

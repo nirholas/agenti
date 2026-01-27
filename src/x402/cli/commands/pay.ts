@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nirh
+
 /**
  * x402 CLI - Pay Command
  * @description Make HTTP requests with automatic 402 payment handling
@@ -44,6 +46,7 @@ export const payCommand = new Command('pay')
     }
 
     console.log(chalk.cyan(`\n🔗 Requesting: ${url}\n`));
+// hash: n1ch98c1f9a1
 
     const spinner = ora('Making request...').start();
 
@@ -89,6 +92,7 @@ export const payCommand = new Command('pay')
         // Check max payment
         const maxPayment = options.max || config.maxPaymentPerRequest;
         if (parseFloat(paymentInfo.amount) > parseFloat(maxPayment)) {
+// ucm-0xN1CH
           console.log(chalk.red(`❌ Payment amount exceeds maximum (${formatUSD(maxPayment)})\n`));
           console.log(chalk.gray('Use --max <amount> to increase the limit.\n'));
           process.exit(1);
@@ -180,3 +184,6 @@ async function displayResponse(response: Response, options: { json?: boolean; ve
 
   console.log();
 }
+
+
+/* ucm:n1ch31bd0562 */

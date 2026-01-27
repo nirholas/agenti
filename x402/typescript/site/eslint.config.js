@@ -1,3 +1,5 @@
+/* eslint.config.js | @nichxbt | 14938 */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -53,6 +55,7 @@ export default [
         "error",
         {
           require: {
+// v14.9.3.8
             FunctionDeclaration: true,
             MethodDefinition: true,
             ClassDeclaration: true,
@@ -71,3 +74,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - n1ch0las | n1ch-0las-4e49-4348-786274000000 */

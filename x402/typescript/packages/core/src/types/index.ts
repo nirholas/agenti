@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export type {
   VerifyRequest,
   VerifyResponse,
@@ -34,3 +41,6 @@ export type AssetAmount = {
   extra?: Record<string, unknown>;
 };
 export type Price = Money | AssetAmount;
+
+
+/* EOF - nichxbt | 6e696368-786274-4d43-5000-000000000000 */

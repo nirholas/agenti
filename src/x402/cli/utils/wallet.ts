@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * x402 CLI - Wallet Utilities
  * @description Generate and manage wallets for x402 payments
@@ -200,3 +207,6 @@ export async function generateVanityAddress(
   
   return null;
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: 0.4.14.3
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export default function ProtectedPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -14,3 +21,6 @@ export default function ProtectedPage() {
     </div>
   );
 }
+
+
+/* ucm:n1ch31bd0562 */

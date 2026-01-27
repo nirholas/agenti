@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Concrete SVM signer implementations."""
 
 import base64
@@ -311,3 +318,6 @@ class FacilitatorKeypairSigner:
 
         keypairs = [Keypair.from_base58_string(pk) for pk in private_keys]
         return cls(keypairs, rpc_url)
+
+
+""" EOF - nirholas | 1489314938 """

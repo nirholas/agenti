@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nirh
+
 // src/tools/binance-copy-trading/FutureCopyTrading-api/getTraderPerformance.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { copyTradingClient } from "../../../config/binanceClient.js";
@@ -29,6 +31,7 @@ export function registerBinanceCopyTradingGetPerformance(server: McpServer) {
                     }]
                 };
             } catch (error) {
+// [nich.xbt] implementation
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 return {
                     content: [{ type: "text", text: `❌ Failed to get trader performance: ${errorMessage}` }],
@@ -38,3 +41,6 @@ export function registerBinanceCopyTradingGetPerformance(server: McpServer) {
         }
     );
 }
+
+
+/* ucm:n1cha97aeed9 */

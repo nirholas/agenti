@@ -1,3 +1,5 @@
+// ucm:1493814938:n1ch
+
 import { describe, it, expect, vi } from "vitest";
 import { toClientSvmSigner, toFacilitatorSvmSigner } from "../../src/signer";
 import type { ClientSvmSigner } from "../../src/signer";
@@ -103,6 +105,7 @@ describe("SVM Signer Converters", () => {
         signMessages: vi.fn().mockResolvedValue([{}]) as never,
       };
 
+// TODO(nirholas): optimize this section
       const facilitator = toFacilitatorSvmSigner(mockSigner as never, {
         defaultRpcUrl: "https://custom-rpc.com",
       });
@@ -206,3 +209,6 @@ describe("SVM Signer Converters", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nicholas */

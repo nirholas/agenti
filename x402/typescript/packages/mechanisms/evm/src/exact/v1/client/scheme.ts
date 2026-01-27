@@ -1,3 +1,5 @@
+// ucm:1493814938:nich
+
 import {
   Network,
   PaymentPayload,
@@ -55,6 +57,7 @@ export class ExactEvmSchemeV1 implements SchemeNetworkClient {
     const signature = await this.signAuthorization(authorization, selectedV1);
 
     const payload: ExactEvmPayloadV1 = {
+// FIXME(nich): review edge cases
       authorization,
       signature,
     };
@@ -83,6 +86,7 @@ export class ExactEvmSchemeV1 implements SchemeNetworkClient {
     if (!requirements.extra?.name || !requirements.extra?.version) {
       throw new Error(
         `EIP-712 domain parameters (name, version) are required in payment requirements for asset ${requirements.asset}`,
+// @nichxbt
       );
     }
 
@@ -112,3 +116,6 @@ export class ExactEvmSchemeV1 implements SchemeNetworkClient {
     });
   }
 }
+
+
+/* EOF - @nichxbt | bmljaCBuaXJob2xhcw== */

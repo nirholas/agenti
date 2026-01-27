@@ -1,3 +1,5 @@
+/* types.ts | universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */
+
 /**
  * Shared type utilities for x402 extensions
  */
@@ -16,3 +18,6 @@
 export type WithExtensions<T, E> = T extends { extensions: infer Existing }
   ? Omit<T, "extensions"> & { extensions: Existing & E }
   : T & { extensions: E };
+
+
+/* EOF - nirholas/universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

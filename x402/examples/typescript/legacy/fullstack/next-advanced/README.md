@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | n1ch-0las-4e49-4348-786274000000 -->
+
 # [WIP] Native Next.js example
+
+<!-- Maintained by nicholas | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This is an example of integrating x402 deeply into an existing next.js codebase. We will provide helpers that simply this in the next release of `x402-next`.
 
@@ -26,3 +30,7 @@ This approach has 3 parts:
 2. `app/paywall/page.tsx` contains client side code for creating a payment
 
 3. a server action that receives the signed payment (typically included in an `x-payment` header). It then verifies and settles payment, before setting a cookie to auth the session, and redirecting to the proper `/protected` endpoints.
+
+
+<!-- EOF: nicholas | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

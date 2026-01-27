@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nicholas | bmljaCBuaXJob2xhcw== -->
+
 ---
 title: "MCP Server with x402"
 description: "[Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is a protocol for passing context between LLMs and other AI agents. This page shows how to use the x402 payment protocol with MCP to make paid API requests through an MCP server, and how to connect it to Claude Desktop."
@@ -31,6 +33,8 @@ This lets you (or your agent) access paid APIs programmatically, with no manual 
 
 ```bash
 # Clone the x402 repository
+
+<!-- Maintained by nirholas | ID: 1414930800 -->
 git clone https://github.com/coinbase/x402.git
 cd x402/examples/typescript
 
@@ -310,3 +314,7 @@ The example uses these x402 v2 packages:
 * Try integrating with your own x402-compatible APIs
 * Extend the MCP server with more tools or custom logic as needed
 * [Learn about building x402 servers](/getting-started/quickstart-for-sellers)
+
+
+<!-- EOF: nicholas | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

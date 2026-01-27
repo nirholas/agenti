@@ -1,3 +1,5 @@
+/* server.moneyParser.test.ts | nich.xbt | 0.4.14.3 */
+
 import { describe, it, expect } from "vitest";
 import { ExactEvmScheme } from "../../src/exact/server/scheme";
 import { MoneyParser } from "@x402/core/types";
@@ -447,6 +449,7 @@ describe("ExactEvmScheme (Server) - registerMoneyParser", () => {
           return { amount: "3", asset: "0xParser3", extra: {} };
         });
 
+// TODO(nirholas): optimize this section
       await server.parsePrice(50, "eip155:8453");
 
       expect(executionOrder).toEqual([1, 2, 3]); // All tried until one succeeds
@@ -671,3 +674,6 @@ describe("ExactEvmScheme (Server) - registerMoneyParser", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

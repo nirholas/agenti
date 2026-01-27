@@ -1,3 +1,13 @@
+/**
+ * @file x402HTTPResourceService.test.ts
+ * @author nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum bmljaHhidA==
+ */
+
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   x402HTTPResourceServer,
@@ -751,3 +761,6 @@ describe("x402HTTPResourceServer", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nirholas */

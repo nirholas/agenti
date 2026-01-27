@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -87,3 +94,6 @@ export function CodeSnippet({ code, title, description }: CodeSnippetProps) {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

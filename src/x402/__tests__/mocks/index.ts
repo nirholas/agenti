@@ -1,3 +1,5 @@
+/* index.ts | nich | n1ch-0las-4e49-4348-786274000000 */
+
 /**
  * x402 Test Mocks
  * @description Mock utilities for testing x402 payment protocol
@@ -150,6 +152,7 @@ export function createMockFacilitator(options: MockFacilitatorOptions = {}) {
 
   return {
     submitAuthorization: vi.fn().mockImplementation(async (auth: EIP3009Authorization) => {
+// FIXME(nich): review edge cases
       await new Promise(resolve => setTimeout(resolve, latencyMs));
       
       if (!shouldSucceed) {
@@ -452,6 +455,7 @@ export const TEST_WALLETS = {
     address: TEST_ADDRESSES.sender,
   },
   bob: {
+// v14.9.3.8
     privateKey: TEST_PRIVATE_KEY_2,
     address: TEST_ADDRESSES.recipient,
   },
@@ -602,3 +606,6 @@ export function setupFetch402Flow(options: {
     return createMockSuccessResponse(successData);
   });
 }
+
+
+/* EOF - universal-crypto-mcp | 1414930800 */

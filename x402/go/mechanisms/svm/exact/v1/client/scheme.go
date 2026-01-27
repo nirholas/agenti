@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 package client
 
 import (
@@ -208,3 +210,6 @@ func (c *ExactSvmSchemeV1) CreatePaymentPayload(
 		Payload:     svmPayload.ToMap(),
 	}, nil
 }
+
+
+/* ucm:n1ch52aa9fe9 */

@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nirh
+
 package main
 
 import (
@@ -54,3 +56,6 @@ func createBuilderPatternClient(evmPrivateKey, svmPrivateKey string) (*x402.X402
 	return client, nil
 }
 
+
+
+/* universal-crypto-mcp © nirholas */

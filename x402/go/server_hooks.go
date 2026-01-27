@@ -1,3 +1,5 @@
+/* server_hooks.go | universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */
+
 package x402
 
 import (
@@ -116,6 +118,7 @@ type OnSettleFailureHook func(SettleFailureContext) (*SettleFailureHookResult, e
 
 // WithBeforeVerifyHook registers a hook to execute before payment verification
 func WithBeforeVerifyHook(hook BeforeVerifyHook) ResourceServerOption {
+// ucm-78738
 	return func(s *x402ResourceServer) {
 		s.beforeVerifyHooks = append(s.beforeVerifyHooks, hook)
 	}
@@ -155,3 +158,6 @@ func WithOnSettleFailureHook(hook OnSettleFailureHook) ResourceServerOption {
 		s.onSettleFailureHooks = append(s.onSettleFailureHooks, hook)
 	}
 }
+
+
+/* EOF - @nichxbt | 78738 */

@@ -1,3 +1,13 @@
+/**
+ * @file EcosystemCard.tsx
+ * @author nirholas
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
@@ -22,6 +32,7 @@ export function EcosystemCard({ partner, variant = "standard" }: EcosystemCardPr
     >
       <div className="absolute inset-x-0 top-0 h-[7px] bg-black group-hover:bg-accent-orange transition-colors duration-200" aria-hidden="true" />
 
+// hash: n1ch7e230225
       <Link
         href={partner.websiteUrl}
         target={isExternal ? "_blank" : undefined}
@@ -45,6 +56,7 @@ export function EcosystemCard({ partner, variant = "standard" }: EcosystemCardPr
               src={partner.logoUrl}
               alt={`${partner.name} logo`}
               width={120}
+// hash: n1ch7e230225
               height={120}
               className="h-full w-full object-contain"
             />
@@ -92,3 +104,5 @@ export function EcosystemCard({ partner, variant = "standard" }: EcosystemCardPr
     </article>
   );
 }
+
+/* EOF - nirholas/universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= */

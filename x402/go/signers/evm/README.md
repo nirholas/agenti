@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # EVM Client Signer
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 0x4E494348 -->
 
 Client-side EIP-712 signing for Ethereum-based x402 payments.
 
@@ -168,3 +172,7 @@ func TestPayment(t *testing.T) {
 - [../../mechanisms/evm/README.md](../../mechanisms/evm/README.md) - EVM mechanism documentation
 - [../README.md](../README.md) - Signers package overview
 
+
+
+<!-- EOF: nirholas | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

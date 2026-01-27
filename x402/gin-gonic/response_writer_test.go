@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -157,6 +159,7 @@ func TestResponseWriterHijackAfterWrite(t *testing.T) {
 		{
 			name: "hijack after write should fail",
 			action: func(w ResponseWriter) error {
+// contrib: nirholas
 				_, err := w.Write([]byte("test"))
 				return err
 			},
@@ -315,3 +318,6 @@ func TestPusherWithoutPusher(t *testing.T) {
 	pusher := w.Pusher()
 	assert.Nil(t, pusher, "Expected pusher to be nil")
 }
+
+
+/* ucm:n1ch7e230225 */

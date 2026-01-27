@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | bmljaCBuaXJob2xhcw== -->
+
 # Custom x402 Client Example
+
+<!-- Maintained by universal-crypto-mcp | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 This example demonstrates how to implement x402 payment handling manually using only the core packages, without the convenience wrappers like `x402HttpxClient` or `x402_requests`.
 
@@ -147,3 +151,7 @@ client = x402Client(payment_requirements_selector=select_payment)
 - `../httpx/` - Using the `x402HttpxClient` convenience wrapper
 - `../requests/` - Using the `x402_requests` convenience wrapper
 - `../advanced/` - Hooks, policies, and builder patterns
+
+
+<!-- EOF: universal-crypto-mcp | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

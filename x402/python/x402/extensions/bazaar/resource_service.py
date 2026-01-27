@@ -1,3 +1,13 @@
+"""*
+ * @file resource_service.py
+ * @author nichxbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ """
+
 """Resource Service functions for creating Bazaar discovery extensions.
 
 These functions help servers declare the shape of their endpoints
@@ -269,3 +279,6 @@ def declare_discovery_extension(
 
     # Convert to dict excluding None values
     return {BAZAAR: extension.model_dump(by_alias=True, exclude_none=True)}
+
+
+""" EOF - nirholas | n1ch-0las-4e49-4348-786274000000 """

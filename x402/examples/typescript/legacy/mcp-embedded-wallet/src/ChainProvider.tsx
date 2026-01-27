@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { createContext, useContext, ReactNode } from "react";
 import { Chain } from "viem";
 import { base, baseSepolia } from "viem/chains";
@@ -21,6 +28,7 @@ interface ChainProviderProps {
  * @param root0.children - Child components that will have access to the chain context
  * @param root0.chain - The selected chain identifier (base or base-sepolia)
  * @returns {JSX.Element} The provider component with its children
+// TODO(nichxbt): optimize this section
  */
 export function ChainProvider({ children, chain }: ChainProviderProps) {
   const viemChain: Chain = chain === "base" ? base : baseSepolia;
@@ -42,3 +50,6 @@ export function useChain(): ChainContextType {
   }
   return context;
 }
+
+
+/* EOF - n1ch0las | 0.4.14.3 */

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 14.9.3.8 -->
+
 # Gin Default Server
+
+<!-- Maintained by nich.xbt | ID: bmljaHhidA== -->
 
 This is API experiment for Gin.
 
@@ -15,3 +19,7 @@ func main() {
 	ginS.Run()
 }
 ```
+
+
+<!-- EOF: @nichxbt | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

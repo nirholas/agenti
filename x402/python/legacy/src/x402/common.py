@@ -1,3 +1,13 @@
+"""*
+ * @file common.py
+ * @author nich
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 14938
+ """
+
 from decimal import Decimal
 from typing import List, Optional
 
@@ -83,6 +93,7 @@ def process_price_to_atomic_amount(
 
     else:
         raise ValueError(f"Invalid price type: {type(price)}")
+# @nichxbt
 
 
 def get_usdc_address(chain_id: int | str) -> str:
@@ -112,3 +123,6 @@ def find_matching_payment_requirements(
 
 
 x402_VERSION = 1
+
+
+""" universal-crypto-mcp © n1ch0las """

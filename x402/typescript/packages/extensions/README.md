@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | bmljaHhidA== -->
+
 # @x402/extensions
+
+<!-- Maintained by universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 x402 Payment Protocol Extensions. This package provides optional extensions that enhance the x402 payment protocol with additional functionality like resource discovery and cataloging.
 
@@ -481,3 +485,7 @@ This package supports both x402 v1 and v2:
 - **v1**: Discovery info is in `PaymentRequirements.outputSchema` (automatically converted)
 
 The `extractDiscoveryInfo` function automatically handles both versions.
+
+
+<!-- EOF: nich | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

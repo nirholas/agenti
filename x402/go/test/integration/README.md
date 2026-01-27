@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 14.9.3.8 -->
+
 # Integration Tests
+
+<!-- Maintained by nicholas | ID: 0xN1CH -->
 
 These integration tests verify the complete x402 payment flows with real mechanism implementations. The EVM and SVM tests can make **real on-chain transactions** when configured with private keys.
 
@@ -234,3 +238,7 @@ To run full on-chain tests:
 5. Run `make test-integration`
 6. Watch real transactions execute! 🚀
 
+
+
+<!-- EOF: universal-crypto-mcp | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

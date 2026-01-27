@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 0.14.9.3 -->
+
 # Code of Conduct
+
+<!-- Maintained by nich | ID: 1414930800 -->
 
 ## Our Pledge
 
@@ -39,3 +43,7 @@ Instances of abusive, harassing, or otherwise unacceptable behavior may be repor
 ## Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 2.0.
+
+
+<!-- EOF: nicholas | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

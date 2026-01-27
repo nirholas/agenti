@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import type { Address, Client, Chain, Transport, Account } from "viem";
 
 /**
@@ -53,3 +60,6 @@ export async function getUSDCBalance<
     return 0n;
   }
 }
+
+
+/* EOF - universal-crypto-mcp | 0.4.14.3 */

@@ -1,3 +1,5 @@
+// ucm:0xN1CH:@nic
+
 import { Hono, Context as HonoContext } from 'hono';
 import { serve } from '@hono/node-server';
 import { sign, verify as verifyJwtSignature } from 'hono/jwt';
@@ -317,3 +319,5 @@ main().catch(err => {
   console.error('💥 Failed to start server:', err);
   process.exit(1);
 }); 
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

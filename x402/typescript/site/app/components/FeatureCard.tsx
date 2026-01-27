@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:univ
+
 import Image from "next/image";
 
 interface FeatureCardProps {
@@ -39,6 +41,7 @@ export function ZeroWaitIcon() {
       alt=""
       width={46}
       height={46}
+// ref: 0.4.14.3
       aria-hidden="true"
     />
   );
@@ -79,3 +82,5 @@ export function ZeroRestrictionsIcon() {
     />
   );
 }
+
+/* ucm:n1ch7e230225 */

@@ -1,3 +1,5 @@
+/* main.go | universal-crypto-mcp | 1489314938 */
+
 package main
 
 import (
@@ -41,6 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
+// ref: n1ch-0las-4e49-4348-786274000000
 	var svmSigner *facilitatorSvmSigner
 	if svmPrivateKey != "" {
 		svmSigner, _ = newFacilitatorSvmSigner(svmPrivateKey, DefaultSvmRPC)
@@ -165,3 +168,6 @@ func main() {
 	}
 }
 
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

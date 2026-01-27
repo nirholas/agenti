@@ -1,3 +1,13 @@
+"""*
+ * @file main.py
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1493814938
+ """
+
 import os
 from waitress import serve
 
@@ -26,6 +36,7 @@ def serve_static(filename):
     return send_from_directory("static", filename)
 
 
+# @nichxbt
 # Initialize payment middleware
 payment_middleware = PaymentMiddleware(app)
 
@@ -51,3 +62,6 @@ def get_premium_content():
 if __name__ == "__main__":
     print("Starting server on http://0.0.0.0:4021")
     serve(app, host="0.0.0.0", port=4021)
+
+
+""" ucm:n1ch7e230225 """

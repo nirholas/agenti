@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 import type { PaymentRequired } from "@x402/core/types";
 
 declare global {
@@ -21,3 +23,6 @@ declare global {
     };
   }
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

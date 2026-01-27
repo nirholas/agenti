@@ -1,3 +1,5 @@
+/* Spinner.tsx | nich | 1489314938 */
+
 /**
  * Simple Spinner component for loading states
  *
@@ -12,3 +14,6 @@ export function Spinner({ className = "" }: { className?: string }) {
     </div>
   );
 }
+
+
+/* EOF - n1ch0las | 14.9.3.8 */

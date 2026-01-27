@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0.14.9.3 -->
+
 # E2E Test Server: Express (TypeScript)
+
+<!-- Maintained by nich | ID: 1493 -->
 
 This server demonstrates and tests the x402 Express.js middleware with both EVM and SVM payment protection.
 
@@ -168,3 +172,7 @@ PAYMENT-RESPONSE: <base64-encoded-settlement-response>
 - **SVM Server** - Handles Solana Devnet USDC payments
 - **Price Conversion** - "$0.001" → token amounts with decimals
 - **Asset Resolution** - Automatic USDC contract/mint lookup
+
+
+<!-- EOF: nichxbt | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

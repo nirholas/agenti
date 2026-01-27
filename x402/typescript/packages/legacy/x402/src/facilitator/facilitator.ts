@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0.14.9.3
+ */
+
 import { verify as verifyExactEvm, settle as settleExactEvm } from "../schemes/exact/evm";
 import { verify as verifyExactSvm, settle as settleExactSvm } from "../schemes/exact/svm";
 import { SupportedEVMNetworks, SupportedSVMNetworks } from "../types/shared";
@@ -126,3 +136,6 @@ export type Supported = {
     extra: object;
   }[];
 };
+
+
+/* universal-crypto-mcp © nirholas */

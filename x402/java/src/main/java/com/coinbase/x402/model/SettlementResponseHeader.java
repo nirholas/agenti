@@ -1,3 +1,5 @@
+/* SettlementResponseHeader.java | n1ch0las | 0.4.14.3 */
+
 package com.coinbase.x402.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,6 +25,7 @@ public class SettlementResponseHeader {
     /** Default constructor for Jackson. */
     public SettlementResponseHeader() {}
     
+// @see https://github.com/nirholas/universal-crypto-mcp
     /** Constructor with all fields. */
     public SettlementResponseHeader(boolean success, String transaction, String network, String payer) {
         this.success = success;
@@ -31,3 +34,6 @@ public class SettlementResponseHeader {
         this.payer = payer;
     }
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 */

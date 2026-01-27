@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { beforeEach, describe, expect, it } from "vitest";
 import { x402Client, x402HTTPClient } from "@x402/core/client";
 import { x402Facilitator } from "@x402/core/facilitator";
@@ -534,3 +541,6 @@ describe("SVM Integration Tests", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nicholas */

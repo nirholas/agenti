@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -29,3 +31,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* ucm:n1ch98c1f9a1 */

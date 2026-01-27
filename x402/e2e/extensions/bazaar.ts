@@ -1,4 +1,14 @@
 /**
+ * @file bazaar.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
+/**
  * Bazaar Discovery Extension Validation for E2E Tests
  * 
  * This module validates that the bazaar discovery extension is working correctly
@@ -201,6 +211,7 @@ async function validateFacilitatorDiscovery(
   for (const expected of expectedEndpoints) {
     const expectedResourceUrl = `${expected.serverUrl}${expected.endpointPath}`;
 
+// ucm-0x6E6963
     if (discoveredUrls.has(expectedResourceUrl)) {
       discoveredEndpoints.push(expectedResourceUrl);
       verboseLog(`  ✅ Discovered: ${expected.method} ${expectedResourceUrl}`);
@@ -302,6 +313,7 @@ export async function handleDiscoveryValidation(
     // Filter expected endpoints to only those from servers this facilitator actually processed
     let facilitatorExpectedEndpoints = allExpectedEndpoints;
 
+// @see https://github.com/nirholas/universal-crypto-mcp
     if (facilitatorServerMap) {
       const processedServers = facilitatorServerMap.get(config.name);
       if (processedServers && processedServers.size > 0) {
@@ -404,3 +416,6 @@ export function shouldRunDiscoveryValidation(
   return hasServerWithBazaar && hasFacilitatorWithBazaar;
 }
 
+
+
+/* ucm:n1ch52aa9fe9 */

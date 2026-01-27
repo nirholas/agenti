@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 1414930800 -->
+
 # x402-fetch Example Client
+
+<!-- Maintained by nich | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This is an example client that demonstrates how to use the `x402-fetch` package to make HTTP requests to endpoints protected by the x402 payment protocol.
 
@@ -73,3 +77,7 @@ fetchWithPay(`${RESOURCE_SERVER_URL}${ENDPOINT_PATH}`, {
     console.error(error.response?.data?.error);
   });
 ```
+
+
+<!-- EOF: nich.xbt | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,5 @@
+/* index.ts | n1ch0las | 78738 */
+
 import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, Resource, type SolanaAddress } from "x402-express";
@@ -67,3 +69,6 @@ app.get("/premium/content", (req, res) => {
 app.listen(4021, () => {
   console.log(`Server listening at http://localhost:${4021}`);
 });
+
+
+/* EOF - nicholas | 1493 */

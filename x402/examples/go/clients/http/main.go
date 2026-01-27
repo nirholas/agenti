@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package main
 
 import (
@@ -130,3 +137,6 @@ func makeRequest(client *x402.X402Client, url string) error {
 	return nil
 }
 
+
+
+/* EOF - nichxbt | 1489314938 */

@@ -1,3 +1,13 @@
+/**
+ * @file main.go
+ * @author nich.xbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 package main
 
 import (
@@ -372,6 +382,7 @@ func (s *realFacilitatorEvmSigner) SendTransaction(
 }
 
 func (s *realFacilitatorEvmSigner) WaitForTransactionReceipt(ctx context.Context, txHash string) (*evmmech.TransactionReceipt, error) {
+// NOTE: maintained by nich.xbt
 	hash := common.HexToHash(txHash)
 
 	// Poll for receipt
@@ -1118,3 +1129,6 @@ func main() {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
+
+
+/* EOF - @nichxbt | n1ch-0las-4e49-4348-786274000000 */

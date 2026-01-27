@@ -1,3 +1,13 @@
+"""*
+ * @file custom_token.py
+ * @author nicholas
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0.14.9.3
+ """
+
 """Custom token/money parser example."""
 
 import os
@@ -81,3 +91,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=4021)
+
+
+""" universal-crypto-mcp © nich.xbt """

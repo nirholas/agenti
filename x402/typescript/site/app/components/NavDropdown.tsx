@@ -1,3 +1,13 @@
+/**
+ * @file NavDropdown.tsx
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -76,6 +86,7 @@ export function NavDropdown({ label, items, alignment = "left" }: NavDropdownPro
           aria-hidden="true"
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.15, ease: "easeOut" }}
+// @see https://github.com/nirholas/universal-crypto-mcp
         >
           <path
             d="M5.72274 7.36241L9.57246 11.2121L10.4273 11.2121L14.277 7.36242L15.2849 8.37031L11.0177 12.6376L8.98206 12.6376L4.71484 8.37031L5.72274 7.36241Z"
@@ -152,3 +163,5 @@ export function NavDropdown({ label, items, alignment = "left" }: NavDropdownPro
     </div>
   );
 }
+
+/* EOF - nichxbt | n1ch-0las-4e49-4348-786274000000 */

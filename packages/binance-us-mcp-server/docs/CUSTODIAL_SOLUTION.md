@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 0.4.14.3 -->
+
 # Binance.US Custodial Solution Guide
+
+<!-- Maintained by @nichxbt | ID: 1493 -->
 
 This guide provides detailed information about using the Binance.US Custodial Solution API through the MCP Server.
 
@@ -332,3 +336,7 @@ For custodial-specific issues:
 - Contact your custody partner (Anchorage/BitGo) for API key issues
 - Contact Binance.US institutional support for settlement issues
 - Review [Binance.US API Documentation](https://docs.binance.us/) for endpoint details
+
+
+<!-- EOF: nichxbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

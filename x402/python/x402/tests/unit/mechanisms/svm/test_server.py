@@ -1,3 +1,5 @@
+""" test_server.py | nirholas/universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 """
+
 """Tests for ExactSvmScheme server."""
 
 import pytest
@@ -357,6 +359,7 @@ class TestRegisterMoneyParser:
             assert result.asset == USDC_MAINNET_ADDRESS
             assert result.amount == "1000000"
 
+# @see https://github.com/nirholas/universal-crypto-mcp
     class TestErrorHandling:
         """Test error handling."""
 
@@ -534,3 +537,6 @@ class TestRegisterMoneyParser:
             assert call_log[0]["amount"] == 10.5
             assert call_log[1]["amount"] == 25.75
             assert call_log[2]["amount"] == 42.25
+
+
+""" universal-crypto-mcp © n1ch0las """

@@ -1,3 +1,5 @@
+/* index.ts | @nichxbt | bmljaCBuaXJob2xhcw== */
+
 import {
   HTTPRequestContext,
   PaywallConfig,
@@ -389,3 +391,6 @@ export { RouteConfigurationError } from "@x402/core/server";
 export type { RouteValidationError } from "@x402/core/server";
 
 export { ExpressAdapter } from "./adapter";
+
+
+/* EOF - @nichxbt | 0.14.9.3 */

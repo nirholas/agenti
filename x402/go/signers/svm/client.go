@@ -1,3 +1,5 @@
+// ucm:1493:nich
+
 package svm
 
 import (
@@ -93,3 +95,6 @@ func (s *ClientSigner) SignTransaction(ctx context.Context, tx *solana.Transacti
 
 	return nil
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

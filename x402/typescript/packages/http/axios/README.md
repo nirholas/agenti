@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 0.4.14.3 -->
+
 # x402-axios
+
+<!-- Maintained by @nichxbt | ID: 0.4.14.3 -->
 
 A utility package that extends Axios to automatically handle 402 Payment Required responses using the x402 payment protocol v2. This package enables seamless integration of payment functionality into your applications when making HTTP requests.
 
@@ -195,3 +199,7 @@ const api = wrapAxiosWithPaymentFromConfig(axios.create(), {
 });
 ```
 
+
+
+<!-- EOF: universal-crypto-mcp | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

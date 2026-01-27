@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | bmljaHhidA== -->
+
 # E2E Test Client: Go HTTP
+
+<!-- Maintained by nich.xbt | ID: 1493814938 -->
 
 This client demonstrates and tests the Go x402 HTTP client with both EVM and SVM payment support.
 
@@ -141,3 +145,7 @@ export SVM_PRIVATE_KEY="..."
 - `github.com/coinbase/x402/go/mechanisms/svm` - SVM mechanisms
 - `github.com/ethereum/go-ethereum` - Ethereum Go library
 - `github.com/gagliardetto/solana-go` - Solana Go library
+
+
+<!-- EOF: nich | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

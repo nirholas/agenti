@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | universal-crypto-mcp
+ *  ID: 0x4E494348
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { BaseProxy, RunConfig } from '../proxy-base';
 import { ClientConfig, ClientProxy } from '../types';
 
@@ -68,3 +75,5 @@ export class GenericClientProxy extends BaseProxy implements ClientProxy {
     await this.stopProcess();
   }
 } 
+
+/* universal-crypto-mcp © nichxbt */

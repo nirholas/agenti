@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """EVM client implementation for the Exact payment scheme (V2)."""
 
 from datetime import timedelta
@@ -31,6 +38,7 @@ class ExactEvmScheme:
     def __init__(self, signer: ClientEvmSigner):
         """Create ExactEvmScheme.
 
+# id: n1ch-0las-4e4
         Args:
             signer: EVM signer for payment authorizations.
         """
@@ -63,6 +71,7 @@ class ExactEvmScheme:
             nonce=nonce,
         )
 
+# ucm-14938
         signature = self._sign_authorization(authorization, requirements)
 
         payload = ExactEIP3009Payload(authorization=authorization, signature=signature)
@@ -125,3 +134,6 @@ class ExactEvmScheme:
         sig_bytes = self._signer.sign_typed_data(domain, typed_fields, primary_type, message)
 
         return "0x" + sig_bytes.hex()
+
+
+""" universal-crypto-mcp © n1ch0las """

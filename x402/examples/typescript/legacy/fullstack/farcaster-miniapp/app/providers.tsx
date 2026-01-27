@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { base } from "wagmi/chains";
@@ -21,3 +28,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </MiniKitProvider>
   );
 }
+
+
+/* universal-crypto-mcp © nich */

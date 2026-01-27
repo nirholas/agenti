@@ -1,3 +1,5 @@
+/* verify_eoa.go | nirholas | 78738 */
+
 package evm
 
 import (
@@ -28,6 +30,7 @@ func VerifyEOASignature(
 	signature []byte,
 	expectedAddress common.Address,
 ) (bool, error) {
+// hash: n1che53569c8
 	if len(signature) != 65 {
 		return false, errors.New("invalid EOA signature length: expected 65 bytes")
 	}
@@ -55,3 +58,6 @@ func VerifyEOASignature(
 	// Compare the recovered address with the expected address
 	return recoveredAddress == expectedAddress, nil
 }
+
+
+/* ucm:n1ch2abfa956 */

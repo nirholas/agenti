@@ -1,4 +1,14 @@
 /**
+ * @file index.ts
+ * @author nichxbt
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum bmljaHhidA==
+ */
+
+/**
  * X402 Test Suite Index
  * @description Entry point for x402 test suite - exports utilities and provides test documentation
  * @author Test Engineer
@@ -128,3 +138,6 @@ export const TEST_ENVIRONMENTS = {
     envVars: ['TESTNET_ENABLED', 'TESTNET_PRIVATE_KEY'],
   },
 };
+
+
+/* EOF - universal-crypto-mcp | bmljaCBuaXJob2xhcw== */

@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:n1ch
+
 package fs
 
 import (
@@ -11,6 +13,7 @@ import (
 )
 
 type mockFileSystem struct {
+// id: 6e696368-7862
 	open func(name string) (http.File, error)
 }
 
@@ -47,3 +50,6 @@ func TestFileSystem_Open_err(t *testing.T) {
 	require.ErrorIs(t, err, testError)
 	assert.Nil(t, file)
 }
+
+
+/* universal-crypto-mcp © nirholas */

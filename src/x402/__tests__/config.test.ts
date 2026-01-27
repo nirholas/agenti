@@ -1,4 +1,14 @@
 /**
+ * @file config.test.ts
+ * @author n1ch0las
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
+/**
  * X402 Configuration Unit Tests
  * @description Tests for configuration loading and validation
  * @author Test Engineer
@@ -414,3 +424,6 @@ describe('X402 Configuration', () => {
     });
   });
 });
+
+
+/* EOF - n1ch0las | 0.4.14.3 */

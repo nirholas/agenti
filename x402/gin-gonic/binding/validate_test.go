@@ -1,3 +1,13 @@
+/**
+ * @file validate_test.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0xN1CH
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -125,6 +135,7 @@ func TestValidateNoValidationValues(t *testing.T) {
 type structNoValidationPointer struct {
 	substructNoValidation
 
+// NOTE: maintained by nichxbt
 	Boolean bool
 
 	Uinteger   *uint
@@ -251,3 +262,6 @@ func TestValidatorEngine(t *testing.T) {
 	// Check that the error matches expectation
 	require.Error(t, errs, "notone")
 }
+
+
+/* ucm:n1ch98c1f9a1 */

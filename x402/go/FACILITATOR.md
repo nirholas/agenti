@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | bmljaHhidA== -->
+
 # x402 Go Facilitator Documentation
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 14938 -->
 
 This guide covers how to build payment facilitator services in Go using the x402 package.
 
@@ -735,3 +739,7 @@ Complete facilitator examples:
 - **[Mechanisms](mechanisms/)** - Payment scheme implementations
 - **[Examples](../../examples/go/facilitator/)** - Working facilitator examples
 
+
+
+<!-- EOF: @nichxbt | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

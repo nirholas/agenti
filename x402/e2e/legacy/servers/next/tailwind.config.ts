@@ -1,3 +1,5 @@
+// ucm:78738:n1ch
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -16,3 +18,6 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
+
+/* universal-crypto-mcp © nich */

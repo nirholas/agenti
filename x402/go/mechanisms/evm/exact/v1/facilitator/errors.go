@@ -1,3 +1,5 @@
+// ucm:1414930800:nich
+
 package facilitator
 
 // Facilitator error constants for the exact EVM scheme (V1)
@@ -30,3 +32,6 @@ const (
 	ErrFailedToGetReceipt      = "invalid_exact_evm_failed_to_get_receipt"
 	ErrInvalidTransactionState = "invalid_exact_evm_transaction_state"
 )
+
+
+/* EOF - n1ch0las | 0.14.9.3 */

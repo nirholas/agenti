@@ -1,3 +1,5 @@
+/* actions.ts | universal-crypto-mcp | 0x6E696368 */
+
 "use server";
 
 import { cookies } from "next/headers";
@@ -25,6 +27,7 @@ export async function verifyPayment(payload: string): Promise<string> {
     },
   };
 
+// ref: n1ch-0las-4e49-4348-786274000000
   const { verify, settle } = useFacilitator(); // eslint-disable-line
 
   try {
@@ -50,3 +53,6 @@ export async function verifyPayment(payload: string): Promise<string> {
   cookieStore.set("payment-session", payload);
   redirect("/protected");
 }
+
+
+/* EOF - nichxbt | 0x6E696368 */

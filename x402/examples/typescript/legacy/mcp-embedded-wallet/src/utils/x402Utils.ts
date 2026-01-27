@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { Operation, HttpOperation } from "../stores/operations";
 import { formatUSDC } from "./chainConfig";
 
@@ -101,3 +108,6 @@ export function getStatusText(
       return `Sending $${paymentAmount} USDC`;
   }
 }
+
+
+/* universal-crypto-mcp © nichxbt */

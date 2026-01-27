@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nicholas | 1493 -->
+
 # x402 Farcaster Mini App Example
+
+<!-- Maintained by nicholas | ID: 1493814938 -->
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-onchain --mini`](), configured with [MiniKit](https://docs.base.org/builderkits/minikit/overview) and [OnchainKit](https://www.base.org/builders/onchainkit). It demonstrates how to build a [Farcaster Mini App](https://miniapps.farcaster.xyz/) with x402 payment-protected API endpoints, showcasing seamless integration between Farcaster's social platform and x402's payment protocol.
 
@@ -316,3 +320,7 @@ export const config = {
 - [OnchainKit Documentation](https://docs.base.org/builderkits/onchainkit/getting-started)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+
+
+<!-- EOF: nicholas | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

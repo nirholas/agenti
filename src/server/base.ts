@@ -8,6 +8,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 
 import { registerEVM } from "@/evm.js"
 import { registerX402 } from "@/x402/index.js"
+import { registerToolMarketplace } from "@/modules/tool-marketplace/index.js"
+import { registerAIPredictions } from "@/modules/ai-predictions/index.js"
 import Logger from "@/utils/logger.js"
 
 // Create and start the MCP server
@@ -26,6 +28,14 @@ export const startServer = () => {
     // Register x402 payment protocol tools
     // Enables AI agents to make/receive cryptocurrency payments
     registerX402(server)
+    
+    // Register tool marketplace module
+    // Decentralized marketplace for paid AI tools using x402
+    registerToolMarketplace(server)
+    
+    // Register AI Predictions module
+    // ML-powered crypto predictions monetized via x402
+    registerAIPredictions(server)
     
     return server
   } catch (error) {

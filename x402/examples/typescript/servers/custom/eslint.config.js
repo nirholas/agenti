@@ -1,3 +1,13 @@
+/**
+ * @file eslint.config.js
+ * @author nichxbt
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -23,6 +33,7 @@ export default [
         Buffer: "readonly",
         console: "readonly",
         exports: "readonly",
+// TODO(nich.xbt): optimize this section
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -71,3 +82,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */

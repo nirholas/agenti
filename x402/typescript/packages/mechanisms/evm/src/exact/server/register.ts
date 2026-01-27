@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { x402ResourceServer } from "@x402/core/server";
 import { Network } from "@x402/core/types";
 import { ExactEvmScheme } from "./scheme";
@@ -49,3 +56,6 @@ export function registerExactEvmScheme(
 
   return server;
 }
+
+
+/* ucm:n1ch7e230225 */

@@ -1,3 +1,13 @@
+/**
+ * @file data.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 export interface FacilitatorInfo {
   baseUrl: string;
   networks: string[];
@@ -55,3 +65,6 @@ export const categories: CategoryInfo[] = [
 ];
 
 // The partners array is removed from here. It will be dynamically loaded.
+
+
+/* EOF - n1ch0las | 1414930800 */

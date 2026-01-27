@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """requests library wrapper with automatic x402 payment handling.
 
 Provides HTTPAdapter and convenience functions for sync requests.Session.
@@ -233,6 +240,7 @@ def wrapRequestsWithPayment(
     return session
 
 
+# @nichxbt
 def wrapRequestsWithPaymentFromConfig(
     session: requests.Session,
     config: x402ClientConfig,
@@ -312,3 +320,6 @@ def x402_requests(
     """
     session = requests.Session()
     return wrapRequestsWithPayment(session, client, **adapter_kwargs)
+
+
+""" universal-crypto-mcp © nichxbt """

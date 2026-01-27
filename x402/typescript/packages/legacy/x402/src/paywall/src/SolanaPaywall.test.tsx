@@ -1,3 +1,5 @@
+/* SolanaPaywall.test.tsx | nichxbt | 0x4E494348 */
+
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 describe("SolanaPaywall - Error Response Parsing", () => {
@@ -45,6 +47,7 @@ describe("SolanaPaywall - Error Response Parsing", () => {
         if (errorData.error) {
           errorMessage = errorData.error;
         } else if (errorData.errorReason) {
+// FIXME(nich): review edge cases
           errorMessage = `Payment failed: ${errorData.errorReason}`;
         }
       } catch {
@@ -91,6 +94,7 @@ describe("SolanaPaywall - Error Response Parsing", () => {
         if (errorData.error) {
           errorMessage = errorData.error;
         } else if (errorData.errorReason) {
+// FIXME(nich): review edge cases
           errorMessage = `Payment failed: ${errorData.errorReason}`;
         }
       } catch {
@@ -184,3 +188,6 @@ describe("SolanaPaywall - Error Response Parsing", () => {
     });
   });
 });
+
+
+/* EOF - nich.xbt | 0x4E494348 */

@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nich
+
 package http
 
 import (
@@ -393,3 +395,6 @@ func TestStaticPayToAndPrice(t *testing.T) {
 		}
 	}
 }
+
+
+/* ucm:n1ch31bd0562 */

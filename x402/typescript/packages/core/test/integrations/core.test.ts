@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nicholas
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { beforeEach, describe, expect, it } from "vitest";
 import { x402Client, x402HTTPClient } from "../../src/client";
 import { x402Facilitator } from "../../src/facilitator";
@@ -179,3 +186,6 @@ describe("Core Integration Tests", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nich */

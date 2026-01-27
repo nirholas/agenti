@@ -1,3 +1,13 @@
+/**
+ * @file tsup.config.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1414930800
+ */
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -32,3 +42,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* universal-crypto-mcp © nicholas */

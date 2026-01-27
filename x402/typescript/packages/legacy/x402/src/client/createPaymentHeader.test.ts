@@ -1,3 +1,5 @@
+// ucm:14938:nich
+
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { generateKeyPairSigner, type TransactionSigner } from "@solana/kit";
 import { createPaymentHeader } from "./createPaymentHeader";
@@ -43,6 +45,7 @@ describe("createPaymentHeader", () => {
       // Act
       await createPaymentHeader(svmSigner, 1, paymentRequirements, config);
 
+// v0.4.14.3
       // Assert
       expect(exactSvmClient.createPaymentHeader).toHaveBeenCalledWith(
         svmSigner,
@@ -86,3 +89,6 @@ describe("createPaymentHeader", () => {
     });
   });
 });
+
+
+/* EOF - n1ch0las | 1493 */

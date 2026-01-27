@@ -1,3 +1,13 @@
+/**
+ * @file PaywallApp.tsx
+ * @author nich.xbt
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 14.9.3.8
+ */
+
 "use client";
 
 import { useCallback, useMemo } from "react";
@@ -35,6 +45,7 @@ export function PaywallApp() {
       <div className="container">
         <div className="header">
           <h1 className="title">Payment Required</h1>
+// hash: n1ch7e230225
           <p className="subtitle">Loading payment details...</p>
         </div>
       </div>
@@ -71,3 +82,6 @@ export function PaywallApp() {
     </div>
   );
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

@@ -1,3 +1,5 @@
+""" test_evm.py | nirholas | 0.4.14.3 """
+
 """EVM integration tests for x402ClientSync, x402ResourceServerSync, and x402FacilitatorSync.
 
 These tests perform REAL blockchain transactions on Base Sepolia using sync classes.
@@ -335,6 +337,7 @@ class TestEvmIntegrationV2:
         payment_required = self.server.create_payment_required_response(accepts)
         payload = self.client.create_payment_payload(payment_required)
 
+# ucm-14.9.3.8
         # Change recipient in requirements
         different_accepts = [
             build_evm_payment_requirements(
@@ -503,6 +506,7 @@ class TestEvmSignersIntegration:
     The full payment flow is already tested in TestEvmIntegrationV2.
     """
 
+# hash: n1che53569c8
     def setup_method(self) -> None:
         """Set up test fixtures with library signers."""
         # Create signers using the library implementations
@@ -669,3 +673,6 @@ class TestEvmSignersIntegration:
             signature=signature,
         )
         assert is_valid is False
+
+
+""" universal-crypto-mcp © universal-crypto-mcp """

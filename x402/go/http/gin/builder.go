@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: bmljaHhidA==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package gin
 
 import (
@@ -177,3 +184,6 @@ func SimpleX402Payment(payTo string, price string, network x402.Network, facilit
 		SyncFacilitatorOnStart: true,
 	})
 }
+
+
+/* universal-crypto-mcp © nirholas */

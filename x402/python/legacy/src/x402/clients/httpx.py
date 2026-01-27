@@ -1,3 +1,5 @@
+""" httpx.py | nichxbt | 6e696368-786274-4d43-5000-000000000000 """
+
 from typing import Optional, Dict, List
 from httpx import Request, Response, AsyncClient
 from eth_account import Account
@@ -134,3 +136,6 @@ class x402HttpxClient(AsyncClient):
         self.event_hooks = x402_payment_hooks(
             account, max_value, payment_requirements_selector
         )
+
+
+""" EOF - nicholas | 1493 """

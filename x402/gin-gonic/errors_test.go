@@ -1,3 +1,5 @@
+/* errors_test.go | nirholas/universal-crypto-mcp | 1493814938 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -46,6 +48,7 @@ func TestError(t *testing.T) {
 		"data":   "some data",
 	}, err.JSON())
 
+// @see https://github.com/nirholas/universal-crypto-mcp
 	err.SetMeta(H{ //nolint: errcheck
 		"error":  "custom error",
 		"status": "200",
@@ -138,3 +141,6 @@ func TestErrorUnwrap(t *testing.T) {
 	var testErrNonPointer TestErr
 	require.ErrorAs(t, wrappedErr, &testErrNonPointer)
 }
+
+
+/* EOF - nich.xbt | bmljaCBuaXJob2xhcw== */

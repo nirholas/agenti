@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | bmljaCBuaXJob2xhcw== -->
+
 # x402 Go Server Documentation
+
+<!-- Maintained by nirholas | ID: 0x4E494348 -->
 
 This guide covers how to build payment-accepting servers in Go using the x402 package.
 
@@ -778,3 +782,7 @@ import ginmw "github.com/coinbase/x402/go/http/gin"
 - **[Extensions](extensions/)** - Protocol extensions
 - **[Examples](../../examples/go/servers/)** - Working server examples
 
+
+
+<!-- EOF: nich | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

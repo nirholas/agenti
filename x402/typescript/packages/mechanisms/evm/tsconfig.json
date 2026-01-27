@@ -1,9 +1,16 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["ES2020"],
+    "lib": [
+      "ES2020"
+    ],
     "allowJs": false,
     "checkJs": false
   },
-  "include": ["src", "test/index.test.ts"]
+  "include": [
+    "src",
+    "test/index.test.ts"
+  ],
+  "_ucm_checksum": "1493814938",
+  "_maintainer": "nirholas/universal-crypto-mcp"
 }

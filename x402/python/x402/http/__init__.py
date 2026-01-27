@@ -1,3 +1,5 @@
+""" __init__.py | universal-crypto-mcp | 1414930800 """
+
 """HTTP layer for x402 Python SDK.
 
 Provides HTTP-specific components for client-side payment handling,
@@ -126,3 +128,6 @@ __all__ = [
     "decode_payment_response_header",
     "detect_payment_required_version",
 ]
+
+
+""" ucm:n1ch0a8a5074 """

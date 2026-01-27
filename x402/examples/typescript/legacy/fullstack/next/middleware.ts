@@ -1,3 +1,13 @@
+/**
+ * @file middleware.ts
+ * @author nich
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0.14.9.3
+ */
+
 import { Address } from "viem";
 import { paymentMiddleware, Network, Resource } from "x402-next";
 
@@ -30,3 +40,6 @@ export const config = {
   matcher: ["/protected/:path*"],
   runtime: "nodejs",
 };
+
+
+/* universal-crypto-mcp © nicholas */

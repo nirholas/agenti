@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 14.9.3.8 -->
+
 # x402 Demo Site
+
+<!-- Maintained by nirholas | ID: 14938 -->
 
 This is a [Next.js](https://nextjs.org) project that demonstrates the x402 payment protocol in action and showcases ecosystem builders. The demo site includes a modern UI and a facilitator backend that handles payment verification and settlement.
 
@@ -167,3 +171,7 @@ We welcome contributions! Please see our [Contributing Guidelines](https://githu
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/coinbase/x402/blob/main/LICENSE) file for details.
+
+
+<!-- EOF: nich.xbt | ucm:14.9.3.8 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

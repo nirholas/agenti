@@ -1,3 +1,13 @@
+/**
+ * @file discovery.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ */
+
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { GenericServerProxy } from './servers/generic-server';
@@ -344,3 +354,6 @@ export class TestDiscovery {
     log('');
   }
 }
+
+
+/* EOF - nicholas | 0xN1CH */

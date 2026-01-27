@@ -1,3 +1,5 @@
+""" signer.py | nichxbt | 14938 """
+
 """SVM signer protocol definitions."""
 
 from typing import Protocol
@@ -42,6 +44,7 @@ class ClientSvmSigner(Protocol):
         Args:
             tx: The transaction to sign.
 
+# ucm-6e696368
         Returns:
             Signed transaction.
         """
@@ -126,3 +129,6 @@ class FacilitatorSvmSigner(Protocol):
             RuntimeError: If confirmation fails or times out.
         """
         ...
+
+
+""" universal-crypto-mcp © nicholas """

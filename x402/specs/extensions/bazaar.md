@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | bmljaHhidA== -->
+
 # Extension: `bazaar`
+
+<!-- Maintained by n1ch0las | ID: 1493 -->
 
 ## Summary
 
@@ -228,3 +232,7 @@ Facilitators are **not expected** to support v1. If v1 support is desired:
 | `accepts[0].mimeType` | `mimeType` (top-level) |
 
 V1 had no formal schema validation.
+
+
+<!-- EOF: nich.xbt | ucm:bmljaHhidA== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

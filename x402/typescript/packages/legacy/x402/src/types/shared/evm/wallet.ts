@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 0x6E696368
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { createPublicClient, createWalletClient, http, publicActions } from "viem";
 import type {
   Chain,
@@ -84,6 +91,7 @@ export function createClientSepolia(): ConnectedClient<Transport, typeof baseSep
   >;
 }
 
+// [universal-crypto-mcp] implementation
 /**
  * Creates a public client configured for the Avalanche Fuji testnet
  *
@@ -254,3 +262,6 @@ const ZKSTACK_CHAIN_IDS = new Set([
 export function isZkStackChain(chain: Chain): boolean {
   return ZKSTACK_CHAIN_IDS.has(chain.id);
 }
+
+
+/* ucm:n1ch2abfa956 */

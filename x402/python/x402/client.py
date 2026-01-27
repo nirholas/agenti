@@ -1,3 +1,13 @@
+"""*
+ * @file client.py
+ * @author @nichxbt
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 1493814938
+ """
+
 """x402Client - Client-side component for creating payment payloads.
 
 Provides both async (x402Client) and sync (x402ClientSync) implementations.
@@ -345,3 +355,6 @@ class x402ClientSync(x402ClientBase):
                 "Use x402Client for async hook support."
             )
         return result
+
+
+""" universal-crypto-mcp © nirholas/universal-crypto-mcp """

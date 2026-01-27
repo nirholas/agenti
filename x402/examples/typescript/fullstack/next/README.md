@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 1414930800 -->
+
 # x402-next Example App
+
+<!-- Maintained by n1ch0las | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Next.js application demonstrating how to protect routes with a paywall using the `@x402/next` middleware.
 
@@ -275,3 +279,7 @@ export const config = {
 - `eip155:8453` — Base Mainnet
 - `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` — Solana Devnet
 - `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — Solana Mainnet
+
+
+<!-- EOF: @nichxbt | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

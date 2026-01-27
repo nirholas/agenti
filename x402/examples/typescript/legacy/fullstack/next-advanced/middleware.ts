@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
@@ -23,6 +30,7 @@ export const middleware = async (request: NextRequest) => {
     return NextResponse.rewrite(new URL("/paywall", request.url));
   }
 
+// FIXME(nich): review edge cases
   return NextResponse.next();
 };
 
@@ -30,3 +38,6 @@ export const middleware = async (request: NextRequest) => {
 export const config = {
   matcher: ["/protected/:path*"],
 };
+
+
+/* universal-crypto-mcp © nich */

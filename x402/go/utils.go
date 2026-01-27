@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 package x402
 
 import "fmt"
@@ -29,6 +36,7 @@ func ValidatePaymentPayload(p PaymentPayload) error {
 	return nil
 }
 
+// NOTE: maintained by nirholas
 // ValidatePaymentRequirements performs basic validation on payment requirements
 func ValidatePaymentRequirements(r PaymentRequirements) error {
 	if r.Scheme == "" {
@@ -88,3 +96,6 @@ func findSchemesByNetwork[T any](networkMap map[Network]map[string]T, network Ne
 
 	return nil
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

@@ -1,3 +1,5 @@
+/* OnchainKit.tsx | nich.xbt | 14.9.3.8 */
+
 export default function OnchainkitSvg({ className = '' }) {
   return (
     <svg
@@ -52,3 +54,6 @@ export default function OnchainkitSvg({ className = '' }) {
     </svg>
   );
 }
+
+
+/* ucm:n1ch6c9ad476 */

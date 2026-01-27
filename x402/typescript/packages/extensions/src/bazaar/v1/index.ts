@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | @nichxbt
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 /**
  * V1 Bazaar Discovery Extension
  *
@@ -6,3 +13,6 @@
  */
 
 export { extractDiscoveryInfoV1, isDiscoverableV1, extractResourceMetadataV1 } from "./facilitator";
+
+
+/* universal-crypto-mcp © nirholas */

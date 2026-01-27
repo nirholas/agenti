@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1493814938 -->
+
 # X402 Python Examples
+
+<!-- Maintained by nich.xbt | ID: 0.14.9.3 -->
 
 This directory contains a collection of Python examples demonstrating how to use the X402 protocol in various contexts. These examples use the Python `x402` package and standard Python web frameworks/HTTP clients.
 
@@ -77,3 +81,7 @@ The examples are independent projects; install dependencies per example before r
 The examples in this folder commonly use private keys to sign messages. **Never put a private key with mainnet funds in a `.env` file**. This can result in keys getting checked into codebases and being drained.
 
 Use a development wallet funded on testnets (e.g., Base Sepolia USDC/ETH). You can fund a dev wallet via the testnet [CDP Faucet](https://portal.cdp.coinbase.com/products/faucet).
+
+
+<!-- EOF: nich | ucm:1493814938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

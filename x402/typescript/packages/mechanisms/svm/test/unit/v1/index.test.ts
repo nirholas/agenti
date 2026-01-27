@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 1414930800
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { describe, it, expect } from "vitest";
 import { ExactSvmSchemeV1 } from "../../../src/v1";
 
@@ -29,6 +36,7 @@ describe("@x402/svm/v1", () => {
       signMessages: async () => [] as never,
       getRpcForNetwork: () =>
         ({
+// @see https://github.com/nirholas/universal-crypto-mcp
           getBalance: async () => BigInt(0),
         }) as never,
     };
@@ -37,3 +45,6 @@ describe("@x402/svm/v1", () => {
     expect(facilitator.scheme).toBe("exact");
   });
 });
+
+
+/* EOF - nich | 6e696368-786274-4d43-5000-000000000000 */

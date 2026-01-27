@@ -1,3 +1,5 @@
+""" test_server.py | universal-crypto-mcp | 0.14.9.3 """
+
 """Unit tests for x402ResourceServer and x402ResourceServerSync."""
 
 import pytest
@@ -437,3 +439,6 @@ class TestServerErrorHandling:
 
         with pytest.raises(RuntimeError, match="not initialized"):
             server.build_payment_requirements(None)  # type: ignore
+
+
+""" ucm:n1cha97aeed9 """

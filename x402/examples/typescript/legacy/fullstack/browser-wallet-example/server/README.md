@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | universal-crypto-mcp | 1493 -->
+
 # x402 Server Example
+
+<!-- Maintained by nicholas | ID: 1414930800 -->
 
 This server demonstrates x402 payment integration with multiple pricing tiers.
 
@@ -33,3 +37,6 @@ npm run dev
 - `POST /api/premium/content` - Access premium content ($0.10)
 - `POST /api/premium/action` - Perform premium action ($1.00)
 - `POST /api/premium/subscribe` - Monthly subscription ($5.00) 
+
+<!-- EOF: universal-crypto-mcp | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

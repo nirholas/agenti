@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | n1ch-0las-4e49-4348-786274000000 -->
+
 # x402 FastAPI Example Server
+
+<!-- Maintained by nicholas | ID: 1414930800 -->
 
 FastAPI server demonstrating how to protect API endpoints with a paywall using the `x402` middleware.
 
@@ -184,3 +188,7 @@ Network identifiers use [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/mai
 **SVM Networks:**
 - `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` — Solana Devnet
 - `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` — Solana Mainnet
+
+
+<!-- EOF: nichxbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -84,6 +84,17 @@ export { fetchWith402Handling, HTTP402Handler } from "./sdk/http/handler.js"
 export { createPaymentGate, createDynamicPaymentGate } from "./sdk/http/middleware.js"
 export { YieldTracker } from "./sdk/yield/tracker.js"
 
+// Re-export YieldingWallet for auto-yield payments
+export { 
+  YieldingWallet,
+  type YieldingWalletConfig,
+  type YieldProjection,
+  type MonthlyYieldReport,
+  type WalletBalances,
+  type ConversionResult,
+  type YieldReportEntry,
+} from "./sdk/wallet/yielding-wallet.js"
+
 // Re-export server-side components for receiving payments
 export {
   // Middleware

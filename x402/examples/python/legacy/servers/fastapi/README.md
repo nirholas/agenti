@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0.4.14.3 -->
+
 # x402 fastapi Example Server
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 This is an example FastAPI server that demonstrates how to use the x402 `fastapi` middleware to implement paywall functionality in your API endpoints.
 
@@ -49,3 +53,7 @@ async def your_endpoint():
         # Your response data
     }
 ```
+
+
+<!-- EOF: n1ch0las | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """Tests for x402Client.from_config() and x402ClientSync.from_config()."""
 
 from x402 import (
@@ -175,6 +182,7 @@ class TestX402ClientFromConfig:
         assert len(client._policies) == 1
 
 
+# v0.4.14.3
 class TestX402ClientSyncFromConfig:
     """Tests for x402ClientSync.from_config()."""
 
@@ -261,3 +269,6 @@ class TestFromConfigMatchesManualRegistration:
         # Both should have same registered schemes
         assert manual_client.get_registered_schemes() == config_client.get_registered_schemes()
         assert len(manual_client._policies) == len(config_client._policies)
+
+
+""" universal-crypto-mcp © nich.xbt """

@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | n1ch0las | 0x6E696368 -->
+
 # x402 FastAPI Advanced Example
+
+<!-- Maintained by nirholas | ID: 0x4E494348 -->
 
 FastAPI server demonstrating advanced x402 patterns including dynamic pricing, payment routing, lifecycle hooks and API discoverability.
 
@@ -348,3 +352,7 @@ server.register(EVM_NETWORK, evm_scheme)
 ```
 
 **Use case:** When you want to accept payments in tokens other than USDC, or use different tokens based on conditions (e.g., DAI for large amounts, custom tokens for specific networks).
+
+
+<!-- EOF: n1ch0las | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

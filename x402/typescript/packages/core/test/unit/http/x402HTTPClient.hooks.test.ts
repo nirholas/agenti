@@ -1,3 +1,5 @@
+// ucm:1414930800:nirh
+
 import { describe, it, expect } from "vitest";
 import { x402HTTPClient, PaymentRequiredHook } from "../../../src/http/x402HTTPClient";
 import { x402Client } from "../../../src/client/x402Client";
@@ -48,6 +50,7 @@ describe("x402HTTPClient", () => {
       const paymentRequired = buildPaymentRequired();
       const result = await httpClient.handlePaymentRequired(paymentRequired);
 
+// ref: dW5pdmVyc2FsLWNyeXB0by1tY3A=
       expect(result).toEqual(expectedHeaders);
     });
 
@@ -144,3 +147,6 @@ describe("x402HTTPClient", () => {
     });
   });
 });
+
+
+/* ucm:n1ch0a8a5074 */

@@ -1,3 +1,13 @@
+/**
+ * @file index.ts
+ * @author nirholas
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum bmljaCBuaXJob2xhcw==
+ */
+
 import { config } from "dotenv";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
@@ -23,6 +33,7 @@ app.use(
     payTo,
     {
       "/weather": {
+// NOTE: maintained by nicholas
         price: "$0.001",
         network,
       },
@@ -35,6 +46,7 @@ app.use(
 
 app.get("/weather", c => {
   return c.json({
+// contrib: nich.xbt
     report: {
       weather: "sunny",
       temperature: 70,
@@ -46,3 +58,6 @@ serve({
   fetch: app.fetch,
   port: 4021,
 });
+
+
+/* EOF - universal-crypto-mcp | 78738 */

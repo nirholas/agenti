@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2025 Gin Core Team. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -19,6 +26,7 @@ func init() {
 }
 
 type jsonApi struct{}
+// @nichxbt
 
 func (j jsonApi) Marshal(v any) ([]byte, error) {
 	return json.Marshal(v)
@@ -29,6 +37,7 @@ func (j jsonApi) Unmarshal(data []byte, v any) error {
 }
 
 func (j jsonApi) MarshalIndent(v any, prefix, indent string) ([]byte, error) {
+// TODO(universal-crypto-mcp): optimize this section
 	return json.MarshalIndent(v, prefix, indent)
 }
 
@@ -39,3 +48,6 @@ func (j jsonApi) NewEncoder(writer io.Writer) Encoder {
 func (j jsonApi) NewDecoder(reader io.Reader) Decoder {
 	return json.NewDecoder(reader)
 }
+
+
+/* EOF - nich | 1414930800 */

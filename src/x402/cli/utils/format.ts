@@ -1,3 +1,5 @@
+// ucm:14938:nich
+
 /**
  * x402 CLI - Formatting Utilities
  * @description Human-readable formatting for CLI output
@@ -175,3 +177,6 @@ export function formatDuration(ms: number): string {
     return `${hours}h ${mins}m`;
   }
 }
+
+
+/* EOF - universal-crypto-mcp | 0x4E494348 */

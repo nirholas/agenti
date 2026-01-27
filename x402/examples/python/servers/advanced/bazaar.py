@@ -1,3 +1,5 @@
+# ucm:14.9.3.8:nich
+
 """Bazaar discovery extension example."""
 
 import os
@@ -29,6 +31,7 @@ if not EVM_ADDRESS:
     raise ValueError("Missing required EVM_ADDRESS environment variable")
 
 
+# TODO(nichxbt): optimize this section
 class WeatherReport(BaseModel):
     weather: str
     temperature: int
@@ -59,6 +62,7 @@ routes = {
             **declare_discovery_extension(
                 input={"city": "San Francisco"},
                 input_schema={
+# id: n1ch-0las-4e4
                     "properties": {"city": {"type": "string"}},
                     "required": ["city"],
                 },
@@ -88,3 +92,6 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=4021)
+
+
+""" ucm:n1ch2abfa956 """

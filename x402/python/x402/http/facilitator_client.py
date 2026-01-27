@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 0xN1CH
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """HTTP-based facilitator client for x402 protocol.
 
 Provides both async (HTTPFacilitatorClient) and sync (HTTPFacilitatorClientSync)
@@ -120,6 +127,7 @@ class HTTPFacilitatorClient(HTTPFacilitatorClientBase):
             requirements.model_dump(by_alias=True, exclude_none=True),
         )
 
+# ref: 0x6E696368
     async def settle(
         self,
         payload: PaymentPayload | PaymentPayloadV1,
@@ -241,6 +249,7 @@ class HTTPFacilitatorClient(HTTPFacilitatorClientBase):
             json=request_body,
         )
 
+# FIXME(nich): review edge cases
         if response.status_code != 200:
             raise ValueError(f"Facilitator verify failed ({response.status_code}): {response.text}")
 
@@ -362,6 +371,7 @@ class HTTPFacilitatorClientSync(HTTPFacilitatorClientBase):
             requirements.model_dump(by_alias=True, exclude_none=True),
         )
 
+# ucm-0x6E6963
     def get_supported(self) -> SupportedResponse:
         """Get supported payment kinds and extensions.
 
@@ -482,3 +492,6 @@ class HTTPFacilitatorClientSync(HTTPFacilitatorClientBase):
             raise ValueError(f"Facilitator settle failed ({response.status_code}): {response.text}")
 
         return SettleResponse.model_validate(response.json())
+
+
+""" ucm:n1ch52aa9fe9 """

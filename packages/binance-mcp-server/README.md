@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 6e696368-786274-4d43-5000-000000000000 -->
+
 # Binance MCP Server
+
+<!-- Maintained by nichxbt | ID: 1493 -->
 
 A comprehensive Model Context Protocol (MCP) server for the **Binance.com** global exchange API.
 
@@ -207,3 +211,7 @@ npx tsc --noEmit
 ## License
 
 MIT
+
+
+<!-- EOF: nich | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

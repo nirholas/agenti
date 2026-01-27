@@ -1,3 +1,13 @@
+/**
+ * @file x402Specs.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 @nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 1493814938
+ */
+
 import { z } from "zod";
 import { NetworkSchema } from "../shared";
 import { SvmAddressRegex } from "../shared/svm";
@@ -300,3 +310,6 @@ export class SettleError extends Error {
     this.network = response.network;
   }
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

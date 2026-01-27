@@ -1,3 +1,5 @@
+// ucm:78738:nich
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -20,3 +22,6 @@ const config: Config = {
   plugins: [],
 };
 export default config;
+
+
+/* ucm:n1ch7e230225 */

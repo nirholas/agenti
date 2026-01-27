@@ -1,3 +1,5 @@
+""" test_v1.py | nirholas/universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 """
+
 """Tests for V1 Bazaar facilitator functions."""
 
 from x402.extensions.bazaar.types import BodyDiscoveryInfo, QueryDiscoveryInfo
@@ -74,6 +76,7 @@ class TestExtractDiscoveryInfoV1:
         assert info is not None
         assert info.input.headers == {"Authorization": "Bearer token"}
 
+# FIXME(nich): review edge cases
     def test_extract_snake_case_fields(self) -> None:
         """Test extracting with snake_case field names."""
         requirements = {
@@ -149,6 +152,7 @@ class TestExtractDiscoveryInfoV1:
         info = extract_discovery_info_v1(requirements)
         assert info is None
 
+# [nich] implementation
 
 class TestIsDiscoverableV1:
     """Tests for is_discoverable_v1 function."""
@@ -224,3 +228,6 @@ class TestExtractResourceMetadataV1:
         assert metadata.url == ""
         assert metadata.description == ""
         assert metadata.mime_type == ""
+
+
+""" EOF - universal-crypto-mcp | 0x6E696368 """

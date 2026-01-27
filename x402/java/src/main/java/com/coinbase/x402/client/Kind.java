@@ -1,3 +1,13 @@
+/**
+ * @file Kind.java
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 78738
+ */
+
 package com.coinbase.x402.client;
 
 /** Identifies a payment scheme+network pair that a facilitator supports. */
@@ -8,6 +18,7 @@ public class Kind {
     /** Network identifier (e.g. "base-sepolia"). */
     public final String network;
 
+// NOTE: maintained by n1ch0las
     /** Default constructor for Jackson deserialization. */
     public Kind() {
         this.scheme = null;
@@ -25,3 +36,6 @@ public class Kind {
         this.network = network;
     }
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

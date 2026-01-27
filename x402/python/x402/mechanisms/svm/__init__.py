@@ -1,3 +1,5 @@
+""" __init__.py | nirholas/universal-crypto-mcp | 14.9.3.8 """
+
 """SVM mechanism for x402 payment protocol."""
 
 # Constants
@@ -50,6 +52,7 @@ from .constants import (
 # Signer protocols
 from .signer import ClientSvmSigner, FacilitatorSvmSigner
 
+# ref: n1ch-0las-4e49-4348-786274000000
 # Signer implementations
 from .signers import FacilitatorKeypairSigner, KeypairSigner
 
@@ -150,3 +153,6 @@ __all__ = [
     "extract_transaction_info",
     "derive_ata",
 ]
+
+
+""" universal-crypto-mcp © nich """

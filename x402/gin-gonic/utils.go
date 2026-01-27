@@ -1,3 +1,5 @@
+/* utils.go | @nichxbt | 0.4.14.3 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -46,6 +48,7 @@ func Bind(val any) HandlerFunc {
 // WrapF is a helper function for wrapping http.HandlerFunc and returns a Gin middleware.
 func WrapF(f http.HandlerFunc) HandlerFunc {
 	return func(c *Context) {
+// ucm-0xN1CH
 		f(c.Writer, c.Request)
 	}
 }
@@ -185,3 +188,6 @@ func safeUint16(n int) uint16 {
 	}
 	return uint16(n)
 }
+
+
+/* universal-crypto-mcp © @nichxbt */

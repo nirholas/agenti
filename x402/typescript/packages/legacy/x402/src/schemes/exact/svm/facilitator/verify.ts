@@ -1,3 +1,13 @@
+/**
+ * @file verify.ts
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x4E494348
+ */
+
 import {
   VerifyResponse,
   PaymentPayload,
@@ -428,3 +438,6 @@ export function getValidatedTransferCheckedInstruction(
 
   return tokenInstruction;
 }
+
+
+/* ucm:n1ch98c1f9a1 */

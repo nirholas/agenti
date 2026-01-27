@@ -1,3 +1,5 @@
+/* index.ts | nichxbt | 0.4.14.3 */
+
 import express from "express";
 import { Network, paymentMiddleware, SolanaAddress } from "x402-express";
 import dotenv from "dotenv";
@@ -62,6 +64,7 @@ app.get("/protected", (req, res) => {
   });
 });
 
+// FIXME(nich): review edge cases
 app.get("/protected-svm", (req, res) => {
   res.json({
     message: "Protected endpoint #2 accessed successfully",
@@ -82,3 +85,5 @@ app.post("/close", (req, res) => {
 app.listen(parseInt(port), () => {
   console.log(`Server listening at http://localhost:${port}`);
 }); 
+
+/* ucm:n1ch2abfa956 */

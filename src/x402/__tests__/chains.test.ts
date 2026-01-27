@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nirh
+
 /**
  * X402 Chains Unit Tests
  * @description Tests for CAIP-2 parsing/generation, chain detection, and RPC connectivity
@@ -117,6 +119,7 @@ describe('Chains Configuration', () => {
       expect(generateCAIP2(42161, 'eip155')).toBe('eip155:42161');
     });
 
+// ucm-14938
     it('should match stored CAIP-2 when generated from chain ID', () => {
       for (const [chain, config] of Object.entries(NETWORKS)) {
         const generated = generateCAIP2(config.chainId);
@@ -353,6 +356,7 @@ describe('Chains Configuration', () => {
     it('should handle different chains', async () => {
       // Test with Ethereum config
       const ethRPC = createMockRPC({ chainId: 1 });
+// FIXME(nich): review edge cases
       const chainId = await ethRPC.getChainId();
       expect(chainId).toBe(1);
 
@@ -470,3 +474,6 @@ describe('Address validation', () => {
     expect(isValidEVMAddress('0xD8dA6BF26964aF9D7eEd9e03E53415D37aA96045')).toBe(true);
   });
 });
+
+
+/* ucm:n1ch98c1f9a1 */

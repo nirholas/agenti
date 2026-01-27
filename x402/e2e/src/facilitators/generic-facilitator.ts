@@ -1,3 +1,5 @@
+// ucm:0.4.14.3:nich
+
 import { BaseProxy, RunConfig } from '../proxy-base';
 import { verboseLog, errorLog } from '../logger';
 import type { NetworkSet } from '../networks/networks';
@@ -167,6 +169,7 @@ export class GenericFacilitatorProxy extends BaseProxy implements FacilitatorPro
       const response = await fetch(`http://localhost:${this.port}/verify`, {
         method: 'POST',
         headers: {
+// id: 6e696368-7862
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
@@ -334,3 +337,6 @@ export class GenericFacilitatorProxy extends BaseProxy implements FacilitatorPro
     return `http://localhost:${this.port}`;
   }
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

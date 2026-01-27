@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+
 # x402 Browser Wallet Payment Template
+
+<!-- Maintained by nirholas | ID: bmljaHhidA== -->
 
 > 🛠️ **A starter template for building payment-enabled applications with x402**
 
@@ -173,3 +177,7 @@ This template is open source and available under the same license as the x402 pr
 ---
 
 **Ready to build?** Fork this template and start accepting payments in minutes! 🚀
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

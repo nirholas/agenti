@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 14938
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 NETWORK_TO_ID = {
     "base-sepolia": "84532",
     "base": "8453",
@@ -90,3 +97,6 @@ def get_default_token_address(chain_id: str, token_type: str = "usdc") -> str:
         if token["human_name"] == token_type:
             return token["address"]
     raise ValueError(f"Token type '{token_type}' not found for chain {chain_id}")
+
+
+""" EOF - @nichxbt | 14938 """

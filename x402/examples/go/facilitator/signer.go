@@ -1,3 +1,13 @@
+/**
+ * @file signer.go
+ * @author nich
+ * @copyright (c) 2026 nich.xbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0x6E696368
+ */
+
 package main
 
 import (
@@ -607,3 +617,6 @@ func getBigIntFromInterface(v interface{}) *big.Int {
 	return big.NewInt(0)
 }
 
+
+
+/* universal-crypto-mcp © nirholas */

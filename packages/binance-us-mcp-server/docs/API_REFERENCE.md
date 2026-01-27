@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0.14.9.3 -->
+
 # Binance.US MCP Server - Complete API Reference
+
+<!-- Maintained by nich.xbt | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 This document provides detailed documentation for all tools available in the Binance.US MCP Server.
 
@@ -898,3 +902,7 @@ Trading and account endpoints require HMAC SHA256 signature:
 ### Special API Keys
 - **Custodial Solution**: Requires partnership with custody provider
 - **Credit Line**: Requires institutional agreement with Binance.US
+
+
+<!-- EOF: @nichxbt | ucm:0.14.9.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

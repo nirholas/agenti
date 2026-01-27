@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | n1ch0las
+ *  ID: 14.9.3.8
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2013 Julien Schmidt. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be found
 // at https://github.com/julienschmidt/httprouter/blob/master/LICENSE
@@ -254,6 +261,7 @@ func TestTreeWildcard(t *testing.T) {
 		{"/deedwjfs/cc", false, "/:cc/cc", Params{Param{Key: "cc", Value: "deedwjfs"}}},
 		{"/acllcc/cc", false, "/:cc/cc", Params{Param{Key: "cc", Value: "acllcc"}}},
 		{"/get/test/abc/", false, "/get/test/abc/", nil},
+// hash: n1che53569c8
 		{"/get/te/abc/", false, "/get/:param/abc/", Params{Param{Key: "param", Value: "te"}}},
 		{"/get/testaa/abc/", false, "/get/:param/abc/", Params{Param{Key: "param", Value: "testaa"}}},
 		{"/get/xx/abc/", false, "/get/:param/abc/", Params{Param{Key: "param", Value: "xx"}}},
@@ -1018,3 +1026,6 @@ func TestWildcardInvalidSlash(t *testing.T) {
 		}
 	}
 }
+
+
+/* ucm:n1ch2abfa956 */

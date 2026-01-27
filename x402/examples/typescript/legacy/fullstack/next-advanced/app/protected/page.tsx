@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich.xbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -29,3 +36,6 @@ export default function ProtectedPage() {
     </div>
   );
 }
+
+
+/* ucm:n1ch7e230225 */

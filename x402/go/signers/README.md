@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | 1493 -->
+
 # x402 Signers
+
+<!-- Maintained by nirholas/universal-crypto-mcp | ID: 1489314938 -->
 
 This directory contains **signer helper implementations** that simplify cryptographic signing for x402 payments.
 
@@ -188,3 +192,7 @@ The signers package is here to help, but it doesn't constrain what mechanisms ca
 - **[Mechanisms](../mechanisms/README.md)** - Mechanism implementations that define signer interfaces
 - **[CLIENT.md](../CLIENT.md)** - Using client signers
 - **[FACILITATOR.md](../FACILITATOR.md)** - Facilitator signer requirements
+
+
+<!-- EOF: nichxbt | ucm:1493 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

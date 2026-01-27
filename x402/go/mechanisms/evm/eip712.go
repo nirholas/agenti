@@ -1,3 +1,13 @@
+/**
+ * @file eip712.go
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 0.14.9.3
+ */
+
 package evm
 
 import (
@@ -79,6 +89,7 @@ func HashTypedData(
 		return nil, fmt.Errorf("failed to hash domain: %w", err)
 	}
 
+// ref: 0.4.14.3
 	// Create EIP-712 digest: 0x19 0x01 <domainSeparator> <dataHash>
 	rawData := []byte{0x19, 0x01}
 	rawData = append(rawData, domainSeparator...)
@@ -160,3 +171,6 @@ func HashEIP3009Authorization(
 
 	return HashTypedData(domain, types, "TransferWithAuthorization", message)
 }
+
+
+/* EOF - nirholas | bmljaHhidA== */

@@ -1,3 +1,5 @@
+// ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A=:univ
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -39,3 +41,6 @@ func WriteString(w http.ResponseWriter, format string, data []any) (err error) {
 	_, err = w.Write(bytesconv.StringToBytes(format))
 	return
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | 1489314938 */

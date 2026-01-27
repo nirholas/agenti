@@ -1,3 +1,13 @@
+/**
+ * @file scheme.go
+ * @author n1ch0las
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0x6E696368
+ */
+
 package facilitator
 
 import (
@@ -440,3 +450,6 @@ func (f *ExactEvmSchemeV1) deploySmartWallet(
 
 	return nil
 }
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

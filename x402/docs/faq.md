@@ -1,3 +1,5 @@
+<!-- universal-crypto-mcp | nich | 0xN1CH -->
+
 ---
 title: "FAQ"
 ---
@@ -145,3 +147,7 @@ We acknowledge that the repo is primarily under Coinbase ownership today. This i
 
 • Reach out in the [Discord channel](https://discord.gg/invite/cdp)\
 • Open a GitHub Discussion or Issue in the [x402 repo](https://github.com/coinbase/x402)
+
+
+<!-- EOF: nich | ucm:0xN1CH -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

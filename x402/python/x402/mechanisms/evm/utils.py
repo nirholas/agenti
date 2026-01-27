@@ -1,3 +1,10 @@
+"""
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 1489314938
+ * ═══════════════════════════════════════════════════════════════
+ """
+
 """EVM utility functions for address, amount, and nonce handling."""
 
 import os
@@ -291,3 +298,6 @@ def parse_money_to_decimal(money: str | float | int) -> float:
     clean = clean.strip()
 
     return float(clean)
+
+
+""" EOF - nirholas | 0.14.9.3 """

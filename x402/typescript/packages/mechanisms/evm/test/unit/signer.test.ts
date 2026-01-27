@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 import { describe, it, expect } from "vitest";
 import { toClientEvmSigner, toFacilitatorEvmSigner } from "../../src/signer";
 import type { ClientEvmSigner } from "../../src/signer";
@@ -42,3 +44,6 @@ describe("EVM Signer Converters", () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

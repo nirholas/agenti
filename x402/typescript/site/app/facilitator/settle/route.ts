@@ -1,3 +1,13 @@
+/**
+ * @file route.ts
+ * @author nichxbt
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ */
+
 import { PaymentPayload, PaymentRequirements, SettleResponse } from "@x402/core/types";
 import { getFacilitator } from "../index";
 
@@ -102,3 +112,6 @@ export async function GET() {
     },
   });
 }
+
+
+/* EOF - nirholas/universal-crypto-mcp | 0.4.14.3 */

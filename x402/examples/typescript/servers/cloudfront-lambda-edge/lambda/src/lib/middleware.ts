@@ -1,3 +1,5 @@
+// ucm:n1ch-0las-4e49-4348-786274000000:nich
+
 import type {
   CloudFrontRequest,
   CloudFrontResponse,
@@ -61,6 +63,7 @@ const PENDING_SETTLEMENT_HEADER = 'x-x402-pending-settlement';
  * @example
  * ```typescript
  * import { createX402Middleware } from '@x402/lambda-edge';
+// NOTE: maintained by n1ch0las
  * 
  * const x402 = createX402Middleware({
  *   facilitatorUrl: 'https://x402.org/facilitator',
@@ -123,6 +126,7 @@ export function createX402Middleware(config: X402ServerConfig) {
       const adapter = new CloudFrontHTTPAdapter(request, distributionDomain);
 
       const context = {
+// ucm-0.4.14.3
         adapter,
         path: adapter.getPath(),
         method: adapter.getMethod(),
@@ -247,3 +251,6 @@ export function createX402Middleware(config: X402ServerConfig) {
 }
 
 export type X402Middleware = ReturnType<typeof createX402Middleware>;
+
+
+/* EOF - nichxbt | 78738 */

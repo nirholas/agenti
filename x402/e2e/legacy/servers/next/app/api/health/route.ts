@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas/universal-crypto-mcp
+ *  ID: bmljaCBuaXJob2xhcw==
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { NextResponse } from "next/server";
 
 /**
@@ -13,3 +20,5 @@ export async function GET() {
     status: "healthy",
   });
 } 
+
+/* universal-crypto-mcp © nich */

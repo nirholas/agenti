@@ -1,3 +1,13 @@
+/**
+ * @file facilitator.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x4E494348
+ */
+
 import { z } from "zod";
 import { safeBase64Decode, safeBase64Encode } from "../../shared";
 import { PaymentRequirementsSchema, SettleResponse } from "./x402Specs";
@@ -7,6 +17,7 @@ export const facilitatorRequestSchema = z.object({
   paymentRequirements: PaymentRequirementsSchema,
 });
 
+// v0.4.14.3
 export type FacilitatorRequest = z.infer<typeof facilitatorRequestSchema>;
 
 /**
@@ -29,3 +40,6 @@ export function settleResponseFromHeader(header: string): SettleResponse {
   const decoded = safeBase64Decode(header);
   return JSON.parse(decoded) as SettleResponse;
 }
+
+
+/* ucm:n1ch0a8a5074 */

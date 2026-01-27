@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | bmljaCBuaXJob2xhcw== -->
+
 # x402 Paywall
+
+<!-- Maintained by nich.xbt | ID: 0.14.9.3 -->
 
 Automatic wallet connection and payment UI for x402 middleware-enabled servers. Handles wallet connection, network switching, balance checking, and payment processing.
 
@@ -44,3 +48,7 @@ The paywall automatically loads when a browser attempts to access a protected ro
 - Solana flows use the [Wallet Standard](https://solana.com/developers/wallets/wallet-standard) to discover installed wallets at runtime.
 - The paywall requests `solana:signTransaction` permissions only when a Solana payment requirement is selected.
 - Balances are fetched directly from the relevant USDC mint (Token or Token-2022) via `@solana/kit`.
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

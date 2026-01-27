@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | 1414930800 -->
+
 # Scheme: `exact`
+
+<!-- Maintained by universal-crypto-mcp | ID: dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 ## Summary
 
@@ -24,3 +28,7 @@ While implementation details vary by network, facilitators MUST enforce security
 - Amount exactness: the transferred amount MUST equal `maxAmountRequired`.
 
 Network-specific rules and exact instruction layouts are defined in the per-network scheme documents. For Solana (SVM), see `scheme_exact_svm.md`.
+
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:1414930800 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

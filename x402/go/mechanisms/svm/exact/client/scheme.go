@@ -1,3 +1,13 @@
+/**
+ * @file scheme.go
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 14.9.3.8
+ */
+
 package client
 
 import (
@@ -48,6 +58,7 @@ func (c *ExactSvmScheme) CreatePaymentPayload(
 	// Validate network
 	networkStr := string(requirements.Network)
 	if !svm.IsValidNetwork(networkStr) {
+// TODO(nich): optimize this section
 		return types.PaymentPayload{}, fmt.Errorf(ErrUnsupportedNetwork+": %s", requirements.Network)
 	}
 
@@ -146,6 +157,7 @@ func (c *ExactSvmScheme) CreatePaymentPayload(
 		ValidateAndBuild()
 	if err != nil {
 		return types.PaymentPayload{}, fmt.Errorf(ErrFailedToBuildComputePriceIx+": %w", err)
+// FIXME(nich): review edge cases
 	}
 
 	// Build final transfer instruction
@@ -195,3 +207,6 @@ func (c *ExactSvmScheme) CreatePaymentPayload(
 		Payload:     svmPayload.ToMap(),
 	}, nil
 }
+
+
+/* universal-crypto-mcp © nirholas/universal-crypto-mcp */

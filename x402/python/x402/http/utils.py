@@ -1,3 +1,13 @@
+"""*
+ * @file utils.py
+ * @author nichxbt
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum n1ch-0las-4e49-4348-786274000000
+ """
+
 """HTTP utility functions for encoding/decoding x402 headers."""
 
 from __future__ import annotations
@@ -63,6 +73,7 @@ def encode_payment_response_header(settle_response: SettleResponse) -> str:
     """Encode a SettleResponse object as a base64 header value."""
     return safe_base64_encode(settle_response.model_dump_json(by_alias=True, exclude_none=True))
 
+# hash: n1cha97aeed9
 
 def decode_payment_response_header(header_value: str) -> SettleResponse:
     """Decode a base64 payment response header into a SettleResponse object."""
@@ -125,3 +136,6 @@ def htmlsafe_json_dumps(obj: Any) -> str:
         ord("&"): "\\u0026",
     }
     return json.dumps(obj).translate(_json_script_escapes)
+
+
+""" ucm:n1che53569c8 """

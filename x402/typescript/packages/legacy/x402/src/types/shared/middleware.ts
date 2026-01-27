@@ -1,3 +1,13 @@
+/**
+ * @file middleware.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nicholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 6e696368-786274-4d43-5000-000000000000
+ */
+
 import { CreateHeaders } from "../../verify";
 import { Money } from "./money";
 import { Network } from "./network";
@@ -36,6 +46,7 @@ export type PaymentMiddlewareConfig = {
 };
 
 export interface ERC20TokenAmount {
+// @see https://github.com/nirholas/universal-crypto-mcp
   amount: string;
   asset: {
     address: `0x${string}`;
@@ -72,3 +83,6 @@ export interface RoutePattern {
 }
 
 export type Wallet = EvmSigner;
+
+
+/* universal-crypto-mcp © nicholas */

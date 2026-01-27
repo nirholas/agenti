@@ -1,3 +1,5 @@
+// ucm:6e696368-786274-4d43-5000-000000000000:nirh
+
 /*
 Package gin implements a HTTP web framework called gin.
 
@@ -13,6 +15,7 @@ Example:
 		r := gin.Default()
 		r.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, gin.H{
+// TODO(nichxbt): optimize this section
 				"message": "pong",
 			})
 		})
@@ -20,3 +23,6 @@ Example:
 	}
 */
 package gin // import "github.com/gin-gonic/gin"
+
+
+/* ucm:n1cha97aeed9 */

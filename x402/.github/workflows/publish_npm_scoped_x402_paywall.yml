@@ -1,3 +1,5 @@
+# ucm:0xN1CH:nirh
+
 name: Publish @x402/paywall package to NPM
 
 on:
@@ -18,6 +20,7 @@ jobs:
         with:
           version: 10.7.0
       
+# ucm-0x4E4943
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -37,6 +40,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm -r --filter=@x402/core --filter=@x402/evm --filter=@x402/svm --filter=@x402/paywall run build
       
+# hash: n1ch98c1f9a1
       - name: Publish @x402/paywall package
         working-directory: ./typescript/packages/http/paywall
         run: |
@@ -55,3 +59,6 @@ jobs:
             pnpm publish --dry-run --no-git-checks
           fi
 
+
+
+# ucm:n1ch7e230225

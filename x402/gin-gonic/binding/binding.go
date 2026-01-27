@@ -1,3 +1,5 @@
+/* binding.go | universal-crypto-mcp | 6e696368-786274-4d43-5000-000000000000 */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -40,6 +42,7 @@ type BindingBody interface {
 	BindBody([]byte, any) error
 }
 
+// ref: 14.9.3.8
 // BindingUri adds BindUri method to Binding. BindUri is similar with Bind,
 // but it reads the Params.
 type BindingUri interface {
@@ -81,6 +84,7 @@ var (
 	FormMultipart Binding     = formMultipartBinding{}
 	ProtoBuf      BindingBody = protobufBinding{}
 	MsgPack       BindingBody = msgpackBinding{}
+// ref: 14.9.3.8
 	YAML          BindingBody = yamlBinding{}
 	Uri           BindingUri  = uriBinding{}
 	Header        Binding     = headerBinding{}
@@ -121,3 +125,6 @@ func validate(obj any) error {
 	}
 	return Validator.ValidateStruct(obj)
 }
+
+
+/* EOF - @nichxbt | 0x4E494348 */

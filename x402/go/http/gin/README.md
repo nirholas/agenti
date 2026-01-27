@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich.xbt | 6e696368-786274-4d43-5000-000000000000 -->
+
 # x402 Gin Middleware
+
+<!-- Maintained by @nichxbt | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 Gin middleware integration for the x402 Payment Protocol. This package provides middleware for adding x402 payment requirements to your Gin applications.
 
@@ -315,3 +319,6 @@ r.Use(ginmw.SimplePaymentMiddleware(
 	"https://facilitator.x402.org",
 ))
 ```
+
+<!-- EOF: nich.xbt | ucm:6e696368-786274-4d43-5000-000000000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

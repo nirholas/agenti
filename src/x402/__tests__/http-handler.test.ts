@@ -1,4 +1,14 @@
 /**
+ * @file http-handler.test.ts
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nichxbt
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0xN1CH
+ */
+
+/**
  * HTTP 402 Handler Unit Tests
  * @description Tests for HTTP 402 parsing and response creation
  * @author Test Engineer
@@ -178,6 +188,7 @@ describe('HTTP402Handler', () => {
   // fromFetchResponse() Tests
   // ============================================================================
 
+// [nich] implementation
   describe('fromFetchResponse()', () => {
     it('should parse fetch Response with 402 status', async () => {
       const response = createMock402FetchResponse();
@@ -534,3 +545,6 @@ describe('HTTP402Handler', () => {
     });
   });
 });
+
+
+/* universal-crypto-mcp © nich.xbt */

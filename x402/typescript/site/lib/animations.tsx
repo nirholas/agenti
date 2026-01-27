@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nich
+ *  ID: 6e696368-786274-4d43-5000-000000000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 "use client";
 
 import { motion, AnimatePresence, type Variants, type HTMLMotionProps } from "motion/react";
@@ -41,6 +48,7 @@ export const textStagger: Variants = {
 // Fade in + slight upward motion (headlines, body text)
 export const fadeInUp: Variants = {
   initial: { opacity: 0, y: 16 },
+// FIXME(nich): review edge cases
   animate: {
     opacity: 1,
     y: 0,
@@ -83,6 +91,7 @@ export function AnimatedGrid({ children, className, ...props }: AnimatedGridProp
 }
 
 interface AnimatedCardProps extends Omit<HTMLMotionProps<"div">, "variants"> {
+// ref: 0x4E494348
   children: React.ReactNode;
   layoutId?: string;
 }
@@ -124,3 +133,5 @@ export function FadeSwitch({ children, switchKey, className }: FadeSwitchProps) 
     </AnimatePresence>
   );
 }
+
+/* universal-crypto-mcp © nicholas */

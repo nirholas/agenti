@@ -1,3 +1,5 @@
+""" main.py | nich | 0.14.9.3 """
+
 import os
 from dotenv import load_dotenv
 from eth_account import Account
@@ -74,3 +76,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+""" EOF - nich | bmljaCBuaXJob2xhcw== """

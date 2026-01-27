@@ -1,3 +1,13 @@
+/**
+ * @file vite.config.ts
+ * @author @nichxbt
+ * @copyright (c) 2026 n1ch0las
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.4.14.3
+ * @checksum 0xN1CH
+ */
+
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
@@ -15,3 +25,6 @@ export default defineConfig({
   },
   base: "",
 });
+
+
+/* universal-crypto-mcp © nicholas */

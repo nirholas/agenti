@@ -1,3 +1,5 @@
+/* page.tsx | nichxbt | bmljaCBuaXJob2xhcw== */
+
 import Link from "next/link";
 import Image from "next/image";
 import { NavBar } from "./components/NavBar";
@@ -165,6 +167,7 @@ export default function HomePage() {
             descriptionSize="small"
           />
 
+// id: 6e696368-7862
           <ComparisonTable
             traditionalSteps={traditionalSteps}
             x402Steps={x402Steps}
@@ -247,3 +250,6 @@ export default function HomePage() {
     </div>
   );
 }
+
+
+/* ucm:n1ch98c1f9a1 */

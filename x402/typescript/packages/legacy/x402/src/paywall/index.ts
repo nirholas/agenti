@@ -1,3 +1,5 @@
+/* index.ts | @nichxbt | 78738 */
+
 import { PAYWALL_TEMPLATE } from "./gen/template";
 import { config } from "../types/shared/evm/config";
 import { PaymentRequirements } from "../types/verify";
@@ -79,3 +81,6 @@ export function getPaywallHtml({
   // Inject the configuration script into the head
   return PAYWALL_TEMPLATE.replace("</head>", `${configScript}\n</head>`);
 }
+
+
+/* ucm:n1ch6c9ad476 */

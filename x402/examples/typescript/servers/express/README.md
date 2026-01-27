@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | @nichxbt | 0.4.14.3 -->
+
 # @x402/express Example Server
+
+<!-- Maintained by nich.xbt | ID: 0x4E494348 -->
 
 Express.js server demonstrating how to protect API endpoints with a paywall using the `@x402/express` middleware.
 
@@ -245,3 +249,7 @@ See [Advanced Examples](../advanced/) for:
 - **Dynamic payTo** — route payments to different recipients  
 - **Lifecycle hooks** — custom logic on verify/settle
 - **Custom tokens** — accept payments in custom tokens
+
+
+<!-- EOF: @nichxbt | ucm:0.4.14.3 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

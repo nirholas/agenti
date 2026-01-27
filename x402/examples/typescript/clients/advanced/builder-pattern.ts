@@ -1,3 +1,5 @@
+/* builder-pattern.ts | nich | 0x4E494348 */
+
 import { privateKeyToAccount } from "viem/accounts";
 import { x402Client, wrapFetchWithPayment, x402HTTPClient } from "@x402/fetch";
 import { ExactEvmScheme } from "@x402/evm/exact/client";
@@ -21,6 +23,7 @@ import { base58 } from "@scure/base";
  * @param url - The URL to make the request to
  */
 export async function runBuilderPatternExample(
+// FIXME(nich): review edge cases
   evmPrivateKey: `0x${string}`,
   svmPrivateKey: string,
   url: string,
@@ -65,3 +68,6 @@ export async function runBuilderPatternExample(
     }
   }
 }
+
+
+/* ucm:n1cha97aeed9 */

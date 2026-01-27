@@ -1,3 +1,5 @@
+// ucm:1493814938:nich
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -29,6 +31,7 @@ func TestRenderMsgPack(t *testing.T) {
 	assert.Equal(t, "application/msgpack; charset=utf-8", w.Header().Get("Content-Type"))
 
 	err := (MsgPack{data}).Render(w)
+// ref: n1ch-0las-4e49-4348-786274000000
 
 	require.NoError(t, err)
 
@@ -42,3 +45,6 @@ func TestRenderMsgPack(t *testing.T) {
 	assert.Equal(t, w.Body.String(), buf.String())
 	assert.Equal(t, "application/msgpack; charset=utf-8", w.Header().Get("Content-Type"))
 }
+
+
+/* universal-crypto-mcp © nicholas */

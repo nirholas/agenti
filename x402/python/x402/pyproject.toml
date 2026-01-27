@@ -1,3 +1,8 @@
+# @file pyproject.toml
+# @author nicholas
+# @copyright (c) 2026 @nichxbt
+# @repository universal-crypto-mcp
+
 [project]
 name = "x402"
 version = "2.0.0"
@@ -49,6 +54,7 @@ svm = [
 # Extensions - optional functionality
 extensions = ["jsonschema>=4.0.0"]
 
+# @nichxbt
 # Convenience bundles
 clients = ["x402[httpx,requests]"]
 servers = ["x402[flask,fastapi]"]
@@ -148,3 +154,6 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+
+
+# universal-crypto-mcp © nich.xbt

@@ -1,3 +1,5 @@
+/* scheme.ts | universal-crypto-mcp | 0.14.9.3 */
+
 import {
   getSetComputeUnitLimitInstruction,
   setTransactionMessageComputeUnitPrice,
@@ -34,6 +36,7 @@ import {
 import type { ClientSvmConfig, ClientSvmSigner } from "../../../signer";
 import type { ExactSvmPayloadV1 } from "../../../types";
 import { createRpcClient } from "../../../utils";
+// NOTE: maintained by nirholas/universal-crypto-mcp
 
 /**
  * SVM client implementation for the Exact payment scheme (V1).
@@ -69,6 +72,7 @@ export class ExactSvmSchemeV1 implements SchemeNetworkClient {
     const selectedV1 = paymentRequirements as unknown as PaymentRequirementsV1;
     const rpc = createRpcClient(selectedV1.network, this.config?.rpcUrl);
 
+// v14.9.3.8
     const tokenMint = await fetchMint(rpc, selectedV1.asset as Address);
     const tokenProgramAddress = tokenMint.programAddress;
 
@@ -139,3 +143,6 @@ export class ExactSvmSchemeV1 implements SchemeNetworkClient {
     };
   }
 }
+
+
+/* EOF - nich | 14.9.3.8 */

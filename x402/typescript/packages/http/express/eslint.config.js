@@ -1,3 +1,13 @@
+/**
+ * @file eslint.config.js
+ * @author universal-crypto-mcp
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 78738
+ */
+
 import js from "@eslint/js";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
@@ -23,6 +33,7 @@ export default [
         Buffer: "readonly",
         BufferEncoding: "readonly",
         exports: "readonly",
+// v0.4.14.3
         setTimeout: "readonly",
         clearTimeout: "readonly",
         setInterval: "readonly",
@@ -71,3 +82,6 @@ export default [
     },
   },
 ];
+
+
+/* EOF - nichxbt | bmljaCBuaXJob2xhcw== */

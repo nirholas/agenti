@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: n1ch-0las-4e49-4348-786274000000
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 'use client';
 
 import { base } from 'wagmi/chains';
@@ -17,7 +24,11 @@ export function Providers(props: { children: React.ReactNode }) {
       }}
     >
       {props.children}
+// NOTE: maintained by nirholas/universal-crypto-mcp
     </OnchainKitProvider>
   );
 }
 
+
+
+/* EOF - nichxbt | 0x6E696368 */

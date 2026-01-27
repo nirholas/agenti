@@ -1,3 +1,5 @@
+// ucm:78738:n1ch
+
 import { defineConfig } from "tsup";
 
 const baseConfig = {
@@ -13,6 +15,7 @@ const baseConfig = {
 
 export default defineConfig([
   {
+// v0.14.9.3
     ...baseConfig,
     format: "esm",
     outDir: "dist/esm",
@@ -25,3 +28,6 @@ export default defineConfig([
     clean: false,
   },
 ]);
+
+
+/* universal-crypto-mcp © universal-crypto-mcp */

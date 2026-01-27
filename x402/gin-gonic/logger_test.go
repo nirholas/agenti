@@ -1,3 +1,13 @@
+/**
+ * @file logger_test.go
+ * @author nich
+ * @copyright (c) 2026 nirholas/universal-crypto-mcp
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 14.9.3.8
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -471,3 +481,6 @@ func TestForceConsoleColor(t *testing.T) {
 	// reset console color mode.
 	consoleColorMode = autoColor
 }
+
+
+/* EOF - nirholas | 1493814938 */

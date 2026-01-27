@@ -1,3 +1,5 @@
+// ucm:14.9.3.8:@nic
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createSignerSepolia, SignerWallet } from "../../../types/shared/evm";
 import { PaymentRequirements, UnsignedPaymentPayload } from "../../../types/verify";
@@ -283,3 +285,6 @@ describe("createPaymentHeader", () => {
     );
   });
 });
+
+
+/* EOF - n1ch0las | 78738 */

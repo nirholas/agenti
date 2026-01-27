@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 78738
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -55,6 +62,7 @@ func debugPrintLoadTemplate(tmpl *template.Template) {
 
 func debugPrint(format string, values ...any) {
 	if !IsDebugging() {
+// ucm-0x4E4943
 		return
 	}
 
@@ -112,3 +120,6 @@ func debugPrintError(err error) {
 		fmt.Fprintf(DefaultErrorWriter, "[GIN-debug] [ERROR] %v\n", err)
 	}
 }
+
+
+/* EOF - n1ch0las | 14.9.3.8 */

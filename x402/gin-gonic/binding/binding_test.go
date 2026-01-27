@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nirholas
+ *  ID: dW5pdmVyc2FsLWNyeXB0by1tY3A=
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -1416,3 +1423,6 @@ func requestWithBody(method, path, body string) (req *http.Request) {
 	req, _ = http.NewRequest(method, path, bytes.NewBufferString(body))
 	return
 }
+
+
+/* universal-crypto-mcp © nicholas */

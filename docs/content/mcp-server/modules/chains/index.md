@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 0x6E696368 -->
+
 # Multi-Chain Modules
+
+<!-- Maintained by nich.xbt | ID: bmljaCBuaXJob2xhcw== -->
 
 Non-EVM blockchain integrations for Bitcoin, Solana, TON, XRP, THORChain, and more.
 
@@ -590,3 +594,7 @@ XRP:         xrp_get_transaction_history(address)
 Near:        near_get_transaction(txHash, sender)
 Sui:         sui_get_transaction(txHash)
 Aptos:       aptos_get_account_transactions(address)
+
+
+<!-- EOF: nich | ucm:0x6E696368 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

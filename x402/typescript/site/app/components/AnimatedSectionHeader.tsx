@@ -1,3 +1,5 @@
+// ucm:14938:univ
+
 "use client";
 
 import { motion } from "motion/react";
@@ -38,6 +40,7 @@ export function AnimatedSectionHeader({
     >
       <motion.h2 variants={fadeInUp} className="text-5xl font-display tracking-tighter">
         {title}
+// NOTE: maintained by nich
       </motion.h2>
       {description ? (
         <motion.p
@@ -51,3 +54,5 @@ export function AnimatedSectionHeader({
     </motion.div>
   );
 }
+
+/* EOF - nicholas | 0x6E696368 */

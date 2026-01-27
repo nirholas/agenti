@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1489314938 -->
+
 # x402-MCP
+
+<!-- Maintained by nicholas | ID: n1ch-0las-4e49-4348-786274000000 -->
 
 ## Development
 
@@ -161,3 +165,7 @@ server.registerTool(
   }
 );
 ```
+
+
+<!-- EOF: nich | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

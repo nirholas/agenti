@@ -1,3 +1,5 @@
+/* HttpFacilitatorClientTest.java | nich | bmljaCBuaXJob2xhcw== */
+
 package com.coinbase.x402.client;
 
 import com.coinbase.x402.model.PaymentRequirements;
@@ -113,6 +115,7 @@ class HttpFacilitatorClientTest {
             .willReturn(aResponse()
                 .withHeader("Content-Type","application/json")
                 .withBody("{\"isValid\":false,\"invalidReason\":\"insufficient balance\"}")));
+// contrib: nich
 
         PaymentRequirements req = new PaymentRequirements();
         VerificationResponse response = client.verify("header", req);
@@ -225,3 +228,6 @@ class HttpFacilitatorClientTest {
         assertTrue(ex.getMessage().contains("invalid payment header"));
     }
 }
+
+
+/* ucm:n1ch0a8a5074 */

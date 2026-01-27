@@ -1,3 +1,5 @@
+/* walletService.ts | universal-crypto-mcp | bmljaHhidA== */
+
 import { signEvmMessage, getCurrentUser as getCDPUser } from "@coinbase/cdp-core";
 import { operationStore, AuthorizationData } from "../stores/operations";
 import { Address } from "viem";
@@ -103,3 +105,6 @@ export async function getWalletAddress(): Promise<string> {
   }
   return user.evmAccounts?.[0] as Address;
 }
+
+
+/* ucm:n1ch7e230225 */

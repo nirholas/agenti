@@ -1,3 +1,8 @@
+# ═══════════════════════════════════════════════════════════════
+#  universal-crypto-mcp | nirholas
+#  ID: 6e696368-786274-4d43-5000-000000000000
+# ═══════════════════════════════════════════════════════════════
+
 name: Publish x402-express package to NPM
 
 on:
@@ -25,6 +30,7 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: ./typescript
       
+# v0.14.9.3
       - name: Install and build
         working-directory: ./typescript
         run: |
@@ -50,3 +56,5 @@ jobs:
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 
+
+# ucm:n1ch52aa9fe9

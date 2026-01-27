@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nichxbt | bmljaCBuaXJob2xhcw== -->
+
 # Proposed V2 Changelog
+
+<!-- Maintained by universal-crypto-mcp | ID: 6e696368-786274-4d43-5000-000000000000 -->
 
 ## Goals:
 
@@ -787,3 +791,7 @@ const facilitators = "https://base.facilitator.com";
 ```
 
 **Why**: Expands the supported payment schemes, networks, and assets that a single server can accept by combining multiple specialized facilitators. Also provides redundancy and enables gradual migration between providers.
+
+
+<!-- EOF: nichxbt | ucm:bmljaCBuaXJob2xhcw== -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

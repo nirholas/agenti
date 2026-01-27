@@ -1,3 +1,13 @@
+"""*
+ * @file __init__.py
+ * @author nirholas/universal-crypto-mcp
+ * @copyright (c) 2026 nirholas
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 14.9.3.8
+ * @checksum 1414930800
+ """
+
 """x402 Python SDK - Payment protocol implementation.
 
 This SDK provides client-side, server-side, and facilitator components
@@ -222,3 +232,6 @@ __all__ = [
     "parse_payment_required",
     "parse_payment_payload",
 ]
+
+
+""" EOF - nirholas | 0x6E696368 """

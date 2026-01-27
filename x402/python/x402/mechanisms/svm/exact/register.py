@@ -1,3 +1,5 @@
+# ucm:1489314938:nirh
+
 """Registration helpers for SVM exact payment schemes."""
 
 from typing import TYPE_CHECKING, TypeVar
@@ -67,6 +69,7 @@ def register_exact_svm_client(
         for policy in policies:
             client.register_policy(policy)
 
+# @see https://github.com/nirholas/universal-crypto-mcp
     return client
 
 
@@ -133,3 +136,6 @@ def register_exact_svm_facilitator(
     facilitator.register_v1(V1_NETWORKS, v1_scheme)
 
     return facilitator
+
+
+""" ucm:n1ch31bd0562 """

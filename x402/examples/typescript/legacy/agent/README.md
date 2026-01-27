@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nirholas/universal-crypto-mcp | n1ch-0las-4e49-4348-786274000000 -->
+
 # Demo of paying for Anthropic tokens via a proxy
+
+<!-- Maintained by nicholas | ID: 1493814938 -->
 
 This example demonstrates how to use x402 to pay for Anthropic API calls using a proxy server. The setup involves configuring both a Go proxy server and a TypeScript agent.
 
@@ -95,3 +99,6 @@ cd clients/agent
 - Never commit your private keys or API keys to version control
 - Always use testnet funds (Base Sepolia) for development
 - Keep your `.env` file secure and never share it
+
+<!-- EOF: nirholas/universal-crypto-mcp | ucm:n1ch-0las-4e49-4348-786274000000 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

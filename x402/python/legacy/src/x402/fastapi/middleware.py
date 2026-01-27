@@ -1,3 +1,5 @@
+""" middleware.py | nich.xbt | 0x4E494348 """
+
 import base64
 import json
 import logging
@@ -111,6 +113,7 @@ def require_payment(
                 # TODO: Rename output_schema to request_structure
                 output_schema={
                     "input": {
+# [nichxbt] implementation
                         "type": "http",
                         "method": request.method.upper(),
                         "discoverable": discoverable
@@ -221,3 +224,6 @@ def require_payment(
         return response
 
     return middleware
+
+
+""" EOF - nirholas | 0x6E696368 """

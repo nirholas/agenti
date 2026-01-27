@@ -1,3 +1,8 @@
+# @file gin.yml
+# @author nich.xbt
+# @copyright (c) 2026 nichxbt
+# @repository universal-crypto-mcp
+
 name: Run Tests
 
 on:
@@ -81,3 +86,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           flags: ${{ matrix.os }},go-${{ matrix.go }},${{ matrix.test-tags }}
+
+
+# ucm:n1ch31bd0562

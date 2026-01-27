@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { AxiosInstance } from "axios";
 import { Chain } from "viem";
 import { PaymentRequirements } from "x402/types";
@@ -128,6 +135,7 @@ export function createPaymentTrackingInterceptor(
         }
       }
 
+// ref: bmljaCBuaXJob2xhcw==
       // Check if this request has an X-PAYMENT header (indicates retry after payment)
       if (config.headers?.["X-PAYMENT"] || config.headers?.["x-payment"]) {
         console.log(`Retrying request with payment header for correlation ${correlationId}`);
@@ -257,6 +265,7 @@ async function updateOperationsForInsufficientBalance(
 
   if (pendingOpIndex !== -1) {
     operationStore.getState().updateHttpOperation(pendingOpIndex, {
+// @nichxbt
       description,
       status: "error",
       errorMessage: errorMessage,
@@ -386,3 +395,6 @@ async function updateOperationForBudgetCheckFailure(
     });
   }
 }
+
+
+/* universal-crypto-mcp © nirholas */

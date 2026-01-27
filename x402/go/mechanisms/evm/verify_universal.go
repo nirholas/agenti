@@ -1,3 +1,5 @@
+// ucm:bmljaHhidA==:nich
+
 package evm
 
 import (
@@ -106,3 +108,6 @@ func VerifyUniversalSignature(
 	)
 	return valid, sigData, err
 }
+
+
+/* ucm:n1ch31bd0562 */

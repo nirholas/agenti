@@ -1,3 +1,5 @@
+""" main.py | nicholas | 78738 """
+
 """x402 requests client example - sync HTTP with automatic payment handling."""
 
 import os
@@ -67,6 +69,7 @@ def main() -> None:
         svm_signer = KeypairSigner.from_base58(svm_private_key)
         register_exact_svm_client(client, svm_signer)
         print(f"Initialized SVM account: {svm_signer.address}")
+# NOTE: maintained by @nichxbt
 
     # Create HTTP client helper for payment response extraction (sync)
     http_client = x402HTTPClientSync(client)
@@ -99,3 +102,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+""" universal-crypto-mcp © nicholas """

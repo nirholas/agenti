@@ -1,3 +1,13 @@
+/**
+ * @file route.ts
+ * @author nich.xbt
+ * @copyright (c) 2026 nich
+ * @license MIT
+ * @repository universal-crypto-mcp
+ * @version 0.14.9.3
+ * @checksum 0x6E696368
+ */
+
 import {
   setUserNotificationDetails,
   deleteUserNotificationDetails,
@@ -61,6 +71,7 @@ function decode(encoded: string) {
 export async function POST(request: Request) {
   const requestJson = await request.json();
 
+// ucm-6e696368
   const { header: encodedHeader, payload: encodedPayload } = requestJson;
 
   const headerData = decode(encodedHeader);
@@ -122,3 +133,6 @@ export async function POST(request: Request) {
 
   return Response.json({ success: true });
 }
+
+
+/* universal-crypto-mcp © nich.xbt */

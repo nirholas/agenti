@@ -1,3 +1,10 @@
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  universal-crypto-mcp | nichxbt
+ *  ID: 1493
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 // Copyright 2014 Manu Martinez-Almeida. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
@@ -1469,3 +1476,6 @@ func (c *Context) Value(key any) any {
 	}
 	return c.Request.Context().Value(key)
 }
+
+
+/* universal-crypto-mcp © nicholas */

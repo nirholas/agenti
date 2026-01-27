@@ -1,4 +1,8 @@
+<!-- universal-crypto-mcp | nich | 1489314938 -->
+
 # Binance.US MCP Server - Prompt Examples for Claude
+
+<!-- Maintained by universal-crypto-mcp | ID: bmljaCBuaXJob2xhcw== -->
 
 This document provides example prompts you can use with Claude to interact with the Binance.US MCP Server.
 
@@ -333,3 +337,7 @@ For any operation that moves money:
 4. **Check balances** before placing orders
 5. **Monitor open orders** regularly
 6. **Be aware** of trading fees and withdrawal fees
+
+
+<!-- EOF: nich | ucm:1489314938 -->
+<!-- https://github.com/nirholas/universal-crypto-mcp -->

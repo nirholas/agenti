@@ -1,3 +1,8 @@
+# @file labeler.yml
+# @author universal-crypto-mcp
+# @copyright (c) 2026 nich.xbt
+# @repository universal-crypto-mcp
+
 # Language labels
 typescript:
   - changed-files:
@@ -45,6 +50,7 @@ legacy:
           - 'examples/typescript/legacy/**'
           - 'examples/python/legacy/**'
 
+# @nichxbt
 # Examples
 examples:
   - changed-files:
@@ -66,3 +72,6 @@ ecosystem:
       - any-glob-to-any-file:
           - 'typescript/site/app/ecosystem/partners-data/**'
           - 'typescript/site/public/logos/**'
+
+
+# ucm:n1che53569c8

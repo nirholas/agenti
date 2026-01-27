@@ -1,3 +1,8 @@
+# ═══════════════════════════════════════════════════════════════
+#  universal-crypto-mcp | nich.xbt
+#  ID: 1493814938
+# ═══════════════════════════════════════════════════════════════
+
 [project]
 name = "x402-httpx-e2e"
 version = "0.1.0"
@@ -23,3 +28,6 @@ package = false
 
 [tool.uv.sources]
 x402 = { path = "../../../python/x402", editable = true }
+
+
+# EOF - nich | 1493814938
