@@ -27,9 +27,11 @@ function cosineSimilarity(a: number[], b: number[]): number {
   let normB = 0
 
   for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i]
-    normA += a[i] * a[i]
-    normB += b[i] * b[i]
+    const aVal = a[i]!
+    const bVal = b[i]!
+    dotProduct += aVal * bVal
+    normA += aVal * aVal
+    normB += bVal * bVal
   }
 
   const magnitude = Math.sqrt(normA) * Math.sqrt(normB)
@@ -46,7 +48,8 @@ function euclideanDistance(a: number[], b: number[]): number {
 
   let sum = 0
   for (let i = 0; i < a.length; i++) {
-    sum += (a[i] - b[i]) ** 2
+    const diff = a[i]! - b[i]!
+    sum += diff ** 2
   }
 
   return Math.sqrt(sum)
@@ -112,7 +115,11 @@ export class SemanticSearchEngine {
       dimensions: this.embeddingDimensions,
     })
 
-    return response.data[0].embedding
+    const embedding = response.data[0]?.embedding
+    if (!embedding) {
+      throw new Error("Failed to get embedding from OpenAI")
+    }
+    return embedding
   }
 
   /**
@@ -195,8 +202,9 @@ export class SemanticSearchEngine {
 
       // Store embeddings
       for (let i = 0; i < textsToEmbed.length; i++) {
-        const { toolId, text } = textsToEmbed[i]
-        const embedding = response.data[i].embedding
+        const item = textsToEmbed[i]!
+        const { toolId, text } = item
+        const embedding = response.data[i]!.embedding
 
         this.embeddings.set(toolId, {
           toolId,
@@ -463,7 +471,10 @@ export class SemanticSearchEngine {
       const idx = Math.floor(Math.random() * toolIds.length)
       if (!usedIndices.has(idx)) {
         usedIndices.add(idx)
-        centroids.push([...embeddings[idx]])
+        const embedding = embeddings[idx]
+        if (embedding) {
+          centroids.push([...embedding])
+        }
       }
     }
 
@@ -473,9 +484,13 @@ export class SemanticSearchEngine {
     for (let i = 0; i < toolIds.length; i++) {
       let bestCluster = 0
       let bestSimilarity = -1
+      const embedding = embeddings[i]
+      if (!embedding) continue
 
       for (let c = 0; c < centroids.length; c++) {
-        const similarity = cosineSimilarity(embeddings[i], centroids[c])
+        const centroid = centroids[c]
+        if (!centroid) continue
+        const similarity = cosineSimilarity(embedding, centroid)
         if (similarity > bestSimilarity) {
           bestSimilarity = similarity
           bestCluster = c
@@ -485,7 +500,10 @@ export class SemanticSearchEngine {
       if (!clusters.has(bestCluster)) {
         clusters.set(bestCluster, [])
       }
-      clusters.get(bestCluster)!.push(toolIds[i])
+      const toolId = toolIds[i]
+      if (toolId) {
+        clusters.get(bestCluster)!.push(toolId)
+      }
     }
 
     return clusters

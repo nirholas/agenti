@@ -10,6 +10,7 @@ import { z } from "zod"
 import type { Address } from "viem"
 import Logger from "@/utils/logger.js"
 import { toolRegistry } from "../registry.js"
+import type { ToolCategory } from "../types.js"
 import { fullTextSearch } from "./search.js"
 import { semanticSearch } from "./semantic.js"
 import { filterEngine, FilterEngine } from "./filters.js"
@@ -79,21 +80,30 @@ async function performHybridSearch(
 
   // Merge and deduplicate results
   const seen = new Set<string>()
-  const mergedResults = []
+  const mergedResults: Array<{ tool: typeof fullTextResults[0]["tool"]; score: number; matchReasons: string[]; highlights?: { field: string; snippet: string }[] }> = []
 
   // Interleave full-text and semantic results
   const maxLen = Math.max(fullTextResults.length, semanticResults.length)
   for (let i = 0; i < maxLen; i++) {
-    if (i < fullTextResults.length && !seen.has(fullTextResults[i].tool.toolId)) {
-      seen.add(fullTextResults[i].tool.toolId)
+    const ftResult = fullTextResults[i]
+    if (ftResult && !seen.has(ftResult.tool.toolId)) {
+      seen.add(ftResult.tool.toolId)
       mergedResults.push({
-        ...fullTextResults[i],
-        score: fullTextResults[i].score * 1.2, // Boost full-text slightly
+        tool: ftResult.tool,
+        score: ftResult.score * 1.2, // Boost full-text slightly
+        matchReasons: ftResult.matchReasons || [],
+        highlights: ftResult.highlights,
       })
     }
-    if (i < semanticResults.length && !seen.has(semanticResults[i].tool.toolId)) {
-      seen.add(semanticResults[i].tool.toolId)
-      mergedResults.push(semanticResults[i])
+    const semResult = semanticResults[i]
+    if (semResult && !seen.has(semResult.tool.toolId)) {
+      seen.add(semResult.tool.toolId)
+      mergedResults.push({
+        tool: semResult.tool,
+        score: semResult.score,
+        matchReasons: semResult.matchReasons || [],
+        highlights: semResult.highlights,
+      })
     }
   }
 
@@ -110,13 +120,15 @@ async function performHybridSearch(
   // Get related categories
   const categoryCount = new Map<string, number>()
   for (const result of mergedResults.slice(0, 20)) {
-    const cat = result.tool.category
-    categoryCount.set(cat, (categoryCount.get(cat) || 0) + 1)
+    if (result?.tool) {
+      const cat = result.tool.category
+      categoryCount.set(cat, (categoryCount.get(cat) || 0) + 1)
+    }
   }
   const relatedCategories = Array.from(categoryCount.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
-    .map(([cat]) => cat) as any
+    .map(([cat]) => cat) as ToolCategory[]
 
   // Track analytics
   const queryId = searchAnalytics.recordQuery({

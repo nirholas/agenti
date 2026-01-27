@@ -6,13 +6,13 @@
  */
 
 import type { Address } from "viem"
-import { timeseriesDB } from "./timeseries.js"
+import { timeseriesDB } from "../analytics/timeseries.js"
 import {
   metricsCollector,
   METRIC_NAMES,
   type GeoDistribution,
   type ResponseTimeMetrics,
-} from "./collector.js"
+} from "../analytics/collector.js"
 import { toolRegistry } from "../registry.js"
 import Logger from "@/utils/logger.js"
 
@@ -293,10 +293,10 @@ export class CreatorInsightsService {
     
     if (!userCohort) {
       // New user, add to today's cohort
-      let cohort = toolCohorts.get(cohortDate)
+      let cohort = toolCohorts.get(cohortDate!)
       if (!cohort) {
         cohort = new Set()
-        toolCohorts.set(cohortDate, cohort)
+        toolCohorts.set(cohortDate!, cohort)
       }
       cohort.add(userKey)
     }
@@ -414,7 +414,7 @@ export class CreatorInsightsService {
 
       // Merge geo data
       for (const country of geoData.countries) {
-        const existing = combinedGeo.countries.find(c => c.code === country.code)
+        const existing = combinedGeo.countries.find((c: { code: string }) => c.code === country.code)
         if (existing) {
           existing.count += country.count
         } else {
@@ -433,11 +433,11 @@ export class CreatorInsightsService {
       .map(([hour]) => hour)
 
     // Recalculate geo percentages
-    const totalGeoUsers = combinedGeo.countries.reduce((sum, c) => sum + c.count, 0)
+    const totalGeoUsers = combinedGeo.countries.reduce((sum: number, c: { count: number }) => sum + c.count, 0)
     for (const country of combinedGeo.countries) {
       country.percentage = totalGeoUsers > 0 ? (country.count / totalGeoUsers) * 100 : 0
     }
-    combinedGeo.countries.sort((a, b) => b.count - a.count)
+    combinedGeo.countries.sort((a: { count: number }, b: { count: number }) => b.count - a.count)
 
     // Build revenue chart data
     const revenueChartData: TimeSeriesData = {
@@ -672,7 +672,7 @@ export class CreatorInsightsService {
     
     for (const item of sorted.slice(0, 5)) {
       peakTimes.push({
-        day: DAY_NAMES[item.day],
+        day: DAY_NAMES[item.day] ?? `Day ${item.day}`,
         hour: item.hour,
         value: item.value,
       })
@@ -681,7 +681,7 @@ export class CreatorInsightsService {
     for (const item of sorted.slice(-5).reverse()) {
       if (item.value > 0) {
         quietTimes.push({
-          day: DAY_NAMES[item.day],
+          day: DAY_NAMES[item.day] ?? `Day ${item.day}`,
           hour: item.hour,
           value: item.value,
         })

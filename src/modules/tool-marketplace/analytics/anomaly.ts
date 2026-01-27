@@ -272,12 +272,16 @@ export class AnomalyDetectorService {
 
     // Calculate baseline statistics
     const values = data.map(d => d.count)
-    const mean = values.reduce((a, b) => a + b, 0) / values.length
-    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length
+    const filteredValues = values.filter((v): v is number => v !== undefined)
+    if (filteredValues.length < this.thresholds.minDataPoints) return anomalies
+    const mean = filteredValues.reduce((a, b) => a + b, 0) / filteredValues.length
+    const variance = filteredValues.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / filteredValues.length
     const stddev = Math.sqrt(variance)
 
     // Check the most recent hour
-    const latestValue = values[values.length - 1]
+    const latestValueRaw = values[values.length - 1]
+    if (latestValueRaw === undefined) return anomalies
+    const latestValue: number = latestValueRaw
     const zScore = calculateZScore(latestValue, mean, stddev)
 
     if (zScore >= this.thresholds.spikeZScore) {
@@ -334,11 +338,15 @@ export class AnomalyDetectorService {
     }
 
     const values = data.map(d => d.sum)
-    const mean = values.reduce((a, b) => a + b, 0) / values.length
-    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length
+    const filteredValues = values.filter((v): v is number => v !== undefined)
+    if (filteredValues.length < this.thresholds.minDataPoints) return anomalies
+    const mean = filteredValues.reduce((a, b) => a + b, 0) / filteredValues.length
+    const variance = filteredValues.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / filteredValues.length
     const stddev = Math.sqrt(variance)
 
-    const latestValue = values[values.length - 1]
+    const latestValueRaw = values[values.length - 1]
+    if (latestValueRaw === undefined) return anomalies
+    const latestValue: number = latestValueRaw
     const zScore = calculateZScore(latestValue, mean, stddev)
 
     if (zScore >= this.thresholds.spikeZScore) {
@@ -401,8 +409,8 @@ export class AnomalyDetectorService {
     }
 
     // Calculate error rate
-    const totalErrors = errorData.reduce((sum, d) => sum + d.count, 0)
-    const totalCalls = callData.reduce((sum, d) => sum + d.count, 0)
+    const totalErrors = errorData.reduce((sum, d) => sum + (d.count ?? 0), 0)
+    const totalCalls = callData.reduce((sum, d) => sum + (d.count ?? 0), 0)
     
     if (totalCalls === 0) return anomalies
 
@@ -444,11 +452,15 @@ export class AnomalyDetectorService {
     if (data.length < 6) return anomalies // Need at least 6 hours of data
 
     const p95Values = data.map(d => d.percentiles.p95)
-    const mean = p95Values.reduce((a, b) => a + b, 0) / p95Values.length
-    const variance = p95Values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / p95Values.length
+    const filteredP95Values = p95Values.filter((v): v is number => v !== undefined)
+    if (filteredP95Values.length < 6) return anomalies
+    const mean = filteredP95Values.reduce((a, b) => a + b, 0) / filteredP95Values.length
+    const variance = filteredP95Values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / filteredP95Values.length
     const stddev = Math.sqrt(variance)
 
-    const latestP95 = p95Values[p95Values.length - 1]
+    const latestP95Raw = p95Values[p95Values.length - 1]
+    if (latestP95Raw === undefined) return anomalies
+    const latestP95: number = latestP95Raw
     const zScore = calculateZScore(latestP95, mean, stddev)
 
     if (zScore >= 2.0 || latestP95 > 5000) { // > 5 seconds is always bad
@@ -529,7 +541,11 @@ export class AnomalyDetectorService {
     if (timestamps.length >= 10) {
       const intervals: number[] = []
       for (let i = 1; i < timestamps.length; i++) {
-        intervals.push(timestamps[i] - timestamps[i - 1])
+        const curr = timestamps[i]
+        const prev = timestamps[i - 1]
+        if (curr !== undefined && prev !== undefined) {
+          intervals.push(curr - prev)
+        }
       }
       
       const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length

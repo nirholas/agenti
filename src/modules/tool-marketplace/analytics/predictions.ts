@@ -8,7 +8,8 @@
 import type { Address } from "viem"
 import { timeseriesDB, type AggregatedDataPoint } from "./timeseries.js"
 import { METRIC_NAMES } from "./collector.js"
-import { toolRegistry, type RegisteredTool } from "../registry.js"
+import { toolRegistry } from "../registry.js"
+import type { RegisteredTool } from "../types.js"
 import Logger from "@/utils/logger.js"
 
 /**
@@ -153,7 +154,7 @@ const storage: PredictionStorage = {
  */
 function linearRegression(data: number[]): { slope: number; intercept: number; r2: number } {
   const n = data.length
-  if (n < 2) return { slope: 0, intercept: data[0] || 0, r2: 0 }
+  if (n < 2) return { slope: 0, intercept: data[0] ?? 0, r2: 0 }
 
   const xMean = (n - 1) / 2
   const yMean = data.reduce((a, b) => a + b, 0) / n
@@ -164,7 +165,9 @@ function linearRegression(data: number[]): { slope: number; intercept: number; r
 
   for (let i = 0; i < n; i++) {
     const xDiff = i - xMean
-    const yDiff = data[i] - yMean
+    const yVal = data[i]
+    if (yVal === undefined) continue
+    const yDiff = yVal - yMean
     ssXY += xDiff * yDiff
     ssXX += xDiff * xDiff
     ssYY += yDiff * yDiff
@@ -200,17 +203,28 @@ function exponentialSmoothing(
 ): number[] {
   if (data.length === 0) return Array(periods).fill(0)
 
-  const smoothed: number[] = [data[0]]
+  const firstVal = data[0]
+  if (firstVal === undefined) return Array(periods).fill(0)
+  
+  const smoothed: number[] = [firstVal]
   for (let i = 1; i < data.length; i++) {
-    smoothed.push(alpha * data[i] + (1 - alpha) * smoothed[i - 1])
+    const currVal = data[i]
+    const prevSmooth = smoothed[i - 1]
+    if (currVal !== undefined && prevSmooth !== undefined) {
+      smoothed.push(alpha * currVal + (1 - alpha) * prevSmooth)
+    }
   }
 
   const lastValue = smoothed[smoothed.length - 1]
+  if (lastValue === undefined) return Array(periods).fill(0)
+  
   const forecast: number[] = []
   
   // Simple trend-adjusted forecast
-  const recentTrend = data.length > 1
-    ? (data[data.length - 1] - data[data.length - 2]) / data[data.length - 1]
+  const last = data[data.length - 1]
+  const secondLast = data[data.length - 2]
+  const recentTrend = (data.length > 1 && last !== undefined && secondLast !== undefined && last !== 0)
+    ? (last - secondLast) / last
     : 0
 
   for (let i = 0; i < periods; i++) {
@@ -332,7 +346,7 @@ export class PredictiveAnalyticsService {
       const high = mid * (1 + confidenceMultiplier)
 
       dailyForecast.push({
-        date: date.toISOString().split("T")[0],
+        date: date.toISOString().split("T")[0] ?? date.toISOString().slice(0, 10),
         low: low.toFixed(6),
         mid: mid.toFixed(6),
         high: high.toFixed(6),

@@ -460,7 +460,7 @@ export function registerUCAITools(server: McpServer): void {
         const result = await getHistoricalDataService().queryHistoricalData({
           contractAddress: contractAddress as Address,
           network,
-          dataType,
+          dataType: dataType as any,
           fromBlock: fromBlock === "earliest" ? "earliest" : fromBlock ? BigInt(fromBlock) : undefined,
           toBlock: toBlock === "latest" ? "latest" : toBlock ? BigInt(toBlock) : undefined,
           eventFilter: eventFilter as any,

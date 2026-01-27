@@ -67,7 +67,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       docsUrl: z.string().url().optional().describe("Documentation URL"),
       tags: z.array(z.string()).optional().describe("Tags for discovery"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const tool = await toolRegistry.registerTool({
           name: params.name,
@@ -129,7 +130,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       docsUrl: z.string().url().optional().describe("New documentation URL"),
       tags: z.array(z.string()).optional().describe("New tags"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const updates: any = {}
         if (params.displayName) updates.displayName = params.displayName
@@ -186,7 +188,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       toolId: z.string().describe("The tool ID to pause"),
       callerAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Your wallet address (must be owner)"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         await toolRegistry.pauseTool(params.toolId, params.callerAddress as Address)
 
@@ -222,7 +225,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       toolId: z.string().describe("The tool ID to activate"),
       callerAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Your wallet address (must be owner)"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         await toolRegistry.activateTool(params.toolId, params.callerAddress as Address)
 
@@ -269,7 +273,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       sortOrder: z.enum(["asc", "desc"]).default("desc").describe("Sort direction"),
       limit: z.number().default(20).describe("Max results to return"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const tools = await toolRegistry.discoverTools({
           maxPrice: params.maxPrice,
@@ -328,7 +333,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       toolId: z.string().optional().describe("Tool ID"),
       name: z.string().optional().describe("Tool name"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         let tool = null
         if (params.toolId) {
@@ -401,7 +407,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
     {
       toolId: z.string().describe("Tool ID to check revenue for"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const revenue = await toolRegistry.getToolRevenue(params.toolId)
 
@@ -444,7 +451,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
     {
       creatorAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Creator wallet address"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const analytics = await toolRegistry.getCreatorAnalytics(params.creatorAddress as Address)
 
@@ -544,7 +552,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       userAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe("User address to get history for"),
       limit: z.number().default(50).describe("Max records to return"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         let usage
         if (params.toolId) {
@@ -598,7 +607,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
     {
       limit: z.number().default(50).describe("Max events to return"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const events = await toolRegistry.getRecentEvents(params.limit)
 
@@ -652,7 +662,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       review: z.string().max(500).optional().describe("Optional review text (max 500 chars)"),
       usageTxHash: z.string().optional().describe("Transaction hash of your tool usage (for verified rating)"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const rating = await ratingService.submitRating(
           params.toolId,
@@ -708,7 +719,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       description: z.string().min(20).max(1000).describe("Detailed description of the issue"),
       evidence: z.array(z.string()).optional().describe("Evidence URLs (screenshots, logs, etc.)"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const report = await reputationScorer.reportTool(
           params.toolId,
@@ -778,7 +790,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
         description: z.string().optional(),
       })).optional().describe("Evidence to support your dispute"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         // Get tool owner address
         const tool = await toolRegistry.getTool(params.toolId)
@@ -845,7 +858,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
     {
       toolId: z.string().describe("The tool ID to check"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         // Get or calculate reputation score
         let score = reputationScorer.getScore(params.toolId)
@@ -940,7 +954,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       schemaType: z.enum(["openapi", "jsonschema", "custom"]).optional().describe("Type of API schema"),
       schema: z.record(z.unknown()).optional().describe("API schema to register (JSON)"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         // Get tool
         const tool = await toolRegistry.getTool(params.toolId)
@@ -1051,7 +1066,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       state: z.enum(["open", "under_review", "resolved", "escalated", "closed", "expired"]).optional().describe("Filter by state"),
       limit: z.number().default(20).describe("Maximum results to return"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         if (params.disputeId) {
           const dispute = disputeManager.getDispute(params.disputeId)
@@ -1134,7 +1150,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
       callerAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Your wallet address (must be party to dispute)"),
       reason: z.string().min(20).max(500).describe("Reason for escalation"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const dispute = await disputeManager.escalateDispute(
           params.disputeId,
@@ -1182,7 +1199,8 @@ export function registerToolMarketplaceTools(server: McpServer): void {
     {
       limit: z.number().default(20).describe("Maximum results to return"),
     },
-    async (params) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (params: any) => {
       try {
         const leaderboard = reputationScorer.getLeaderboard(params.limit)
 

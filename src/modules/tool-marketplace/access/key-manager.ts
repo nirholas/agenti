@@ -73,7 +73,7 @@ export class KeyManager {
     if (parts.length !== 2) {
       return key.substring(0, 8) + "..." + key.substring(key.length - 4)
     }
-    const randomPart = parts[1]
+    const randomPart = parts[1] ?? ""
     return `${KEY_PREFIX}_${randomPart.substring(0, 6)}...${randomPart.substring(randomPart.length - 4)}`
   }
 

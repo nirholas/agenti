@@ -191,6 +191,8 @@ export class RecommendationEngine {
         for (let j = i + 1; j < toolArray.length; j++) {
           const toolA = toolArray[i]
           const toolB = toolArray[j]
+          if (!toolA || !toolB) continue
+          
           const pairKey = [toolA, toolB].sort().join("|")
 
           if (!coUsageCounts.has(toolA)) {
@@ -569,18 +571,20 @@ export class RecommendationEngine {
     // Interleave results
     const maxLen = Math.max(collaborative.length, contentBased.length)
     for (let i = 0; i < maxLen && merged.length < limit; i++) {
-      if (i < collaborative.length && !seen.has(collaborative[i].tool.toolId)) {
-        seen.add(collaborative[i].tool.toolId)
+      const collabItem = collaborative[i]
+      if (collabItem && !seen.has(collabItem.tool.toolId)) {
+        seen.add(collabItem.tool.toolId)
         merged.push({
-          ...collaborative[i],
-          reasons: [`Because you used ${tool.displayName}`, ...collaborative[i].reasons],
+          ...collabItem,
+          reasons: [`Because you used ${tool.displayName}`, ...collabItem.reasons],
         })
       }
-      if (i < contentBased.length && !seen.has(contentBased[i].tool.toolId) && merged.length < limit) {
-        seen.add(contentBased[i].tool.toolId)
+      const contentItem = contentBased[i]
+      if (contentItem && !seen.has(contentItem.tool.toolId) && merged.length < limit) {
+        seen.add(contentItem.tool.toolId)
         merged.push({
-          ...contentBased[i],
-          reasons: [`Similar to ${tool.displayName}`, ...contentBased[i].reasons],
+          ...contentItem,
+          reasons: [`Similar to ${tool.displayName}`, ...contentItem.reasons],
         })
       }
     }

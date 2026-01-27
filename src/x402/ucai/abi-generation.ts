@@ -590,7 +590,8 @@ export class ABIGenerationService {
    * Check if contract is a proxy
    */
   private async checkIfProxy(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     address: Address,
     bytecode: Hex
   ): Promise<boolean> {
