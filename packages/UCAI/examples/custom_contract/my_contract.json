@@ -1,0 +1,46 @@
+[
+  {
+    "type": "function",
+    "name": "getValue",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setValue",
+    "inputs": [{"name": "newValue", "type": "uint256"}],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getOwner",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "address"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getFee",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isActive",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "bool"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "ValueChanged",
+    "inputs": [
+      {"name": "oldValue", "type": "uint256", "indexed": false},
+      {"name": "newValue", "type": "uint256", "indexed": false},
+      {"name": "changedBy", "type": "address", "indexed": true}
+    ]
+  }
+]

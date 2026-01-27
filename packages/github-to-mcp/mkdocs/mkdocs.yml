@@ -1,0 +1,204 @@
+# Project information
+site_name: GitHub to MCP
+site_url: https://docs-github-to-mcp.vercel.app/
+site_author: nirholas
+site_description: >-
+  Convert any GitHub repository into an MCP server in seconds.
+  Give Claude, ChatGPT, Cursor, and any AI assistant instant access to any codebase.
+
+# Use /docs as base path since it's served from Next.js
+use_directory_urls: true
+
+# Repository
+repo_name: nirholas/github-to-mcp
+repo_url: https://github.com/nirholas/github-to-mcp
+edit_uri: edit/main/mkdocs/docs/
+
+# Copyright
+copyright: Copyright &copy; 2024-2026 nirholas
+
+# Configuration
+theme:
+  name: material
+  custom_dir: overrides
+  favicon: assets/logo.svg
+  logo: assets/logo.svg
+  
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+    - header.autohide
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+
+  icon:
+    repo: fontawesome/brands/github
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      title: On this page
+  - tables
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: nirholas
+      repo: github-to-mcp
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Extra configuration
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/github-to-mcp
+      name: GitHub
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@nirholas/github-to-mcp
+      name: npm
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/nirholas
+      name: Twitter
+  
+  generator: false
+  
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+
+extra_css:
+  - stylesheets/extra.css
+
+# Page tree
+nav:
+  - Home: index.md
+  
+  - Getting Started:
+    - getting-started/index.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  
+  - Guides:
+    - guides/index.md
+    - Claude Desktop: guides/claude-desktop.md
+    - Cursor Integration: guides/cursor.md
+    - VS Code: guides/vscode.md
+    - Private Repos: guides/private-repos.md
+    - Custom Tools: guides/custom-tools.md
+    - Batch Conversion: guides/batch.md
+  
+  - CLI:
+    - cli/index.md
+    - generate: cli/generate.md
+    - inspect: cli/inspect.md
+    - serve: cli/serve.md
+  
+  - API:
+    - api/index.md
+    - Core: api/core.md
+    - OpenAPI Parser: api/openapi-parser.md
+    - MCP Server: api/mcp-server.md
+  
+  - Concepts:
+    - concepts/index.md
+    - How It Works: concepts/how-it-works.md
+    - Tool Types: concepts/tool-types.md
+    - Repository Classification: concepts/classification.md
+    - MCP Protocol: concepts/mcp-protocol.md
+  
+  - Reference:
+    - reference/index.md
+    - Generated Tools: reference/tools.md
+    - Configuration Options: reference/config.md
+    - Environment Variables: reference/env.md
+  
+  - Contributing:
+    - contributing/index.md
+    - Development Setup: contributing/development.md
+    - Architecture: contributing/architecture.md
+    - Testing: contributing/testing.md
+  
+  - Changelog: changelog.md

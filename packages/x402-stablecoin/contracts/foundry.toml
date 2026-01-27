@@ -1,0 +1,45 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+evm_version = "cancun"
+
+# Remappings for OpenZeppelin
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+# Arbitrum specific settings
+gas_limit = 1099511627775
+block_gas_limit = 1125899906842624
+
+# Testing
+fuzz = { runs = 256 }
+invariant = { runs = 256 }
+
+[profile.ci]
+fuzz = { runs = 1000 }
+invariant = { runs = 1000 }
+
+[rpc_endpoints]
+arbitrum = "${ARBITRUM_RPC_URL}"
+arbitrum_sepolia = "${ARBITRUM_SEPOLIA_RPC_URL}"
+
+[etherscan]
+arbitrum = { key = "${ARBISCAN_API_KEY}" }
+arbitrum_sepolia = { key = "${ARBISCAN_API_KEY}" }
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+multiline_func_header = "all"
+quote_style = "double"
+number_underscore = "thousands"

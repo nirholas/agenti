@@ -1,0 +1,72 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {"name": "_logic", "type": "address"},
+      {"name": "admin_", "type": "address"},
+      {"name": "_data", "type": "bytes"}
+    ],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "implementation",
+    "inputs": [],
+    "outputs": [{"name": "implementation_", "type": "address"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "admin",
+    "inputs": [],
+    "outputs": [{"name": "admin_", "type": "address"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "changeAdmin",
+    "inputs": [{"name": "newAdmin", "type": "address"}],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "upgradeTo",
+    "inputs": [{"name": "newImplementation", "type": "address"}],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "inputs": [
+      {"name": "newImplementation", "type": "address"},
+      {"name": "data", "type": "bytes"}
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "event",
+    "name": "Upgraded",
+    "inputs": [{"indexed": true, "name": "implementation", "type": "address"}],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "AdminChanged",
+    "inputs": [
+      {"indexed": false, "name": "previousAdmin", "type": "address"},
+      {"indexed": false, "name": "newAdmin", "type": "address"}
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "fallback",
+    "stateMutability": "payable"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
+  }
+]

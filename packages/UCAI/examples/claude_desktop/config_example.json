@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "usdc-token": {
+      "command": "python",
+      "args": ["/Users/you/mcp-servers/usdc/server.py"],
+      "env": {
+        "RPC_URL": "https://eth.llamarpc.com"
+      }
+    },
+    "nft-collection": {
+      "command": "python",
+      "args": ["/Users/you/mcp-servers/nft/server.py"],
+      "env": {
+        "RPC_URL": "https://eth.llamarpc.com"
+      }
+    },
+    "polygon-token": {
+      "command": "python",
+      "args": ["/Users/you/mcp-servers/polygon-token/server.py"],
+      "env": {
+        "RPC_URL": "https://polygon-rpc.com"
+      }
+    }
+  }
+}

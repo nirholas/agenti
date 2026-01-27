@@ -1,0 +1,43 @@
+{
+  "name": "openbare-edge",
+  "version": "1.0.0",
+  "description": "OpenBare Cloudflare Workers Edge Server - TompHTTP Bare Server Protocol v3",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:local": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:production": "wrangler deploy --env production",
+    "tail": "wrangler tail",
+    "login": "wrangler login",
+    "whoami": "wrangler whoami",
+    "lint": "eslint src/",
+    "test": "node --test 'test/**/*.test.js'"
+  },
+  "keywords": [
+    "bare-server",
+    "proxy",
+    "cloudflare-workers",
+    "edge",
+    "tomphtp",
+    "openbare"
+  ],
+  "author": "SPA-OS",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.22.0",
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/SPA-OS"
+  },
+  "bugs": {
+    "url": "https://github.com/nirholas/SPA-OS/issues"
+  }
+}

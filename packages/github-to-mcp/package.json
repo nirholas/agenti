@@ -1,0 +1,63 @@
+{
+  "name": "github-to-mcp-monorepo",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Convert any GitHub repository into an MCP server",
+  "packageManager": "pnpm@10.23.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm -r build",
+    "build:core": "pnpm --filter @nirholas/github-to-mcp build",
+    "build:web": "pnpm --filter web build",
+    "lint": "pnpm -r lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "typecheck": "pnpm -r typecheck",
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "github",
+    "ai",
+    "tools"
+  ],
+  "author": "nirholas",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/github-to-mcp"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^25.0.6",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "eslint": "^9.39.2",
+    "happy-dom": "^20.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "msw": "^2.12.7",
+    "prettier": "^3.8.0",
+    "vitest": "^1.6.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/sweep",
+  "title": "Sweep MCP",
+  "description": "MCP server for automated token sweeping and wallet consolidation",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/sweep",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/sweep",
+    "bugs": "https://github.com/nirholas/sweep/issues"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/sweep/main/assets/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "sweep",
+      "version": "0.1.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RPC_URL",
+          "description": "Ethereum RPC endpoint URL",
+          "required": false,
+          "secret": false
+        },
+        {
+          "name": "PRIVATE_KEY",
+          "description": "Private key for signing sweep transactions",
+          "required": true,
+          "secret": true
+        },
+        {
+          "name": "DESTINATION_ADDRESS",
+          "description": "Destination wallet address for swept tokens",
+          "required": false,
+          "secret": false
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": [
+        "sweep",
+        "tokens",
+        "wallet",
+        "consolidation",
+        "mcp",
+        "ethereum",
+        "automation"
+      ],
+      "category": "Blockchain"
+    }
+  }
+}

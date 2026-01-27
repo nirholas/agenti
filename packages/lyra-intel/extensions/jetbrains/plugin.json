@@ -1,0 +1,103 @@
+{
+  "name": "lyra-intel-jetbrains",
+  "version": "1.0.0",
+  "description": "Lyra Intel code analysis plugin for JetBrains IDEs",
+  "vendor": {
+    "name": "Lyra Intel",
+    "url": "https://github.com/nirholas/lyra-intel"
+  },
+  "idea-version": {
+    "since-build": "223",
+    "until-build": "233.*"
+  },
+  "depends": [
+    "com.intellij.modules.platform",
+    "com.intellij.modules.lang"
+  ],
+  "extensions": {
+    "com.intellij.toolWindow": [
+      {
+        "id": "LyraIntel",
+        "anchor": "right",
+        "factoryClass": "com.lyra.intel.toolwindow.LyraIntelToolWindowFactory",
+        "icon": "icons/lyra_intel.svg"
+      }
+    ],
+    "com.intellij.annotator": [
+      {
+        "language": "JAVA",
+        "implementationClass": "com.lyra.intel.annotator.LyraIntelAnnotator"
+      },
+      {
+        "language": "Python",
+        "implementationClass": "com.lyra.intel.annotator.LyraIntelAnnotator"
+      },
+      {
+        "language": "kotlin",
+        "implementationClass": "com.lyra.intel.annotator.LyraIntelAnnotator"
+      }
+    ],
+    "com.intellij.localInspection": [
+      {
+        "language": "JAVA",
+        "shortName": "LyraIntelInspection",
+        "displayName": "Lyra Intel Code Analysis",
+        "groupPath": ["Java"],
+        "groupName": "Code quality",
+        "enabledByDefault": "true",
+        "level": "WARNING",
+        "implementationClass": "com.lyra.intel.inspection.LyraIntelInspection"
+      }
+    ]
+  },
+  "actions": {
+    "group": [
+      {
+        "id": "LyraIntel.Actions",
+        "text": "Lyra Intel",
+        "popup": "true",
+        "add-to-group": {
+          "group-id": "EditorPopupMenu",
+          "anchor": "first"
+        }
+      }
+    ],
+    "action": [
+      {
+        "id": "LyraIntel.AnalyzeFile",
+        "class": "com.lyra.intel.actions.AnalyzeFileAction",
+        "text": "Analyze with Lyra Intel",
+        "description": "Analyze current file with Lyra Intel",
+        "add-to-group": {
+          "group-id": "LyraIntel.Actions",
+          "anchor": "first"
+        },
+        "keyboard-shortcut": {
+          "first-keystroke": "ctrl alt L",
+          "keymap": "$default"
+        }
+      },
+      {
+        "id": "LyraIntel.SecurityScan",
+        "class": "com.lyra.intel.actions.SecurityScanAction",
+        "text": "Security Scan",
+        "description": "Run security scan on current file",
+        "add-to-group": {
+          "group-id": "LyraIntel.Actions",
+          "anchor": "after",
+          "relative-to-action": "LyraIntel.AnalyzeFile"
+        }
+      },
+      {
+        "id": "LyraIntel.Settings",
+        "class": "com.lyra.intel.actions.SettingsAction",
+        "text": "Lyra Intel Settings",
+        "description": "Open Lyra Intel settings",
+        "add-to-group": {
+          "group-id": "LyraIntel.Actions",
+          "anchor": "last"
+        }
+      }
+    ]
+  }
+}

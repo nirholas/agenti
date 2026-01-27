@@ -1,0 +1,54 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/lyra-tool-discovery",
+  "title": "Lyra Tool Discovery",
+  "description": "AI discovers MCP servers from GitHub/npm - analyzes APIs and configs automatically",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/lyra-tool-discovery",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/lyra-tool-discovery",
+    "bugs": "https://github.com/nirholas/lyra-tool-discovery/issues",
+    "npm": "https://www.npmjs.com/package/@nirholas/lyra-tool-discovery"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@nirholas/lyra-tool-discovery",
+      "version": "0.1.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GITHUB_TOKEN",
+          "description": "GitHub token for API access",
+          "required": false,
+          "secret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["tool-discovery", "mcp", "github", "npm", "api", "automation", "ai", "agent"],
+      "category": "Developer Tools"
+    }
+  }
+}

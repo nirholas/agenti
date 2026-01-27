@@ -1,0 +1,47 @@
+# OpenBare Edge - Cloudflare Workers Configuration
+name = "openbare-edge"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Account settings (uncomment and set your account_id)
+# account_id = "your-account-id"
+
+# Workers configuration
+workers_dev = true
+
+# Environment variables
+[vars]
+BARE_VERSION = "3"
+MAX_PAYLOAD_SIZE = "104857600"  # 100MB
+
+# Production environment
+[env.production]
+name = "openbare-edge"
+workers_dev = false
+# route = { pattern = "bare.yourdomain.com/*", zone_name = "yourdomain.com" }
+
+# Staging environment
+[env.staging]
+name = "openbare-edge-staging"
+workers_dev = true
+
+# Custom domains (uncomment and configure)
+# routes = [
+#   { pattern = "bare.yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]
+
+# Durable Objects (if needed for rate limiting)
+# [[durable_objects.bindings]]
+# name = "RATE_LIMITER"
+# class_name = "RateLimiter"
+
+# KV Namespaces (if needed for caching)
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+
+# Build configuration
+[build]
+command = ""
+watch_dir = "src"

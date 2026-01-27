@@ -1,0 +1,72 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm install --legacy-peer-deps"
+
+[deploy]
+startCommand = "npx tsx src/api/index.ts"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+numReplicas = 1
+
+[[services]]
+name = "sweep-api"
+internalPort = 3000
+
+# Worker service for background jobs (BullMQ)
+[[services]]
+name = "sweep-workers"
+buildCommand = "npm install --legacy-peer-deps"
+startCommand = "npx tsx src/workers.ts"
+numReplicas = 1
+
+# ============================================================================
+# Environment Variable Groups (for Railway Shared Variables)
+# ============================================================================
+# 
+# Configure these in Railway Dashboard → Project Settings → Shared Variables
+# 
+# REQUIRED - Database & Cache (auto-provisioned by Railway)
+# ├── DATABASE_URL      → PostgreSQL plugin auto-sets this
+# └── REDIS_URL         → Redis plugin auto-sets this
+#
+# REQUIRED - Core Infrastructure  
+# ├── NODE_ENV          → production
+# ├── ALCHEMY_API_KEY   → Primary RPC provider
+# └── COINGECKO_API_KEY → Token price data
+#
+# RPC ENDPOINTS - Chain-specific (share across services)
+# ├── RPC_ETHEREUM      → https://eth-mainnet.g.alchemy.com/v2/${{ALCHEMY_API_KEY}}
+# ├── RPC_BASE          → https://base-mainnet.g.alchemy.com/v2/${{ALCHEMY_API_KEY}}
+# ├── RPC_ARBITRUM      → https://arb-mainnet.g.alchemy.com/v2/${{ALCHEMY_API_KEY}}
+# ├── RPC_POLYGON       → https://polygon-mainnet.g.alchemy.com/v2/${{ALCHEMY_API_KEY}}
+# ├── RPC_BSC           → https://bsc-dataseed1.binance.org (free)
+# ├── RPC_LINEA         → https://linea-mainnet.g.alchemy.com/v2/${{ALCHEMY_API_KEY}}
+# ├── RPC_OPTIMISM      → https://opt-mainnet.g.alchemy.com/v2/${{ALCHEMY_API_KEY}}
+# └── RPC_SOLANA        → https://api.mainnet-beta.solana.com or Helius
+#
+# DEX AGGREGATORS
+# ├── ONEINCH_API_KEY   → For 1inch swap quotes
+# ├── LIFI_API_KEY      → For cross-chain bridging
+# └── JUPITER_API_KEY   → For Solana swaps
+#
+# ACCOUNT ABSTRACTION (ERC-4337)
+# ├── PIMLICO_API_KEY       → Bundler provider
+# ├── COINBASE_PAYMASTER_URL → Gasless transaction sponsorship
+# └── PAYMASTER_SIGNER_KEY  → For self-hosted paymaster (optional)
+#
+# SOLANA
+# ├── HELIUS_API_KEY    → Solana RPC & APIs
+# └── JITO_TIP_LAMPORTS → MEV tip amount (default: 10000)
+#
+# SECURITY & SIMULATION
+# ├── TENDERLY_ACCESS_KEY → Transaction simulation
+# ├── TENDERLY_ACCOUNT    → Tenderly account slug
+# ├── TENDERLY_PROJECT    → Tenderly project slug
+# └── GOPLUS_API_KEY      → Token security checks
+#
+# MONITORING
+# ├── SENTRY_DSN       → Error tracking
+# └── DATADOG_API_KEY  → Metrics & APM
+# ============================================================================

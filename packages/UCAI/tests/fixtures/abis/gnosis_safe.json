@@ -1,0 +1,164 @@
+[
+  {
+    "type": "function",
+    "name": "getOwners",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "address[]"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getThreshold",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isOwner",
+    "inputs": [{"name": "owner", "type": "address"}],
+    "outputs": [{"name": "", "type": "bool"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "nonce",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getTransactionHash",
+    "inputs": [
+      {"name": "to", "type": "address"},
+      {"name": "value", "type": "uint256"},
+      {"name": "data", "type": "bytes"},
+      {"name": "operation", "type": "uint8"},
+      {"name": "safeTxGas", "type": "uint256"},
+      {"name": "baseGas", "type": "uint256"},
+      {"name": "gasPrice", "type": "uint256"},
+      {"name": "gasToken", "type": "address"},
+      {"name": "refundReceiver", "type": "address"},
+      {"name": "_nonce", "type": "uint256"}
+    ],
+    "outputs": [{"name": "", "type": "bytes32"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "approveHash",
+    "inputs": [{"name": "hashToApprove", "type": "bytes32"}],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "execTransaction",
+    "inputs": [
+      {"name": "to", "type": "address"},
+      {"name": "value", "type": "uint256"},
+      {"name": "data", "type": "bytes"},
+      {"name": "operation", "type": "uint8"},
+      {"name": "safeTxGas", "type": "uint256"},
+      {"name": "baseGas", "type": "uint256"},
+      {"name": "gasPrice", "type": "uint256"},
+      {"name": "gasToken", "type": "address"},
+      {"name": "refundReceiver", "type": "address"},
+      {"name": "signatures", "type": "bytes"}
+    ],
+    "outputs": [{"name": "success", "type": "bool"}],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "addOwnerWithThreshold",
+    "inputs": [
+      {"name": "owner", "type": "address"},
+      {"name": "_threshold", "type": "uint256"}
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "removeOwner",
+    "inputs": [
+      {"name": "prevOwner", "type": "address"},
+      {"name": "owner", "type": "address"},
+      {"name": "_threshold", "type": "uint256"}
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "changeThreshold",
+    "inputs": [{"name": "_threshold", "type": "uint256"}],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "encodeTransactionData",
+    "inputs": [
+      {"name": "to", "type": "address"},
+      {"name": "value", "type": "uint256"},
+      {"name": "data", "type": "bytes"},
+      {"name": "operation", "type": "uint8"},
+      {"name": "safeTxGas", "type": "uint256"},
+      {"name": "baseGas", "type": "uint256"},
+      {"name": "gasPrice", "type": "uint256"},
+      {"name": "gasToken", "type": "address"},
+      {"name": "refundReceiver", "type": "address"},
+      {"name": "_nonce", "type": "uint256"}
+    ],
+    "outputs": [{"name": "", "type": "bytes"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "ExecutionSuccess",
+    "inputs": [
+      {"indexed": false, "name": "txHash", "type": "bytes32"},
+      {"indexed": false, "name": "payment", "type": "uint256"}
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ExecutionFailure",
+    "inputs": [
+      {"indexed": false, "name": "txHash", "type": "bytes32"},
+      {"indexed": false, "name": "payment", "type": "uint256"}
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "AddedOwner",
+    "inputs": [{"indexed": false, "name": "owner", "type": "address"}],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RemovedOwner",
+    "inputs": [{"indexed": false, "name": "owner", "type": "address"}],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ChangedThreshold",
+    "inputs": [{"indexed": false, "name": "threshold", "type": "uint256"}],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ApproveHash",
+    "inputs": [
+      {"indexed": true, "name": "approvedHash", "type": "bytes32"},
+      {"indexed": true, "name": "owner", "type": "address"}
+    ],
+    "anonymous": false
+  }
+]

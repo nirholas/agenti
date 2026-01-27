@@ -1,0 +1,381 @@
+{
+  "name": "github-to-mcp",
+  "displayName": "GitHub to MCP",
+  "description": "Convert GitHub repositories to MCP servers for use with Claude Desktop and other AI assistants",
+  "version": "1.0.0",
+  "publisher": "nirholas",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "github",
+    "ai",
+    "tools",
+    "claude",
+    "anthropic",
+    "openapi",
+    "api"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.git/config"
+  ],
+  "main": "./dist/extension.js",
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/github-to-mcp"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "github-to-mcp.convert",
+        "title": "GitHub to MCP: Convert Repository",
+        "icon": "$(github)"
+      },
+      {
+        "command": "github-to-mcp.convertFromUrl",
+        "title": "GitHub to MCP: Convert from URL",
+        "icon": "$(link)"
+      },
+      {
+        "command": "github-to-mcp.convertCurrentRepo",
+        "title": "GitHub to MCP: Convert Current Workspace",
+        "icon": "$(folder)"
+      },
+      {
+        "command": "github-to-mcp.convertFromClipboard",
+        "title": "GitHub to MCP: Convert from Clipboard",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "github-to-mcp.browseRegistry",
+        "title": "GitHub to MCP: Browse Server Registry",
+        "icon": "$(library)"
+      },
+      {
+        "command": "github-to-mcp.configureClaudeDesktop",
+        "title": "GitHub to MCP: Configure Claude Desktop",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "github-to-mcp.openClaudeConfig",
+        "title": "GitHub to MCP: Open Claude Desktop Config",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "github-to-mcp.copyConfig",
+        "title": "GitHub to MCP: Copy MCP Config",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "github-to-mcp.viewDetails",
+        "title": "View Details",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "github-to-mcp.showToolDetails",
+        "title": "Show Tool Details",
+        "icon": "$(symbol-method)"
+      },
+      {
+        "command": "github-to-mcp.removeHistoryItem",
+        "title": "Remove from History",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "github-to-mcp.clearHistory",
+        "title": "Clear History",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "github-to-mcp.refreshHistory",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "github-to-mcp.openInBrowser",
+        "title": "Open in Browser",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "github-to-mcp.exportServer",
+        "title": "Export Server Files",
+        "icon": "$(export)"
+      },
+      {
+        "command": "github-to-mcp.validate",
+        "title": "GitHub to MCP: Validate MCP Server",
+        "icon": "$(check)"
+      },
+      {
+        "command": "github-to-mcp.showOutput",
+        "title": "GitHub to MCP: Show Output",
+        "icon": "$(output)"
+      },
+      {
+        "command": "github-to-mcp.showConversionPanel",
+        "title": "GitHub to MCP: Open Conversion Panel",
+        "icon": "$(window)"
+      },
+      {
+        "command": "github-to-mcp.showQuickActions",
+        "title": "GitHub to MCP: Quick Actions",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "github-to-mcp.filterTools",
+        "title": "Filter Tools",
+        "icon": "$(filter)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "github-to-mcp",
+          "title": "GitHub to MCP",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "github-to-mcp": [
+        {
+          "id": "github-to-mcp.servers",
+          "name": "MCP Servers",
+          "icon": "$(server)"
+        },
+        {
+          "id": "github-to-mcp.tools",
+          "name": "Tools Explorer",
+          "icon": "$(symbol-method)"
+        },
+        {
+          "id": "github-to-mcp.history",
+          "name": "Conversion History",
+          "icon": "$(history)"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "github-to-mcp.servers",
+        "contents": "No MCP servers yet.\n[Convert a Repository](command:github-to-mcp.convertFromUrl)\n[Browse Registry](command:github-to-mcp.browseRegistry)"
+      },
+      {
+        "view": "github-to-mcp.history",
+        "contents": "No conversion history.\n[Convert from URL](command:github-to-mcp.convertFromUrl)\n[Convert Current Workspace](command:github-to-mcp.convertCurrentRepo)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "github-to-mcp.refreshHistory",
+          "when": "view == github-to-mcp.history",
+          "group": "navigation"
+        },
+        {
+          "command": "github-to-mcp.clearHistory",
+          "when": "view == github-to-mcp.history",
+          "group": "navigation"
+        },
+        {
+          "command": "github-to-mcp.convertFromUrl",
+          "when": "view == github-to-mcp.servers",
+          "group": "navigation"
+        },
+        {
+          "command": "github-to-mcp.filterTools",
+          "when": "view == github-to-mcp.tools",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "github-to-mcp.viewDetails",
+          "when": "view == github-to-mcp.history && viewItem == historyItem",
+          "group": "inline"
+        },
+        {
+          "command": "github-to-mcp.openInBrowser",
+          "when": "view == github-to-mcp.history && viewItem == historyItem",
+          "group": "inline"
+        },
+        {
+          "command": "github-to-mcp.removeHistoryItem",
+          "when": "view == github-to-mcp.history && viewItem == historyItem",
+          "group": "inline"
+        },
+        {
+          "command": "github-to-mcp.exportServer",
+          "when": "viewItem == mcpServer || viewItem == historyItem"
+        },
+        {
+          "command": "github-to-mcp.copyConfig",
+          "when": "viewItem == mcpServer || viewItem == historyItem"
+        },
+        {
+          "command": "github-to-mcp.showToolDetails",
+          "when": "viewItem == mcpTool || viewItem == tool",
+          "group": "inline"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "github-to-mcp.validate",
+          "when": "resourceExtname == .js || resourceExtname == .ts || resourceExtname == .py",
+          "group": "github-to-mcp@1"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "github-to-mcp.convertCurrentRepo",
+          "when": "gitOpenRepositoryCount > 0",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "github-to-mcp.viewDetails",
+          "when": "false"
+        },
+        {
+          "command": "github-to-mcp.showToolDetails",
+          "when": "false"
+        },
+        {
+          "command": "github-to-mcp.removeHistoryItem",
+          "when": "false"
+        },
+        {
+          "command": "github-to-mcp.openInBrowser",
+          "when": "false"
+        },
+        {
+          "command": "github-to-mcp.exportServer",
+          "when": "false"
+        },
+        {
+          "command": "github-to-mcp.filterTools",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "github-to-mcp.convertFromUrl",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m"
+      },
+      {
+        "command": "github-to-mcp.convertCurrentRepo",
+        "key": "ctrl+shift+alt+m",
+        "mac": "cmd+shift+alt+m"
+      },
+      {
+        "command": "github-to-mcp.showConversionPanel",
+        "key": "ctrl+k ctrl+m",
+        "mac": "cmd+k cmd+m"
+      }
+    ],
+    "configuration": {
+      "title": "GitHub to MCP",
+      "properties": {
+        "github-to-mcp.defaultPlatform": {
+          "type": "string",
+          "enum": [
+            "claude",
+            "cursor",
+            "json"
+          ],
+          "default": "claude",
+          "description": "Default platform for MCP config output"
+        },
+        "github-to-mcp.autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect GitHub repositories and offer to convert"
+        },
+        "github-to-mcp.historyLimit": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum number of conversions to keep in history"
+        },
+        "github-to-mcp.alwaysShowStatusBar": {
+          "type": "boolean",
+          "default": false,
+          "description": "Always show the status bar item, even when not in a GitHub repository"
+        },
+        "github-to-mcp.githubToken": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Personal Access Token for higher API rate limits"
+        },
+        "github-to-mcp.defaultOutputDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Default directory for generated MCP server files"
+        },
+        "github-to-mcp.defaultRuntime": {
+          "type": "string",
+          "enum": [
+            "node",
+            "typescript",
+            "python"
+          ],
+          "default": "node",
+          "description": "Default runtime for generated MCP servers"
+        },
+        "github-to-mcp.autoConfigureClaude": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically add converted servers to Claude Desktop config"
+        },
+        "github-to-mcp.showToolParameters": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show tool parameters in the Tools Explorer view"
+        },
+        "github-to-mcp.logLevel": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "default": "info",
+          "description": "Logging level for the output channel"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run build",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "pnpm run build -- --watch",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.8",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@nirholas/github-to-mcp": "workspace:*"
+  }
+}

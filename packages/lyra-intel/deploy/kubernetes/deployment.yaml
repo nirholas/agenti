@@ -1,0 +1,288 @@
+# Kubernetes Deployment for Lyra Intel
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lyra-intel
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lyra-intel-config
+  namespace: lyra-intel
+data:
+  API_PORT: "8080"
+  WORKERS: "8"
+  LOG_LEVEL: "INFO"
+  CACHE_BACKEND: "redis"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lyra-intel-secrets
+  namespace: lyra-intel
+type: Opaque
+stringData:
+  OPENAI_API_KEY: "your-openai-key"
+  ANTHROPIC_API_KEY: "your-anthropic-key"
+  POSTGRES_PASSWORD: "your-db-password"
+  REDIS_PASSWORD: "your-redis-password"
+  JWT_SECRET: "your-jwt-secret"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lyra-intel-api
+  namespace: lyra-intel
+  labels:
+    app: lyra-intel
+    component: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: lyra-intel
+      component: api
+  template:
+    metadata:
+      labels:
+        app: lyra-intel
+        component: api
+    spec:
+      containers:
+      - name: api
+        image: ghcr.io/nirholas/lyra-intel:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: API_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: lyra-intel-config
+              key: API_PORT
+        - name: WORKERS
+          valueFrom:
+            configMapKeyRef:
+              name: lyra-intel-config
+              key: WORKERS
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: lyra-intel-secrets
+              key: OPENAI_API_KEY
+        - name: POSTGRES_HOST
+          value: postgres-service
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: lyra-intel-secrets
+              key: POSTGRES_PASSWORD
+        - name: REDIS_HOST
+          value: redis-service
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lyra-intel-service
+  namespace: lyra-intel
+spec:
+  selector:
+    app: lyra-intel
+    component: api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: lyra-intel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        env:
+        - name: POSTGRES_DB
+          value: lyra_intel
+        - name: POSTGRES_USER
+          value: lyra
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: lyra-intel-secrets
+              key: POSTGRES_PASSWORD
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: lyra-intel
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: lyra-intel
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: lyra-intel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+      volumes:
+      - name: redis-storage
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: lyra-intel
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: lyra-intel-hpa
+  namespace: lyra-intel
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: lyra-intel-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lyra-intel-ingress
+  namespace: lyra-intel
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.lyra-intel.com
+    secretName: lyra-intel-tls
+  rules:
+  - host: api.lyra-intel.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lyra-intel-service
+            port:
+              number: 80

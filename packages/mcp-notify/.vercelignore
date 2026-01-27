@@ -1,0 +1,15 @@
+# Ignore Go backend files - this is a static docs site
+api/
+cmd/
+internal/
+pkg/
+*.go
+go.mod
+go.sum
+Dockerfile
+docker-compose.yaml
+Makefile
+web/
+deploy/
+test/
+scripts/

@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pip install --break-system-packages mkdocs-material mkdocs-minify-plugin mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-glightbox && python -m mkdocs build",
+  "outputDirectory": "site",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}

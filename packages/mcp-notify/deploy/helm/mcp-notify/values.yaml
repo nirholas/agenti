@@ -1,0 +1,236 @@
+# Default values for mcp-notify
+# This is a YAML-formatted file.
+
+# Number of replicas
+replicaCount: 2
+
+# Image configuration
+image:
+  repository: ghcr.io/nirholas/mcp-notify
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+
+# Override the name of the chart
+nameOverride: ""
+fullnameOverride: ""
+
+# Service account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use
+  name: ""
+
+# Pod annotations
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+
+# Container security context
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: watch.mcpregistry.dev
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: mcp-notify-tls
+    #   hosts:
+    #     - watch.mcpregistry.dev
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Application configuration
+config:
+  # Logging level: debug, info, warn, error
+  logLevel: info
+  
+  # Poll interval for MCP Registry
+  pollInterval: 5m
+  
+  # Request timeout for registry API
+  requestTimeout: 30s
+  
+  # Enable metrics endpoint
+  metricsEnabled: true
+  
+  # CORS allowed origins
+  corsOrigins: "*"
+
+# Environment variables from ConfigMap or values
+env:
+  # LOG_LEVEL: info
+  # POLL_INTERVAL: 5m
+
+# Environment variables from secrets
+envFromSecrets:
+  # DATABASE_URL: mcp-notify-secrets
+  # REDIS_URL: mcp-notify-secrets
+  # API_SECRET_KEY: mcp-notify-secrets
+
+# Existing secret to use for sensitive values
+# Secret should contain: database-url, redis-url, api-secret-key
+existingSecret: ""
+
+# PostgreSQL configuration (Bitnami subchart)
+postgresql:
+  enabled: true
+  auth:
+    username: mcpwatch
+    password: ""  # Leave empty to auto-generate
+    database: mcpwatch
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+  # For production, consider using external database
+  # enabled: false
+
+# External database configuration (when postgresql.enabled: false)
+externalDatabase:
+  host: ""
+  port: 5432
+  database: mcpwatch
+  username: mcpwatch
+  # Password should be in existingSecret
+  existingSecret: ""
+  existingSecretKey: "database-password"
+
+# Redis configuration (Bitnami subchart)
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+  # For production, consider using external Redis
+  # enabled: false
+
+# External Redis configuration (when redis.enabled: false)
+externalRedis:
+  host: ""
+  port: 6379
+  password: ""
+  # If using existingSecret for password
+  existingSecret: ""
+  existingSecretKey: "redis-password"
+
+# SMTP configuration for email notifications
+smtp:
+  enabled: false
+  host: ""
+  port: 587
+  username: ""
+  from: ""
+  # Password in existingSecret
+  existingSecret: ""
+  existingSecretKey: "smtp-password"
+
+# Health check configuration
+healthCheck:
+  liveness:
+    path: /health
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+# Extra volumes
+extraVolumes: []
+
+# Extra volume mounts
+extraVolumeMounts: []
+
+# Init containers
+initContainers: []
+
+# Sidecar containers
+extraContainers: []
+
+# ServiceMonitor for Prometheus Operator
+serviceMonitor:
+  enabled: false
+  namespace: ""
+  interval: 30s
+  scrapeTimeout: 10s
+  labels: {}
+  annotations: {}
+
+# Network policies
+networkPolicy:
+  enabled: false
+  ingress:
+    - from:
+        - podSelector: {}
+  egress:
+    - to:
+        - podSelector: {}

@@ -1,0 +1,60 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+ffi = false
+ast = true
+build_info = true
+extra_output = ["storageLayout", "abi", "evm.bytecode"]
+
+# Remappings
+remappings = [
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/",
+    "permit2/=lib/permit2/src/",
+]
+
+# Testing
+[profile.default.fuzz]
+runs = 256
+max_test_rejects = 65536
+
+[profile.default.invariant]
+runs = 256
+depth = 15
+
+# CI Profile - more thorough testing
+[profile.ci]
+fuzz = { runs = 10000 }
+invariant = { runs = 1000 }
+
+# Fork testing
+[rpc_endpoints]
+mainnet = "${RPC_ETHEREUM}"
+base = "${RPC_BASE}"
+arbitrum = "${RPC_ARBITRUM}"
+polygon = "${RPC_POLYGON}"
+optimism = "${RPC_OPTIMISM}"
+
+# Etherscan verification
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api" }
+arbitrum = { key = "${ARBISCAN_API_KEY}", url = "https://api.arbiscan.io/api" }
+polygon = { key = "${POLYGONSCAN_API_KEY}", url = "https://api.polygonscan.com/api" }
+optimism = { key = "${OPTIMISTIC_ETHERSCAN_API_KEY}", url = "https://api-optimistic.etherscan.io/api" }
+
+# Formatting
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+multiline_func_header = "attributes_first"
+quote_style = "double"
+number_underscore = "thousands"

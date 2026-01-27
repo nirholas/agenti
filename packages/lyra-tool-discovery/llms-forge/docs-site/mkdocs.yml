@@ -1,0 +1,99 @@
+site_name: llm.energy
+site_url: https://llm.energy
+site_description: Extract documentation for AI agents from any site with llms.txt support
+site_author: nich
+
+repo_name: nirholas/lyra-tool-discovery
+repo_url: https://github.com/nirholas/lyra-tool-discovery
+edit_uri: edit/main/llms-forge/docs-site/docs/
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  
+  icon:
+    repo: fontawesome/brands/github
+  
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+nav:
+  - Home: index.md
+  - Overview: overview.md
+  - llms.txt Standard: llms-txt-standard.md
+  - Examples: examples.md
+  - MCP Server:
+    - Installation: mcp-server/installation.md
+    - Tools: mcp-server/tools.md
+  - API Reference: api-reference.md
+  - Self Hosting: self-hosting.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/lyra-tool-discovery
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: Copyright &copy; 2024-2026 nich

@@ -1,0 +1,71 @@
+[project]
+name = "transaction-mcp-server"
+version = "1.0.0"
+description = "MCP Server for Ethereum transaction building, signing, and serialization"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "nirholas", email = "nirholas@users.noreply.github.com"}
+]
+keywords = [
+    "ethereum",
+    "mcp",
+    "transaction",
+    "eip-1559",
+    "eip-2930",
+    "signing",
+    "offline"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "eth-account>=0.10.0",
+    "eth-utils>=2.0.0",
+    "rlp>=3.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0"
+]
+
+[project.scripts]
+transaction-mcp-server = "transaction_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/nirholas/ethereum-wallet-toolkit"
+Repository = "https://github.com/nirholas/ethereum-wallet-toolkit/tree/main/transaction-mcp-server"
+Documentation = "https://github.com/nirholas/ethereum-wallet-toolkit/blob/main/transaction-mcp-server/README.md"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/transaction_mcp"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true

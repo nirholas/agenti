@@ -1,0 +1,76 @@
+# llm.energy
+
+> Extract documentation for AI agents from any site with llms.txt support
+
+## Overview
+
+llm.energy is a free, open-source tool that fetches documentation from websites supporting the llms.txt standard and organizes it into downloadable markdown files optimized for AI assistants.
+
+## Quick Start
+
+1. Visit [llm.energy](https://llm.energy)
+2. Paste any documentation URL
+3. Click Extract
+4. Download organized markdown files
+
+## Features
+
+- **Smart Extraction**: Fetches llms.txt or llms-full.txt
+- **Document Parsing**: Splits content into organized markdown sections
+- **Agent-Ready Output**: Includes AGENT-GUIDE.md for AI assistants
+- **MCP Server**: Model Context Protocol server for programmatic access
+- **Bulk Download**: Individual files or ZIP bundle
+
+## Output Files
+
+- `llms-full.md` - Complete consolidated documentation
+- `AGENT-GUIDE.md` - Usage instructions for AI assistants
+- Individual `.md` files - One per documentation section
+
+## API
+
+### Extract Documentation
+```
+POST /api/extract
+Body: { "url": "https://docs.example.com" }
+Returns: ExtractionResult with documents, stats, and metadata
+```
+
+### Download as ZIP
+```
+POST /api/download
+Body: { documents, fullDocument, agentGuide, siteName }
+Returns: ZIP file blob
+```
+
+### MCP Server
+```json
+{
+  "mcpServers": {
+    "llm-energy": {
+      "command": "npx",
+      "args": ["-y", "@llm-energy/mcp-server"]
+    }
+  }
+}
+```
+
+## MCP Server Tools
+
+- `extract_documentation` - Extract and parse docs from a URL
+- `fetch_llms_txt` - Fetch raw llms.txt content
+- `get_document_section` - Get specific section by filename
+- `list_extracted_documents` - List all extracted sections
+- `get_full_documentation` - Get consolidated llms-full.md
+- `get_agent_guide` - Get AGENT-GUIDE.md
+
+## Links
+
+- Website: https://llm.energy
+- Documentation: https://llm.energy/docs
+- GitHub: https://github.com/nirholas/lyra-tool-discovery
+- Author: https://x.com/nichxbt
+
+## License
+
+MIT

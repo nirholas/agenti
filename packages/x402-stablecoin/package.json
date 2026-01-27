@@ -1,0 +1,63 @@
+{
+  "name": "@x402/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "X402 Payment Protocol with Sperax USDs - Yield-bearing AI agent payments on Arbitrum",
+  "author": "nirholas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/x402.git"
+  },
+  "keywords": [
+    "x402",
+    "payment-protocol",
+    "sperax",
+    "usds",
+    "stablecoin",
+    "yield",
+    "arbitrum",
+    "eip-3009",
+    "gasless",
+    "ai-agent",
+    "micropayments",
+    "defi"
+  ],
+  "workspaces": [
+    "packages/*",
+    "facilitator",
+    "yield-tracker",
+    "cli",
+    "contracts",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "facilitator": "pnpm --filter facilitator start",
+    "facilitator:dev": "pnpm --filter facilitator dev",
+    "yield-tracker": "pnpm --filter yield-tracker start",
+    "cli": "pnpm --filter @x402/cli start",
+    "contracts:compile": "pnpm --filter contracts compile",
+    "contracts:test": "pnpm --filter contracts test",
+    "contracts:deploy": "pnpm --filter contracts deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.0",
+    "tsup": "^8.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

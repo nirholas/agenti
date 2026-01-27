@@ -1,0 +1,19 @@
+{
+  "root": true,
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "sort-keys-fix/sort-keys-fix": "off",
+    "typescript-sort-keys/interface": "off",
+    "simple-import-sort/exports": "off",
+    "unicorn/prefer-export-from": "off",
+    "unicorn/no-process-exit": "off",
+    "unicorn/prefer-top-level-await": "off",
+    "unicorn/switch-case-braces": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "unused-imports/no-unused-imports": "off",
+    "unused-imports/no-unused-vars": "off",
+    "react/jsx-sort-props": "off",
+    "no-undef": "off"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "llms-forge",
+  "version": "1.0.0",
+  "description": "llm.energy - Extract documentation for AI agents from any site with llms.txt support",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "typecheck": "tsc --noEmit",
+    "docs:install": "pip install -r docs-site/requirements.txt",
+    "docs:dev": "cd docs-site && mkdocs serve",
+    "docs:build": "cd docs-site && mkdocs build"
+  },
+  "dependencies": {
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.0",
+    "js-yaml": "^4.1.1",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.400.0",
+    "nanoid": "^5.0.0",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-syntax-highlighter": "^16.1.0",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^5.1.2",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.0",
+    "jsdom": "^27.4.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5",
+    "vitest": "^4.0.17"
+  }
+}

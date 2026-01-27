@@ -1,0 +1,5 @@
+{
+  "buildCommand": "pip install --break-system-packages mkdocs-material mkdocs-minify-plugin mkdocs-git-revision-date-localized-plugin mkdocs-glightbox mkdocs-git-committers-plugin-2 && python -m mkdocs build -f ../mkdocs.yml",
+  "outputDirectory": "../site",
+  "framework": null
+}

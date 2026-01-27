@@ -1,0 +1,42 @@
+{
+  "id": "slack-mcp",
+  "name": "Slack",
+  "description": "Slack API - send messages, manage channels, and interact with workspaces",
+  "sourceRepo": "slackapi/node-slack-sdk",
+  "sourceUrl": "https://github.com/slackapi/node-slack-sdk",
+  "version": "1.0.0",
+  "sourceVersion": "v7.0.0",
+  "toolCount": 10,
+  "tools": [
+    { "name": "post_message", "description": "Send a message to a channel", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "list_channels", "description": "List all channels", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "get_channel_info", "description": "Get channel information", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "create_channel", "description": "Create a new channel", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "list_users", "description": "List all users in workspace", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "get_user_info", "description": "Get user information", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "upload_file", "description": "Upload a file to Slack", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "add_reaction", "description": "Add a reaction to a message", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "get_conversation_history", "description": "Get message history", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "search_messages", "description": "Search for messages", "source": "openapi", "paramCount": 3, "requiresAuth": true }
+  ],
+  "categories": ["communication", "collaboration", "api"],
+  "tags": ["slack", "messaging", "chat", "team", "workspace"],
+  "popularity": 11250,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst SLACK_TOKEN = process.env.SLACK_TOKEN;\nconst SLACK_BASE_URL = 'https://slack.com/api';\n\nif (!SLACK_TOKEN) {\n  console.error('Error: SLACK_TOKEN environment variable is required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'slack-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function slackRequest(method: string, params: Record<string, unknown> = {}) {\n  const response = await fetch(`${SLACK_BASE_URL}/${method}`, {\n    method: 'POST',\n    headers: {\n      'Authorization': `Bearer ${SLACK_TOKEN}`,\n      'Content-Type': 'application/json; charset=utf-8',\n    },\n    body: JSON.stringify(params),\n  });\n  const result = await response.json();\n  if (!result.ok) throw new Error(result.error || 'Slack API error');\n  return result;\n}\n\nconst tools = [\n  { name: 'post_message', description: 'Send a message to a channel', inputSchema: { type: 'object', properties: { channel: { type: 'string' }, text: { type: 'string' }, blocks: { type: 'array' }, thread_ts: { type: 'string' } }, required: ['channel', 'text'] } },\n  { name: 'list_channels', description: 'List all channels', inputSchema: { type: 'object', properties: { types: { type: 'string' }, limit: { type: 'number' }, cursor: { type: 'string' } } } },\n  { name: 'get_channel_info', description: 'Get channel information', inputSchema: { type: 'object', properties: { channel: { type: 'string' } }, required: ['channel'] } },\n  { name: 'create_channel', description: 'Create a new channel', inputSchema: { type: 'object', properties: { name: { type: 'string' }, is_private: { type: 'boolean' } }, required: ['name'] } },\n  { name: 'list_users', description: 'List all users', inputSchema: { type: 'object', properties: { limit: { type: 'number' }, cursor: { type: 'string' } } } },\n  { name: 'get_user_info', description: 'Get user information', inputSchema: { type: 'object', properties: { user: { type: 'string' } }, required: ['user'] } },\n  { name: 'add_reaction', description: 'Add a reaction', inputSchema: { type: 'object', properties: { channel: { type: 'string' }, timestamp: { type: 'string' }, name: { type: 'string' } }, required: ['channel', 'timestamp', 'name'] } },\n  { name: 'get_conversation_history', description: 'Get message history', inputSchema: { type: 'object', properties: { channel: { type: 'string' }, limit: { type: 'number' }, oldest: { type: 'string' }, latest: { type: 'string' } }, required: ['channel'] } },\n  { name: 'search_messages', description: 'Search for messages', inputSchema: { type: 'object', properties: { query: { type: 'string' }, count: { type: 'number' }, sort: { type: 'string' } }, required: ['query'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, unknown>;\n    switch (name) {\n      case 'post_message': result = await slackRequest('chat.postMessage', a); break;\n      case 'list_channels': result = await slackRequest('conversations.list', a); break;\n      case 'get_channel_info': result = await slackRequest('conversations.info', a); break;\n      case 'create_channel': result = await slackRequest('conversations.create', a); break;\n      case 'list_users': result = await slackRequest('users.list', a); break;\n      case 'get_user_info': result = await slackRequest('users.info', a); break;\n      case 'add_reaction': result = await slackRequest('reactions.add', a); break;\n      case 'get_conversation_history': result = await slackRequest('conversations.history', a); break;\n      case 'search_messages': result = await slackRequest('search.messages', a); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "slack": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "SLACK_TOKEN": "${SLACK_TOKEN}" } } } },
+    "cursor": { "mcpServers": { "slack": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "SLACK_TOKEN": "${SLACK_TOKEN}" } } } },
+    "vscode": { "mcpServers": { "slack": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "SLACK_TOKEN": "${SLACK_TOKEN}" } } } }
+  },
+  "quality": { "overall": 86, "schemaCompleteness": 88, "documentation": 85, "examples": 82, "authHandling": 90, "parameterTypes": 85 },
+  "auth": [{ "type": "http", "scheme": "bearer", "envVar": "SLACK_TOKEN", "instructions": "Create a Slack app at https://api.slack.com/apps and get a bot token" }],
+  "docsUrl": "https://api.slack.com/docs",
+  "apiDocsUrl": "https://api.slack.com/methods",
+  "iconUrl": "https://slack.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

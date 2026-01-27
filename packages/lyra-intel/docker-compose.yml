@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # Main Application
+  # =============================================================================
+  lyra-intel:
+    build:
+      context: .
+      target: production
+    container_name: lyra-intel
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./plugins:/app/plugins
+      - /path/to/repos:/repos:ro  # Mount repositories to analyze
+    environment:
+      - LYRA_DATA_DIR=/app/data
+      - LYRA_OUTPUT_DIR=/app/output
+      - LYRA_PLUGINS_DIR=/app/plugins
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    restart: unless-stopped
+    networks:
+      - lyra-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # =============================================================================
+  # Worker Agents (for distributed processing)
+  # =============================================================================
+  lyra-worker:
+    build:
+      context: .
+      target: production
+    command: ["worker", "--coordinator", "http://lyra-intel:8000"]
+    deploy:
+      replicas: 4
+    volumes:
+      - /path/to/repos:/repos:ro
+    environment:
+      - LYRA_WORKER_MODE=true
+    depends_on:
+      - lyra-intel
+    networks:
+      - lyra-network
+
+  # =============================================================================
+  # Redis Cache (optional)
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: lyra-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - lyra-network
+
+  # =============================================================================
+  # PostgreSQL Database (optional, for production)
+  # =============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: lyra-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=lyra
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-lyra_secret}
+      - POSTGRES_DB=lyra_intel
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - lyra-network
+
+  # =============================================================================
+  # Visualization Dashboard (optional)
+  # =============================================================================
+  dashboard:
+    build:
+      context: .
+      target: development
+    container_name: lyra-dashboard
+    command: ["python", "-c", "from src.web.visualization_server import VisualizationServer; s = VisualizationServer(); s.start(blocking=True)"]
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./output:/app/output:ro
+    depends_on:
+      - lyra-intel
+    networks:
+      - lyra-network
+
+networks:
+  lyra-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:

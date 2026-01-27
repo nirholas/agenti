@@ -1,0 +1,46 @@
+{# Template for generating a single MCP tool for querying events #}
+@mcp.tool()
+async def {{ resource.function_name }}(
+    from_block: int = None,
+    to_block: int = None
+) -> List[Dict[str, Any]]:
+    """
+    {{ resource.description }}
+
+    Query {{ resource.original_name }} events from the contract.
+
+    Args:
+        from_block: Starting block number (default: latest - 1000)
+        to_block: Ending block number (default: latest)
+
+    Returns:
+        List of {{ resource.original_name }} events with:
+{%- for field in resource.fields %}
+        - {{ field.name }}: {{ field.description }}{% if field.indexed %} (indexed, filterable){% endif %}
+
+{%- endfor %}
+        - block_number: Block where the event was emitted
+        - transaction_hash: Hash of the transaction
+        - log_index: Index of the log in the block
+    """
+    if from_block is None:
+        from_block = max(0, w3.eth.block_number - 1000)
+    if to_block is None:
+        to_block = "latest"
+
+    events = contract.events.{{ resource.original_name }}.get_logs(
+        fromBlock=from_block,
+        toBlock=to_block
+    )
+
+    return [
+        {
+{%- for field in resource.fields %}
+            "{{ field.name }}": event.args.get("{{ field.original_name }}"),
+{%- endfor %}
+            "block_number": event.blockNumber,
+            "transaction_hash": event.transactionHash.hex(),
+            "log_index": event.logIndex,
+        }
+        for event in events
+    ]

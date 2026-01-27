@@ -1,0 +1,35 @@
+# CODEOWNERS - Defines who is responsible for code review
+
+# Default owners for everything in the repo
+* @nirholas
+
+# Core components
+/internal/api/ @nirholas
+/internal/db/ @nirholas
+/internal/poller/ @nirholas
+/internal/diff/ @nirholas
+/internal/notifier/ @nirholas
+/internal/subscription/ @nirholas
+/internal/scheduler/ @nirholas
+
+# CLI
+/cmd/ @nirholas
+
+# Web Dashboard
+/web/dashboard/ @nirholas
+
+# Infrastructure
+/deploy/ @nirholas
+/Dockerfile @nirholas
+/docker-compose.yaml @nirholas
+
+# Documentation
+/docs/ @nirholas
+/README.md @nirholas
+/CONTRIBUTING.md @nirholas
+
+# API Specification
+/api/ @nirholas
+
+# Tests
+/test/ @nirholas

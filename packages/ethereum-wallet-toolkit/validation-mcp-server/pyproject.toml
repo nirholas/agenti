@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "validation-mcp-server"
+version = "1.0.0"
+description = "MCP server for Ethereum address/key validation and cryptographic utilities"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = ["ethereum", "mcp", "validation", "checksum", "eip55"]
+authors = [
+    { name = "nirholas", email = "nirholas@users.noreply.github.com" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "eth-account>=0.10.0",
+    "eth-keys>=0.5.0",
+    "eth-utils>=2.0.0",
+    "eth-hash[pycryptodome]>=0.5.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[project.scripts]
+validation-mcp-server = "validation_mcp:main"
+
+[project.urls]
+Homepage = "https://github.com/nirholas/ethereum-wallet-toolkit"
+Repository = "https://github.com/nirholas/ethereum-wallet-toolkit/tree/main/validation-mcp-server"
+Documentation = "https://github.com/nirholas/ethereum-wallet-toolkit/blob/main/validation-mcp-server/README.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/validation_mcp"]

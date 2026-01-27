@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum Wallet Toolkit (Offline)</title>
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #fff;
+            --border: #333;
+            --muted: #888;
+        }
+        .light-mode {
+            --bg: #fff;
+            --fg: #000;
+            --border: #ccc;
+            --muted: #666;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            padding: 1rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        h1 { font-size: 1.25rem; font-weight: 600; }
+        .theme-toggle { background: none; border: 1px solid var(--border); color: var(--fg); padding: 0.5rem; cursor: pointer; font-size: 1rem; }
+        .warning { border: 1px solid var(--border); padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem; }
+        .tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .tab { background: none; border: 1px solid var(--border); color: var(--muted); padding: 0.5rem 0.75rem; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; }
+        .tab:hover { color: var(--fg); }
+        .tab.active { background: var(--fg); color: var(--bg); }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .card { border: 1px solid var(--border); padding: 1rem; margin-bottom: 1rem; }
+        .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        label { display: block; margin-bottom: 0.25rem; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--fg);
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--fg); }
+        textarea { resize: vertical; min-height: 80px; }
+        button {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--fg);
+            background: var(--fg);
+            color: var(--bg);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        button:hover { opacity: 0.9; }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: var(--bg); color: var(--fg); }
+        .btn-small { padding: 0.3rem 0.6rem; font-size: 0.7rem; }
+        .btn-group { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+        .row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .row > * { flex: 1; min-width: 200px; }
+        .checkbox-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .checkbox-row input { width: auto; margin: 0; }
+        .checkbox-row label { margin: 0; text-transform: none; color: var(--fg); }
+        .result { margin-top: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--bg); }
+        .result-title { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .result-value { font-family: monospace; font-size: 0.8rem; word-break: break-all; padding: 0.5rem; border: 1px solid var(--border); margin-bottom: 0.75rem; background: var(--bg); }
+        .status { color: var(--muted); font-size: 0.8rem; margin-top: 0.5rem; }
+        .success { color: var(--fg); }
+        .error { color: var(--fg); font-weight: bold; }
+        .hidden { display: none !important; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; }
+        footer { text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.7rem; }
+        footer a { color: var(--fg); }
+        @media (max-width: 600px) {
+            .tabs { gap: 0.15rem; }
+            .tab { padding: 0.4rem 0.5rem; font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⟠ Ethereum Wallet Toolkit</h1>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">◐</button>
+        </header>
+
+        <div class="warning">
+            <strong>⚠ OFFLINE USE:</strong> Disconnect from internet before use. Save page (Ctrl+S) for offline access. Never share private keys.
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-panel="generate">Generate</button>
+            <button class="tab" data-panel="mnemonic">Mnemonic</button>
+            <button class="tab" data-panel="vanity">Vanity</button>
+            <button class="tab" data-panel="sign">Sign</button>
+            <button class="tab" data-panel="verify">Verify</button>
+            <button class="tab" data-panel="validate">Validate</button>
+            <button class="tab" data-panel="keystore">Keystore</button>
+            <button class="tab" data-panel="transaction">Transaction</button>
+            <button class="tab" data-panel="typed-data">EIP-712</button>
+        </div>
+
+        <!-- GENERATE PANEL -->
+        <div class="panel active" id="panel-generate">
+            <div class="card">
+                <div class="card-title">Generate Random Wallet</div>
+                <button onclick="generateWallet()">Generate New Wallet</button>
+                <div id="generate-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- MNEMONIC PANEL -->
+        <div class="panel" id="panel-mnemonic">
+            <div class="card">
+                <div class="card-title">Create Wallet with Mnemonic</div>
+                <div class="row">
+                    <div>
+                        <label>Word Count</label>
+                        <select id="mnemonic-words">
+                            <option value="12">12 words</option>
+                            <option value="15">15 words</option>
+                            <option value="18">18 words</option>
+                            <option value="21">21 words</option>
+                            <option value="24">24 words</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Passphrase (optional)</label>
+                        <input type="text" id="mnemonic-passphrase" placeholder="Optional BIP39 passphrase">
+                    </div>
+                </div>
+                <label>Derivation Path</label>
+                <input type="text" id="mnemonic-path" value="m/44'/60'/0'/0/0" placeholder="m/44'/60'/0'/0/0">
+                <button onclick="createWithMnemonic()">Create with Mnemonic</button>
+                <div id="mnemonic-create-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Restore from Mnemonic</div>
+                <label>Mnemonic Phrase</label>
+                <textarea id="restore-mnemonic" placeholder="Enter your 12, 15, 18, 21, or 24 word mnemonic phrase"></textarea>
+                <div class="row">
+                    <div>
+                        <label>Passphrase (optional)</label>
+                        <input type="text" id="restore-passphrase" placeholder="Optional passphrase">
+                    </div>
+                    <div>
+                        <label>Derivation Path</label>
+                        <input type="text" id="restore-path" value="m/44'/60'/0'/0/0">
+                    </div>
+                </div>
+                <button onclick="restoreFromMnemonic()">Restore Wallet</button>
+                <div id="mnemonic-restore-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Restore from Private Key</div>
+                <label>Private Key</label>
+                <input type="text" id="restore-key" placeholder="0x... or hex string">
+                <button onclick="restoreFromKey()">Restore from Key</button>
+                <div id="key-restore-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Derive Multiple Accounts</div>
+                <label>Mnemonic Phrase</label>
+                <textarea id="derive-mnemonic" placeholder="Enter mnemonic phrase"></textarea>
+                <div class="row">
+                    <div>
+                        <label>Number of Accounts</label>
+                        <input type="number" id="derive-count" value="5" min="1" max="100">
+                    </div>
+                    <div>
+                        <label>Base Path</label>
+                        <input type="text" id="derive-base-path" value="m/44'/60'/0'/0">
+                    </div>
+                </div>
+                <button onclick="deriveAccounts()">Derive Accounts</button>
+                <div id="derive-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- VANITY PANEL -->
+        <div class="panel" id="panel-vanity">
+            <div class="card">
+                <div class="card-title">Vanity Address Generator</div>
+                <div class="row">
+                    <div>
+                        <label>Prefix (after 0x)</label>
+                        <input type="text" id="vanity-prefix" placeholder="e.g., dead" maxlength="8">
+                    </div>
+                    <div>
+                        <label>Suffix</label>
+                        <input type="text" id="vanity-suffix" placeholder="e.g., beef" maxlength="8">
+                    </div>
+                </div>
+                <label>Contains</label>
+                <input type="text" id="vanity-contains" placeholder="Address must contain this pattern">
+                <label>Regex Pattern</label>
+                <input type="text" id="vanity-regex" placeholder="e.g., ^dead.*beef$">
+                
+                <div class="grid-2" style="margin: 0.75rem 0;">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-case">
+                        <label for="vanity-case">Case-sensitive (EIP-55)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-letters">
+                        <label for="vanity-letters">Letters only (a-f)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-numbers">
+                        <label for="vanity-numbers">Numbers only (0-9)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-mirror">
+                        <label for="vanity-mirror">Mirror/Palindrome</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-doubles">
+                        <label for="vanity-doubles">Leading doubles (aa, bb...)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-zeros">
+                        <label for="vanity-zeros">Many zeros (8+)</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="vanity-contract">
+                        <label for="vanity-contract">Contract address</label>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div>
+                        <label>Leading Character</label>
+                        <input type="text" id="vanity-leading" placeholder="e.g., 0" maxlength="1">
+                    </div>
+                    <div>
+                        <label>Leading Count</label>
+                        <input type="number" id="vanity-leading-count" value="4" min="1" max="20">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Find Count (addresses to find)</label>
+                        <input type="number" id="vanity-count" value="1" min="1" max="100">
+                    </div>
+                    <div>
+                        <label>Estimated Difficulty</label>
+                        <input type="text" id="vanity-difficulty" readonly placeholder="Enter criteria above">
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="vanity-btn" onclick="startVanity()">Start Mining</button>
+                    <button class="btn-secondary" onclick="stopVanity()">Stop</button>
+                    <button class="btn-secondary" onclick="exportVanityResults()" id="vanity-export-btn" disabled>Export Results</button>
+                </div>
+                <p class="status" id="vanity-status"></p>
+                <div id="vanity-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- SIGN PANEL -->
+        <div class="panel" id="panel-sign">
+            <div class="card">
+                <div class="card-title">Sign Message</div>
+                <label>Message</label>
+                <textarea id="sign-message" placeholder="Enter message to sign"></textarea>
+                <label>Private Key</label>
+                <input type="text" id="sign-key" placeholder="0x...">
+                <button onclick="signMessage()">Sign Message</button>
+                <div id="sign-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- VERIFY PANEL -->
+        <div class="panel" id="panel-verify">
+            <div class="card">
+                <div class="card-title">Verify Message Signature</div>
+                <label>Message</label>
+                <textarea id="verify-message" placeholder="Original message"></textarea>
+                <label>Signature</label>
+                <input type="text" id="verify-signature" placeholder="0x...">
+                <label>Expected Address</label>
+                <input type="text" id="verify-address" placeholder="0x...">
+                <button onclick="verifyMessage()">Verify Signature</button>
+                <div id="verify-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- VALIDATE PANEL -->
+        <div class="panel" id="panel-validate">
+            <div class="card">
+                <div class="card-title">Validate Address</div>
+                <label>Ethereum Address</label>
+                <input type="text" id="validate-address" placeholder="0x...">
+                <button onclick="validateAddress()">Validate Address</button>
+                <div id="validate-address-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Validate Private Key</div>
+                <label>Private Key</label>
+                <input type="text" id="validate-key" placeholder="0x...">
+                <button onclick="validateKey()">Validate Key</button>
+                <div id="validate-key-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Verify Key-Address Pair</div>
+                <label>Private Key</label>
+                <input type="text" id="pair-key" placeholder="0x...">
+                <label>Address</label>
+                <input type="text" id="pair-address" placeholder="0x...">
+                <button onclick="validatePair()">Verify Match</button>
+                <div id="pair-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- KEYSTORE PANEL -->
+        <div class="panel" id="panel-keystore">
+            <div class="card">
+                <div class="card-title">Encrypt to Keystore</div>
+                <label>Private Key</label>
+                <input type="text" id="keystore-encrypt-key" placeholder="0x...">
+                <label>Password</label>
+                <input type="password" id="keystore-encrypt-password" placeholder="Strong password">
+                <label>Confirm Password</label>
+                <input type="password" id="keystore-encrypt-confirm" placeholder="Confirm password">
+                <button onclick="encryptKeystore()">Encrypt to Keystore</button>
+                <div id="keystore-encrypt-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Decrypt Keystore</div>
+                <label>Keystore JSON</label>
+                <textarea id="keystore-decrypt-json" placeholder="Paste keystore JSON here"></textarea>
+                <label>Password</label>
+                <input type="password" id="keystore-decrypt-password" placeholder="Keystore password">
+                <button onclick="decryptKeystore()">Decrypt Keystore</button>
+                <div id="keystore-decrypt-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- TRANSACTION PANEL -->
+        <div class="panel" id="panel-transaction">
+            <div class="card">
+                <div class="card-title">Sign Transaction Offline</div>
+                <div class="row">
+                    <div>
+                        <label>To Address</label>
+                        <input type="text" id="tx-to" placeholder="0x...">
+                    </div>
+                    <div>
+                        <label>Value (Wei)</label>
+                        <input type="text" id="tx-value" placeholder="0" value="0">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Nonce</label>
+                        <input type="number" id="tx-nonce" placeholder="0" value="0" min="0">
+                    </div>
+                    <div>
+                        <label>Gas Limit</label>
+                        <input type="number" id="tx-gas" placeholder="21000" value="21000">
+                    </div>
+                    <div>
+                        <label>Chain ID</label>
+                        <input type="number" id="tx-chainid" placeholder="1" value="1">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Gas Price (Wei) - Legacy</label>
+                        <input type="text" id="tx-gasprice" placeholder="e.g., 20000000000">
+                    </div>
+                </div>
+                <p style="color: var(--muted); font-size: 0.75rem; margin-bottom: 0.5rem;">— OR use EIP-1559 —</p>
+                <div class="row">
+                    <div>
+                        <label>Max Fee Per Gas (Wei)</label>
+                        <input type="text" id="tx-maxfee" placeholder="EIP-1559">
+                    </div>
+                    <div>
+                        <label>Max Priority Fee (Wei)</label>
+                        <input type="text" id="tx-priorityfee" placeholder="EIP-1559">
+                    </div>
+                </div>
+                <label>Data (hex)</label>
+                <input type="text" id="tx-data" placeholder="0x" value="0x">
+                <label>Private Key</label>
+                <input type="text" id="tx-key" placeholder="0x...">
+                <button onclick="signTransaction()">Sign Transaction</button>
+                <div id="tx-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <!-- EIP-712 TYPED DATA PANEL -->
+        <div class="panel" id="panel-typed-data">
+            <div class="card">
+                <div class="card-title">Sign EIP-712 Typed Data</div>
+                <label>Typed Data JSON</label>
+                <textarea id="typed-data-json" placeholder='{"domain":{...},"types":{...},"message":{...},"primaryType":"..."}'></textarea>
+                <label>Private Key</label>
+                <input type="text" id="typed-data-key" placeholder="0x...">
+                <button onclick="signTypedData()">Sign Typed Data</button>
+                <div id="typed-data-sign-result" class="result hidden"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Verify EIP-712 Signature</div>
+                <label>Typed Data JSON</label>
+                <textarea id="typed-verify-json" placeholder='{"domain":{...},"types":{...},"message":{...},"primaryType":"..."}'></textarea>
+                <label>Signature</label>
+                <input type="text" id="typed-verify-sig" placeholder="0x...">
+                <label>Expected Address</label>
+                <input type="text" id="typed-verify-address" placeholder="0x...">
+                <button onclick="verifyTypedData()">Verify Signature</button>
+                <div id="typed-data-verify-result" class="result hidden"></div>
+            </div>
+        </div>
+
+        <footer>
+            Ethereum Wallet Toolkit — Uses secp256k1 & keccak256 — <a href="https://github.com/nirholas/ethereum-wallet-toolkit">GitHub</a>
+        </footer>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 1: SECP256K1 ELLIPTIC CURVE CRYPTOGRAPHY -->
+    <!-- ============================================================ -->
+    <script>
+    // secp256k1 curve parameters
+    const CURVE = {
+        P: 2n ** 256n - 2n ** 32n - 977n,
+        N: 2n ** 256n - 0x14551231950b75fc4402da1732fc9bebfn,
+        Gx: 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n,
+        Gy: 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n,
+        a: 0n,
+        b: 7n
+    };
+
+    const mod = (a, b = CURVE.P) => ((a % b) + b) % b;
+    const pow = (b, e, m = CURVE.P) => {
+        let r = 1n;
+        for (b = mod(b, m); e > 0n; e >>= 1n, b = mod(b * b, m))
+            if (e & 1n) r = mod(r * b, m);
+        return r;
+    };
+    const inv = (n, m = CURVE.P) => pow(n, m - 2n, m);
+
+    class Point {
+        constructor(x, y) { this.x = x; this.y = y; }
+        static get BASE() { return new Point(CURVE.Gx, CURVE.Gy); }
+        static get ZERO() { return new Point(0n, 0n); }
+        
+        equals(o) { return this.x === o.x && this.y === o.y; }
+        
+        add(o) {
+            if (this.equals(Point.ZERO)) return o;
+            if (o.equals(Point.ZERO)) return this;
+            const [x1, y1, x2, y2] = [this.x, this.y, o.x, o.y];
+            if (x1 === x2 && y1 === mod(-y2)) return Point.ZERO;
+            const lam = x1 === x2 && y1 === y2
+                ? mod(3n * x1 ** 2n * inv(2n * y1))
+                : mod((y2 - y1) * inv(x2 - x1));
+            const x3 = mod(lam ** 2n - x1 - x2);
+            const y3 = mod(lam * (x1 - x3) - y1);
+            return new Point(x3, y3);
+        }
+        
+        mul(n) {
+            let p = Point.ZERO, d = this;
+            for (n = mod(n, CURVE.N); n > 0n; n >>= 1n, d = d.add(d))
+                if (n & 1n) p = p.add(d);
+            return p;
+        }
+        
+        toBytes() {
+            const x = this.x.toString(16).padStart(64, '0');
+            const y = this.y.toString(16).padStart(64, '0');
+            return new Uint8Array([4, ...hexToBytes(x), ...hexToBytes(y)]);
+        }
+    }
+
+    // Signature recovery
+    function recoverPublicKey(msgHash, signature, recoveryId) {
+        const r = BigInt('0x' + bytesToHex(signature.slice(0, 32)));
+        const s = BigInt('0x' + bytesToHex(signature.slice(32, 64)));
+        const z = BigInt('0x' + bytesToHex(msgHash));
+        
+        const isOdd = recoveryId & 1;
+        const x = r + (recoveryId >> 1 ? CURVE.N : 0n);
+        if (x >= CURVE.P) return null;
+        
+        // Calculate y from x
+        const y2 = mod(pow(x, 3n) + CURVE.b);
+        let y = pow(y2, (CURVE.P + 1n) / 4n);
+        if ((y & 1n) !== BigInt(isOdd)) y = mod(-y);
+        
+        const R = new Point(x, y);
+        const rInv = inv(r, CURVE.N);
+        const u1 = mod(-z * rInv, CURVE.N);
+        const u2 = mod(s * rInv, CURVE.N);
+        
+        const Q = Point.BASE.mul(u1).add(R.mul(u2));
+        return Q;
+    }
+
+    function signMessage(msgHash, privateKey) {
+        const z = BigInt('0x' + bytesToHex(msgHash));
+        const d = BigInt('0x' + privateKey.replace('0x', ''));
+        
+        // Deterministic k using simple hash (not RFC 6979, but sufficient for demo)
+        let k = mod(z + d, CURVE.N);
+        if (k === 0n) k = 1n;
+        
+        // Use crypto.getRandomValues for k to avoid issues
+        const kBytes = new Uint8Array(32);
+        crypto.getRandomValues(kBytes);
+        k = mod(BigInt('0x' + bytesToHex(kBytes)), CURVE.N);
+        if (k === 0n) k = 1n;
+        
+        const R = Point.BASE.mul(k);
+        const r = mod(R.x, CURVE.N);
+        if (r === 0n) return signMessage(msgHash, privateKey); // retry
+        
+        const kInv = inv(k, CURVE.N);
+        let s = mod(kInv * (z + r * d), CURVE.N);
+        if (s === 0n) return signMessage(msgHash, privateKey); // retry
+        
+        // Ensure low S value (BIP 62)
+        if (s > CURVE.N / 2n) s = CURVE.N - s;
+        
+        // Calculate recovery ID
+        let v = 27 + (R.y & 1n ? 1 : 0);
+        if (s !== mod(kInv * (z + r * d), CURVE.N)) v ^= 1;
+        
+        return {
+            r: r.toString(16).padStart(64, '0'),
+            s: s.toString(16).padStart(64, '0'),
+            v: v
+        };
+    }
+
+    function getPublicKey(privateKey) {
+        const pk = privateKey.replace('0x', '');
+        const n = BigInt('0x' + pk);
+        return Point.BASE.mul(n).toBytes();
+    }
+    </script>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 2: KECCAK-256 HASH FUNCTION -->
+    <!-- ============================================================ -->
+    <script>
+    const keccak256 = (() => {
+        const RC = [1n, 0x8082n, 0x800000000000808an, 0x8000000080008000n, 0x808bn, 0x80000001n,
+            0x8000000080008081n, 0x8000000000008009n, 0x8an, 0x88n, 0x80008009n, 0x8000000an,
+            0x8000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
+            0x8000000000008002n, 0x8000000000000080n, 0x800an, 0x800000008000000an,
+            0x8000000080008081n, 0x8000000000008080n, 0x80000001n, 0x8000000080008008n];
+        const ROTC = [1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44];
+        const rot = (x, n) => ((x << BigInt(n)) | (x >> BigInt(64 - n))) & 0xffffffffffffffffn;
+        
+        return (data) => {
+            const state = new Array(25).fill(0n);
+            const rate = 136;
+            const padded = [...data, 1, ...new Array((rate - ((data.length + 1) % rate)) % rate).fill(0)];
+            padded[padded.length - 1] |= 0x80;
+            
+            for (let i = 0; i < padded.length; i += rate) {
+                for (let j = 0; j < rate / 8; j++) {
+                    let v = 0n;
+                    for (let k = 0; k < 8; k++) v |= BigInt(padded[i + j * 8 + k]) << BigInt(k * 8);
+                    state[j] ^= v;
+                }
+                for (let r = 0; r < 24; r++) {
+                    const C = [];
+                    for (let x = 0; x < 5; x++) C[x] = state[x] ^ state[x + 5] ^ state[x + 10] ^ state[x + 15] ^ state[x + 20];
+                    const D = [];
+                    for (let x = 0; x < 5; x++) D[x] = C[(x + 4) % 5] ^ rot(C[(x + 1) % 5], 1);
+                    for (let x = 0; x < 5; x++) for (let y = 0; y < 5; y++) state[x + y * 5] ^= D[x];
+                    let [x, y] = [1, 0], cur = state[1];
+                    for (let t = 0; t < 24; t++) {
+                        const [nx, ny] = [(2 * x + 3 * y) % 5, x];
+                        const tmp = state[nx + ny * 5];
+                        state[nx + ny * 5] = rot(cur, ROTC[t]);
+                        cur = tmp;
+                        [x, y] = [nx, ny];
+                    }
+                    const tmp = state.slice();
+                    for (let y = 0; y < 5; y++) for (let x = 0; x < 5; x++)
+                        state[x + y * 5] = tmp[x + y * 5] ^ ((~tmp[(x + 1) % 5 + y * 5]) & tmp[(x + 2) % 5 + y * 5]);
+                    state[0] ^= RC[r];
+                }
+            }
+            const out = [];
+            for (let i = 0; i < 4; i++) {
+                let v = state[i];
+                for (let j = 0; j < 8; j++) { out.push(Number(v & 0xffn)); v >>= 8n; }
+            }
+            return new Uint8Array(out);
+        };
+    })();
+    </script>
+
+    <!-- ============================================================ -->
+    <!-- SECTION 3: UTILITY FUNCTIONS -->
+    <!-- ============================================================ -->
+    <script>
+    function hexToBytes(h) {
+        h = h.replace('0x', '');
+        const r = [];
+        for (let i = 0; i < h.length; i += 2) r.push(parseInt(h.substr(i, 2), 16));
+        return new Uint8Array(r);
+    }
+
+    function bytesToHex(b) {
+        return [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function generatePrivateKey() {
+        const bytes = new Uint8Array(32);
+        crypto.getRandomValues(bytes);
+        return '0x' + bytesToHex(bytes);
+    }
+
+    function privateKeyToAddress(privateKeyHex) {
+        const privKey = privateKeyHex.replace('0x', '');
+        const pubKey = getPublicKey(privKey);
+        const pubKeyNoPrefix = pubKey.slice(1);
+        const hash = keccak256(pubKeyNoPrefix);
+        const addressBytes = hash.slice(12);
+        return toChecksumAddress(bytesToHex(addressBytes));
+    }
+
+    function toChecksumAddress(address) {
+        address = address.toLowerCase().replace('0x', '');
+        const hashHex = bytesToHex(keccak256(new TextEncoder().encode(address)));
+        let result = '0x';
+        for (let i = 0; i < 40; i++) {
+            result += parseInt(hashHex[i], 16) >= 8 ? address[i].toUpperCase() : address[i];
+        }
+        return result;
+    }
+
+    function isValidHex(s) {
+        return /^[0-9a-fA-F]*$/.test(s);
+    }
+
+    function isValidAddress(addr) {
+        if (!addr.startsWith('0x')) return false;
+        if (addr.length !== 42) return false;
+        return isValidHex(addr.slice(2));
+    }
+
+    function isValidPrivateKey(key) {
+        const k = key.replace('0x', '');
+        if (k.length !== 64) return false;
+        return isValidHex(k);
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        });
+    }
+
+    function showResult(elementId, html) {
+        const el = document.getElementById(elementId);
+        el.innerHTML = html;
+        el.classList.remove('hidden');
+    }
+
+    function resultField(label, value, copyable = true) {
+        const copyBtn = copyable ? `<button class="btn-small btn-secondary" onclick="copyToClipboard('${value.replace(/'/g, "\\'")}')">Copy</button>` : '';
+        return `<div class="result-title">${label}</div><div class="result-value">${value}</div>${copyBtn}`;
+    }
+    </script>
+
+    <!-- Main application logic -->
+    <script>
+    // Core utility functions
+    function privateKeyToAddress(privateKeyHex) {
+        const privKey = privateKeyHex.replace('0x', '');
+        const pubKey = getPublicKey(privKey);
+        const pubKeyNoPrefix = pubKey.slice(1);
+        const hash = keccak256(pubKeyNoPrefix);
+        const addressBytes = hash.slice(12);
+        return toChecksumAddress(bytes2hex(addressBytes));
+    }
+
+    function toChecksumAddress(address) {
+        address = address.toLowerCase().replace('0x', '');
+        const hashHex = bytes2hex(keccak256(new TextEncoder().encode(address)));
+        let result = '0x';
+        for (let i = 0; i < 40; i++) {
+            result += parseInt(hashHex[i], 16) >= 8 ? address[i].toUpperCase() : address[i];
+        }
+        return result;
+    }
+
+    function generatePrivateKey() {
+        const bytes = new Uint8Array(32);
+        crypto.getRandomValues(bytes);
+        return '0x' + bytes2hex(bytes);
+    }
+
+    function isValidHex(s) { return /^[0-9a-fA-F]*$/.test(s); }
+    function isValidAddress(a) { return a && a.startsWith('0x') && a.length === 42 && isValidHex(a.slice(2)); }
+    function isValidPrivateKey(k) { const x = k.replace('0x',''); return x.length === 64 && isValidHex(x); }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text; document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+        });
+    }
+
+    function showResult(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.remove('hidden');
+    }
+
+    function field(label, value, copy = true) {
+        const escaped = value.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const btn = copy ? `<button class="btn-small btn-secondary" onclick="copyText('${escaped}')">Copy</button>` : '';
+        return `<div class="result-title">${label}</div><div class="result-value">${value}</div>${btn}`;
+    }
+
+    // Theme toggle
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+
+    // Tab navigation
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+        });
+    });
+
+    // GENERATE WALLET
+    function generateWallet() {
+        const privateKey = generatePrivateKey();
+        const address = privateKeyToAddress(privateKey);
+        showResult('generate-result', field('Address', address) + field('Private Key', privateKey));
+    }
+
+    // RESTORE FROM KEY
+    function restoreFromKey() {
+        const key = document.getElementById('restore-key').value.trim();
+        if (!isValidPrivateKey(key)) return showResult('key-restore-result', '<div class="error">Invalid private key</div>');
+        const pk = key.startsWith('0x') ? key : '0x' + key;
+        const address = privateKeyToAddress(pk);
+        showResult('key-restore-result', field('Address', address) + field('Private Key', pk));
+    }
+
+    // VALIDATE ADDRESS
+    function validateAddress() {
+        const addr = document.getElementById('validate-address').value.trim();
+        const valid = isValidAddress(addr);
+        const checksum = valid ? toChecksumAddress(addr.slice(2)) : '';
+        showResult('validate-address-result', 
+            `<div class="result-title">Valid</div><div class="result-value">${valid ? 'YES' : 'NO'}</div>` +
+            (valid ? field('Checksum Address', checksum) : ''));
+    }
+
+    // VALIDATE KEY
+    function validateKey() {
+        const key = document.getElementById('validate-key').value.trim();
+        const valid = isValidPrivateKey(key);
+        let html = `<div class="result-title">Valid</div><div class="result-value">${valid ? 'YES' : 'NO'}</div>`;
+        if (valid) {
+            const pk = key.startsWith('0x') ? key : '0x' + key;
+            html += field('Derived Address', privateKeyToAddress(pk));
+        }
+        showResult('validate-key-result', html);
+    }
+
+    // VALIDATE PAIR
+    function validatePair() {
+        const key = document.getElementById('pair-key').value.trim();
+        const addr = document.getElementById('pair-address').value.trim();
+        if (!isValidPrivateKey(key)) return showResult('pair-result', '<div class="error">Invalid private key</div>');
+        if (!isValidAddress(addr)) return showResult('pair-result', '<div class="error">Invalid address</div>');
+        const pk = key.startsWith('0x') ? key : '0x' + key;
+        const derived = privateKeyToAddress(pk);
+        const match = derived.toLowerCase() === addr.toLowerCase();
+        showResult('pair-result', 
+            `<div class="result-title">Match</div><div class="result-value">${match ? 'YES - Key matches address' : 'NO - Key does NOT match address'}</div>` +
+            field('Derived Address', derived));
+    }
+
+    // VANITY ADDRESS
+    let vanityRunning = false;
+    let vanityResults = [];
+    function stopVanity() { vanityRunning = false; }
+
+    function estimateVanityDifficulty(opts) {
+        let chars = 0;
+        if (opts.prefix) chars += opts.prefix.length;
+        if (opts.suffix) chars += opts.suffix.length;
+        if (opts.contains) chars += opts.contains.length;
+        if (opts.leading && opts.leadingCount) chars = Math.max(chars, opts.leadingCount);
+        if (opts.doubles) chars = Math.max(chars, 4);
+        if (opts.zeros) chars = Math.max(chars, 2);
+        if (opts.letters) chars = Math.max(chars, 8);
+        if (opts.numbers) chars = Math.max(chars, 8);
+        if (opts.mirror) chars = Math.max(chars, 10);
+        
+        if (chars === 0) return null;
+        const base = opts.caseSensitive ? 22 : 16;
+        return Math.pow(base, chars);
+    }
+
+    function updateDifficultyEstimate() {
+        const opts = {
+            prefix: document.getElementById('vanity-prefix').value.trim(),
+            suffix: document.getElementById('vanity-suffix').value.trim(),
+            contains: document.getElementById('vanity-contains').value.trim(),
+            caseSensitive: document.getElementById('vanity-case').checked,
+            letters: document.getElementById('vanity-letters').checked,
+            numbers: document.getElementById('vanity-numbers').checked,
+            mirror: document.getElementById('vanity-mirror').checked,
+            doubles: document.getElementById('vanity-doubles').checked,
+            zeros: document.getElementById('vanity-zeros').checked,
+            leading: document.getElementById('vanity-leading').value.trim(),
+            leadingCount: parseInt(document.getElementById('vanity-leading-count').value) || 4
+        };
+        const diff = estimateVanityDifficulty(opts);
+        const el = document.getElementById('vanity-difficulty');
+        if (!diff) { el.value = 'Enter criteria above'; return; }
+        if (diff < 1000) el.value = `~${diff.toFixed(0)} attempts (easy)`;
+        else if (diff < 1000000) el.value = `~${(diff/1000).toFixed(1)}K attempts`;
+        else if (diff < 1000000000) el.value = `~${(diff/1000000).toFixed(1)}M attempts`;
+        else el.value = `~${(diff/1000000000).toFixed(1)}B attempts (hard!)`;
+    }
+
+    // Add listeners to update difficulty estimate
+    ['vanity-prefix', 'vanity-suffix', 'vanity-contains', 'vanity-case', 'vanity-letters', 
+     'vanity-numbers', 'vanity-mirror', 'vanity-doubles', 'vanity-zeros', 'vanity-leading', 
+     'vanity-leading-count'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', updateDifficultyEstimate);
+    });
+
+    function exportVanityResults() {
+        if (vanityResults.length === 0) return;
+        const data = JSON.stringify(vanityResults, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vanity-addresses-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function checkVanityMatch(address, opts) {
+        let addr = address.slice(2);
+        const addrCheck = opts.caseSensitive ? addr : addr.toLowerCase();
+        
+        if (opts.prefix) {
+            const p = opts.caseSensitive ? opts.prefix : opts.prefix.toLowerCase();
+            if (!addrCheck.startsWith(p)) return false;
+        }
+        if (opts.suffix) {
+            const s = opts.caseSensitive ? opts.suffix : opts.suffix.toLowerCase();
+            if (!addrCheck.endsWith(s)) return false;
+        }
+        if (opts.contains) {
+            const c = opts.caseSensitive ? opts.contains : opts.contains.toLowerCase();
+            if (!addrCheck.includes(c)) return false;
+        }
+        if (opts.letters && !/^[a-f]+$/i.test(addr)) return false;
+        if (opts.numbers && !/^[0-9]+$/.test(addr)) return false;
+        if (opts.mirror) {
+            const half = Math.floor(addr.length / 2);
+            if (addrCheck.slice(0, half) !== addrCheck.slice(-half).split('').reverse().join('')) return false;
+        }
+        if (opts.leading && opts.leadingCount > 0) {
+            const expected = (opts.caseSensitive ? opts.leading : opts.leading.toLowerCase()).repeat(opts.leadingCount);
+            if (!addrCheck.startsWith(expected)) return false;
+        }
+        if (opts.doubles) {
+            let count = 0;
+            for (let i = 0; i < addrCheck.length - 1; i += 2) {
+                if (addrCheck[i] === addrCheck[i + 1]) count++; else break;
+            }
+            if (count < 2) return false;
+        }
+        if (opts.zeros && (addrCheck.match(/0/g) || []).length < 8) return false;
+        if (opts.regex) {
+            try { if (!new RegExp(opts.regex, opts.caseSensitive ? '' : 'i').test(addrCheck)) return false; }
+            catch { return false; }
+        }
+        return true;
+    }
+
+    function calculateContractAddress(deployer, nonce = 0) {
+        const addrBytes = hex2bytes(deployer.slice(2));
+        const rlp = nonce === 0 
+            ? new Uint8Array([0xd6, 0x94, ...addrBytes, 0x80])
+            : new Uint8Array([0xd6, 0x94, ...addrBytes, nonce]);
+        const hash = keccak256(rlp);
+        return toChecksumAddress(bytes2hex(hash.slice(12)));
+    }
+
+    function startVanity() {
+        const opts = {
+            prefix: document.getElementById('vanity-prefix').value.trim(),
+            suffix: document.getElementById('vanity-suffix').value.trim(),
+            contains: document.getElementById('vanity-contains').value.trim(),
+            regex: document.getElementById('vanity-regex').value.trim(),
+            caseSensitive: document.getElementById('vanity-case').checked,
+            letters: document.getElementById('vanity-letters').checked,
+            numbers: document.getElementById('vanity-numbers').checked,
+            mirror: document.getElementById('vanity-mirror').checked,
+            doubles: document.getElementById('vanity-doubles').checked,
+            zeros: document.getElementById('vanity-zeros').checked,
+            contract: document.getElementById('vanity-contract').checked,
+            leading: document.getElementById('vanity-leading').value.trim(),
+            leadingCount: parseInt(document.getElementById('vanity-leading-count').value) || 4
+        };
+
+        if (!opts.prefix && !opts.suffix && !opts.contains && !opts.regex && !opts.letters && 
+            !opts.numbers && !opts.mirror && !opts.doubles && !opts.zeros && !opts.leading) {
+            document.getElementById('vanity-status').textContent = 'Specify at least one criteria';
+            return;
+        }
+
+        if (opts.prefix && !isValidHex(opts.prefix)) return document.getElementById('vanity-status').textContent = 'Invalid hex prefix';
+        if (opts.suffix && !isValidHex(opts.suffix)) return document.getElementById('vanity-status').textContent = 'Invalid hex suffix';
+
+        vanityRunning = true;
+        const btn = document.getElementById('vanity-btn');
+        btn.disabled = true;
+        const statusEl = document.getElementById('vanity-status');
+        const startTime = performance.now();
+        let attempts = 0;
+
+        const mine = () => {
+            for (let i = 0; i < 100; i++) {
+                attempts++;
+                const privateKey = generatePrivateKey();
+                const deployerAddress = privateKeyToAddress(privateKey);
+                const checkAddr = opts.contract ? calculateContractAddress(deployerAddress, 0) : deployerAddress;
+                
+                if (checkVanityMatch(checkAddr, opts)) {
+                    const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+                    let html = field('Address', checkAddr) + field('Private Key', privateKey);
+                    if (opts.contract) html = field('Contract Address', checkAddr) + field('Deployer Address', deployerAddress) + field('Deployer Private Key', privateKey);
+                    html += `<div class="result-title">Stats</div><div class="result-value">Time: ${elapsed}s | Attempts: ${attempts.toLocaleString()}</div>`;
+                    showResult('vanity-result', html);
+                    statusEl.textContent = 'Found!';
+                    btn.disabled = false;
+                    vanityRunning = false;
+                    return;
+                }
+            }
+            const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+            statusEl.textContent = `Mining... ${attempts.toLocaleString()} attempts (${elapsed}s)`;
+            if (vanityRunning) setTimeout(mine, 0);
+            else { btn.disabled = false; statusEl.textContent = 'Stopped'; }
+        };
+        setTimeout(mine, 10);
+    }
+
+    // MESSAGE SIGNING
+    function hashMessage(message) {
+        const prefix = '\x19Ethereum Signed Message:\n' + message.length;
+        const prefixBytes = new TextEncoder().encode(prefix);
+        const messageBytes = new TextEncoder().encode(message);
+        const combined = new Uint8Array(prefixBytes.length + messageBytes.length);
+        combined.set(prefixBytes); combined.set(messageBytes, prefixBytes.length);
+        return keccak256(combined);
+    }
+
+    function signEthMessage(message, privateKey) {
+        const msgHash = hashMessage(message);
+        const pk = privateKey.replace('0x', '');
+        const d = BigInt('0x' + pk);
+        const z = BigInt('0x' + bytes2hex(msgHash));
+        
+        let k, r, s, R;
+        do {
+            const kBytes = new Uint8Array(32);
+            crypto.getRandomValues(kBytes);
+            k = mod(BigInt('0x' + bytes2hex(kBytes)), N);
+        } while (k === 0n);
+        
+        R = Point.BASE.mul(k);
+        r = mod(R.x, N);
+        if (r === 0n) return signEthMessage(message, privateKey);
+        
+        const kInv = inv(k, N);
+        s = mod(kInv * (z + r * d), N);
+        if (s === 0n) return signEthMessage(message, privateKey);
+        
+        let v = 27 + (R.y % 2n === 1n ? 1 : 0);
+        if (s > N / 2n) { s = N - s; v = v === 27 ? 28 : 27; }
+        
+        const sig = '0x' + r.toString(16).padStart(64, '0') + s.toString(16).padStart(64, '0') + v.toString(16);
+        return { signature: sig, messageHash: '0x' + bytes2hex(msgHash), r: '0x' + r.toString(16).padStart(64, '0'), s: '0x' + s.toString(16).padStart(64, '0'), v };
+    }
+
+    function recoverAddress(message, signature) {
+        const msgHash = hashMessage(message);
+        const sig = signature.replace('0x', '');
+        const r = BigInt('0x' + sig.slice(0, 64));
+        const s = BigInt('0x' + sig.slice(64, 128));
+        const v = parseInt(sig.slice(128, 130), 16);
+        const recoveryId = v - 27;
+        
+        const z = BigInt('0x' + bytes2hex(msgHash));
+        const isOdd = recoveryId & 1;
+        const x = r;
+        
+        const y2 = mod(pow(x, 3n) + 7n);
+        let y = pow(y2, (P + 1n) / 4n);
+        if ((y % 2n === 1n) !== (isOdd === 1)) y = mod(-y);
+        
+        const R = new Point(x, y);
+        const rInv = inv(r, N);
+        const u1 = mod(-z * rInv, N);
+        const u2 = mod(s * rInv, N);
+        const Q = Point.BASE.mul(u1).add(R.mul(u2));
+        
+        const pubKey = Q.toBytes().slice(1);
+        const hash = keccak256(pubKey);
+        return toChecksumAddress(bytes2hex(hash.slice(12)));
+    }
+
+    function signMessage() {
+        const message = document.getElementById('sign-message').value;
+        const key = document.getElementById('sign-key').value.trim();
+        if (!message) return showResult('sign-result', '<div class="error">Enter a message</div>');
+        if (!isValidPrivateKey(key)) return showResult('sign-result', '<div class="error">Invalid private key</div>');
+        
+        const pk = key.startsWith('0x') ? key : '0x' + key;
+        const result = signEthMessage(message, pk);
+        const address = privateKeyToAddress(pk);
+        
+        showResult('sign-result', 
+            field('Signer Address', address) +
+            field('Signature', result.signature) +
+            field('Message Hash', result.messageHash) +
+            field('r', result.r) + field('s', result.s) +
+            `<div class="result-title">v</div><div class="result-value">${result.v}</div>`);
+    }
+
+    function verifyMessage() {
+        const message = document.getElementById('verify-message').value;
+        const signature = document.getElementById('verify-signature').value.trim();
+        const expectedAddr = document.getElementById('verify-address').value.trim();
+        
+        if (!message || !signature || !expectedAddr) return showResult('verify-result', '<div class="error">Fill all fields</div>');
+        
+        try {
+            const recovered = recoverAddress(message, signature);
+            const valid = recovered.toLowerCase() === expectedAddr.toLowerCase();
+            showResult('verify-result',
+                `<div class="result-title">Valid</div><div class="result-value">${valid ? 'YES - Signature is valid' : 'NO - Signature is invalid'}</div>` +
+                field('Recovered Address', recovered) +
+                field('Expected Address', expectedAddr));
+        } catch (e) {
+            showResult('verify-result', '<div class="error">Error verifying: ' + e.message + '</div>');
+        }
+    }
+
+    // KEYSTORE (simplified - uses PBKDF2 + AES available in browser)
+    async function encryptKeystore() {
+        const key = document.getElementById('keystore-encrypt-key').value.trim();
+        const password = document.getElementById('keystore-encrypt-password').value;
+        const confirm = document.getElementById('keystore-encrypt-confirm').value;
+        
+        if (!isValidPrivateKey(key)) return showResult('keystore-encrypt-result', '<div class="error">Invalid private key</div>');
+        if (!password || password.length < 8) return showResult('keystore-encrypt-result', '<div class="error">Password must be at least 8 characters</div>');
+        if (password !== confirm) return showResult('keystore-encrypt-result', '<div class="error">Passwords do not match</div>');
+        
+        const pk = key.replace('0x', '');
+        const address = privateKeyToAddress('0x' + pk);
+        const salt = crypto.getRandomValues(new Uint8Array(32));
+        const iv = crypto.getRandomValues(new Uint8Array(16));
+        const id = bytes2hex(crypto.getRandomValues(new Uint8Array(16)));
+        
+        const encoder = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+        const derivedBits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: 262144, hash: 'SHA-256' }, keyMaterial, 256);
+        const derivedKey = new Uint8Array(derivedBits);
+        
+        const aesKey = await crypto.subtle.importKey('raw', derivedKey.slice(0, 16), { name: 'AES-CTR' }, false, ['encrypt']);
+        const encrypted = await crypto.subtle.encrypt({ name: 'AES-CTR', counter: iv, length: 64 }, aesKey, hex2bytes(pk));
+        const ciphertext = new Uint8Array(encrypted);
+        
+        const macData = new Uint8Array([...derivedKey.slice(16), ...ciphertext]);
+        const mac = keccak256(macData);
+        
+        const keystore = {
+            version: 3,
+            id: id.slice(0,8)+'-'+id.slice(8,12)+'-'+id.slice(12,16)+'-'+id.slice(16,20)+'-'+id.slice(20),
+            address: address.slice(2).toLowerCase(),
+            crypto: {
+                ciphertext: bytes2hex(ciphertext),
+                cipherparams: { iv: bytes2hex(iv) },
+                cipher: 'aes-128-ctr',
+                kdf: 'pbkdf2',
+                kdfparams: { dklen: 32, salt: bytes2hex(salt), c: 262144, prf: 'hmac-sha256' },
+                mac: bytes2hex(mac)
+            }
+        };
+        
+        const json = JSON.stringify(keystore, null, 2);
+        showResult('keystore-encrypt-result', 
+            field('Address', address) +
+            `<div class="result-title">Keystore JSON</div><div class="result-value" style="white-space:pre-wrap;font-size:0.7rem;">${json}</div>` +
+            `<button class="btn-small btn-secondary" onclick="copyText(\`${json.replace(/`/g,'\\`')}\`)">Copy JSON</button>`);
+    }
+
+    async function decryptKeystore() {
+        const jsonStr = document.getElementById('keystore-decrypt-json').value.trim();
+        const password = document.getElementById('keystore-decrypt-password').value;
+        
+        if (!jsonStr || !password) return showResult('keystore-decrypt-result', '<div class="error">Enter keystore JSON and password</div>');
+        
+        try {
+            const ks = JSON.parse(jsonStr);
+            const salt = hex2bytes(ks.crypto.kdfparams.salt);
+            const iv = hex2bytes(ks.crypto.cipherparams.iv);
+            const ciphertext = hex2bytes(ks.crypto.ciphertext);
+            const iterations = ks.crypto.kdfparams.c;
+            
+            const encoder = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
+            const derivedBits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, keyMaterial, 256);
+            const derivedKey = new Uint8Array(derivedBits);
+            
+            const macData = new Uint8Array([...derivedKey.slice(16), ...ciphertext]);
+            const mac = bytes2hex(keccak256(macData));
+            if (mac !== ks.crypto.mac) return showResult('keystore-decrypt-result', '<div class="error">Invalid password (MAC mismatch)</div>');
+            
+            const aesKey = await crypto.subtle.importKey('raw', derivedKey.slice(0, 16), { name: 'AES-CTR' }, false, ['decrypt']);
+            const decrypted = await crypto.subtle.decrypt({ name: 'AES-CTR', counter: iv, length: 64 }, aesKey, ciphertext);
+            const privateKey = '0x' + bytes2hex(new Uint8Array(decrypted));
+            const address = privateKeyToAddress(privateKey);
+            
+            showResult('keystore-decrypt-result', field('Address', address) + field('Private Key', privateKey));
+        } catch (e) {
+            showResult('keystore-decrypt-result', '<div class="error">Error: ' + e.message + '</div>');
+        }
+    }
+
+    // TRANSACTION SIGNING
+    function rlpEncode(input) {
+        if (input instanceof Uint8Array) {
+            if (input.length === 1 && input[0] < 128) return input;
+            return new Uint8Array([...rlpLength(input.length, 128), ...input]);
+        }
+        if (Array.isArray(input)) {
+            const output = input.map(rlpEncode).reduce((a, b) => new Uint8Array([...a, ...b]), new Uint8Array());
+            return new Uint8Array([...rlpLength(output.length, 192), ...output]);
+        }
+        return new Uint8Array();
+    }
+
+    function rlpLength(len, offset) {
+        if (len < 56) return new Uint8Array([len + offset]);
+        const hexLen = len.toString(16);
+        const lenBytes = hex2bytes(hexLen.length % 2 ? '0' + hexLen : hexLen);
+        return new Uint8Array([lenBytes.length + offset + 55, ...lenBytes]);
+    }
+
+    function bigintToBytes(n) {
+        if (n === 0n) return new Uint8Array([]);
+        const hex = n.toString(16);
+        return hex2bytes(hex.length % 2 ? '0' + hex : hex);
+    }
+
+    function signTransaction() {
+        const to = document.getElementById('tx-to').value.trim();
+        const value = document.getElementById('tx-value').value.trim() || '0';
+        const nonce = parseInt(document.getElementById('tx-nonce').value) || 0;
+        const gas = parseInt(document.getElementById('tx-gas').value) || 21000;
+        const chainId = parseInt(document.getElementById('tx-chainid').value) || 1;
+        const gasPrice = document.getElementById('tx-gasprice').value.trim();
+        const maxFee = document.getElementById('tx-maxfee').value.trim();
+        const priorityFee = document.getElementById('tx-priorityfee').value.trim();
+        const data = document.getElementById('tx-data').value.trim() || '0x';
+        const key = document.getElementById('tx-key').value.trim();
+
+        if (!isValidAddress(to)) return showResult('tx-result', '<div class="error">Invalid To address</div>');
+        if (!isValidPrivateKey(key)) return showResult('tx-result', '<div class="error">Invalid private key</div>');
+        if (!gasPrice && !maxFee) return showResult('tx-result', '<div class="error">Specify gas price or max fee</div>');
+
+        const pk = key.startsWith('0x') ? key : '0x' + key;
+        const valueWei = BigInt(value);
+        const dataBytes = data === '0x' ? new Uint8Array() : hex2bytes(data.replace('0x', ''));
+
+        try {
+            let txHash, rawTx, sigResult;
+            
+            if (maxFee) {
+                // EIP-1559 transaction
+                const maxFeeWei = BigInt(maxFee);
+                const priorityFeeWei = BigInt(priorityFee || '0');
+                const txData = [
+                    bigintToBytes(BigInt(chainId)),
+                    bigintToBytes(BigInt(nonce)),
+                    bigintToBytes(priorityFeeWei),
+                    bigintToBytes(maxFeeWei),
+                    bigintToBytes(BigInt(gas)),
+                    hex2bytes(to.slice(2)),
+                    bigintToBytes(valueWei),
+                    dataBytes,
+                    [] // access list
+                ];
+                const encoded = rlpEncode(txData);
+                const toSign = new Uint8Array([2, ...encoded]);
+                txHash = keccak256(toSign);
+                
+                sigResult = signTxHash(txHash, pk);
+                const signedData = [...txData.slice(0, -1), [], bigintToBytes(BigInt(sigResult.v - 27)), hex2bytes(sigResult.r.slice(2)), hex2bytes(sigResult.s.slice(2))];
+                rawTx = '0x02' + bytes2hex(rlpEncode(signedData));
+            } else {
+                // Legacy transaction
+                const gasPriceWei = BigInt(gasPrice);
+                const txData = [
+                    bigintToBytes(BigInt(nonce)),
+                    bigintToBytes(gasPriceWei),
+                    bigintToBytes(BigInt(gas)),
+                    hex2bytes(to.slice(2)),
+                    bigintToBytes(valueWei),
+                    dataBytes,
+                    bigintToBytes(BigInt(chainId)),
+                    new Uint8Array(),
+                    new Uint8Array()
+                ];
+                txHash = keccak256(rlpEncode(txData));
+                
+                sigResult = signTxHash(txHash, pk);
+                const v = BigInt(sigResult.v) + BigInt(chainId) * 2n + 8n;
+                const signedData = [
+                    bigintToBytes(BigInt(nonce)),
+                    bigintToBytes(gasPriceWei),
+                    bigintToBytes(BigInt(gas)),
+                    hex2bytes(to.slice(2)),
+                    bigintToBytes(valueWei),
+                    dataBytes,
+                    bigintToBytes(v),
+                    hex2bytes(sigResult.r.slice(2)),
+                    hex2bytes(sigResult.s.slice(2))
+                ];
+                rawTx = '0x' + bytes2hex(rlpEncode(signedData));
+            }
+
+            const finalHash = keccak256(hex2bytes(rawTx.slice(2)));
+            showResult('tx-result',
+                field('Transaction Hash', '0x' + bytes2hex(finalHash)) +
+                field('Raw Transaction', rawTx) +
+                field('r', sigResult.r) + field('s', sigResult.s) +
+                `<div class="result-title">v</div><div class="result-value">${sigResult.v}</div>`);
+        } catch (e) {
+            showResult('tx-result', '<div class="error">Error: ' + e.message + '</div>');
+        }
+    }
+
+    function signTxHash(hash, privateKey) {
+        const pk = privateKey.replace('0x', '');
+        const d = BigInt('0x' + pk);
+        const z = BigInt('0x' + bytes2hex(hash));
+        
+        let k, r, s, R;
+        do {
+            const kBytes = new Uint8Array(32);
+            crypto.getRandomValues(kBytes);
+            k = mod(BigInt('0x' + bytes2hex(kBytes)), N);
+        } while (k === 0n);
+        
+        R = Point.BASE.mul(k);
+        r = mod(R.x, N);
+        if (r === 0n) return signTxHash(hash, privateKey);
+        
+        const kInv = inv(k, N);
+        s = mod(kInv * (z + r * d), N);
+        if (s === 0n) return signTxHash(hash, privateKey);
+        
+        let v = 27 + (R.y % 2n === 1n ? 1 : 0);
+        if (s > N / 2n) { s = N - s; v = v === 27 ? 28 : 27; }
+        
+        return { r: '0x' + r.toString(16).padStart(64, '0'), s: '0x' + s.toString(16).padStart(64, '0'), v };
+    }
+
+    // EIP-712 TYPED DATA
+    function hashTypedData(typedData) {
+        const { domain, types, message, primaryType } = typedData;
+        
+        function encodeType(name) {
+            const deps = new Set();
+            function findDeps(t) {
+                if (deps.has(t) || !types[t]) return;
+                deps.add(t);
+                types[t].forEach(f => findDeps(f.type.replace(/\[\d*\]$/, '')));
+            }
+            findDeps(name);
+            deps.delete(name);
+            const sorted = [name, ...[...deps].sort()];
+            return sorted.map(t => `${t}(${types[t].map(f => `${f.type} ${f.name}`).join(',')})`).join('');
+        }
+
+        function typeHash(name) {
+            return keccak256(new TextEncoder().encode(encodeType(name)));
+        }
+
+        function encodeData(type, data) {
+            const values = [typeHash(type)];
+            for (const field of types[type]) {
+                const value = data[field.name];
+                if (field.type === 'string') {
+                    values.push(keccak256(new TextEncoder().encode(value)));
+                } else if (field.type === 'bytes') {
+                    values.push(keccak256(hex2bytes(value.replace('0x', ''))));
+                } else if (types[field.type]) {
+                    values.push(encodeData(field.type, value));
+                } else if (field.type === 'address') {
+                    const addr = hex2bytes(value.slice(2).padStart(64, '0'));
+                    values.push(addr);
+                } else if (field.type.startsWith('uint') || field.type.startsWith('int')) {
+                    const n = BigInt(value);
+                    values.push(hex2bytes(n.toString(16).padStart(64, '0')));
+                } else if (field.type === 'bool') {
+                    values.push(hex2bytes((value ? '1' : '0').padStart(64, '0')));
+                } else if (field.type.startsWith('bytes')) {
+                    const v = value.replace('0x', '').padEnd(64, '0');
+                    values.push(hex2bytes(v));
+                }
+            }
+            const concat = values.reduce((a, b) => {
+                const arr = b instanceof Uint8Array ? b : hex2bytes(bytes2hex(b));
+                return new Uint8Array([...a, ...arr]);
+            }, new Uint8Array());
+            return keccak256(concat);
+        }
+
+        const domainType = [
+            domain.name && { name: 'name', type: 'string' },
+            domain.version && { name: 'version', type: 'string' },
+            domain.chainId !== undefined && { name: 'chainId', type: 'uint256' },
+            domain.verifyingContract && { name: 'verifyingContract', type: 'address' }
+        ].filter(Boolean);
+        types.EIP712Domain = domainType;
+
+        const domainSeparator = encodeData('EIP712Domain', domain);
+        const structHash = encodeData(primaryType, message);
+        
+        const toSign = new Uint8Array([0x19, 0x01, ...domainSeparator, ...structHash]);
+        return keccak256(toSign);
+    }
+
+    function signTypedData() {
+        const jsonStr = document.getElementById('typed-data-json').value.trim();
+        const key = document.getElementById('typed-data-key').value.trim();
+        
+        if (!jsonStr) return showResult('typed-data-sign-result', '<div class="error">Enter typed data JSON</div>');
+        if (!isValidPrivateKey(key)) return showResult('typed-data-sign-result', '<div class="error">Invalid private key</div>');
+        
+        try {
+            const typedData = JSON.parse(jsonStr);
+            const hash = hashTypedData(typedData);
+            const pk = key.startsWith('0x') ? key : '0x' + key;
+            const sig = signTxHash(hash, pk);
+            const signature = sig.r + sig.s.slice(2) + sig.v.toString(16);
+            const address = privateKeyToAddress(pk);
+            
+            showResult('typed-data-sign-result',
+                field('Signer', address) +
+                field('Signature', signature) +
+                field('Message Hash', '0x' + bytes2hex(hash)) +
+                field('r', sig.r) + field('s', sig.s) +
+                `<div class="result-title">v</div><div class="result-value">${sig.v}</div>`);
+        } catch (e) {
+            showResult('typed-data-sign-result', '<div class="error">Error: ' + e.message + '</div>');
+        }
+    }
+
+    function verifyTypedData() {
+        const jsonStr = document.getElementById('typed-verify-json').value.trim();
+        const sig = document.getElementById('typed-verify-sig').value.trim();
+        const expectedAddr = document.getElementById('typed-verify-address').value.trim();
+        
+        if (!jsonStr || !sig || !expectedAddr) return showResult('typed-data-verify-result', '<div class="error">Fill all fields</div>');
+        
+        try {
+            const typedData = JSON.parse(jsonStr);
+            const hash = hashTypedData(typedData);
+            
+            const sigClean = sig.replace('0x', '');
+            const r = BigInt('0x' + sigClean.slice(0, 64));
+            const s = BigInt('0x' + sigClean.slice(64, 128));
+            const v = parseInt(sigClean.slice(128, 130), 16);
+            const recoveryId = v - 27;
+            
+            const z = BigInt('0x' + bytes2hex(hash));
+            const isOdd = recoveryId & 1;
+            const x = r;
+            
+            const y2 = mod(pow(x, 3n) + 7n);
+            let y = pow(y2, (P + 1n) / 4n);
+            if ((y % 2n === 1n) !== (isOdd === 1)) y = mod(-y);
+            
+            const R = new Point(x, y);
+            const rInv = inv(r, N);
+            const u1 = mod(-z * rInv, N);
+            const u2 = mod(s * rInv, N);
+            const Q = Point.BASE.mul(u1).add(R.mul(u2));
+            
+            const pubKey = Q.toBytes().slice(1);
+            const addrHash = keccak256(pubKey);
+            const recovered = toChecksumAddress(bytes2hex(addrHash.slice(12)));
+            
+            const valid = recovered.toLowerCase() === expectedAddr.toLowerCase();
+            showResult('typed-data-verify-result',
+                `<div class="result-title">Valid</div><div class="result-value">${valid ? 'YES' : 'NO'}</div>` +
+                field('Recovered', recovered) + field('Expected', expectedAddr));
+        } catch (e) {
+            showResult('typed-data-verify-result', '<div class="error">Error: ' + e.message + '</div>');
+        }
+    }
+
+    // Mnemonic placeholders (BIP39 requires wordlist - show message)
+    function createWithMnemonic() {
+        showResult('mnemonic-create-result', '<div class="error">BIP39 mnemonic generation requires the full wordlist (~2048 words). Use the CLI tool for mnemonic operations, or generate a random wallet instead.</div>');
+    }
+    function restoreFromMnemonic() {
+        showResult('mnemonic-restore-result', '<div class="error">BIP39 mnemonic restoration requires PBKDF2 with the wordlist. Use the CLI tool for mnemonic operations.</div>');
+    }
+    function deriveAccounts() {
+        showResult('derive-result', '<div class="error">HD derivation requires BIP32/BIP39 implementation. Use the CLI tool for account derivation.</div>');
+    }
+    </script>
+</body>
+</html>
+
+
+
+

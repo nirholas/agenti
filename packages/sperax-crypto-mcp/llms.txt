@@ -1,0 +1,85 @@
+# Sperax MCP Server
+
+> Model Context Protocol server for the Sperax DeFi ecosystem - enabling AI agents to interact with USDs (auto-yield stablecoin), SPA governance, veSPA staking, Demeter yield farms, and the complete Sperax protocol on Arbitrum and BNB Chain.
+
+## Quick Facts
+- **Tools**: 85 callable functions across 16 categories
+- **Resources**: 11 documentation endpoints
+- **Prompts**: 19 pre-built conversation templates
+- **Networks**: Arbitrum One, BNB Chain
+- **Transport**: stdio (Claude Desktop) or HTTP/SSE
+
+## Installation
+```bash
+npx -y @sperax/mcp-server
+```
+
+## Claude Desktop Config
+```json
+{
+  "mcpServers": {
+    "sperax": {
+      "command": "npx",
+      "args": ["-y", "@sperax/mcp-server"]
+    }
+  }
+}
+```
+
+## Core Capabilities
+
+### USDs Stablecoin (7 tools)
+- `usds_get_info` - Token overview, supply, APR
+- `usds_get_balance` - Check balance and rebase state
+- `usds_get_yield_info` - Current yield metrics
+- `usds_estimate_mint` - Simulate minting
+
+### Vault & Collateral (10 tools)
+- `vault_get_status` - TVL, health, utilization
+- `vault_get_collaterals` - Supported collaterals
+- `vault_get_strategies` - Active yield strategies
+
+### SPA & Staking (8 tools)
+- `spa_get_info` - Token overview
+- `vespa_get_position` - Lock position and voting power
+- `vespa_calculate_power` - Calculate voting power
+
+### Demeter Farms (7 tools)
+- `demeter_list_farms` - All active farms
+- `demeter_get_top_farms` - Highest APR farms
+- `demeter_get_user_position` - User farm positions
+
+### Analytics (6 tools)
+- `analytics_get_tvl` - TVL breakdown
+- `analytics_get_protocol_health` - Health score
+
+### Governance (5 tools)
+- `governance_get_proposals` - Active proposals
+- `governance_get_voting_power` - User voting power
+
+### Oracle (5 tools)
+- `oracle_get_all_prices` - Chainlink prices
+- `oracle_check_staleness` - Data freshness
+
+### Plus: Dripper (5), Yield Reserve (4), Portfolio (2), Subgraph (5), Supply (3), Swap (3), Agents (5), Plugins (6), News (7)
+
+## Key Protocol Concepts
+
+- **USDs**: Auto-yield stablecoin, ~5% APY via daily rebase, no claiming required
+- **SPA**: Governance token, 30% of yield used for buyback & burn
+- **veSPA**: Vote-escrowed SPA, lock 7 days to 4 years, voting power = SPA × (days/365)
+- **xSPA**: Reward token, redeem for SPA with 15-180 day vesting (50-100%)
+- **Demeter**: No-code yield farm creation, 100 USDs fee
+
+## Contract Addresses (Arbitrum)
+- USDs: `0xD74f5255D557944cf7Dd0E45FF521520002D5748`
+- SPA: `0x5575552988A3A80504bBaeB1311674fCFd40aD4B`
+- Vault: `0x6Bbc476Ee35CBA9e9c3A59fc5b10d7a0BC6f74Ca`
+- veSPA: `0x2e2071180682Ce6C247B1eF93d382D509F5F6A17`
+
+## Links
+- Docs: https://docs.sperax.io
+- App: https://app.sperax.io
+- GitHub: https://github.com/sperax
+
+For comprehensive documentation, see llms-full.txt

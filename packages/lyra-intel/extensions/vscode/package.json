@@ -1,0 +1,138 @@
+{
+  "name": "lyra-intel-vscode",
+  "displayName": "Lyra Intel",
+  "description": "AI-powered code analysis and intelligence for VS Code",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:go",
+    "onLanguage:rust",
+    "onLanguage:java",
+    "onCommand:lyraIntel.analyze",
+    "onCommand:lyraIntel.analyzeCurrent",
+    "onCommand:lyraIntel.securityScan",
+    "onCommand:lyraIntel.showInsights"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lyraIntel.analyze",
+        "title": "Lyra Intel: Analyze Workspace"
+      },
+      {
+        "command": "lyraIntel.analyzeCurrent",
+        "title": "Lyra Intel: Analyze Current File"
+      },
+      {
+        "command": "lyraIntel.securityScan",
+        "title": "Lyra Intel: Security Scan"
+      },
+      {
+        "command": "lyraIntel.showInsights",
+        "title": "Lyra Intel: Show Code Insights"
+      },
+      {
+        "command": "lyraIntel.fixSecurity",
+        "title": "Lyra Intel: Fix Security Issue"
+      }
+    ],
+    "configuration": {
+      "title": "Lyra Intel",
+      "properties": {
+        "lyraIntel.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:8080",
+          "description": "Lyra Intel API server URL"
+        },
+        "lyraIntel.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for authentication"
+        },
+        "lyraIntel.autoAnalyze": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically analyze files on save"
+        },
+        "lyraIntel.showInlineHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline code hints"
+        },
+        "lyraIntel.securityScanOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run security scan on file save"
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "lyraIntelInsights",
+          "name": "Lyra Intel Insights"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "lyraIntel",
+          "title": "Lyra Intel",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "lyraIntel.analyze",
+          "group": "lyraIntel@1"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "lyraIntel.analyzeCurrent",
+          "group": "lyraIntel@1"
+        },
+        {
+          "command": "lyraIntel.showInsights",
+          "group": "lyraIntel@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

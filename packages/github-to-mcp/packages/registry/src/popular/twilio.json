@@ -1,0 +1,40 @@
+{
+  "id": "twilio-mcp",
+  "name": "Twilio",
+  "description": "Twilio API - send SMS, make calls, and manage communication services",
+  "sourceRepo": "twilio/twilio-node",
+  "sourceUrl": "https://github.com/twilio/twilio-node",
+  "version": "1.0.0",
+  "sourceVersion": "v5.0.0",
+  "toolCount": 8,
+  "tools": [
+    { "name": "send_sms", "description": "Send an SMS message", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "list_messages", "description": "List sent/received messages", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "get_message", "description": "Get a message by SID", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "make_call", "description": "Initiate a phone call", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "list_calls", "description": "List call records", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "list_phone_numbers", "description": "List available phone numbers", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "lookup_phone_number", "description": "Lookup phone number details", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "send_whatsapp", "description": "Send a WhatsApp message", "source": "openapi", "paramCount": 3, "requiresAuth": true }
+  ],
+  "categories": ["communication", "sms", "api"],
+  "tags": ["twilio", "sms", "voice", "calls", "whatsapp", "messaging"],
+  "popularity": 9840,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;\nconst TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;\n\nif (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {\n  console.error('Error: TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN environment variables are required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'twilio-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function twilioRequest(endpoint: string, method: string = 'GET', body?: Record<string, string>) {\n  const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');\n  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}${endpoint}`, {\n    method,\n    headers: {\n      'Authorization': `Basic ${auth}`,\n      'Content-Type': 'application/x-www-form-urlencoded',\n    },\n    body: body ? new URLSearchParams(body).toString() : undefined,\n  });\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.message || 'Twilio API error');\n  }\n  return response.json();\n}\n\nconst tools = [\n  { name: 'send_sms', description: 'Send an SMS', inputSchema: { type: 'object', properties: { to: { type: 'string' }, from: { type: 'string' }, body: { type: 'string' }, status_callback: { type: 'string' } }, required: ['to', 'from', 'body'] } },\n  { name: 'list_messages', description: 'List messages', inputSchema: { type: 'object', properties: { to: { type: 'string' }, from: { type: 'string' }, date_sent: { type: 'string' }, page_size: { type: 'number' } } } },\n  { name: 'get_message', description: 'Get a message', inputSchema: { type: 'object', properties: { message_sid: { type: 'string' } }, required: ['message_sid'] } },\n  { name: 'make_call', description: 'Make a call', inputSchema: { type: 'object', properties: { to: { type: 'string' }, from: { type: 'string' }, url: { type: 'string' }, twiml: { type: 'string' } }, required: ['to', 'from'] } },\n  { name: 'list_calls', description: 'List calls', inputSchema: { type: 'object', properties: { to: { type: 'string' }, from: { type: 'string' }, status: { type: 'string' }, page_size: { type: 'number' } } } },\n  { name: 'list_phone_numbers', description: 'List phone numbers', inputSchema: { type: 'object', properties: { country_code: { type: 'string' }, type: { type: 'string' }, page_size: { type: 'number' } } } },\n  { name: 'send_whatsapp', description: 'Send WhatsApp message', inputSchema: { type: 'object', properties: { to: { type: 'string', description: 'WhatsApp number with whatsapp: prefix' }, from: { type: 'string' }, body: { type: 'string' } }, required: ['to', 'from', 'body'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, string>;\n    switch (name) {\n      case 'send_sms': result = await twilioRequest('/Messages.json', 'POST', { To: a.to, From: a.from, Body: a.body }); break;\n      case 'list_messages': result = await twilioRequest('/Messages.json'); break;\n      case 'get_message': result = await twilioRequest(`/Messages/${a.message_sid}.json`); break;\n      case 'make_call': result = await twilioRequest('/Calls.json', 'POST', { To: a.to, From: a.from, Url: a.url || '', Twiml: a.twiml || '' }); break;\n      case 'list_calls': result = await twilioRequest('/Calls.json'); break;\n      case 'list_phone_numbers': result = await twilioRequest('/IncomingPhoneNumbers.json'); break;\n      case 'send_whatsapp': result = await twilioRequest('/Messages.json', 'POST', { To: a.to, From: a.from, Body: a.body }); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "twilio": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "TWILIO_ACCOUNT_SID": "${TWILIO_ACCOUNT_SID}", "TWILIO_AUTH_TOKEN": "${TWILIO_AUTH_TOKEN}" } } } },
+    "cursor": { "mcpServers": { "twilio": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "TWILIO_ACCOUNT_SID": "${TWILIO_ACCOUNT_SID}", "TWILIO_AUTH_TOKEN": "${TWILIO_AUTH_TOKEN}" } } } },
+    "vscode": { "mcpServers": { "twilio": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "TWILIO_ACCOUNT_SID": "${TWILIO_ACCOUNT_SID}", "TWILIO_AUTH_TOKEN": "${TWILIO_AUTH_TOKEN}" } } } }
+  },
+  "quality": { "overall": 85, "schemaCompleteness": 86, "documentation": 84, "examples": 82, "authHandling": 88, "parameterTypes": 85 },
+  "auth": [{ "type": "http", "scheme": "basic", "envVar": "TWILIO_ACCOUNT_SID", "instructions": "Get your credentials from https://console.twilio.com" }],
+  "docsUrl": "https://www.twilio.com/docs",
+  "apiDocsUrl": "https://www.twilio.com/docs/api",
+  "iconUrl": "https://www.twilio.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

@@ -1,0 +1,133 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lyra-intel"
+version = "0.1.0"
+description = "Intelligence Infrastructure Engine for Massive-Scale Codebase Analysis"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "nirholas"}
+]
+keywords = [
+    "code-analysis",
+    "codebase",
+    "intelligence",
+    "ast",
+    "static-analysis",
+    "dependency-graph",
+    "git-analysis",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+]
+
+dependencies = [
+    "pyyaml>=6.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.4.2",
+    "sqlalchemy>=2.0.23",
+    "alembic>=1.12.1",
+    "redis>=5.0.1",
+    "aiofiles>=23.2.1",
+    "python-multipart>=0.0.6",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-dotenv>=1.0.0",
+    "gitpython>=3.1.40",
+    "requests>=2.31.0",
+    "jinja2>=3.1.2",
+    "click>=8.1.0",
+]
+
+[project.optional-dependencies]
+ai = [
+    "openai>=1.3.0",
+    "anthropic>=0.7.0",
+    "sentence-transformers>=2.2.0",
+]
+export = [
+    "reportlab>=4.0.0",
+    "openpyxl>=3.1.0",
+]
+enterprise = [
+    "ldap3>=2.9.0",
+    "python-saml>=1.15.0",
+]
+streaming = [
+    "websockets>=12.0",
+]
+monitoring = [
+    "prometheus-client>=0.19.0",
+]
+cli = [
+    "rich>=13.0.0",
+]
+discovery = [
+    "aiohttp>=3.9.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "black>=23.0",
+    "mypy>=1.0",
+    "ruff>=0.1",
+]
+postgres = [
+    "asyncpg>=0.28",
+    "psycopg2-binary>=2.9",
+]
+cloud-aws = [
+    "boto3>=1.28",
+]
+cloud-gcp = [
+    "google-cloud-compute>=1.14",
+    "google-cloud-bigquery>=3.11",
+]
+cloud-azure = [
+    "azure-mgmt-compute>=30.0",
+]
+all = [
+    "lyra-intel[dev,postgres,cloud-aws,cloud-gcp,cloud-azure,ai,export,enterprise,streaming,monitoring,cli]",
+]
+
+[project.scripts]
+lyra-intel = "src.cli.interactive:cli"
+
+[project.urls]
+Homepage = "https://github.com/nirholas/lyra-intel"
+Repository = "https://github.com/nirholas/lyra-intel"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

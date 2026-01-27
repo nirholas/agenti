@@ -1,0 +1,647 @@
+# Wagmi
+
+> Reactivity for Ethereum apps
+
+Type Safe, Extensible, and Modular by design. Build high-performance blockchain frontends.
+
+## Table of Contents
+
+### Introduction
+
+- [Why Wagmi](/react/why.md)
+- [Installation](/react/installation.md)
+- [Getting Started](/react/getting-started.md)
+- [TypeScript](/react/typescript.md)
+- [Comparison](/react/comparisons.md)
+
+### Guides
+
+- [TanStack Query](/react/guides/tanstack-query.md)
+- [Viem](/react/guides/viem.md)
+- [Error Handling](/react/guides/error-handling.md)
+- [Ethers.js Adapters](/react/guides/ethers.md)
+- [Chain Properties](/react/guides/chain-properties.md)
+- [SSR](/react/guides/ssr.md)
+- [Connect Wallet](/react/guides/connect-wallet.md)
+- [Send Transaction](/react/guides/send-transaction.md)
+- [Read from Contract](/react/guides/read-from-contract.md)
+- [Write to Contract](/react/guides/write-to-contract.md)
+- [FAQ / Troubleshooting](/react/guides/faq.md)
+- [Migrate from v2 to v3](/react/guides/migrate-from-v2-to-v3.md): Guide for migrating from Wagmi v2 to v3.
+- [Migrate from v1 to v2](/react/guides/migrate-from-v1-to-v2.md): Guide for migrating from Wagmi v1 to v2.
+
+### Configuration
+
+- [createConfig](/react/api/createConfig.md)
+- [createStorage](/react/api/createStorage.md)
+- [Chains](/react/api/chains.md)
+- [Connectors](/react/api/connectors.md)
+- [Transports](/react/api/transports.md)
+- [WagmiProvider](/react/api/WagmiProvider.md)
+
+#### Connectors
+
+- [baseAccount](/react/api/connectors/baseAccount.md)
+- [gemini](/react/api/connectors/gemini.md)
+- [injected](/react/api/connectors/injected.md)
+- [metaMask](/react/api/connectors/metaMask.md)
+- [mock](/react/api/connectors/mock.md)
+- [porto](/react/api/connectors/porto.md)
+- [safe](/react/api/connectors/safe.md)
+- [walletConnect](/react/api/connectors/walletConnect.md)
+
+#### Transports
+
+- [custom](/react/api/transports/custom.md)
+- [fallback](/react/api/transports/fallback.md)
+- [http](/react/api/transports/http.md)
+- [unstable_connector](/react/api/transports/unstable_connector.md)
+- [webSocket](/react/api/transports/webSocket.md)
+
+### Hooks
+
+- [useBalance](/react/api/hooks/useBalance.md): Hook for fetching native currency balance.
+- [useBlockNumber](/react/api/hooks/useBlockNumber.md): Hook for fetching the number of the most recent block seen.
+- [useBlock](/react/api/hooks/useBlock.md): Hook for fetching information about a block at a block number, hash or tag.
+- [useBlockTransactionCount](/react/api/hooks/useBlockTransactionCount.md): Hook for fetching the number of Transactions at a block number, hash or tag.
+- [useBytecode](/react/api/hooks/useBytecode.md): Hook for retrieving the bytecode at an address.
+- [useCall](/react/api/hooks/useCall.md): Hook for executing a new message call immediately without submitting a transaction to the network.
+- [useCallsStatus](/react/api/hooks/useCallsStatus.md): Hook for fetching the number of the most recent block seen.
+- [useCapabilities](/react/api/hooks/useCapabilities.md): Hook for fetching the number of the most recent block seen.
+- [useChainId](/react/api/hooks/useChainId.md): Hook for getting current chain ID.
+- [useChains](/react/api/hooks/useChains.md): Hook for getting configured chains
+- [useClient](/react/api/hooks/useClient.md): Hook for getting Viem `Client` instance.
+- [useConfig](/react/api/hooks/useConfig.md): Hook for getting `Config` from nearest `WagmiProvider`.
+- [useConnect](/react/api/hooks/useConnect.md): Hook for connecting accounts with connectors.
+- [useConnection](/react/api/hooks/useConnection.md): Hook for getting current connection.
+- [useConnectionEffect](/react/api/hooks/useConnectionEffect.md): Hook for listening to connection lifecycle events.
+- [useConnections](/react/api/hooks/useConnections.md): Hook for getting active connections.
+- [useConnectorClient](/react/api/hooks/useConnectorClient.md): Hook for getting a Viem `Client` object for the current or provided connector.
+- [useConnectors](/react/api/hooks/useConnectors.md): Hook for getting configured connectors.
+- [useDeployContract](/react/api/hooks/useDeployContract.md): Hook for deploying a contract to the network, given bytecode & constructor arguments.
+- [useDisconnect](/react/api/hooks/useDisconnect.md): Hook for disconnecting connections.
+- [useEnsAddress](/react/api/hooks/useEnsAddress.md): Hook for fetching ENS address for name.
+- [useEnsAvatar](/react/api/hooks/useEnsAvatar.md): Hook for fetching ENS avatar for name.
+- [useEnsName](/react/api/hooks/useEnsName.md): Hook for fetching primary ENS name for address.
+- [useEnsResolver](/react/api/hooks/useEnsResolver.md): Hook for fetching ENS resolver for name.
+- [useEnsText](/react/api/hooks/useEnsText.md): Hook for fetching a text record for a specified ENS name and key.
+- [useFeeHistory](/react/api/hooks/useFeeHistory.md): Hook for fetching a collection of historical gas information.
+- [useProof](/react/api/hooks/useProof.md): Hook for return the account and storage values of the specified account including the Merkle-proof.
+- [usePublicClient](/react/api/hooks/usePublicClient.md): Hook for getting Viem `PublicClient` instance.
+- [useEstimateFeesPerGas](/react/api/hooks/useEstimateFeesPerGas.md): Hook for fetching an estimate for the fees per gas (in wei) for a transaction to be likely included in the next block.
+- [useEstimateGas](/react/api/hooks/useEstimateGas.md): Hook for estimating the gas necessary to complete a transaction without submitting it to the network.
+- [useEstimateMaxPriorityFeePerGas](/react/api/hooks/useEstimateMaxPriorityFeePerGas.md): Hook for fetching an estimate for the max priority fee per gas (in wei) for a transaction to be likely included in the next block.
+- [useGasPrice](/react/api/hooks/useGasPrice.md): Hook for fetching the current price of gas (in wei).
+- [useInfiniteReadContracts](/react/api/hooks/useInfiniteReadContracts.md): Hook for calling multiple read methods on a contract with "infinite scroll"/"fetch more" support.
+- [usePrepareTransactionRequest](/react/api/hooks/usePrepareTransactionRequest.md): Hook for preparing a transaction request for signing by populating a nonce, gas limit, fee values, and a transaction type.
+- [useReadContract](/react/api/hooks/useReadContract.md): Hook for calling a read-only function on a contract, and returning the response.
+- [useReadContracts](/react/api/hooks/useReadContracts.md): Hook for calling multiple read methods on a contract.
+- [useReconnect](/react/api/hooks/useReconnect.md): Hook for reconnecting connectors.
+- [useSendCalls](/react/api/hooks/useSendCalls.md): Hook that requests for the wallet to sign and broadcast a batch of calls (transactions) to the network.
+- [useSendCallsSync](/react/api/hooks/useSendCallsSync.md): Hook that requests for the wallet to sign and broadcast a batch of calls (transactions) to the network.
+- [useSendTransaction](/react/api/hooks/useSendTransaction.md): Hook for creating, signing, and sending transactions to networks.
+- [useSendTransactionSync](/react/api/hooks/useSendTransactionSync.md): Hook for creating, signing, and sending transactions to the network synchronously.
+- [useShowCallsStatus](/react/api/hooks/useShowCallsStatus.md): Action to request for the wallet to show information about a call batch
+- [useSignMessage](/react/api/hooks/useSignMessage.md): Hook for signing messages.
+- [useSignTypedData](/react/api/hooks/useSignTypedData.md): Hook for signing typed data and calculating an Ethereum-specific EIP-712 signature.
+- [useSimulateContract](/react/api/hooks/useSimulateContract.md): Hook for simulating/validating a contract interaction.
+- [useStorageAt](/react/api/hooks/useStorageAt.md): Hook for returning the value from a storage slot at a given address.
+- [useSwitchChain](/react/api/hooks/useSwitchChain.md): Hook for switching the target chain for a connector or the Wagmi `Config`.
+- [useSwitchConnection](/react/api/hooks/useSwitchConnection.md): Hook for switching the current connection.
+- [useTransaction](/react/api/hooks/useTransaction.md): Hook for fetching transactions given hashes or block identifiers.
+- [useTransactionConfirmations](/react/api/hooks/useTransactionConfirmations.md): Hook for fetching the number of blocks passed (confirmations) since the transaction was processed on a block.
+- [useTransactionCount](/react/api/hooks/useTransactionCount.md): Hook for fetching the number of transactions an Account has broadcast / sent.
+- [useTransactionReceipt](/react/api/hooks/useTransactionReceipt.md): Hook for return the Transaction Receipt given a Transaction hash.
+- [useWaitForCallsStatus](/react/api/hooks/useWaitForCallsStatus.md): Waits for a call bundle to be confirmed & included on a block.
+- [useWaitForTransactionReceipt](/react/api/hooks/useWaitForTransactionReceipt.md): Hook that waits for the transaction to be included on a block, and then returns the transaction receipt. If the transaction reverts, then the action will throw an error. Replacement detection (e.g. sped up transactions) is also supported.
+- [useVerifyMessage](/react/api/hooks/useVerifyMessage.md): Hook for verify that a message was signed by the provided address.
+- [useVerifyTypedData](/react/api/hooks/useVerifyTypedData.md): Hook for verify that a typed data was signed by the provided address.
+- [useWalletClient](/react/api/hooks/useWalletClient.md): Hook for getting a Viem `WalletClient` object for the current or provided connector.
+- [useWatchAsset](/react/api/hooks/useWatchAsset.md): Hook for requesting user tracks the token in their wallet. Returns a boolean indicating if the token was successfully added.
+- [useWatchBlocks](/react/api/hooks/useWatchBlocks.md): Hook that watches for block changes.
+- [useWatchBlockNumber](/react/api/hooks/useWatchBlockNumber.md): Hook that watches for block number changes.
+- [useWatchContractEvent](/react/api/hooks/useWatchContractEvent.md): Hook that watches and returns emitted contract event logs.
+- [useWatchPendingTransactions](/react/api/hooks/useWatchPendingTransactions.md): Hook that watches and returns pending transaction hashes.
+- [useWriteContract](/react/api/hooks/useWriteContract.md): Action for executing a write function on a contract.
+
+### Miscellaneous
+
+- [Actions](/react/api/actions.md)
+- [Errors](/react/api/errors.md)
+
+#### Utilities
+
+- [cookieToInitialState](/react/api/utilities/cookieToInitialState.md)
+- [deserialize](/react/api/utilities/deserialize.md)
+- [serialize](/react/api/utilities/serialize.md)
+
+### Introduction
+
+- [Why Wagmi](/vue/why.md)
+- [Installation](/vue/installation.md)
+- [Getting Started](/vue/getting-started.md)
+- [TypeScript](/vue/typescript.md)
+
+### Guides
+
+- [TanStack Query](/vue/guides/tanstack-query.md)
+- [Viem](/vue/guides/viem.md)
+- [Error Handling](/vue/guides/error-handling.md)
+- [Chain Properties](/vue/guides/chain-properties.md)
+- [SSR](/vue/guides/ssr.md)
+- [Connect Wallet](/vue/guides/connect-wallet.md)
+- [Send Transaction](/vue/guides/send-transaction.md)
+- [Read from Contract](/vue/guides/read-from-contract.md)
+- [Write to Contract](/vue/guides/write-to-contract.md)
+- [FAQ / Troubleshooting](/vue/guides/faq.md)
+
+### Configuration
+
+- [createConfig](/vue/api/createConfig.md)
+- [createStorage](/vue/api/createStorage.md)
+- [Chains](/vue/api/chains.md)
+- [Connectors](/vue/api/connectors.md)
+- [Transports](/vue/api/transports.md)
+- [WagmiPlugin](/vue/api/WagmiPlugin.md)
+- [Nuxt](/vue/api/Nuxt.md)
+
+#### Connectors
+
+- [baseAccount](/vue/api/connectors/baseAccount.md)
+- [gemini](/vue/api/connectors/gemini.md)
+- [injected](/vue/api/connectors/injected.md)
+- [metaMask](/vue/api/connectors/metaMask.md)
+- [mock](/vue/api/connectors/mock.md)
+- [porto](/vue/api/connectors/porto.md)
+- [safe](/vue/api/connectors/safe.md)
+- [walletConnect](/vue/api/connectors/walletConnect.md)
+
+#### Transports
+
+- [custom](/vue/api/transports/custom.md)
+- [fallback](/vue/api/transports/fallback.md)
+- [http](/vue/api/transports/http.md)
+- [unstable_connector](/vue/api/transports/unstable_connector.md)
+- [webSocket](/vue/api/transports/webSocket.md)
+
+### Composables
+
+- [useBalance](/vue/api/composables/useBalance.md): Composable for fetching native currency balance.
+- [useBlockNumber](/vue/api/composables/useBlockNumber.md): Composable for fetching the number of the most recent block seen.
+- [useBytecode](/vue/api/composables/useBytecode.md): Composable for retrieving the bytecode at an address.
+- [useChainId](/vue/api/composables/useChainId.md): Composable for getting current chain ID.
+- [useChains](/vue/api/composables/useChains.md): Composable for getting configured chains
+- [useClient](/vue/api/composables/useClient.md): Composable for getting Viem `Client` instance.
+- [useConfig](/vue/api/composables/useConfig.md): Composable for getting `Config` from the `WagmiPlugin`.
+- [useConnect](/vue/api/composables/useConnect.md): Composable for connecting accounts with connectors.
+- [useConnection](/vue/api/composables/useConnection.md): Composable for getting current connection.
+- [useConnectionEffect](/vue/api/composables/useConnectionEffect.md): Composable for listening to connection lifecycle events.
+- [useConnections](/vue/api/composables/useConnections.md): Composable for getting active connections.
+- [useConnectorClient](/vue/api/composables/useConnectorClient.md): Composable for getting a Viem `Client` object for the current or provided connector.
+- [useConnectors](/vue/api/composables/useConnectors.md): Composable for getting configured connectors.
+- [useDisconnect](/vue/api/composables/useDisconnect.md): Composable for disconnecting connections.
+- [useEnsAddress](/vue/api/composables/useEnsAddress.md): Composable for fetching ENS address for name.
+- [useEnsAvatar](/vue/api/composables/useEnsAvatar.md): Composable for fetching ENS avatar for name.
+- [useEstimateGas](/vue/api/composables/useEstimateGas.md): Composable for estimating the gas necessary to complete a transaction without submitting it to the network.
+- [useReadContract](/vue/api/composables/useReadContract.md): Composable for calling a read-only function on a contract, and returning the response.
+- [useReconnect](/vue/api/composables/useReconnect.md): Composable for reconnecting connectors.
+- [useSendTransaction](/vue/api/composables/useSendTransaction.md): Composable for creating, signing, and sending transactions to networks.
+- [useSignMessage](/vue/api/composables/useSignMessage.md): Composable for signing messages.
+- [useSignTypedData](/vue/api/composables/useSignTypedData.md): Composable for signing typed data and calculating an Ethereum-specific EIP-712 signature.
+- [useSimulateContract](/vue/api/composables/useSimulateContract.md): Composable for simulating/validating a contract interaction.
+- [useSwitchChain](/vue/api/composables/useSwitchChain.md): Composable for switching the target chain for a connector or the Wagmi `Config`.
+- [useSwitchConnection](/vue/api/composables/useSwitchConnection.md): Composable for switching the current connection.
+- [useTransaction](/vue/api/composables/useTransaction.md): Composable for fetching transactions given hashes or block identifiers.
+- [useTransactionReceipt](/vue/api/composables/useTransactionReceipt.md): Composable for return the Transaction Receipt given a Transaction hash.
+- [useWaitForTransactionReceipt](/vue/api/composables/useWaitForTransactionReceipt.md): Composable that waits for the transaction to be included on a block, and then returns the transaction receipt. If the transaction reverts, then the action will throw an error. Replacement detection (e.g. sped up transactions) is also supported.
+- [useWatchBlockNumber](/vue/api/composables/useWatchBlockNumber.md)
+- [useWatchContractEvent](/vue/api/composables/useWatchContractEvent.md)
+- [useWriteContract](/vue/api/composables/useWriteContract.md): Composable for executing a write function on a contract.
+
+### Miscellaneous
+
+- [Actions](/vue/api/actions.md)
+- [Errors](/vue/api/errors.md)
+
+#### Utilities
+
+- [deserialize](/vue/api/utilities/deserialize.md)
+- [serialize](/vue/api/utilities/serialize.md)
+
+### Introduction
+
+- [Why Wagmi Core](/core/why.md)
+- [Installation](/core/installation.md)
+- [Getting Started](/core/getting-started.md)
+- [TypeScript](/core/typescript.md)
+
+### Guides
+
+- [Viem](/core/guides/viem.md)
+- [Framework Adapters](/core/guides/framework-adapters.md)
+- [Error Handling](/core/guides/error-handling.md)
+- [Ethers.js Adapters](/core/guides/ethers.md)
+- [Chain Properties](/core/guides/chain-properties.md)
+- [FAQ / Troubleshooting](/core/guides/faq.md)
+- [Migrate from v2 to v3](/core/guides/migrate-from-v2-to-v3.md): Guide for migrating from Wagmi v2 to v3.
+- [Migrate from v1 to v2](/core/guides/migrate-from-v1-to-v2.md): Guide for migrating from Wagmi Core v1 to v2.
+
+### Configuration
+
+- [createConfig](/core/api/createConfig.md)
+- [createConnector](/core/api/createConnector.md)
+- [createStorage](/core/api/createStorage.md)
+- [Chains](/core/api/chains.md)
+- [Connectors](/core/api/connectors.md)
+- [Transports](/core/api/transports.md)
+
+#### Connectors
+
+- [baseAccount](/core/api/connectors/baseAccount.md)
+- [gemini](/core/api/connectors/gemini.md)
+- [injected](/core/api/connectors/injected.md)
+- [metaMask](/core/api/connectors/metaMask.md)
+- [mock](/core/api/connectors/mock.md)
+- [porto](/core/api/connectors/porto.md)
+- [safe](/core/api/connectors/safe.md)
+- [walletConnect](/core/api/connectors/walletConnect.md)
+
+#### Transports
+
+- [custom](/core/api/transports/custom.md)
+- [fallback](/core/api/transports/fallback.md)
+- [http](/core/api/transports/http.md)
+- [unstable_connector](/core/api/transports/unstable_connector.md)
+- [webSocket](/core/api/transports/webSocket.md)
+
+### Actions
+
+- [call](/core/api/actions/call.md)
+- [connect](/core/api/actions/connect.md)
+- [deployContract&#x20;](/core/api/actions/deployContract.md)
+- [disconnect](/core/api/actions/disconnect.md)
+- [estimateFeesPerGas](/core/api/actions/estimateFeesPerGas.md)
+- [estimateGas](/core/api/actions/estimateGas.md)
+- [estimateMaxPriorityFeePerGas](/core/api/actions/estimateMaxPriorityFeePerGas.md)
+- [getBalance](/core/api/actions/getBalance.md)
+- [getBlock](/core/api/actions/getBlock.md)
+- [getBlockNumber](/core/api/actions/getBlockNumber.md)
+- [getBlockTransactionCount](/core/api/actions/getBlockTransactionCount.md)
+- [getBytecode](/core/api/actions/getBytecode.md)
+- [getCallsStatus](/core/api/actions/getCallsStatus.md)
+- [getCapabilities](/core/api/actions/getCapabilities.md)
+- [getChainId](/core/api/actions/getChainId.md)
+- [getChains](/core/api/actions/getChains.md)
+- [getClient](/core/api/actions/getClient.md)
+- [getConnection](/core/api/actions/getConnection.md)
+- [getConnections](/core/api/actions/getConnections.md)
+- [getConnectorClient](/core/api/actions/getConnectorClient.md)
+- [getConnectors](/core/api/actions/getConnectors.md)
+- [getEnsAddress](/core/api/actions/getEnsAddress.md)
+- [getEnsAvatar](/core/api/actions/getEnsAvatar.md)
+- [getEnsName](/core/api/actions/getEnsName.md)
+- [getEnsResolver](/core/api/actions/getEnsResolver.md)
+- [getEnsText](/core/api/actions/getEnsText.md)
+- [getFeeHistory](/core/api/actions/getFeeHistory.md)
+- [getGasPrice](/core/api/actions/getGasPrice.md)
+- [getProof](/core/api/actions/getProof.md)
+- [getPublicClient](/core/api/actions/getPublicClient.md)
+- [getStorageAt](/core/api/actions/getStorageAt.md)
+- [getTransaction](/core/api/actions/getTransaction.md)
+- [getTransactionConfirmations](/core/api/actions/getTransactionConfirmations.md)
+- [getTransactionCount](/core/api/actions/getTransactionCount.md)
+- [getTransactionReceipt](/core/api/actions/getTransactionReceipt.md)
+- [getWalletClient](/core/api/actions/getWalletClient.md)
+- [multicall](/core/api/actions/multicall.md)
+- [prepareTransactionRequest](/core/api/actions/prepareTransactionRequest.md)
+- [reconnect](/core/api/actions/reconnect.md)
+- [readContract](/core/api/actions/readContract.md)
+- [readContracts](/core/api/actions/readContracts.md)
+- [sendCalls](/core/api/actions/sendCalls.md)
+- [sendCallsSync](/core/api/actions/sendCallsSync.md)
+- [sendTransaction](/core/api/actions/sendTransaction.md)
+- [sendTransactionSync](/core/api/actions/sendTransactionSync.md)
+- [showCallsStatus](/core/api/actions/showCallsStatus.md)
+- [signMessage](/core/api/actions/signMessage.md)
+- [signTypedData](/core/api/actions/signTypedData.md)
+- [simulateContract](/core/api/actions/simulateContract.md)
+- [switchChain](/core/api/actions/switchChain.md)
+- [switchConnection](/core/api/actions/switchConnection.md)
+- [verifyMessage](/core/api/actions/verifyMessage.md)
+- [verifyTypedData](/core/api/actions/verifyTypedData.md)
+- [waitForCallsStatus](/core/api/actions/waitForCallsStatus.md)
+- [waitForTransactionReceipt](/core/api/actions/waitForTransactionReceipt.md)
+- [watchAsset](/core/api/actions/watchAsset.md)
+- [watchBlocks](/core/api/actions/watchBlocks.md)
+- [watchBlockNumber](/core/api/actions/watchBlockNumber.md)
+- [watchChainId](/core/api/actions/watchChainId.md)
+- [watchClient](/core/api/actions/watchClient.md)
+- [watchConnection](/core/api/actions/watchConnection.md)
+- [watchConnections](/core/api/actions/watchConnections.md)
+- [watchConnectors](/core/api/actions/watchConnectors.md)
+- [watchContractEvent](/core/api/actions/watchContractEvent.md)
+- [watchPendingTransactions](/core/api/actions/watchPendingTransactions.md)
+- [watchPublicClient](/core/api/actions/watchPublicClient.md)
+- [writeContract](/core/api/actions/writeContract.md)
+
+### Miscellaneous
+
+- [Errors](/core/api/errors.md)
+
+#### Utilities
+
+- [cookieToInitialState](/core/api/utilities/cookieToInitialState.md)
+- [deserialize](/core/api/utilities/deserialize.md)
+- [serialize](/core/api/utilities/serialize.md)
+
+### Introduction
+
+- [Why Wagmi CLI](/cli/why.md)
+- [Installation](/cli/installation.md)
+- [Getting Started](/cli/getting-started.md)
+
+### Guides
+
+- [Migrate from v1 to v2](/cli/guides/migrate-from-v1-to-v2.md): Guide for migrating from Wagmi CLI v1 to v2.
+
+### Config File
+
+- [Configuring CLI](/cli/config/configuring-cli.md)
+- [Config Options](/cli/config/options.md)
+
+### Commands
+
+- [generate](/cli/api/commands/generate.md)
+- [init](/cli/api/commands/init.md)
+
+### Plugins
+
+- [actions](/cli/api/plugins/actions.md)
+- [blockExplorer](/cli/api/plugins/blockExplorer.md)
+- [etherscan](/cli/api/plugins/etherscan.md)
+- [fetch](/cli/api/plugins/fetch.md)
+- [foundry](/cli/api/plugins/foundry.md)
+- [hardhat](/cli/api/plugins/hardhat.md)
+- [react](/cli/api/plugins/react.md)
+- [sourcify](/cli/api/plugins/sourcify.md)
+
+### Dev
+
+- [Contributing](/dev/contributing.md)
+- [Creating Connectors](/dev/creating-connectors.md)
+
+
+### Tempo
+
+- [Getting Started](/tempo/getting-started.md)
+- [Chains](/tempo/chains.md)
+
+### Hooks
+
+#### AMM
+
+- [`amm.useBurn`](/tempo/hooks/amm.useBurn.md)
+- [`amm.useLiquidityBalance`](/tempo/hooks/amm.useLiquidityBalance.md)
+- [`amm.useMint`](/tempo/hooks/amm.useMint.md)
+- [`amm.usePool`](/tempo/hooks/amm.usePool.md)
+- [`amm.useRebalanceSwap`](/tempo/hooks/amm.useRebalanceSwap.md)
+- [`amm.useWatchBurn`](/tempo/hooks/amm.useWatchBurn.md)
+- [`amm.useWatchMint`](/tempo/hooks/amm.useWatchMint.md)
+- [`amm.useWatchRebalanceSwap`](/tempo/hooks/amm.useWatchRebalanceSwap.md)
+
+#### DEX
+
+- [`dex.useBalance`](/tempo/hooks/dex.useBalance.md)
+- [`dex.useBuy`](/tempo/hooks/dex.useBuy.md)
+- [`dex.useBuyQuote`](/tempo/hooks/dex.useBuyQuote.md)
+- [`dex.useCancel`](/tempo/hooks/dex.useCancel.md)
+- [`dex.useCreatePair`](/tempo/hooks/dex.useCreatePair.md)
+- [`dex.useOrder`](/tempo/hooks/dex.useOrder.md)
+- [`dex.usePlace`](/tempo/hooks/dex.usePlace.md)
+- [`dex.usePlaceFlip`](/tempo/hooks/dex.usePlaceFlip.md)
+- [`dex.useSell`](/tempo/hooks/dex.useSell.md)
+- [`dex.useSellQuote`](/tempo/hooks/dex.useSellQuote.md)
+- [`dex.useTickLevel`](/tempo/hooks/dex.useTickLevel.md)
+- [`dex.useWatchFlipOrderPlaced`](/tempo/hooks/dex.useWatchFlipOrderPlaced.md)
+- [`dex.useWatchOrderCancelled`](/tempo/hooks/dex.useWatchOrderCancelled.md)
+- [`dex.useWatchOrderFilled`](/tempo/hooks/dex.useWatchOrderFilled.md)
+- [`dex.useWatchOrderPlaced`](/tempo/hooks/dex.useWatchOrderPlaced.md)
+- [`dex.useWithdraw`](/tempo/hooks/dex.useWithdraw.md)
+
+#### Faucet
+
+- [`faucet.useFund`](/tempo/hooks/faucet.useFund.md)
+
+#### Fee
+
+- [`fee.useSetUserToken`](/tempo/hooks/fee.useSetUserToken.md)
+- [`fee.useUserToken`](/tempo/hooks/fee.useUserToken.md)
+- [`fee.useWatchSetUserToken`](/tempo/hooks/fee.useWatchSetUserToken.md)
+
+#### Nonce
+
+- [`nonce.useNonce`](/tempo/hooks/nonce.useNonce.md)
+- [`nonce.useWatchNonceIncremented`](/tempo/hooks/nonce.useWatchNonceIncremented.md)
+
+#### Policy
+
+- [`policy.useCreate`](/tempo/hooks/policy.useCreate.md)
+- [`policy.useData`](/tempo/hooks/policy.useData.md)
+- [`policy.useIsAuthorized`](/tempo/hooks/policy.useIsAuthorized.md)
+- [`policy.useModifyBlacklist`](/tempo/hooks/policy.useModifyBlacklist.md)
+- [`policy.useModifyWhitelist`](/tempo/hooks/policy.useModifyWhitelist.md)
+- [`policy.useSetAdmin`](/tempo/hooks/policy.useSetAdmin.md)
+- [`policy.useWatchAdminUpdated`](/tempo/hooks/policy.useWatchAdminUpdated.md)
+- [`policy.useWatchBlacklistUpdated`](/tempo/hooks/policy.useWatchBlacklistUpdated.md)
+- [`policy.useWatchCreate`](/tempo/hooks/policy.useWatchCreate.md)
+- [`policy.useWatchWhitelistUpdated`](/tempo/hooks/policy.useWatchWhitelistUpdated.md)
+
+#### Reward
+
+- [`reward.useClaim`](/tempo/hooks/reward.useClaim.md)
+- [`reward.useSetRecipient`](/tempo/hooks/reward.useSetRecipient.md)
+- [`reward.useUserRewardInfo`](/tempo/hooks/reward.useUserRewardInfo.md)
+- [`reward.useWatchRewardRecipientSet`](/tempo/hooks/reward.useWatchRewardRecipientSet.md)
+
+#### Token
+
+- [`token.useApprove`](/tempo/hooks/token.useApprove.md)
+- [`token.useBurn`](/tempo/hooks/token.useBurn.md)
+- [`token.useBurnBlocked`](/tempo/hooks/token.useBurnBlocked.md)
+- [`token.useChangeTransferPolicy`](/tempo/hooks/token.useChangeTransferPolicy.md)
+- [`token.useCreate`](/tempo/hooks/token.useCreate.md)
+- [`token.useGetAllowance`](/tempo/hooks/token.useGetAllowance.md)
+- [`token.useGetBalance`](/tempo/hooks/token.useGetBalance.md)
+- [`token.useGetMetadata`](/tempo/hooks/token.useGetMetadata.md)
+- [`token.useGrantRoles`](/tempo/hooks/token.useGrantRoles.md)
+- [`token.useHasRole`](/tempo/hooks/token.useHasRole.md)
+- [`token.useMint`](/tempo/hooks/token.useMint.md)
+- [`token.usePause`](/tempo/hooks/token.usePause.md)
+- [`token.useRenounceRoles`](/tempo/hooks/token.useRenounceRoles.md)
+- [`token.useRevokeRoles`](/tempo/hooks/token.useRevokeRoles.md)
+- [`token.useSetRoleAdmin`](/tempo/hooks/token.useSetRoleAdmin.md)
+- [`token.useSetSupplyCap`](/tempo/hooks/token.useSetSupplyCap.md)
+- [`token.useTransfer`](/tempo/hooks/token.useTransfer.md)
+- [`token.useUnpause`](/tempo/hooks/token.useUnpause.md)
+- [`token.useWatchAdminRole`](/tempo/hooks/token.useWatchAdminRole.md)
+- [`token.useWatchApprove`](/tempo/hooks/token.useWatchApprove.md)
+- [`token.useWatchBurn`](/tempo/hooks/token.useWatchBurn.md)
+- [`token.useWatchCreate`](/tempo/hooks/token.useWatchCreate.md)
+- [`token.useWatchMint`](/tempo/hooks/token.useWatchMint.md)
+- [`token.useWatchRole`](/tempo/hooks/token.useWatchRole.md)
+- [`token.useWatchTransfer`](/tempo/hooks/token.useWatchTransfer.md)
+
+### Actions
+
+#### AMM
+
+- [`amm.burn`](/tempo/actions/amm.burn.md)
+- [`amm.getLiquidityBalance`](/tempo/actions/amm.getLiquidityBalance.md)
+- [`amm.getPool`](/tempo/actions/amm.getPool.md)
+- [`amm.mint`](/tempo/actions/amm.mint.md)
+- [`amm.rebalanceSwap`](/tempo/actions/amm.rebalanceSwap.md)
+- [`amm.watchBurn`](/tempo/actions/amm.watchBurn.md)
+- [`amm.watchMint`](/tempo/actions/amm.watchMint.md)
+- [`amm.watchRebalanceSwap`](/tempo/actions/amm.watchRebalanceSwap.md)
+
+#### DEX
+
+- [`dex.buy`](/tempo/actions/dex.buy.md)
+- [`dex.cancel`](/tempo/actions/dex.cancel.md)
+- [`dex.createPair`](/tempo/actions/dex.createPair.md)
+- [`dex.getBalance`](/tempo/actions/dex.getBalance.md)
+- [`dex.getBuyQuote`](/tempo/actions/dex.getBuyQuote.md)
+- [`dex.getOrder`](/tempo/actions/dex.getOrder.md)
+- [`dex.getSellQuote`](/tempo/actions/dex.getSellQuote.md)
+- [`dex.getTickLevel`](/tempo/actions/dex.getTickLevel.md)
+- [`dex.place`](/tempo/actions/dex.place.md)
+- [`dex.placeFlip`](/tempo/actions/dex.placeFlip.md)
+- [`dex.sell`](/tempo/actions/dex.sell.md)
+- [`dex.watchFlipOrderPlaced`](/tempo/actions/dex.watchFlipOrderPlaced.md)
+- [`dex.watchOrderCancelled`](/tempo/actions/dex.watchOrderCancelled.md)
+- [`dex.watchOrderFilled`](/tempo/actions/dex.watchOrderFilled.md)
+- [`dex.watchOrderPlaced`](/tempo/actions/dex.watchOrderPlaced.md)
+- [`dex.withdraw`](/tempo/actions/dex.withdraw.md)
+
+#### Faucet
+
+- [`faucet.fund`](/tempo/actions/faucet.fund.md)
+
+#### Fee
+
+- [`fee.getUserToken`](/tempo/actions/fee.getUserToken.md)
+- [`fee.setUserToken`](/tempo/actions/fee.setUserToken.md)
+- [`fee.watchSetUserToken`](/tempo/actions/fee.watchSetUserToken.md)
+
+#### Nonce
+
+- [`nonce.getNonce`](/tempo/actions/nonce.getNonce.md)
+- [`nonce.watchNonceIncremented`](/tempo/actions/nonce.watchNonceIncremented.md)
+
+#### Policy
+
+- [`policy.create`](/tempo/actions/policy.create.md)
+- [`policy.getData`](/tempo/actions/policy.getData.md)
+- [`policy.isAuthorized`](/tempo/actions/policy.isAuthorized.md)
+- [`policy.modifyBlacklist`](/tempo/actions/policy.modifyBlacklist.md)
+- [`policy.modifyWhitelist`](/tempo/actions/policy.modifyWhitelist.md)
+- [`policy.setAdmin`](/tempo/actions/policy.setAdmin.md)
+- [`policy.watchAdminUpdated`](/tempo/actions/policy.watchAdminUpdated.md)
+- [`policy.watchBlacklistUpdated`](/tempo/actions/policy.watchBlacklistUpdated.md)
+- [`policy.watchCreate`](/tempo/actions/policy.watchCreate.md)
+- [`policy.watchWhitelistUpdated`](/tempo/actions/policy.watchWhitelistUpdated.md)
+
+#### Reward
+
+- [`reward.claim`](/tempo/actions/reward.claim.md)
+- [`reward.getUserRewardInfo`](/tempo/actions/reward.getUserRewardInfo.md)
+- [`reward.setRecipient`](/tempo/actions/reward.setRecipient.md)
+- [`reward.watchRewardRecipientSet`](/tempo/actions/reward.watchRewardRecipientSet.md)
+
+#### Token
+
+- [`token.approve`](/tempo/actions/token.approve.md)
+- [`token.burn`](/tempo/actions/token.burn.md)
+- [`token.burnBlocked`](/tempo/actions/token.burnBlocked.md)
+- [`token.changeTransferPolicy`](/tempo/actions/token.changeTransferPolicy.md)
+- [`token.create`](/tempo/actions/token.create.md)
+- [`token.getAllowance`](/tempo/actions/token.getAllowance.md)
+- [`token.getBalance`](/tempo/actions/token.getBalance.md)
+- [`token.getMetadata`](/tempo/actions/token.getMetadata.md)
+- [`token.grantRoles`](/tempo/actions/token.grantRoles.md)
+- [`token.hasRole`](/tempo/actions/token.hasRole.md)
+- [`token.mint`](/tempo/actions/token.mint.md)
+- [`token.pause`](/tempo/actions/token.pause.md)
+- [`token.renounceRoles`](/tempo/actions/token.renounceRoles.md)
+- [`token.revokeRoles`](/tempo/actions/token.revokeRoles.md)
+- [`token.setRoleAdmin`](/tempo/actions/token.setRoleAdmin.md)
+- [`token.setSupplyCap`](/tempo/actions/token.setSupplyCap.md)
+- [`token.transfer`](/tempo/actions/token.transfer.md)
+- [`token.unpause`](/tempo/actions/token.unpause.md)
+- [`token.watchAdminRole`](/tempo/actions/token.watchAdminRole.md)
+- [`token.watchApprove`](/tempo/actions/token.watchApprove.md)
+- [`token.watchBurn`](/tempo/actions/token.watchBurn.md)
+- [`token.watchCreate`](/tempo/actions/token.watchCreate.md)
+- [`token.watchMint`](/tempo/actions/token.watchMint.md)
+- [`token.watchRole`](/tempo/actions/token.watchRole.md)
+- [`token.watchTransfer`](/tempo/actions/token.watchTransfer.md)
+
+### Connectors
+
+- [`dangerous_secp256k1`](/tempo/connectors/dangerous_secp256k1.md)
+- [`webAuthn`](/tempo/connectors/webAuthn.md)
+
+### Key Managers
+
+- [`KeyManager.http`](/tempo/keyManagers/http.md)
+- [`KeyManager.localStorage`](/tempo/keyManagers/localStorage.md)
+
+### Other
+
+- [`reward.distribute`](/tempo/actions/reward.distribute.md)
+- [`reward.useDistribute`](/tempo/hooks/reward.useDistribute.md)
+- [`reward.useWatchRewardDistributed`](/tempo/hooks/reward.useWatchRewardDistributed.md)
+- [`reward.watchRewardDistributed`](/tempo/actions/reward.watchRewardDistributed.md)
+- [Agent Guidelines](/AGENTS.md)
+- [baseAccount](/shared/connectors/baseAccount.md)
+- [coinbaseWallet](/core/api/connectors/coinbaseWallet.md)
+- [coinbaseWallet](/react/api/connectors/coinbaseWallet.md)
+- [coinbaseWallet](/shared/connectors/coinbaseWallet.md)
+- [coinbaseWallet](/vue/api/connectors/coinbaseWallet.md)
+- [cookieToInitialState](/shared/utilities/cookieToInitialState.md)
+- [create-wagmi](/cli/create-wagmi.md)
+- [createConfig](/shared/createConfig.md)
+- [createStorage](/shared/createStorage.md)
+- [custom](/shared/transports/custom.md)
+- [deserialize](/shared/utilities/deserialize.md)
+- [fallback](/shared/transports/fallback.md)
+- [gemini](/shared/connectors/gemini.md)
+- [http](/shared/transports/http.md)
+- [injected](/shared/connectors/injected.md)
+- [metaMask](/shared/connectors/metaMask.md)
+- [mock](/shared/connectors/mock.md)
+- [porto](/shared/connectors/porto.md)
+- [routescan](/cli/api/plugins/routescan.md)
+- [safe](/shared/connectors/safe.md)
+- [serialize](/shared/utilities/serialize.md)
+- [Testing](/core/guides/testing.md)
+- [Testing](/react/guides/testing.md)
+- [unstable\_connector](/shared/transports/unstable_connector.md)
+- [Untitled](/shared/create-chain.md)
+- [Untitled](/shared/errors.md)
+- [Untitled](/shared/faq.md)
+- [Untitled](/shared/getConnection-return-type.md)
+- [Untitled](/shared/installation.md)
+- [Untitled](/shared/migrate-from-v2-to-v3.md)
+- [Untitled](/shared/mutation-imports.md)
+- [Untitled](/shared/mutation-options.md)
+- [Untitled](/shared/mutation-result.md)
+- [Untitled](/shared/query-imports.md)
+- [Untitled](/shared/query-options.md)
+- [Untitled](/shared/query-result.md)
+- [Untitled](/shared/tempo-write-parameters.md)
+- [useEnsName](/vue/api/composables/useEnsName.md): Composable for fetching primary ENS name for address.
+- [useWriteContracts](/react/api/hooks/useWriteContracts.md): Hook that requests for the wallet to sign and broadcast a batch of calls (transactions) to the network.
+- [walletConnect](/shared/connectors/walletConnect.md)
+- [webSocket](/shared/transports/webSocket.md)
+- [writeContracts](/core/api/actions/writeContracts.md)

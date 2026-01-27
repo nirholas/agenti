@@ -1,0 +1,53 @@
+{
+  "name": "@openbare/client",
+  "version": "1.0.0",
+  "description": "Multi-server proxy client with automatic failover for OpenBare",
+  "type": "module",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "types": "./index.d.ts"
+    },
+    "./codec": {
+      "import": "./src/codec.js"
+    },
+    "./discovery": {
+      "import": "./src/discovery.js"
+    }
+  },
+  "files": [
+    "src/",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "test": "node --test 'test/**/*.test.js'",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "bare",
+    "proxy",
+    "client",
+    "failover",
+    "load-balancing"
+  ],
+  "author": "OpenBare Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openbare/client"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "browser": {
+    "./src/index.js": "./src/index.js"
+  }
+}

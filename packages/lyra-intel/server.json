@@ -1,0 +1,54 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/lyra-intel",
+  "title": "Lyra Intel",
+  "description": "Analyze repos of any size - security scanning, code analysis, monorepo support",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/lyra-intel",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/lyra-intel",
+    "bugs": "https://github.com/nirholas/lyra-intel/issues",
+    "pypi": "https://pypi.org/project/lyra-intel/"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "lyra-intel",
+      "version": "1.0.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GITHUB_TOKEN",
+          "description": "GitHub token for repo access",
+          "required": false,
+          "secret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["repo", "intel", "security", "scanning", "code-analysis", "monorepo", "mcp", "ai"],
+      "category": "Developer Tools"
+    }
+  }
+}

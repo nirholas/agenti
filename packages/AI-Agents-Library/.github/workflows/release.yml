@@ -1,0 +1,61 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+        
+      - name: Install deps
+        run: bun i
+        
+      - name: Test
+        run: bun run test
+        
+      - name: Format
+        run: bun run format
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_PROXY_URL: ${{ secrets.OPENAI_PROXY_URL }}
+          
+      - name: Awesome
+        run: bun run awesome
+        
+      - name: Prettier
+        run: |
+          echo "module.exports = require('@lobehub/lint').remarklint;" >> .remarkrc.cjs
+          echo "module.exports = require('@lobehub/lint').prettier;" >> .prettierrc.cjs
+          bun run lint:md
+          bun run prettier
+          rm .remarkrc.cjs
+          rm .prettierrc.cjs
+          
+      - name: Commit changes
+        run: |-
+          git diff
+          git config --global user.name "nich"
+          git config --global user.email "22895867+nirholas@users.noreply.github.com"
+          git add .
+          git commit -m "🤖 chore: Auto format and add i18n json files" || exit 0
+          git push
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          force_orphan: true

@@ -1,0 +1,21 @@
+# X402 ConfigMap
+# Non-sensitive configuration values
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: x402-facilitator-config
+  namespace: x402
+  labels:
+    app.kubernetes.io/name: x402-facilitator
+    app.kubernetes.io/component: config
+data:
+  NODE_ENV: "production"
+  PORT: "3002"
+  HOST: "0.0.0.0"
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  RATE_LIMIT_WINDOW_MS: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  PAYMENT_CACHE_TTL_MS: "86400000"
+  ENABLE_METRICS: "true"
+  ENABLE_REQUEST_LOGGING: "true"

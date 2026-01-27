@@ -1,0 +1,40 @@
+{
+  "id": "openai-mcp",
+  "name": "OpenAI",
+  "description": "OpenAI API - chat completions, embeddings, images, and more",
+  "sourceRepo": "openai/openai-node",
+  "sourceUrl": "https://github.com/openai/openai-node",
+  "version": "1.0.0",
+  "sourceVersion": "v4.0.0",
+  "toolCount": 8,
+  "tools": [
+    { "name": "create_chat_completion", "description": "Generate chat completions", "source": "openapi", "paramCount": 6, "requiresAuth": true },
+    { "name": "create_embedding", "description": "Create embeddings for text", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "create_image", "description": "Generate images with DALL-E", "source": "openapi", "paramCount": 5, "requiresAuth": true },
+    { "name": "list_models", "description": "List available models", "source": "openapi", "paramCount": 0, "requiresAuth": true },
+    { "name": "create_transcription", "description": "Transcribe audio with Whisper", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "create_moderation", "description": "Check content for policy violations", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "create_speech", "description": "Generate speech from text", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "list_files", "description": "List uploaded files", "source": "openapi", "paramCount": 1, "requiresAuth": true }
+  ],
+  "categories": ["ai", "machine-learning", "api"],
+  "tags": ["openai", "gpt", "chatgpt", "dalle", "whisper", "embeddings"],
+  "popularity": 18920,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst OPENAI_API_KEY = process.env.OPENAI_API_KEY;\nconst OPENAI_BASE_URL = 'https://api.openai.com/v1';\n\nif (!OPENAI_API_KEY) {\n  console.error('Error: OPENAI_API_KEY environment variable is required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'openai-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function openaiRequest(endpoint: string, method: string = 'GET', body?: unknown) {\n  const response = await fetch(`${OPENAI_BASE_URL}${endpoint}`, {\n    method,\n    headers: {\n      'Authorization': `Bearer ${OPENAI_API_KEY}`,\n      'Content-Type': 'application/json',\n    },\n    body: body ? JSON.stringify(body) : undefined,\n  });\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.error?.message || 'OpenAI API error');\n  }\n  return response.json();\n}\n\nconst tools = [\n  { name: 'create_chat_completion', description: 'Generate chat completions', inputSchema: { type: 'object', properties: { model: { type: 'string', description: 'Model ID (e.g., gpt-4)' }, messages: { type: 'array', items: { type: 'object', properties: { role: { type: 'string' }, content: { type: 'string' } } } }, temperature: { type: 'number' }, max_tokens: { type: 'number' }, stream: { type: 'boolean' } }, required: ['model', 'messages'] } },\n  { name: 'create_embedding', description: 'Create embeddings', inputSchema: { type: 'object', properties: { model: { type: 'string' }, input: { type: 'string' }, encoding_format: { type: 'string' } }, required: ['model', 'input'] } },\n  { name: 'create_image', description: 'Generate images', inputSchema: { type: 'object', properties: { prompt: { type: 'string' }, model: { type: 'string' }, n: { type: 'number' }, size: { type: 'string' }, quality: { type: 'string' } }, required: ['prompt'] } },\n  { name: 'list_models', description: 'List available models', inputSchema: { type: 'object', properties: {} } },\n  { name: 'create_transcription', description: 'Transcribe audio', inputSchema: { type: 'object', properties: { file: { type: 'string', description: 'Base64 encoded audio file' }, model: { type: 'string' }, language: { type: 'string' }, response_format: { type: 'string' } }, required: ['file', 'model'] } },\n  { name: 'create_moderation', description: 'Check content moderation', inputSchema: { type: 'object', properties: { input: { type: 'string' }, model: { type: 'string' } }, required: ['input'] } },\n  { name: 'create_speech', description: 'Generate speech', inputSchema: { type: 'object', properties: { model: { type: 'string' }, input: { type: 'string' }, voice: { type: 'string' }, response_format: { type: 'string' } }, required: ['model', 'input', 'voice'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, unknown>;\n    switch (name) {\n      case 'create_chat_completion': result = await openaiRequest('/chat/completions', 'POST', a); break;\n      case 'create_embedding': result = await openaiRequest('/embeddings', 'POST', a); break;\n      case 'create_image': result = await openaiRequest('/images/generations', 'POST', a); break;\n      case 'list_models': result = await openaiRequest('/models'); break;\n      case 'create_moderation': result = await openaiRequest('/moderations', 'POST', a); break;\n      case 'create_speech': result = await openaiRequest('/audio/speech', 'POST', a); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "openai": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "OPENAI_API_KEY": "${OPENAI_API_KEY}" } } } },
+    "cursor": { "mcpServers": { "openai": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "OPENAI_API_KEY": "${OPENAI_API_KEY}" } } } },
+    "vscode": { "mcpServers": { "openai": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "OPENAI_API_KEY": "${OPENAI_API_KEY}" } } } }
+  },
+  "quality": { "overall": 90, "schemaCompleteness": 92, "documentation": 88, "examples": 90, "authHandling": 92, "parameterTypes": 88 },
+  "auth": [{ "type": "http", "scheme": "bearer", "envVar": "OPENAI_API_KEY", "instructions": "Get your API key from https://platform.openai.com/api-keys" }],
+  "docsUrl": "https://platform.openai.com/docs",
+  "apiDocsUrl": "https://platform.openai.com/docs/api-reference",
+  "iconUrl": "https://openai.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

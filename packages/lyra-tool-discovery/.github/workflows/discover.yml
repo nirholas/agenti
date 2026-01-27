@@ -1,0 +1,145 @@
+# Crypto MCP Tool Discovery Agent
+# Runs hourly to discover new crypto/DeFi/blockchain/web3 MCP tools
+#
+# Discovers tools from:
+# - GitHub repositories (crypto, defi, blockchain, web3 focused)
+# - npm packages (crypto, defi, blockchain, web3 focused)
+#
+# Filters:
+# - Only crypto/DeFi/blockchain/web3 related tools
+# - Only tools updated within the last 12 months
+#
+# Creates PRs with discovered tools in this repo
+
+name: 🔍 Discover Crypto MCP Tools
+
+on:
+  # Run every hour
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      sources:
+        description: 'Sources (github,npm,awesome-list)'
+        required: false
+        default: 'github,npm'
+      dry_run:
+        description: 'Dry run (no PRs)'
+        type: boolean
+        default: false
+      max_age_months:
+        description: 'Max age in months (default: 12)'
+        required: false
+        default: '12'
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  discover:
+    name: Discover Tools
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📚 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔧 Build
+        run: pnpm build
+
+      - name: 🔍 Run discovery
+        id: discovery
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          FLAGS=""
+          
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+              FLAGS="$FLAGS --dry-run"
+            fi
+            if [ -n "${{ github.event.inputs.sources }}" ]; then
+              FLAGS="$FLAGS --sources=${{ github.event.inputs.sources }}"
+            fi
+          fi
+          
+          node dist/cli.js discover $FLAGS --output=data/discovered-tools.json 2>&1 | tee discovery.log
+          
+          # Count results
+          TOOLS=$(grep -o '"totalDiscovered":[0-9]*' discovery.log | grep -o '[0-9]*' || echo "0")
+          echo "tools_found=$TOOLS" >> $GITHUB_OUTPUT
+
+      - name: 📤 Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: discovery-results
+          path: |
+            discovery.log
+            data/discovered-tools.json
+          retention-days: 30
+
+      - name: 📊 Summary
+        run: |
+          echo "## 🔍 Discovery Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tools Found:** ${{ steps.discovery.outputs.tools_found }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "*Run: $(date -u '+%Y-%m-%d %H:%M UTC')*" >> $GITHUB_STEP_SUMMARY
+
+  # Weekly deep scan
+  weekly:
+    name: Weekly Deep Scan
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 0 * * 0'
+    timeout-minutes: 60
+    
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+      
+      - run: pnpm install --frozen-lockfile && pnpm build
+      
+      - name: Deep scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          node dist/cli.js discover --sources=github,npm,awesome-list --output=data/discovered-tools.json

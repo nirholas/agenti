@@ -1,0 +1,47 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/lyra-registry",
+  "title": "Crypto Tools Registry",
+  "description": "Registry API for 800+ crypto, blockchain, DeFi, NFT, trading tools discovery",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/lyra-registry",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/lyra-registry",
+    "bugs": "https://github.com/nirholas/lyra-registry/issues",
+    "npm": "https://www.npmjs.com/package/lyra-registry"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "lyra-registry",
+      "version": "1.0.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": []
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["crypto", "tools", "registry", "blockchain", "defi", "nft", "trading", "discovery", "mcp", "ai"],
+      "category": "Developer Tools"
+    }
+  }
+}

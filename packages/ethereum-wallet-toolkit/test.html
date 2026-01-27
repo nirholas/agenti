@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethereum Wallet Toolkit - Test Suite</title>
+<style>
+:root { --bg: #000; --fg: #fff; --pass: #0f0; --fail: #f00; --border: #333; }
+body { font-family: monospace; background: var(--bg); color: var(--fg); padding: 2rem; line-height: 1.6; }
+h1 { margin-bottom: 1rem; }
+.test { padding: 0.25rem 0; }
+.pass { color: var(--pass); }
+.fail { color: var(--fail); }
+.error { color: var(--fail); font-size: 0.85rem; margin-left: 2rem; }
+#summary { margin-top: 2rem; padding: 1rem; border: 1px solid var(--border); font-size: 1.2rem; }
+#log { white-space: pre-wrap; margin-top: 1rem; }
+.buttons { margin: 1rem 0; }
+.btn { background: var(--fg); color: var(--bg); border: none; padding: 0.5rem 1rem; cursor: pointer; margin-right: 0.5rem; }
+</style>
+</head>
+<body>
+<h1>Ethereum Wallet Toolkit - Test Suite</h1>
+<div class="buttons">
+<button class="btn" onclick="testOffline1()">Test offline1.html (ethereumjs)</button>
+<button class="btn" onclick="testOffline()">Test offline.html (inline)</button>
+</div>
+<div id="status"></div>
+<div id="log"></div>
+<div id="summary"></div>
+
+<script>
+async function testOffline1() {
+    document.getElementById('status').innerHTML = 'Loading offline1.html...';
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = 'offline1.html';
+    document.body.appendChild(iframe);
+    
+    iframe.onload = () => {
+        document.getElementById('status').innerHTML = 'Running tests on offline1.html (ethereumjs bundle)...';
+        try {
+            const W = iframe.contentWindow.EthWallet;
+            if (!W) throw new Error('EthWallet not found in iframe');
+            runAllTests(W, 'offline1.html (ethereumjs bundle)');
+        } catch (e) {
+            document.getElementById('log').innerHTML = '<div class="fail">Failed to load: ' + e.message + '</div>';
+        }
+    };
+}
+
+async function testOffline() {
+    document.getElementById('status').innerHTML = 'Loading offline.html...';
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = 'offline.html';
+    document.body.appendChild(iframe);
+    
+    iframe.onload = () => {
+        document.getElementById('status').innerHTML = 'Running tests on offline.html (inline crypto)...';
+        try {
+            const win = iframe.contentWindow;
+            // The inline version exposes functions globally
+            const W = {
+                generateWallet: win.generateWallet,
+                privateKeyToWallet: win.privateKeyToAddress ? (k) => ({ address: win.privateKeyToAddress(k), privateKey: k }) : null,
+                // Map to whatever functions are exposed
+            };
+            document.getElementById('log').innerHTML = '<div class="pass">offline.html loaded successfully</div>';
+            document.getElementById('log').innerHTML += '<div>Available functions: ' + Object.keys(win).filter(k => typeof win[k] === 'function').slice(0,20).join(', ') + '</div>';
+        } catch (e) {
+            document.getElementById('log').innerHTML = '<div class="fail">Failed to load: ' + e.message + '</div>';
+        }
+    };
+}
+
+async function runAllTests(W, version) {
+    const log = document.getElementById('log');
+    const summary = document.getElementById('summary');
+    log.innerHTML = '';
+    
+    let passed = 0;
+    let failed = 0;
+    
+    function test(name, fn) {
+        try {
+            fn();
+            log.innerHTML += '<div class="test pass">✓ ' + name + '</div>';
+            passed++;
+        } catch (e) {
+            log.innerHTML += '<div class="test fail">✗ ' + name + '</div>';
+            log.innerHTML += '<div class="error">' + e.message + '</div>';
+            failed++;
+        }
+    }
+    
+    async function asyncTest(name, fn) {
+        try {
+            await fn();
+            log.innerHTML += '<div class="test pass">✓ ' + name + '</div>';
+            passed++;
+        } catch (e) {
+            log.innerHTML += '<div class="test fail">✗ ' + name + '</div>';
+            log.innerHTML += '<div class="error">' + e.message + '</div>';
+            failed++;
+        }
+    }
+    
+    const TEST_KEY = '4c0883a69102937d6231471b5dbb6204fe51296170827936ea5cce4b76994fd9';
+    const TEST_ADDR = '0x1234123451234567890d91123456789012345678';
+    const TEST_MNEMONIC = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    
+    log.innerHTML += '<h3>Testing: ' + version + '</h3>';
+    log.innerHTML += '<h4>--- WALLET GENERATION ---</h4>';
+    
+    test('Generate random wallet', () => {
+        const w = W.generateWallet();
+        if (!w.address.startsWith('0x') || w.address.length !== 42) throw new Error('Bad address: ' + w.address);
+        if (!w.privateKey.startsWith('0x') || w.privateKey.length !== 66) throw new Error('Bad key');
+    });
+    
+    test('Import from private key', () => {
+        const w = W.privateKeyToWallet(TEST_KEY);
+        if (w.address.toLowerCase() !== TEST_ADDR.toLowerCase()) {
+            throw new Error('Expected ' + TEST_ADDR + ', got ' + w.address);
+        }
+    });
+    
+    log.innerHTML += '<h4>--- MNEMONIC ---</h4>';
+    
+    test('Create mnemonic (12 words)', () => {
+        const m = W.createMnemonic(12);
+        if (m.split(' ').length !== 12) throw new Error('Got ' + m.split(' ').length + ' words');
+    });
+    
+    test('Create mnemonic (24 words)', () => {
+        const m = W.createMnemonic(24);
+        if (m.split(' ').length !== 24) throw new Error('Got ' + m.split(' ').length + ' words');
+    });
+    
+    test('Validate mnemonic (valid)', () => {
+        if (!W.validateMnemonicPhrase(TEST_MNEMONIC)) throw new Error('Valid mnemonic rejected');
+    });
+    
+    test('Validate mnemonic (invalid)', () => {
+        if (W.validateMnemonicPhrase('invalid words here that are not valid')) throw new Error('Invalid accepted');
+    });
+    
+    test('Recover from mnemonic', () => {
+        const w = W.mnemonicToWallet(TEST_MNEMONIC);
+        const expected = '0x1234123451234567890d91123456789012345678';
+        if (w.address.toLowerCase() !== expected.toLowerCase()) {
+            throw new Error('Expected ' + expected + ', got ' + w.address);
+        }
+    });
+    
+    test('Derive 5 accounts', () => {
+        const accounts = W.deriveAccounts(TEST_MNEMONIC, 5);
+        if (accounts.length !== 5) throw new Error('Got ' + accounts.length);
+    });
+    
+    log.innerHTML += '<h4>--- MESSAGE SIGNING ---</h4>';
+    
+    test('Sign message', () => {
+        const r = W.signMessage('Hello World', TEST_KEY);
+        if (!r.signature.startsWith('0x')) throw new Error('Bad sig format');
+        if (r.signature.length !== 132) throw new Error('Bad sig length: ' + r.signature.length);
+    });
+    
+    test('Verify signature (valid)', () => {
+        const signed = W.signMessage('Test', TEST_KEY);
+        const r = W.verifyMessage('Test', signed.signature, TEST_ADDR);
+        if (!r.isValid) throw new Error('Valid signature rejected');
+    });
+    
+    test('Verify signature (wrong message)', () => {
+        const signed = W.signMessage('Original', TEST_KEY);
+        const r = W.verifyMessage('Different', signed.signature, TEST_ADDR);
+        if (r.isValid) throw new Error('Wrong message accepted');
+    });
+    
+    log.innerHTML += '<h4>--- VALIDATION ---</h4>';
+    
+    test('Validate address (valid)', () => {
+        if (!W.validateAddress('0x1234123451234567890d91123456789012345678')) throw new Error('Valid rejected');
+    });
+    
+    test('Validate address (invalid)', () => {
+        if (W.validateAddress('0x123')) throw new Error('Short accepted');
+        if (W.validateAddress('not-an-address')) throw new Error('Bad format accepted');
+    });
+    
+    test('Validate private key (valid)', () => {
+        if (!W.validatePrivateKey(TEST_KEY)) throw new Error('Valid rejected');
+    });
+    
+    test('Validate private key (invalid)', () => {
+        if (W.validatePrivateKey('123')) throw new Error('Short accepted');
+    });
+    
+    test('Validate key-address pair (valid)', () => {
+        if (!W.validateKeyAddressPair(TEST_KEY, TEST_ADDR)) throw new Error('Valid pair rejected');
+    });
+    
+    test('Validate key-address pair (invalid)', () => {
+        if (W.validateKeyAddressPair(TEST_KEY, '0x1234123451234567890d91123456789012345678')) {
+            throw new Error('Invalid pair accepted');
+        }
+    });
+    
+    log.innerHTML += '<h4>--- KEYSTORE ---</h4>';
+    
+    await asyncTest('Encrypt keystore', async () => {
+        const ks = await W.encryptKeystore(TEST_KEY, 'password123');
+        if (ks.version !== 3) throw new Error('Wrong version: ' + ks.version);
+        if (!ks.crypto) throw new Error('Missing crypto');
+    });
+    
+    await asyncTest('Encrypt + decrypt keystore', async () => {
+        const ks = await W.encryptKeystore(TEST_KEY, 'testpass');
+        const w = await W.decryptKeystore(ks, 'testpass');
+        if (w.address.toLowerCase() !== TEST_ADDR.toLowerCase()) {
+            throw new Error('Decrypted mismatch');
+        }
+    });
+    
+    await asyncTest('Wrong password fails', async () => {
+        const ks = await W.encryptKeystore(TEST_KEY, 'correct');
+        try {
+            await W.decryptKeystore(ks, 'wrong');
+            throw new Error('Should have failed');
+        } catch (e) {
+            if (!e.message.toLowerCase().includes('password') && !e.message.toLowerCase().includes('mac')) {
+                throw e;
+            }
+        }
+    });
+    
+    log.innerHTML += '<h4>--- TRANSACTIONS ---</h4>';
+    
+    test('Sign legacy transaction', () => {
+        const r = W.signTransaction({
+            to: '0x1234123451234567890d91123456789012345678',
+            value: '1000000000000000000',
+            nonce: 0,
+            gas: 21000,
+            gasPrice: '20000000000'
+        }, TEST_KEY, 1);
+        if (!r.rawTransaction.startsWith('0x')) throw new Error('Bad raw tx');
+        if (!r.hash.startsWith('0x')) throw new Error('Bad hash');
+    });
+    
+    test('Sign EIP-1559 transaction', () => {
+        const r = W.signTransaction({
+            to: '0x1234123451234567890d91123456789012345678',
+            value: '1000000000000000000',
+            nonce: 0,
+            gas: 21000,
+            maxFeePerGas: '30000000000',
+            maxPriorityFeePerGas: '2000000000'
+        }, TEST_KEY, 1);
+        if (!r.rawTransaction.startsWith('0x')) throw new Error('Bad raw tx');
+    });
+    
+    log.innerHTML += '<h4>--- EIP-712 ---</h4>';
+    
+    test('Sign typed data', () => {
+        const r = W.signTypedData({
+            types: {
+                EIP712Domain: [
+                    { name: 'name', type: 'string' },
+                    { name: 'chainId', type: 'uint256' }
+                ],
+                Message: [{ name: 'content', type: 'string' }]
+            },
+            primaryType: 'Message',
+            domain: { name: 'Test', chainId: 1 },
+            message: { content: 'Hello' }
+        }, TEST_KEY);
+        if (!r.signature.startsWith('0x')) throw new Error('Bad signature');
+    });
+    
+    test('Verify typed data', () => {
+        const data = {
+            types: {
+                EIP712Domain: [{ name: 'name', type: 'string' }],
+                Msg: [{ name: 'text', type: 'string' }]
+            },
+            primaryType: 'Msg',
+            domain: { name: 'Test' },
+            message: { text: 'Hi' }
+        };
+        const signed = W.signTypedData(data, TEST_KEY);
+        const r = W.verifyTypedData(data, signed.signature, TEST_ADDR);
+        if (!r.isValid) throw new Error('Verification failed');
+    });
+    
+    log.innerHTML += '<h4>--- VANITY ---</h4>';
+    
+    test('Check vanity prefix', () => {
+        if (!W.checkVanityMatch('0x1234123451234567890d91123456789012345678', { prefix: 'dead' })) {
+            throw new Error('Should match');
+        }
+    });
+    
+    test('Check vanity suffix', () => {
+        if (!W.checkVanityMatch('0x1234123451234567890d91123456789012345678', { suffix: '7890' })) {
+            throw new Error('Should match');
+        }
+    });
+    
+    log.innerHTML += '<h4>--- CONTRACT ADDRESS ---</h4>';
+    
+    test('Calculate contract address', () => {
+        const addr = W.calculateContractAddress(TEST_ADDR, 0);
+        if (!addr.startsWith('0x') || addr.length !== 42) throw new Error('Bad address');
+    });
+    
+    test('Different nonces = different addresses', () => {
+        const a0 = W.calculateContractAddress(TEST_ADDR, 0);
+        const a1 = W.calculateContractAddress(TEST_ADDR, 1);
+        if (a0 === a1) throw new Error('Same address for different nonces');
+    });
+    
+    // Summary
+    const total = passed + failed;
+    summary.innerHTML = '<span class="' + (failed === 0 ? 'pass' : 'fail') + '">';
+    summary.innerHTML += 'RESULTS: ' + passed + '/' + total + ' tests passed';
+    summary.innerHTML += '</span>';
+    if (failed === 0) {
+        summary.innerHTML += ' ✓ ALL TESTS PASSED';
+    } else {
+        summary.innerHTML += ' ✗ ' + failed + ' FAILED';
+    }
+    
+    document.getElementById('status').innerHTML = 'Tests complete!';
+}
+</script>
+</body>
+</html>
+
+
+
+

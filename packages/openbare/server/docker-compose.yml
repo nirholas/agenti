@@ -1,0 +1,55 @@
+# ============================================================================
+# OpenBare Server - Docker Compose
+# For local development and testing
+# ============================================================================
+
+version: '3.8'
+
+services:
+  openbare:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openbare-server
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - LOG_PRETTY=true
+      - NODE_ID=docker-dev-node
+      - REGION=local
+      - OWNER_CONTACT=developer@localhost
+      # Uncomment to enable registry
+      # - REGISTRY_URL=http://registry:3000
+      # - NODE_URL=http://localhost:8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Uncomment to run with registry
+  # registry:
+  #   build:
+  #     context: ../registry
+  #     dockerfile: Dockerfile
+  #   container_name: openbare-registry
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3000
+  #   volumes:
+  #     - registry-data:/app/data
+
+# volumes:
+#   registry-data:
+
+networks:
+  default:
+    name: openbare-network

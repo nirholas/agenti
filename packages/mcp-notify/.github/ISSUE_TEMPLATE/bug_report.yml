@@ -1,0 +1,132 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: When I try to create a subscription with a Discord webhook, I get an error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+      placeholder: The subscription should be created successfully and I should receive notifications.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+      placeholder: I received a 500 Internal Server Error with no helpful message.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Please provide detailed steps to reproduce the issue.
+      placeholder: |
+        1. Go to the dashboard
+        2. Click "New Subscription"
+        3. Add a Discord webhook URL
+        4. Click "Create"
+        5. See error
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component is affected?
+      options:
+        - API Server
+        - Web Dashboard
+        - CLI Tool
+        - Discord Notifications
+        - Slack Notifications
+        - Email Notifications
+        - Webhook Notifications
+        - Telegram Notifications
+        - Teams Notifications
+        - Poller/Diff Engine
+        - Database
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment type
+      description: How are you running MCP Watch?
+      options:
+        - Docker Compose
+        - Kubernetes/Helm
+        - Binary
+        - Development (go run)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of MCP Watch are you running?
+      placeholder: v1.2.3 or commit hash
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Please copy and paste any relevant log output.
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Please provide details about your environment.
+      value: |
+        - OS: [e.g., Ubuntu 22.04]
+        - Browser (for dashboard): [e.g., Chrome 120]
+        - Docker version (if applicable): [e.g., 24.0.0]
+        - PostgreSQL version: [e.g., 15]
+        - Redis version: [e.g., 7]
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context, screenshots, or configuration files about the problem here.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched the existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have read the documentation
+          required: true
+        - label: I am running the latest version (or have checked if this is fixed)
+          required: false

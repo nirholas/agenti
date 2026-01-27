@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pino-*.log
+
+# Build
+dist/
+build/
+.next/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+.nyc_output/
+
+# Docker
+.docker/
+
+# Wrangler
+.wrangler/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Temp
+tmp/
+temp/

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/sperax-crypto-mcp",
+  "title": "SperaxOS",
+  "description": "Sperax Protocol MCP – USDs stablecoin, SPA, veSPA governance & Demeter DeFi",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/sperax-crypto-mcp",
+    "source": "github"
+  },
+  "version": "0.0.1",
+  "links": {
+    "homepage": "https://github.com/nirholas/sperax-crypto-mcp",
+    "bugs": "https://github.com/nirholas/sperax-crypto-mcp/issues",
+    "npm": "https://www.npmjs.com/package/@nirholas/sperax-mcp"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@nirholas/sperax-mcp",
+      "version": "0.0.1",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RPC_URL",
+          "description": "Arbitrum RPC endpoint URL",
+          "required": false,
+          "secret": false
+        },
+        {
+          "name": "PRIVATE_KEY",
+          "description": "Wallet private key for transactions",
+          "required": false,
+          "secret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["sperax", "usds", "spa", "vespa", "demeter", "defi", "arbitrum", "stablecoin", "mcp"],
+      "category": "DeFi"
+    }
+  }
+}

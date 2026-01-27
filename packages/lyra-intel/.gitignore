@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+__pycache__/
+*.egg-info/
+
+# Build outputs
+dist/
+build/
+*.o
+*.so
+.next/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS
+*.pyc
+Thumbs.db
+
+# Internal development files (not for public distribution)
+.lyra-intel/
+DEPLOYMENT_CHECKLIST.md
+IMPLEMENTATION_STATUS.md
+MCP_SERVER_SUMMARY.md
+MCP_COMPLETION_SUMMARY.txt
+
+# Temporary files
+*.tmp
+temp/

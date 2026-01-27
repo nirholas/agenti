@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XActions — Free AI-Powered X/Twitter Automation Tools | Mass Unfollow, Auto-Follow & More</title>
+  <meta name="description" content="Free, open-source AI-powered X/Twitter automation tools. Works with Grok, GPT, Claude & MCP servers. Mass unfollow non-followers, auto-liker, growth suite. No API fees, 100% browser-based. The Twitter API alternative.">
+  <meta name="keywords" content="xactions, Grok Twitter automation, AI Twitter automation, LLM Twitter bot, machine learning Twitter, AI agents for X, GPT Twitter automation, Claude Twitter tools, xAI automation, Twitter AI bot, automated Twitter with AI, MCP server Twitter, AI-powered unfollow, smart Twitter automation, twitter automation, mass unfollow twitter, twitter unfollow tool, twitter bot, twitter growth, detect unfollowers, auto follow twitter, twitter scripts, hypefury alternative, tweethunter alternative, twitter api alternative, who unfollowed me, download twitter video">
+  <meta name="author" content="nich (@nichxbt)">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="XActions — Free AI-Powered X/Twitter Automation Tools">
+  <meta property="og:description" content="AI-powered mass unfollow, smart automation with LLM integration. Works with GPT, Claude & MCP servers. Free, open-source, no API fees.">
+  <meta property="og:url" content="https://xactions.app">
+  <meta property="og:site_name" content="XActions">
+  <meta property="og:image" content="https://xactions.app/og-home.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@nichxbt">
+  <meta name="twitter:creator" content="@nichxbt">
+  <meta name="twitter:title" content="XActions — AI-Powered X/Twitter Automation Tools">
+  <meta name="twitter:description" content="Smart automation with AI agents, LLM & MCP server integration. Mass unfollow, auto-engage, grow your audience. 100% free & open-source.">
+  <meta name="twitter:image" content="https://xactions.app/og-home.png">
+  
+  <link rel="canonical" href="https://xactions.app">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "XActions",
+    "description": "Free, open-source AI-powered X/Twitter automation tools with LLM integration. Compatible with GPT, Claude, and MCP servers for intelligent mass unfollow, auto-engagement and growth",
+    "url": "https://xactions.app",
+    "applicationCategory": "BrowserApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "nich",
+      "url": "https://x.com/nichxbt"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --bg-primary: #000000;
+      --bg-secondary: #16181c;
+      --bg-tertiary: #202327;
+      --bg-hover: #1d1f23;
+      --accent: #1d9bf0;
+      --accent-hover: #1a8cd8;
+      --accent-light: rgba(29, 155, 240, 0.1);
+      --text-primary: #e7e9ea;
+      --text-secondary: #71767b;
+      --border: #2f3336;
+      --success: #00ba7c;
+      --warning: #ffad1f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 16px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { 
+      background: var(--bg-tertiary); 
+      border-radius: 8px; 
+      border: 4px solid var(--bg-primary); 
+    }
+
+    /* Layout */
+    .layout {
+      display: flex;
+      max-width: 1300px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* Left Sidebar */
+    .sidebar-left {
+      width: 275px;
+      padding: 0 12px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+
+    .logo {
+      padding: 12px;
+    }
+
+    .logo a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 800;
+      padding: 12px;
+      border-radius: 9999px;
+      transition: background 0.2s;
+    }
+
+    .logo a:hover {
+      background: var(--accent-light);
+    }
+
+    nav {
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 12px;
+      border-radius: 9999px;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: background 0.2s;
+      margin-bottom: 4px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .nav-item.active {
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      font-size: 1.5rem;
+      width: 28px;
+      text-align: center;
+    }
+
+    .action-btn {
+      width: 90%;
+      padding: 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      font-size: 1.0625rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 16px 0;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+    }
+
+    .action-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      max-width: 600px;
+      border-right: 1px solid var(--border);
+    }
+
+    .main-header {
+      position: sticky;
+      top: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .main-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 48px 24px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+    }
+
+    .hero h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      margin-bottom: 24px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 9999px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 0.9375rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-tertiary);
+    }
+
+    /* Legal Banner */
+    .legal-banner {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .legal-banner strong {
+      color: var(--warning);
+    }
+
+    /* Section */
+    .section {
+      padding: 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Feature Cards */
+    .features-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .feature-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent);
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+    }
+
+    .feature-title {
+      font-weight: 700;
+      font-size: 0.9375rem;
+    }
+
+    .feature-desc {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+
+    /* Steps */
+    .steps {
+      counter-reset: step;
+    }
+
+    .step {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 16px 16px 60px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step h3 {
+      font-size: 0.9375rem;
+      margin-bottom: 4px;
+    }
+
+    .step p {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+
+    .step code {
+      display: inline-block;
+      background: var(--bg-primary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.75rem;
+      margin-top: 8px;
+    }
+
+    /* Code Section */
+    .code-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-header span {
+      font-weight: 700;
+      font-size: 0.9375rem;
+    }
+
+    .copy-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8125rem;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+    }
+
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      background: var(--bg-primary);
+    }
+
+    .code-note {
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Script Tabs */
+    .script-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Safety */
+    .safety-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .safety-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+    }
+
+    .safety-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .safety-item h4 {
+      font-size: 0.875rem;
+      margin-bottom: 2px;
+    }
+
+    .safety-item p {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+
+    /* Right Sidebar */
+    .sidebar-right {
+      width: 350px;
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    /* Stats Card */
+    .promo-card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .promo-header {
+      padding: 16px;
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .promo-item {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+
+    .promo-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .promo-item h4 {
+      font-size: 0.9375rem;
+      margin-bottom: 4px;
+    }
+
+    .promo-item p {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+
+    .promo-link {
+      display: block;
+      padding: 16px;
+      color: var(--accent);
+      font-size: 0.9375rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .promo-link:hover {
+      background: var(--bg-hover);
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      padding: 16px;
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      line-height: 1.5;
+    }
+
+    .disclaimer a {
+      color: var(--text-secondary);
+    }
+
+    .disclaimer a:hover {
+      text-decoration: underline;
+    }
+
+    .disclaimer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      margin-bottom: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .sidebar-right { width: 290px; }
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar-right { display: none; }
+      .main-content { max-width: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar-left {
+        width: 68px;
+        padding: 0 4px;
+      }
+      .logo a span:last-child,
+      .nav-item span:last-child {
+        display: none;
+      }
+      .nav-item {
+        justify-content: center;
+        padding: 12px;
+      }
+      .action-btn {
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        font-size: 0;
+      }
+      .action-btn::before {
+        content: '→';
+        font-size: 1.5rem;
+      }
+      .hero h2 { font-size: 1.5rem; }
+      .hero p { font-size: 1rem; }
+      .safety-grid { grid-template-columns: 1fr; }
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px;
+      background: var(--bg-primary);
+    }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 32px;
+    }
+    .footer-brand h3 { font-size: 1.25rem; margin-bottom: 8px; }
+    .footer-brand p { color: var(--text-secondary); font-size: 0.875rem; line-height: 1.5; }
+    .footer-links h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary); }
+    .footer-links a { display: block; color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; padding: 4px 0; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-bottom { max-width: 1200px; margin: 24px auto 0; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom p { color: var(--text-secondary); font-size: 0.8125rem; }
+    .footer-bottom a { color: var(--text-secondary); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--accent); }
+    @media (max-width: 768px) { .footer-content { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .footer-content { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-left">
+      <div class="logo">
+        <a href="/">
+          <span>⚡</span>
+          <span>XActions</span>
+        </a>
+      </div>
+
+      <nav>
+        <a href="/" class="nav-item active">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+        <a href="/login" class="nav-item">
+          <span class="nav-icon">🔐</span>
+          <span>Login</span>
+        </a>
+        <a href="/dashboard" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="/features" class="nav-item">
+          <span class="nav-icon">✨</span>
+          <span>Features</span>
+        </a>
+        <a href="/docs" class="nav-item">
+          <span class="nav-icon">📚</span>
+          <span>Docs</span>
+        </a>
+        <a href="#scripts" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>Free Scripts</span>
+        </a>
+      </nav>
+
+      <a href="/login" class="action-btn">Login →</a>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="main-header">
+        <h1>Welcome to XActions</h1>
+      </header>
+
+      <!-- Trust Banner -->
+      <div class="legal-banner" style="background: linear-gradient(90deg, var(--accent-light), transparent);">
+        <strong style="color: var(--success);">✓ Fast Activation</strong> • Crypto payments accepted • Open source
+      </div>
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-icon">⚡</div>
+        <h2>Automate Your X Growth in Minutes</h2>
+        <p>Mass unfollow, detect unfollowers, auto-engage — start immediately. Pay with crypto for instant access.</p>
+        <div class="hero-buttons">
+          <a href="/pricing" class="btn btn-primary">Buy Credits & Start →</a>
+          <a href="#scripts" class="btn btn-secondary">Try Free Scripts</a>
+        </div>
+        <div style="margin-top: 16px; display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <span style="color: var(--text-secondary); font-size: 0.875rem;">Accepted:</span>
+          <span style="background: var(--bg-secondary); padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem;">₿ BTC</span>
+          <span style="background: var(--bg-secondary); padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem;">Ξ ETH</span>
+          <span style="background: var(--bg-secondary); padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem;">◎ SOL</span>
+          <span style="background: var(--bg-secondary); padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem;">$ USDC</span>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="section">
+        <h2 class="section-title">✨ Automate Everything</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">🔄</span>
+              <span class="feature-title">Mass Unfollow Non-Followers</span>
+            </div>
+            <p class="feature-desc">Automatically remove everyone who doesn't follow you back. Clean up in minutes.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">🧹</span>
+              <span class="feature-title">Unfollow Everyone</span>
+            </div>
+            <p class="feature-desc">Fresh start your account. Remove all follows with one click.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">🚨</span>
+              <span class="feature-title">Detect Who Unfollowed You</span>
+            </div>
+            <p class="feature-desc">Know exactly who stopped following you. Get alerts instantly.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">📊</span>
+              <span class="feature-title">Monitor Competitors</span>
+            </div>
+            <p class="feature-desc">Track any account's followers. Spy on competitor growth.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">❤️</span>
+              <span class="feature-title">Auto-Like & Engage</span>
+            </div>
+            <p class="feature-desc">Boost engagement automatically. Like posts by keywords or users.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">🚀</span>
+              <span class="feature-title">Growth Suite</span>
+            </div>
+            <p class="feature-desc">Complete automation: follow, engage, and smart unfollow for maximum growth.</p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="/pricing" class="btn btn-primary">Start Automating →</a>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section class="section" id="get-started">
+        <h2 class="section-title">🚀 Get Started in 2 Minutes</h2>
+        
+        <!-- Quick Pay Option -->
+        <div style="background: linear-gradient(135deg, var(--accent-light), var(--bg-secondary)); border: 2px solid var(--accent); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <span style="font-size: 2rem;">⚡</span>
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800;">Instant Start (Recommended)</h3>
+              <p style="color: var(--text-secondary);">Pay with crypto, no account needed</p>
+            </div>
+          </div>
+          <div class="steps" style="margin-bottom: 16px;">
+            <div class="step">
+              <h3>Choose a credit package</h3>
+              <p>Pick from $2.99 starter to $149.99 unlimited</p>
+            </div>
+            <div class="step">
+              <h3>Pay with BTC, ETH, SOL, or USDC</h3>
+              <p>Just enter your email for credit delivery.</p>
+            </div>
+            <div class="step">
+              <h3>Start automating immediately</h3>
+              <p>Credits added instantly after payment confirms. Login and run operations.</p>
+            </div>
+          </div>
+          <a href="/pricing" style="display: block; background: var(--accent); color: white; text-align: center; padding: 16px; border-radius: 9999px; font-weight: 700; text-decoration: none;">Buy Credits & Start Now →</a>
+        </div>
+
+        <!-- Free Scripts Option -->
+        <div style="text-align: center; color: var(--text-secondary); margin: 24px 0; font-size: 0.875rem;">
+          — or try our free browser scripts below —
+        </div>
+      </section>
+
+      <!-- Free Scripts -->
+      <section class="section" id="scripts">
+        <h2 class="section-title">📋 Free Browser Scripts</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 16px;">Manual scripts for the technically inclined. Paste in browser console.</p>
+        
+        <div class="script-tabs">
+          <button class="tab-btn active" onclick="showScript('unfollow')">Unfollow Non-Followers</button>
+          <button class="tab-btn" onclick="showScript('monitor')">Detect Unfollowers</button>
+          <button class="tab-btn" onclick="showScript('watch')">Monitor Account</button>
+        </div>
+
+        <div class="code-section" id="unfollow-script">
+          <div class="code-header">
+            <span>Unfollow Non-Followers</span>
+            <button class="copy-btn" onclick="copyCode('unfollow-code')">Copy</button>
+          </div>
+          <pre id="unfollow-code">(() => {
+  const $followButtons = '[data-testid$="-unfollow"]';
+  const $confirmButton = '[data-testid="confirmationSheetConfirm"]';
+  const retry = { count: 0, limit: 3 };
+
+  const sleep = (s) => new Promise(r => setTimeout(r, s * 1000));
+  const scroll = () => window.scrollTo(0, document.body.scrollHeight);
+
+  const unfollowAll = async (buttons) => {
+    for (const btn of buttons) {
+      btn.click();
+      await sleep(1);
+      document.querySelector($confirmButton)?.click();
+      await sleep(0.5);
+    }
+  };
+
+  const run = async () => {
+    scroll();
+    await sleep(1);
+    let buttons = [...document.querySelectorAll($followButtons)]
+      .filter(b => !b.closest('[data-testid="UserCell"]')
+        ?.querySelector('[data-testid="userFollowIndicator"]'));
+    
+    if (buttons.length) {
+      console.log(`Unfollowing ${buttons.length} users...`);
+      await unfollowAll(buttons);
+      retry.count = 0;
+      await sleep(2);
+      return run();
+    }
+    
+    if (++retry.count < retry.limit) {
+      await sleep(2);
+      return run();
+    }
+    console.log('✅ Done! Reload and run again if any were missed.');
+  };
+
+  run();
+})();</pre>
+          <div class="code-note">
+            <strong>📍 Use on:</strong> x.com/YOUR_USERNAME/following
+          </div>
+        </div>
+
+        <div class="code-section hidden" id="monitor-script">
+          <div class="code-header">
+            <span>Detect Who Unfollowed You</span>
+            <button class="copy-btn" onclick="copyCode('monitor-code')">Copy</button>
+          </div>
+          <pre id="monitor-code">(() => {
+  const KEY = 'xactions_followers';
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  const scrape = async () => {
+    const users = new Set();
+    let prev = 0, retries = 0;
+    console.log('🔍 Scanning followers...');
+    
+    while (retries < 5) {
+      window.scrollTo(0, document.body.scrollHeight);
+      await sleep(1500);
+      document.querySelectorAll('[data-testid="UserCell"] a[href^="/"]')
+        .forEach(a => {
+          const u = a.href.split('/')[3]?.toLowerCase();
+          if (u && !u.includes('?')) users.add(u);
+        });
+      console.log(`   Found ${users.size}...`);
+      if (users.size === prev) retries++; 
+      else { retries = 0; prev = users.size; }
+    }
+    return [...users];
+  };
+
+  const run = async () => {
+    const current = await scrape();
+    const saved = localStorage.getItem(KEY);
+    
+    if (saved) {
+      const { followers: old, time } = JSON.parse(saved);
+      const oldSet = new Set(old);
+      const gone = old.filter(u => !current.includes(u));
+      const newF = current.filter(u => !oldSet.has(u));
+      
+      console.log(`\n📊 Since ${new Date(time).toLocaleString()}:`);
+      if (gone.length) {
+        console.log(`\n🚨 UNFOLLOWED YOU (${gone.length}):`);
+        gone.forEach(u => console.log(`   @${u}`));
+      }
+      if (newF.length) {
+        console.log(`\n🎉 NEW FOLLOWERS (${newF.length}):`);
+        newF.forEach(u => console.log(`   @${u}`));
+      }
+      if (!gone.length && !newF.length) console.log('✨ No changes!');
+    } else {
+      console.log('📸 First scan — saving snapshot...');
+    }
+    
+    localStorage.setItem(KEY, JSON.stringify({
+      followers: current, time: Date.now()
+    }));
+    console.log(`\n💾 Saved ${current.length} followers. Run again later!`);
+  };
+  
+  run();
+})();</pre>
+          <div class="code-note">
+            <strong>📍 Use on:</strong> x.com/YOUR_USERNAME/followers
+          </div>
+        </div>
+
+        <div class="code-section hidden" id="watch-script">
+          <div class="code-header">
+            <span>Monitor Any Account</span>
+            <button class="copy-btn" onclick="copyCode('watch-code')">Copy</button>
+          </div>
+          <pre id="watch-code">(() => {
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const path = location.pathname;
+  const type = path.includes('/followers') ? 'followers' : 'following';
+  const user = path.split('/')[1].toLowerCase();
+  const KEY = `xactions_${user}_${type}`;
+
+  const scrape = async () => {
+    const users = new Set();
+    let prev = 0, retries = 0;
+    console.log(`🔍 Scanning @${user}'s ${type}...`);
+    
+    while (retries < 5) {
+      window.scrollTo(0, document.body.scrollHeight);
+      await sleep(1500);
+      document.querySelectorAll('[data-testid="UserCell"] a[href^="/"]')
+        .forEach(a => {
+          const u = a.href.split('/')[3]?.toLowerCase();
+          if (u && u !== user && !u.includes('?')) users.add(u);
+        });
+      if (users.size === prev) retries++;
+      else { retries = 0; prev = users.size; }
+    }
+    return [...users];
+  };
+
+  const run = async () => {
+    const current = await scrape();
+    console.log(`✅ Found ${current.length} accounts`);
+    
+    const saved = localStorage.getItem(KEY);
+    if (saved) {
+      const { users: old, time } = JSON.parse(saved);
+      const oldSet = new Set(old);
+      const removed = old.filter(u => !current.includes(u));
+      const added = current.filter(u => !oldSet.has(u));
+      
+      console.log(`\n📊 Changes since ${new Date(time).toLocaleString()}:`);
+      if (removed.length) console.log(`👋 Gone: ${removed.map(u=>'@'+u).join(', ')}`);
+      if (added.length) console.log(`➕ New: ${added.map(u=>'@'+u).join(', ')}`);
+      if (!removed.length && !added.length) console.log('✨ No changes!');
+    } else {
+      console.log('📸 First scan — run again later to see changes.');
+    }
+    
+    localStorage.setItem(KEY, JSON.stringify({ users: current, time: Date.now() }));
+  };
+  
+  run();
+})();</pre>
+          <div class="code-note">
+            <strong>📍 Use on:</strong> x.com/ANYONE/followers <em>or</em> /following
+          </div>
+        </div>
+      </section>
+
+      <!-- Why Choose Us -->
+      <section class="section">
+        <h2 class="section-title">🔒 Why XActions?</h2>
+        <div class="safety-grid">
+          <div class="safety-item">
+            <span class="safety-icon">🔐</span>
+            <div>
+              <h4>Private Payments</h4>
+              <p>Pay with crypto for fast, private transactions.</p>
+            </div>
+          </div>
+          <div class="safety-item">
+            <span class="safety-icon">⚡</span>
+            <div>
+              <h4>Instant Activation</h4>
+              <p>Start automating within minutes of payment.</p>
+            </div>
+          </div>
+          <div class="safety-item">
+            <span class="safety-icon">💳</span>
+            <div>
+              <h4>Crypto Payments</h4>
+              <p>BTC, ETH, SOL, USDC accepted. Card payments too.</p>
+            </div>
+          </div>
+          <div class="safety-item">
+            <span class="safety-icon">✅</span>
+            <div>
+              <h4>Trusted Platform</h4>
+              <p>10,000+ satisfied users. Open source code.</p>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+          <a href="/pricing" class="btn btn-primary" style="padding: 16px 32px; font-size: 1rem;">Get Started Now →</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right">
+      <!-- Quick Buy -->
+      <div class="promo-card" style="border: 2px solid var(--accent);">
+        <h3 class="promo-header">⚡ Quick Start</h3>
+        <div class="promo-item">
+          <h4>No Sign-up Required</h4>
+          <p>Pay with crypto and start automating instantly.</p>
+        </div>
+        <div class="promo-item">
+          <h4>Fast & Private</h4>
+          <p>Just email for credit delivery.</p>
+        </div>
+        <div class="promo-item">
+          <h4>Instant Credits</h4>
+          <p>Credits added automatically after payment confirms.</p>
+        </div>
+        <a href="/pricing" class="promo-link" style="background: var(--accent); color: white; text-align: center; border-radius: 9999px; margin: 16px; display: block;">Buy Credits Now →</a>
+      </div>
+
+      <!-- Pricing Preview -->
+      <div class="promo-card">
+        <h3 class="promo-header">💎 Credit Packages</h3>
+        <div class="promo-item" style="display: flex; justify-content: space-between; align-items: center;">
+          <div><h4>Starter</h4><p>50 credits</p></div>
+          <span style="color: var(--success); font-weight: 700;">$2.99</span>
+        </div>
+        <div class="promo-item" style="display: flex; justify-content: space-between; align-items: center;">
+          <div><h4>Medium</h4><p>300 credits</p></div>
+          <span style="color: var(--success); font-weight: 700;">$12.99</span>
+        </div>
+        <div class="promo-item" style="display: flex; justify-content: space-between; align-items: center;">
+          <div><h4>Large</h4><p>1000 credits</p></div>
+          <span style="color: var(--success); font-weight: 700;">$34.99</span>
+        </div>
+        <a href="/pricing" class="promo-link">See all packages →</a>
+      </div>
+
+      <!-- Resources -->
+      <div class="promo-card">
+        <h3 class="promo-header">📚 Resources</h3>
+        <div class="promo-item">
+          <h4>How It Works</h4>
+          <p>3-minute guide to get started.</p>
+        </div>
+        <div class="promo-item">
+          <h4>Feature List</h4>
+          <p>See all automation capabilities.</p>
+        </div>
+        <a href="/docs" class="promo-link">View docs →</a>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="disclaimer">
+        <div class="disclaimer-links">
+          <a href="/docs#terms">Terms</a>
+          <a href="/docs#privacy">Privacy</a>
+          <a href="/docs#disclaimer">Disclaimer</a>
+          <a href="https://github.com/nirholas/XActions">Open Source</a>
+        </div>
+        <p>
+          XActions is an independent project for educational purposes. 
+          Not affiliated with X Corp. Use responsibly and in accordance with X's Terms of Service.
+        </p>
+        <p style="margin-top: 8px;">
+          Made with 🤍 by <a href="https://x.com/nichxbt" target="_blank" style="color: var(--accent);">@nichxbt</a>
+        </p>
+        <p style="margin-top: 4px;">© 2026 XActions</p>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    function copyCode(elementId) {
+      const codeEl = document.getElementById(elementId);
+      if (!codeEl) { alert('Could not find code to copy'); return; }
+      const code = codeEl.textContent;
+      const btn = event.target;
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(() => {
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 2000);
+        }).catch(() => fallbackCopy(code, btn));
+      } else {
+        fallbackCopy(code, btn);
+      }
+    }
+    
+    function fallbackCopy(text, btn) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch (e) {
+        alert('Copy failed. Please select and copy manually.');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showScript(type) {
+      // Hide all scripts
+      document.getElementById('unfollow-script').classList.add('hidden');
+      document.getElementById('monitor-script').classList.add('hidden');
+      document.getElementById('watch-script').classList.add('hidden');
+      
+      // Remove active from all tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      // Show selected
+      const map = { unfollow: 0, monitor: 1, watch: 2 };
+      document.getElementById(`${type}-script`).classList.remove('hidden');
+      document.querySelectorAll('.tab-btn')[map[type]].classList.add('active');
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h3>⚡ XActions</h3>
+        <p>Free, open-source X/Twitter automation toolkit. Mass unfollow, detect unfollowers, auto-engage, and grow your audience without expensive API fees.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Product</h4>
+        <a href="/features">Features</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/docs">Documentation</a>
+        <a href="/dashboard">Dashboard</a>
+      </div>
+      <div class="footer-links">
+        <h4>Company</h4>
+        <a href="/about">About</a>
+        <a href="https://github.com/nirholas/XActions" target="_blank">GitHub</a>
+        <a href="https://x.com/nichxbt" target="_blank">Twitter</a>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 XActions. Not affiliated with X Corp.</p>
+      <p>Made with ❤️ by <a href="https://x.com/nichxbt" target="_blank">@nichxbt</a></p>
+    </div>
+  </footer>
+</body>
+</html>
+

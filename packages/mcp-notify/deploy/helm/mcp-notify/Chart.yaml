@@ -1,0 +1,38 @@
+apiVersion: v2
+name: mcp-notify
+description: A Helm chart for MCP Notify - monitoring and notifications for the MCP Registry
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.0.0"
+
+keywords:
+  - mcp
+  - model-context-protocol
+  - notifications
+  - monitoring
+  - registry
+
+home: https://github.com/nirholas/mcp-notify
+
+sources:
+  - https://github.com/nirholas/mcp-notify
+
+maintainers:
+  - name: nirholas
+    url: https://github.com/nirholas
+
+dependencies:
+  - name: postgresql
+    version: "13.2.24"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "18.6.1"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+
+annotations:
+  category: Monitoring

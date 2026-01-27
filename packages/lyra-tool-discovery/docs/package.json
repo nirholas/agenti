@@ -1,0 +1,14 @@
+{
+  "name": "lyra-tool-discovery-docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.5.0",
+    "vue": "^3.4.0"
+  }
+}

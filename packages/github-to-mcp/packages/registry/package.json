@@ -1,0 +1,59 @@
+{
+  "name": "@github-to-mcp/registry",
+  "version": "1.0.0",
+  "description": "Registry of pre-converted MCP servers for popular repositories",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "registry",
+    "github",
+    "ai",
+    "tools"
+  ],
+  "author": "nirholas",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/github-to-mcp"
+  },
+  "dependencies": {
+    "semver": "^7.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/semver": "^7.5.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@nirholas/github-to-mcp": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@nirholas/github-to-mcp": {
+      "optional": true
+    }
+  }
+}

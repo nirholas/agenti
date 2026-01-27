@@ -1,0 +1,156 @@
+[
+  {
+    "type": "function",
+    "name": "getReserves",
+    "inputs": [],
+    "outputs": [
+      {"name": "_reserve0", "type": "uint112"},
+      {"name": "_reserve1", "type": "uint112"},
+      {"name": "_blockTimestampLast", "type": "uint32"}
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "token0",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "address"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "token1",
+    "inputs": [],
+    "outputs": [{"name": "", "type": "address"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getAmountsOut",
+    "inputs": [
+      {"name": "amountIn", "type": "uint256"},
+      {"name": "path", "type": "address[]"}
+    ],
+    "outputs": [{"name": "amounts", "type": "uint256[]"}],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "swapExactTokensForTokens",
+    "inputs": [
+      {"name": "amountIn", "type": "uint256"},
+      {"name": "amountOutMin", "type": "uint256"},
+      {"name": "path", "type": "address[]"},
+      {"name": "to", "type": "address"},
+      {"name": "deadline", "type": "uint256"}
+    ],
+    "outputs": [{"name": "amounts", "type": "uint256[]"}],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "swapExactETHForTokens",
+    "inputs": [
+      {"name": "amountOutMin", "type": "uint256"},
+      {"name": "path", "type": "address[]"},
+      {"name": "to", "type": "address"},
+      {"name": "deadline", "type": "uint256"}
+    ],
+    "outputs": [{"name": "amounts", "type": "uint256[]"}],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "swapTokensForExactTokens",
+    "inputs": [
+      {"name": "amountOut", "type": "uint256"},
+      {"name": "amountInMax", "type": "uint256"},
+      {"name": "path", "type": "address[]"},
+      {"name": "to", "type": "address"},
+      {"name": "deadline", "type": "uint256"}
+    ],
+    "outputs": [{"name": "amounts", "type": "uint256[]"}],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "addLiquidity",
+    "inputs": [
+      {"name": "tokenA", "type": "address"},
+      {"name": "tokenB", "type": "address"},
+      {"name": "amountADesired", "type": "uint256"},
+      {"name": "amountBDesired", "type": "uint256"},
+      {"name": "amountAMin", "type": "uint256"},
+      {"name": "amountBMin", "type": "uint256"},
+      {"name": "to", "type": "address"},
+      {"name": "deadline", "type": "uint256"}
+    ],
+    "outputs": [
+      {"name": "amountA", "type": "uint256"},
+      {"name": "amountB", "type": "uint256"},
+      {"name": "liquidity", "type": "uint256"}
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "removeLiquidity",
+    "inputs": [
+      {"name": "tokenA", "type": "address"},
+      {"name": "tokenB", "type": "address"},
+      {"name": "liquidity", "type": "uint256"},
+      {"name": "amountAMin", "type": "uint256"},
+      {"name": "amountBMin", "type": "uint256"},
+      {"name": "to", "type": "address"},
+      {"name": "deadline", "type": "uint256"}
+    ],
+    "outputs": [
+      {"name": "amountA", "type": "uint256"},
+      {"name": "amountB", "type": "uint256"}
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "Swap",
+    "inputs": [
+      {"indexed": true, "name": "sender", "type": "address"},
+      {"indexed": false, "name": "amount0In", "type": "uint256"},
+      {"indexed": false, "name": "amount1In", "type": "uint256"},
+      {"indexed": false, "name": "amount0Out", "type": "uint256"},
+      {"indexed": false, "name": "amount1Out", "type": "uint256"},
+      {"indexed": true, "name": "to", "type": "address"}
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Sync",
+    "inputs": [
+      {"indexed": false, "name": "reserve0", "type": "uint112"},
+      {"indexed": false, "name": "reserve1", "type": "uint112"}
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Mint",
+    "inputs": [
+      {"indexed": true, "name": "sender", "type": "address"},
+      {"indexed": false, "name": "amount0", "type": "uint256"},
+      {"indexed": false, "name": "amount1", "type": "uint256"}
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Burn",
+    "inputs": [
+      {"indexed": true, "name": "sender", "type": "address"},
+      {"indexed": false, "name": "amount0", "type": "uint256"},
+      {"indexed": false, "name": "amount1", "type": "uint256"},
+      {"indexed": true, "name": "to", "type": "address"}
+    ],
+    "anonymous": false
+  }
+]

@@ -1,0 +1,112 @@
+# Rust
+rust/target/
+**/*.rs.bk
+Cargo.lock
+
+# TypeScript / Node.js
+node_modules/
+typescript/dist/
+typescript/coverage/
+*.tsbuildinfo
+.npm
+.yarn
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated keypairs (security - never commit private keys)
+*.json
+!typescript/package.json
+!typescript/tsconfig.json
+!typescript/tsconfig.test.json
+!typescript/jest.config.js
+
+# Test outputs
+*.tmp
+*.temp
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.venv/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.tox/
+.nox/
+*.egg
+pip-log.txt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+*~
+
+# Secrets and Keys (CRITICAL)
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+*.secret
+
+# Keystore and Wallet Files (CRITICAL)
+keystore*.json
+wallet*.json
+*.keystore
+*_keystore.json
+encrypted_*.json
+keys/
+wallets/
+generated_*.json
+vanity_*.txt
+vanity_*.json
+
+# Project
+*.log
+*.tmp
+*.bak
+tmp/
+temp/

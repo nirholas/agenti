@@ -1,0 +1,40 @@
+{
+  "name": "@llm-energy/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for llm.energy - Extract documentation from any site with llms.txt support",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "llm-energy-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "llms",
+    "documentation",
+    "ai",
+    "llms-txt"
+  ],
+  "author": "nich (https://x.com/nichxbt)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/lyra-tool-discovery"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

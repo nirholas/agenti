@@ -1,0 +1,210 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lyra Web3 Playground API",
+    "description": "API for compiling Solidity code, generating AI-assisted smart contracts, and accessing contract templates. Use this API to integrate Lyra's blockchain development tools.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Lyra Support",
+      "url": "https://lyra.works",
+      "email": "contact@lyra.works"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://lyra.works/api",
+      "description": "Production API"
+    }
+  ],
+  "paths": {
+    "/compile": {
+      "post": {
+        "operationId": "compileSolidity",
+        "summary": "Compile Solidity Code",
+        "description": "Compiles Solidity smart contract code and returns ABI, bytecode, and any compilation errors or warnings.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Solidity source code to compile"
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "Solidity compiler version (e.g., '0.8.24')",
+                    "default": "0.8.24"
+                  },
+                  "optimize": {
+                    "type": "boolean",
+                    "description": "Enable optimizer",
+                    "default": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Compilation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "abi": { "type": "array" },
+                    "bytecode": { "type": "string" },
+                    "errors": { "type": "array" },
+                    "warnings": { "type": "array" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/generate": {
+      "post": {
+        "operationId": "generateContract",
+        "summary": "AI Contract Generation",
+        "description": "Generate a smart contract based on a natural language description using AI.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "Natural language description of the contract to generate"
+                  },
+                  "contractType": {
+                    "type": "string",
+                    "enum": ["erc20", "erc721", "erc1155", "defi", "custom"],
+                    "description": "Type of contract to generate"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated contract",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": { "type": "string" },
+                    "explanation": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/explain": {
+      "post": {
+        "operationId": "explainContract",
+        "summary": "AI Contract Explanation",
+        "description": "Get a detailed explanation of Solidity code in plain English.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Solidity code to explain"
+                  },
+                  "detail": {
+                    "type": "string",
+                    "enum": ["brief", "detailed", "beginner"],
+                    "default": "detailed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code explanation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "explanation": { "type": "string" },
+                    "securityNotes": { "type": "array" },
+                    "gasEstimate": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates": {
+      "get": {
+        "operationId": "listTemplates",
+        "summary": "List Contract Templates",
+        "description": "Get a list of all available smart contract templates.",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["token", "nft", "defi", "governance", "utility"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" },
+                      "description": { "type": "string" },
+                      "category": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

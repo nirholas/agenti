@@ -1,0 +1,145 @@
+:root {
+  --vp-c-brand-1: #7c3aed;
+  --vp-c-brand-2: #6d28d9;
+  --vp-c-brand-3: #5b21b6;
+  --vp-c-brand-soft: rgba(124, 58, 237, 0.14);
+  
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: #fff;
+  --vp-button-brand-bg: var(--vp-c-brand-1);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: #fff;
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: #fff;
+  --vp-button-brand-active-bg: var(--vp-c-brand-3);
+}
+
+.dark {
+  --vp-c-brand-1: #a78bfa;
+  --vp-c-brand-2: #8b5cf6;
+  --vp-c-brand-3: #7c3aed;
+  --vp-c-brand-soft: rgba(167, 139, 250, 0.14);
+}
+
+/* Hero image styling */
+.VPHero .VPImage {
+  border-radius: 12px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Feature cards */
+.VPFeature {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.VPFeature:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Code blocks */
+.vp-doc div[class*='language-'] {
+  border-radius: 8px;
+}
+
+/* Ecosystem grid styling */
+.ecosystem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.ecosystem-card {
+  padding: 1.5rem;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.ecosystem-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+.ecosystem-card h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--vp-c-brand-1);
+}
+
+.ecosystem-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+}
+
+/* Custom containers */
+.custom-block.tip {
+  border-color: var(--vp-c-brand-1);
+}
+
+.custom-block.tip .custom-block-title {
+  color: var(--vp-c-brand-1);
+}
+
+/* Table styling */
+.vp-doc table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vp-doc th,
+.vp-doc td {
+  border: 1px solid var(--vp-c-border);
+  padding: 0.75rem 1rem;
+}
+
+.vp-doc th {
+  background-color: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+
+/* Inline code */
+.vp-doc :not(pre) > code {
+  background-color: var(--vp-c-bg-soft);
+  color: var(--vp-c-brand-1);
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+}
+
+/* CLI command examples */
+.vp-doc .language-bash code::before,
+.vp-doc .language-sh code::before {
+  content: '$ ';
+  color: var(--vp-c-text-3);
+}
+
+/* Badge styling */
+.badge {
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.badge-mcp {
+  background-color: rgba(124, 58, 237, 0.15);
+  color: var(--vp-c-brand-1);
+}
+
+.badge-standard {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+/* Template table styling */
+.template-table {
+  overflow-x: auto;
+}
+
+.template-table table {
+  min-width: 600px;
+}

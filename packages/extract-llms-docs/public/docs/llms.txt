@@ -1,0 +1,108 @@
+# llm.energy
+
+> Extract documentation for AI agents from any site with llms.txt support.
+
+## Overview
+
+llm.energy fetches documentation from websites that support the llms.txt standard and organizes it into downloadable markdown files optimized for AI assistants.
+
+## Features
+
+- Extract llms.txt or llms-full.txt from any documentation site
+- Split content into individual markdown files by section
+- Generate AGENT-GUIDE.md with instructions for AI assistants
+- Download individual files or everything as a ZIP archive
+- MCP server for programmatic access
+
+## Quick Start
+
+### Web App
+
+1. Visit https://llm.energy
+2. Enter a documentation URL
+3. Download the extracted files
+
+### MCP Server
+
+```json
+{
+  "mcpServers": {
+    "llm-energy": {
+      "command": "npx",
+      "args": ["-y", "@llm-energy/mcp-server"]
+    }
+  }
+}
+```
+
+## MCP Tools
+
+### extract_documentation
+
+Extract and parse documentation from a website with llms.txt support.
+
+Parameters:
+- url (string, required): Documentation site URL
+
+### fetch_llms_txt
+
+Fetch raw llms.txt content without parsing.
+
+Parameters:
+- url (string, required): Documentation site URL
+- full (boolean, optional): Fetch llms-full.txt instead (default: true)
+
+### get_document
+
+Retrieve a specific document from the cache.
+
+Parameters:
+- name (string, required): Document filename
+
+### list_documents
+
+List all cached documents.
+
+## API Reference
+
+Base URL: https://llm.energy/api
+
+### POST /extract
+
+Extract documentation from a URL.
+
+Request:
+```json
+{
+  "url": "docs.anthropic.com"
+}
+```
+
+### GET /fetch
+
+Fetch raw llms.txt content.
+
+Parameters:
+- url: Documentation site URL
+- full: Fetch llms-full.txt (default: true)
+
+## Self Hosting
+
+```bash
+git clone https://github.com/nirholas/lyra-tool-discovery.git
+cd lyra-tool-discovery/llms-forge
+pnpm install
+pnpm dev
+```
+
+## Links
+
+- Website: https://llm.energy
+- GitHub: https://github.com/nirholas/lyra-tool-discovery
+- Documentation: https://llm.energy/docs
+- llms.txt Standard: https://llmstxt.org
+- Author: https://x.com/nichxbt
+
+## License
+
+MIT

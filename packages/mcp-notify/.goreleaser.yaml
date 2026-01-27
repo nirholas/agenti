@@ -1,0 +1,114 @@
+# GoReleaser configuration
+# https://goreleaser.com
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: mcp-notify
+    main: ./cmd/mcp-notify
+    binary: mcp-notify
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Commit={{.Commit}}
+      - -X main.BuildDate={{.Date}}
+
+  - id: mcp-notify-cli
+    main: ./cmd/mcp-notify-cli
+    binary: mcp-notify-cli
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Commit={{.Commit}}
+      - -X main.BuildDate={{.Date}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - config.example.yaml
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^chore:'
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: '🚀 Features'
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: '🐛 Bug Fixes'
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: '📦 Dependencies'
+      regexp: '^.*?(deps|dep)(\([[:word:]]+\))??!?:.+$'
+      order: 2
+    - title: 'Other'
+      order: 999
+
+release:
+  github:
+    owner: nirholas
+    name: mcp-notify
+  draft: false
+  prerelease: auto
+  name_template: "{{.ProjectName}} v{{.Version}}"
+  header: |
+    ## MCP Notify {{.Version}}
+    
+    Real-time monitoring and notifications for the MCP Registry ecosystem.
+  footer: |
+    ## Docker
+    
+    ```bash
+    docker pull ghcr.io/nirholas/mcp-notify:{{.Version}}
+    ```
+    
+    ## Full Changelog
+    
+    **Full Changelog**: https://github.com/nirholas/mcp-notify/compare/{{ .PreviousTag }}...{{ .Tag }}

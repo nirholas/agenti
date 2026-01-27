@@ -1,0 +1,511 @@
+# Ethereum Wallet Toolkit - Complete LLM Context
+
+> Comprehensive reference document for AI/LLM systems to understand and work with this codebase.
+
+## Project Overview
+
+**Name:** Ethereum Wallet Toolkit
+**Type:** Python CLI Application
+**Purpose:** Secure Ethereum wallet operations using official Ethereum Foundation libraries
+**License:** MIT
+**Repository:** https://github.com/nirholas/ethereum-wallet-toolkit
+**Author:** nich (@nichxbt)
+
+### Keywords & Tags
+
+ethereum, wallet, crypto, blockchain, python, cli, bip39, bip32, hd-wallet, mnemonic, 
+vanity-address, eth-account, private-key, public-key, address-generation, message-signing,
+eip-191, secp256k1, keccak256, web3, defi, cryptocurrency, key-management, cold-storage,
+offline-wallet, air-gapped, security, auditable, open-source, educational
+
+---
+
+## Architecture
+
+```
+ethereum-wallet-toolkit/
+├── eth_toolkit.py          # Main CLI (1486 lines)
+│   ├── WalletResult        # Dataclass for wallet output
+│   ├── VanityResult        # Extended dataclass for vanity generation
+│   ├── create_wallet()     # Random wallet generation
+│   ├── create_wallet_with_mnemonic()  # BIP39 mnemonic wallet
+│   ├── restore_from_mnemonic()        # Mnemonic restoration
+│   ├── restore_from_key()             # Private key restoration
+│   ├── generate_vanity()              # Vanity address generation
+│   ├── sign_message()                 # EIP-191 message signing
+│   ├── verify_signature()             # Signature verification
+│   ├── calculate_contract_address()   # CREATE address prediction
+│   └── calculate_create2_address()    # CREATE2 address prediction
+│
+├── vanity.py               # Standalone vanity generator (328 lines)
+│   ├── generate_wallet()   # Single wallet generation
+│   ├── check_vanity_match()# Pattern matching
+│   └── mine_vanity()       # Multi-process mining
+│
+├── offline.html            # Browser-based offline generator
+│
+├── docs/
+│   ├── API.md              # Complete API reference
+│   ├── SECURITY.md         # Security guidelines
+│   ├── VANITY.md           # Vanity address technical guide
+│   └── VANITY_RESOURCES.md # Research compilation
+│
+├── tests/
+│   └── test_toolkit.py     # Unit tests
+│
+├── requirements.txt        # Python dependencies
+├── LICENSE                 # MIT License
+└── README.md               # Project documentation
+```
+
+---
+
+## Core Functions Reference
+
+### Wallet Generation
+
+```python
+def create_wallet() -> WalletResult:
+    """
+    Create a new random Ethereum wallet.
+    Uses OS-level CSPRNG via eth-account.
+    
+    Returns:
+        WalletResult with:
+        - address: str (0x-prefixed, 42 chars)
+        - private_key: str (0x-prefixed hex, 66 chars)
+    """
+
+def create_wallet_with_mnemonic(
+    num_words: int = 12,        # 12, 15, 18, 21, or 24
+    language: str = "english",  # BIP39 wordlist language
+    passphrase: str = "",       # Optional 25th word
+    derivation_path: str = "m/44'/60'/0'/0/0"  # BIP44 Ethereum path
+) -> WalletResult:
+    """
+    Create wallet with BIP39 mnemonic phrase.
+    
+    Returns:
+        WalletResult with mnemonic and derivation_path populated
+    """
+```
+
+### Wallet Restoration
+
+```python
+def restore_from_mnemonic(
+    mnemonic: str,
+    passphrase: str = "",
+    derivation_path: str = "m/44'/60'/0'/0/0"
+) -> WalletResult:
+    """Restore wallet from existing mnemonic phrase."""
+
+def restore_from_key(private_key: str) -> WalletResult:
+    """Restore wallet from private key (with or without 0x prefix)."""
+```
+
+### Vanity Address Generation
+
+```python
+def generate_vanity(
+    prefix: Optional[str] = None,   # Desired prefix after 0x
+    suffix: Optional[str] = None,   # Desired suffix
+    case_sensitive: bool = False,   # Match exact case
+    workers: int = cpu_count(),     # Parallel processes
+    timeout: int = 0                # Max seconds (0 = unlimited)
+) -> VanityResult:
+    """
+    Generate vanity address matching pattern.
+    
+    Difficulty: 16^n attempts average for n hex characters
+    - 2 chars: ~256 attempts
+    - 4 chars: ~65,536 attempts  
+    - 6 chars: ~16,777,216 attempts
+    
+    Returns:
+        VanityResult with attempts count and time_seconds
+    """
+```
+
+### Message Signing (EIP-191)
+
+```python
+def sign_message(private_key: str, message: str) -> str:
+    """
+    Sign message using EIP-191 personal_sign format.
+    
+    Args:
+        private_key: Hex private key
+        message: Plain text message
+    
+    Returns:
+        Signature as hex string (0x-prefixed, 132 chars)
+    """
+
+def verify_signature(address: str, message: str, signature: str) -> bool:
+    """
+    Verify EIP-191 signature.
+    
+    Returns:
+        True if signature is valid and matches address
+    """
+```
+
+### Contract Address Calculation
+
+```python
+def calculate_contract_address(deployer: str, nonce: int) -> str:
+    """
+    Calculate CREATE contract address.
+    Formula: keccak256(rlp([deployer, nonce]))[12:]
+    """
+
+def calculate_create2_address(
+    deployer: str,
+    salt: str,        # 32-byte hex salt
+    init_code_hash: str  # keccak256 of contract init code
+) -> str:
+    """
+    Calculate CREATE2 contract address.
+    Formula: keccak256(0xff ++ deployer ++ salt ++ init_code_hash)[12:]
+    """
+```
+
+### Validation Functions
+
+```python
+def is_valid_address(address: str) -> bool:
+    """Check if string is valid Ethereum address."""
+
+def is_valid_private_key(key: str) -> bool:
+    """Check if string is valid 256-bit private key."""
+
+def validate_public_key(address: str, private_key: str) -> bool:
+    """Verify private key corresponds to address."""
+
+def is_valid_hex_pattern(pattern: str) -> bool:
+    """Check if string contains only hex characters."""
+```
+
+---
+
+## CLI Commands
+
+```bash
+# === WALLET GENERATION ===
+
+# Random wallet
+python eth_toolkit.py generate
+python eth_toolkit.py generate --output wallet.json
+
+# With mnemonic
+python eth_toolkit.py generate --mnemonic
+python eth_toolkit.py generate --mnemonic --words 24
+python eth_toolkit.py generate --mnemonic --language spanish
+python eth_toolkit.py generate --mnemonic --passphrase "my secret"
+
+# === WALLET RESTORATION ===
+
+# From mnemonic
+python eth_toolkit.py restore --mnemonic "word1 word2 ... word12"
+python eth_toolkit.py restore --mnemonic "..." --passphrase "secret"
+python eth_toolkit.py restore --mnemonic "..." --path "m/44'/60'/0'/0/1"
+
+# From private key
+python eth_toolkit.py restore --key 0x...
+
+# === VANITY ADDRESS ===
+
+# Prefix matching
+python eth_toolkit.py vanity --prefix dead
+python eth_toolkit.py vanity --prefix 0000 --case-sensitive
+
+# Suffix matching
+python eth_toolkit.py vanity --suffix beef
+
+# Combined
+python eth_toolkit.py vanity --prefix aa --suffix bb
+
+# Performance options
+python eth_toolkit.py vanity --prefix dead --workers 8 --timeout 300
+
+# === MESSAGE SIGNING ===
+
+# Sign
+python eth_toolkit.py sign --key 0x... --message "Hello World"
+
+# Verify
+python eth_toolkit.py verify --address 0x... --message "Hello World" --signature 0x...
+
+# === CONTRACT ADDRESSES ===
+
+# CREATE address
+python eth_toolkit.py contract --address 0x... --nonce 5
+
+# CREATE2 address
+python eth_toolkit.py create2 --deployer 0x... --salt 0x... --init-code-hash 0x...
+
+# === VALIDATION ===
+
+python eth_toolkit.py validate --address 0x...
+python eth_toolkit.py validate --key 0x...
+```
+
+---
+
+## Dependencies
+
+All dependencies are from the Ethereum Foundation (audited, official):
+
+| Package | Version | Purpose | Repository |
+|---------|---------|---------|------------|
+| eth-account | >=0.8.0 | Key generation, signing, HD wallets | ethereum/eth-account |
+| eth-keys | >=0.4.0 | ECDSA elliptic curve operations | ethereum/eth-keys |
+| eth-utils | >=2.0.0 | Utility functions, encoding | ethereum/eth-utils |
+| eth-rlp | >=0.3.0 | RLP encoding for addresses | ethereum/eth-rlp |
+| rlp | >=3.0.0 | Low-level RLP implementation | ethereum/pyrlp |
+
+**No third-party cryptographic code is used.**
+
+---
+
+## Security Model
+
+### What This Toolkit Does Securely
+
+1. **CSPRNG Usage**: All randomness from OS-level `/dev/urandom` or `CryptGenRandom`
+2. **Audited Libraries**: Only Ethereum Foundation code handles cryptography
+3. **No Network Calls**: Purely offline operation
+4. **Transparent Code**: Single-file, auditable Python
+
+### What This Toolkit Does NOT Protect Against
+
+1. **Compromised OS**: Malware on your system
+2. **Memory Inspection**: Keys exist in RAM during use
+3. **User Error**: Sharing keys, insecure storage
+4. **Physical Access**: Shoulder surfing, cameras
+
+### Known Vulnerabilities in Other Tools
+
+**Profanity Vulnerability (September 2022)**
+- Tool: Profanity vanity generator
+- Issue: 4-byte seed reduced keyspace from 2^256 to 2^32
+- Impact: $160M+ stolen (Wintermute hack)
+- This toolkit: Uses fresh CSPRNG entropy per wallet (not incremental seeds)
+
+**Address Poisoning Attacks**
+- Attack: Scammers create lookalike addresses
+- Impact: $72M single incident (2024)
+- Protection: Always verify full address, use address books
+
+---
+
+## Code Patterns for AI/LLM
+
+### Pattern: Secure Random Wallet
+
+```python
+from eth_account import Account
+
+def create_wallet():
+    account = Account.create()  # Uses CSPRNG internally
+    return {
+        'address': account.address,
+        'private_key': account.key.hex()
+    }
+```
+
+### Pattern: BIP39 Mnemonic
+
+```python
+from eth_account import Account
+
+Account.enable_unaudited_hdwallet_features()
+
+def create_with_mnemonic(words=12):
+    account, mnemonic = Account.create_with_mnemonic(num_words=words)
+    return {
+        'address': account.address,
+        'private_key': account.key.hex(),
+        'mnemonic': mnemonic
+    }
+```
+
+### Pattern: HD Wallet Derivation
+
+```python
+def derive_accounts(mnemonic, count=5):
+    accounts = []
+    for i in range(count):
+        path = f"m/44'/60'/0'/0/{i}"
+        account = Account.from_mnemonic(mnemonic, account_path=path)
+        accounts.append({
+            'path': path,
+            'address': account.address
+        })
+    return accounts
+```
+
+### Pattern: EIP-191 Signing
+
+```python
+from eth_account import Account
+from eth_account.messages import encode_defunct
+
+def sign_message(private_key, message):
+    message_hash = encode_defunct(text=message)
+    signed = Account.sign_message(message_hash, private_key)
+    return signed.signature.hex()
+
+def verify_signature(address, message, signature):
+    message_hash = encode_defunct(text=message)
+    recovered = Account.recover_message(message_hash, signature=signature)
+    return recovered.lower() == address.lower()
+```
+
+### Pattern: Vanity Mining (Multiprocess)
+
+```python
+from concurrent.futures import ProcessPoolExecutor
+from eth_account import Account
+
+def mine_worker(prefix, batch_size=1000):
+    for _ in range(batch_size):
+        account = Account.create()
+        if account.address[2:].lower().startswith(prefix.lower()):
+            return account.address, account.key.hex()
+    return None
+
+def mine_vanity(prefix, workers=4):
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        while True:
+            futures = [executor.submit(mine_worker, prefix) for _ in range(workers)]
+            for future in futures:
+                result = future.result()
+                if result:
+                    return result
+```
+
+---
+
+## Test Examples
+
+```python
+# Test wallet generation
+def test_create_wallet():
+    wallet = create_wallet()
+    assert wallet.address.startswith('0x')
+    assert len(wallet.address) == 42
+    assert len(wallet.private_key) == 66  # 0x + 64 hex chars
+
+# Test mnemonic generation
+def test_mnemonic_words():
+    wallet = create_wallet_with_mnemonic(num_words=24)
+    words = wallet.mnemonic.split()
+    assert len(words) == 24
+
+# Test signature round-trip
+def test_sign_verify():
+    wallet = create_wallet()
+    message = "Test message"
+    signature = sign_message(wallet.private_key, message)
+    assert verify_signature(wallet.address, message, signature)
+
+# Test vanity pattern
+def test_vanity_prefix():
+    result = generate_vanity(prefix='00', timeout=60)
+    assert result.address[2:4].lower() == '00'
+```
+
+---
+
+## Common Use Cases for AI Assistants
+
+### 1. "Generate a secure Ethereum wallet"
+```bash
+python eth_toolkit.py generate --mnemonic --words 24
+```
+
+### 2. "Create a vanity address starting with 'cafe'"
+```bash
+python eth_toolkit.py vanity --prefix cafe
+```
+
+### 3. "Sign a message to prove wallet ownership"
+```bash
+python eth_toolkit.py sign --key 0x... --message "I own this wallet"
+```
+
+### 4. "Verify a signature is valid"
+```bash
+python eth_toolkit.py verify --address 0x... --message "..." --signature 0x...
+```
+
+### 5. "Calculate what contract address will be deployed"
+```bash
+python eth_toolkit.py contract --address 0xDEPLOYER --nonce 0
+```
+
+### 6. "Restore wallet from seed phrase"
+```bash
+python eth_toolkit.py restore --mnemonic "word1 word2 ... word12"
+```
+
+### 7. "Get multiple addresses from one seed"
+```bash
+python eth_toolkit.py restore --mnemonic "..." --path "m/44'/60'/0'/0/0"
+python eth_toolkit.py restore --mnemonic "..." --path "m/44'/60'/0'/0/1"
+python eth_toolkit.py restore --mnemonic "..." --path "m/44'/60'/0'/0/2"
+```
+
+---
+
+## Related Projects
+
+Standalone tools using only Ethereum Foundation libraries:
+
+1. **ethereum-address-similarity** - Compare addresses for visual similarity (anti-phishing)
+2. **ethereum-gas-estimator** - Calculate gas savings from zero bytes in addresses
+3. **ethereum-address-poisoning-detector** - Detect address poisoning attacks in transaction history
+
+---
+
+## Citation
+
+If referencing this project in documentation or code:
+
+```
+Ethereum Wallet Toolkit
+Repository: https://github.com/nirholas/ethereum-wallet-toolkit
+Author: nich (@nichxbt)
+Github: github.com/nirholas
+X: x.com/nichxbt
+License: MIT
+```
+
+---
+
+## Frequently Asked Questions
+
+**Q: Is this safe to use with real funds?**
+A: This is for EDUCATIONAL PURPOSES ONLY. Always use hardware wallets for real funds.
+
+**Q: Why not use third-party libraries?**
+A: Ethereum Foundation libraries are audited and maintained. Third-party crypto code introduces supply chain risk.
+
+**Q: How is this different from Profanity?**
+A: Profanity used weak 4-byte seeds. This toolkit uses OS-level CSPRNG for each wallet.
+
+**Q: Can I generate the same address twice?**
+A: Statistically impossible with proper randomness (2^256 keyspace).
+
+**Q: What's the fastest way to generate vanity addresses?**
+A: Use all CPU cores (`--workers` flag) and keep patterns short (4-5 chars).
+
+---
+
+*This document is machine-readable and designed for LLM/AI consumption. Last updated: January 2026.*
+
+
+
+

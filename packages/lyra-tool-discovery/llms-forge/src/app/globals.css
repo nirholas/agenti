@@ -1,0 +1,564 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== CSS Custom Properties ===== */
+:root {
+  /* Light mode */
+  --background: 255 255 255;
+  --foreground: 10 10 10;
+  --primary: 0 0 0;
+  --primary-foreground: 255 255 255;
+  --muted: 245 245 245;
+  --muted-foreground: 115 115 115;
+  --border: 229 229 229;
+  --card: 255 255 255;
+  --card-foreground: 10 10 10;
+  /* Legacy cyber colors - mapped to monochrome */
+  --cyber-green: #ffffff;
+  --cyber-blue: #a3a3a3;
+  --cyber-purple: #737373;
+  --cyber-pink: #525252;
+}
+
+.dark, html:not(.light) {
+  --background: 0 0 0;
+  --foreground: 250 250 250;
+  --primary: 255 255 255;
+  --primary-foreground: 0 0 0;
+  --muted: 23 23 23;
+  --muted-foreground: 163 163 163;
+  --border: 38 38 38;
+  --card: 10 10 10;
+  --card-foreground: 250 250 250;
+  --cyber-green: #ffffff;
+  --cyber-blue: #a3a3a3;
+  --cyber-purple: #737373;
+  --cyber-pink: #525252;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #000000;
+  color: #fafafa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html.light body {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+
+/* ===== Typography ===== */
+.text-display {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-headline {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.text-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.text-body-lg {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  line-height: 1.6;
+}
+
+/* ===== Scrollbar styling ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+/* ===== Glass Card Effect ===== */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  html.light .glass {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Grid Background */
+  .bg-grid {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  html.light .bg-grid {
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  }
+
+  /* Dots Background */
+  .bg-dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  html.light .bg-dots {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+  }
+}
+
+/* Legacy grid-bg mapped to new bg-grid */
+.grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ===== Terminal styling ===== */
+.terminal {
+  background: #0a0a0a;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  border: 1px solid #262626;
+  border-radius: 0.75rem;
+}
+
+html.light .terminal {
+  background: #fafafa;
+  border-color: #e5e5e5;
+}
+
+.terminal-line {
+  animation: fadeInLine 0.1s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInLine {
+  to { opacity: 1; }
+}
+
+/* Syntax highlighting - monochrome */
+.syntax-property { color: #e5e5e5; }
+.syntax-string { color: #a3a3a3; }
+.syntax-number { color: #737373; }
+.syntax-keyword { color: #fafafa; font-weight: 500; }
+.syntax-comment { color: #525252; font-style: italic; }
+.syntax-function { color: #fafafa; }
+.syntax-punctuation { color: #737373; }
+
+html.light .syntax-property { color: #171717; }
+html.light .syntax-string { color: #525252; }
+html.light .syntax-number { color: #737373; }
+html.light .syntax-keyword { color: #0a0a0a; font-weight: 500; }
+html.light .syntax-comment { color: #a3a3a3; font-style: italic; }
+html.light .syntax-function { color: #0a0a0a; }
+html.light .syntax-punctuation { color: #737373; }
+
+/* ===== Card styling ===== */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: #404040;
+}
+
+html.light .card-lift:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border-color: #d4d4d4;
+}
+
+/* ===== Button styles ===== */
+.btn-primary {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border-radius: 0.75rem;
+}
+
+.btn-primary:hover {
+  background: #e5e5e5;
+  transform: translateY(-1px);
+}
+
+html.light .btn-primary {
+  background: #000000;
+  color: #ffffff;
+}
+
+html.light .btn-primary:hover {
+  background: #171717;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fafafa;
+  border: 1px solid #404040;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 0.75rem;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #525252;
+}
+
+html.light .btn-secondary {
+  color: #0a0a0a;
+  border-color: #d4d4d4;
+}
+
+html.light .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: #a3a3a3;
+}
+
+/* ===== Badge styles ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a3a3a3;
+}
+
+html.light .badge {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #525252;
+}
+
+/* ===== Gradient text - monochrome ===== */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #737373 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html.light .gradient-text {
+  background: linear-gradient(135deg, #000000 0%, #737373 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ===== Step number badge ===== */
+.step-badge {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: #ffffff;
+  color: #000000;
+}
+
+html.light .step-badge {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* ===== Timeline line ===== */
+.timeline-line {
+  background: linear-gradient(180deg, #404040 0%, #171717 100%);
+}
+
+html.light .timeline-line {
+  background: linear-gradient(180deg, #d4d4d4 0%, #e5e5e5 100%);
+}
+
+/* ===== Section divider ===== */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #262626 50%, transparent 100%);
+}
+
+html.light .section-divider {
+  background: linear-gradient(90deg, transparent 0%, #e5e5e5 50%, transparent 100%);
+}
+
+/* ===== Keep cyber-button for compatibility ===== */
+.cyber-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.cyber-button:hover::before {
+  left: 100%;
+}
+
+/* ===== Mobile-First Utilities ===== */
+@layer utilities {
+  /* Touch-friendly tap targets - minimum 44px */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Scrollbar thin variant for mobile */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 2px;
+  }
+
+  /* Hide scrollbar but allow scroll */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area padding for mobile devices */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+}
+
+/* ===== Mobile Breakpoint Adjustments ===== */
+@media (max-width: 640px) {
+  /* Ensure minimum font size for readability */
+  body {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Prevent horizontal overflow */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Larger touch targets on mobile */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+
+  /* Better tap area for links in text */
+  p a, li a {
+    padding: 0.25rem 0;
+  }
+
+  /* Full-width form elements */
+  input[type="text"],
+  input[type="url"],
+  input[type="email"],
+  select {
+    width: 100%;
+  }
+
+  /* Terminal adjustments for mobile */
+  .terminal {
+    font-size: 12px;
+    padding: 0.75rem;
+  }
+}
+
+/* ===== Accessibility Improvements ===== */
+
+/* Focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Remove focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast focus for better visibility */
+.focus-ring-white:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+html.light :focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: white;
+  color: black;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Ensure interactive elements are visually distinct */
+button:disabled,
+input:disabled,
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border-neutral-700 {
+    border-color: #737373;
+  }
+  
+  .border-neutral-800 {
+    border-color: #525252;
+  }
+  
+  .text-neutral-400 {
+    color: #a3a3a3;
+  }
+  
+  .text-neutral-500 {
+    color: #a3a3a3;
+  }
+}
+
+/* ===== Selection styling ===== */
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+html.light ::selection {
+  background: rgba(0, 0, 0, 0.2);
+  color: black;
+}
+
+/* ===== Print styles ===== */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}

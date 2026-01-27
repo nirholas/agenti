@@ -1,0 +1,52 @@
+{
+  "name": "openbare",
+  "version": "1.0.0",
+  "description": "A decentralized, censorship-resistant web proxy network",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client",
+    "registry"
+  ],
+  "scripts": {
+    "start:server": "npm run start -w server",
+    "start:registry": "npm run start -w registry",
+    "dev:server": "npm run dev -w server",
+    "dev:registry": "npm run dev -w registry",
+    "install:all": "npm install --workspaces",
+    "test": "npm test --workspaces --if-present",
+    "test:server": "npm test -w server",
+    "test:client": "npm test -w client",
+    "test:registry": "npm test -w registry",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix",
+    "format": "npx prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "npx prettier --check \"**/*.{js,json,md}\""
+  },
+  "keywords": [
+    "proxy",
+    "bare-server",
+    "ultraviolet",
+    "censorship-resistant",
+    "decentralized",
+    "web-proxy",
+    "privacy"
+  ],
+  "author": "OpenBare Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/openbare.git"
+  },
+  "homepage": "https://github.com/nirholas/openbare#readme",
+  "bugs": {
+    "url": "https://github.com/nirholas/openbare/issues"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,28 @@
+// src/config/types.ts
+// TypeScript interfaces for Binance.US API responses
+/**
+ * Error Codes
+ */
+export const ERROR_CODES = {
+    UNKNOWN: -1000,
+    DISCONNECTED: -1001,
+    UNAUTHORIZED: -1002,
+    TOO_MANY_REQUESTS: -1003,
+    UNEXPECTED_RESP: -1006,
+    TIMEOUT: -1007,
+    SERVER_BUSY: -1008,
+    INVALID_TIMESTAMP: -1021,
+    INVALID_SIGNATURE: -1022,
+    ILLEGAL_CHARS: -1100,
+    TOO_MANY_PARAMETERS: -1101,
+    MANDATORY_PARAM_EMPTY_OR_MALFORMED: -1102,
+    UNKNOWN_PARAM: -1103,
+    BAD_SYMBOL: -1121,
+    NEW_ORDER_REJECTED: -2010,
+    CANCEL_REJECTED: -2011,
+    NO_SUCH_ORDER: -2013,
+    BAD_API_KEY_FMT: -2014,
+    REJECTED_MBX_KEY: -2015,
+    ORDER_ARCHIVED: -2026,
+};
+//# sourceMappingURL=types.js.map

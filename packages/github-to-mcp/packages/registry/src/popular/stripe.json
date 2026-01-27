@@ -1,0 +1,163 @@
+{
+  "id": "stripe-mcp",
+  "name": "Stripe",
+  "description": "Payment processing API - create customers, charges, subscriptions, and more",
+  "sourceRepo": "stripe/stripe-node",
+  "sourceUrl": "https://github.com/stripe/stripe-node",
+  "version": "1.0.0",
+  "sourceVersion": "v14.0.0",
+  "toolCount": 12,
+  "tools": [
+    {
+      "name": "create_customer",
+      "description": "Create a new Stripe customer",
+      "source": "openapi",
+      "paramCount": 4,
+      "requiresAuth": true
+    },
+    {
+      "name": "get_customer",
+      "description": "Retrieve a customer by ID",
+      "source": "openapi",
+      "paramCount": 1,
+      "requiresAuth": true
+    },
+    {
+      "name": "list_customers",
+      "description": "List all customers with pagination",
+      "source": "openapi",
+      "paramCount": 3,
+      "requiresAuth": true
+    },
+    {
+      "name": "create_payment_intent",
+      "description": "Create a payment intent for processing payments",
+      "source": "openapi",
+      "paramCount": 5,
+      "requiresAuth": true
+    },
+    {
+      "name": "confirm_payment_intent",
+      "description": "Confirm a payment intent",
+      "source": "openapi",
+      "paramCount": 2,
+      "requiresAuth": true
+    },
+    {
+      "name": "create_subscription",
+      "description": "Create a subscription for a customer",
+      "source": "openapi",
+      "paramCount": 4,
+      "requiresAuth": true
+    },
+    {
+      "name": "cancel_subscription",
+      "description": "Cancel an existing subscription",
+      "source": "openapi",
+      "paramCount": 2,
+      "requiresAuth": true
+    },
+    {
+      "name": "create_invoice",
+      "description": "Create an invoice for a customer",
+      "source": "openapi",
+      "paramCount": 3,
+      "requiresAuth": true
+    },
+    {
+      "name": "list_invoices",
+      "description": "List all invoices with filtering",
+      "source": "openapi",
+      "paramCount": 4,
+      "requiresAuth": true
+    },
+    {
+      "name": "create_refund",
+      "description": "Create a refund for a charge or payment intent",
+      "source": "openapi",
+      "paramCount": 3,
+      "requiresAuth": true
+    },
+    {
+      "name": "get_balance",
+      "description": "Retrieve current account balance",
+      "source": "openapi",
+      "paramCount": 0,
+      "requiresAuth": true
+    },
+    {
+      "name": "list_products",
+      "description": "List all products",
+      "source": "openapi",
+      "paramCount": 3,
+      "requiresAuth": true
+    }
+  ],
+  "categories": ["payments", "fintech", "api"],
+  "tags": ["stripe", "payments", "billing", "subscriptions", "invoices"],
+  "popularity": 15420,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport {\n  CallToolRequestSchema,\n  ListToolsRequestSchema,\n} from '@modelcontextprotocol/sdk/types.js';\n\nconst STRIPE_API_KEY = process.env.STRIPE_API_KEY;\nconst STRIPE_BASE_URL = 'https://api.stripe.com/v1';\n\nif (!STRIPE_API_KEY) {\n  console.error('Error: STRIPE_API_KEY environment variable is required');\n  process.exit(1);\n}\n\nconst server = new Server(\n  { name: 'stripe-mcp', version: '1.0.0' },\n  { capabilities: { tools: {} } }\n);\n\nasync function stripeRequest(endpoint: string, method: string = 'GET', body?: Record<string, unknown>) {\n  const response = await fetch(`${STRIPE_BASE_URL}${endpoint}`, {\n    method,\n    headers: {\n      'Authorization': `Bearer ${STRIPE_API_KEY}`,\n      'Content-Type': 'application/x-www-form-urlencoded',\n    },\n    body: body ? new URLSearchParams(body as Record<string, string>).toString() : undefined,\n  });\n  \n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.error?.message || 'Stripe API error');\n  }\n  \n  return response.json();\n}\n\nconst tools = [\n  {\n    name: 'create_customer',\n    description: 'Create a new Stripe customer',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        email: { type: 'string', description: 'Customer email address' },\n        name: { type: 'string', description: 'Customer name' },\n        phone: { type: 'string', description: 'Customer phone number' },\n        metadata: { type: 'object', description: 'Additional metadata' },\n      },\n      required: ['email'],\n    },\n  },\n  {\n    name: 'get_customer',\n    description: 'Retrieve a customer by ID',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        customer_id: { type: 'string', description: 'Customer ID (cus_xxx)' },\n      },\n      required: ['customer_id'],\n    },\n  },\n  {\n    name: 'list_customers',\n    description: 'List all customers with pagination',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        limit: { type: 'number', description: 'Number of customers to return (max 100)' },\n        starting_after: { type: 'string', description: 'Cursor for pagination' },\n        email: { type: 'string', description: 'Filter by email' },\n      },\n    },\n  },\n  {\n    name: 'create_payment_intent',\n    description: 'Create a payment intent for processing payments',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        amount: { type: 'number', description: 'Amount in cents' },\n        currency: { type: 'string', description: 'Three-letter currency code (e.g., usd)' },\n        customer: { type: 'string', description: 'Customer ID' },\n        description: { type: 'string', description: 'Payment description' },\n        metadata: { type: 'object', description: 'Additional metadata' },\n      },\n      required: ['amount', 'currency'],\n    },\n  },\n  {\n    name: 'confirm_payment_intent',\n    description: 'Confirm a payment intent',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        payment_intent_id: { type: 'string', description: 'Payment intent ID' },\n        payment_method: { type: 'string', description: 'Payment method ID' },\n      },\n      required: ['payment_intent_id'],\n    },\n  },\n  {\n    name: 'create_subscription',\n    description: 'Create a subscription for a customer',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        customer: { type: 'string', description: 'Customer ID' },\n        price: { type: 'string', description: 'Price ID' },\n        trial_period_days: { type: 'number', description: 'Number of trial days' },\n        metadata: { type: 'object', description: 'Additional metadata' },\n      },\n      required: ['customer', 'price'],\n    },\n  },\n  {\n    name: 'cancel_subscription',\n    description: 'Cancel an existing subscription',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        subscription_id: { type: 'string', description: 'Subscription ID' },\n        cancel_at_period_end: { type: 'boolean', description: 'Cancel at end of period' },\n      },\n      required: ['subscription_id'],\n    },\n  },\n  {\n    name: 'create_invoice',\n    description: 'Create an invoice for a customer',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        customer: { type: 'string', description: 'Customer ID' },\n        auto_advance: { type: 'boolean', description: 'Auto-finalize invoice' },\n        description: { type: 'string', description: 'Invoice description' },\n      },\n      required: ['customer'],\n    },\n  },\n  {\n    name: 'list_invoices',\n    description: 'List all invoices with filtering',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        customer: { type: 'string', description: 'Filter by customer ID' },\n        status: { type: 'string', enum: ['draft', 'open', 'paid', 'void', 'uncollectible'] },\n        limit: { type: 'number', description: 'Number of invoices to return' },\n        starting_after: { type: 'string', description: 'Cursor for pagination' },\n      },\n    },\n  },\n  {\n    name: 'create_refund',\n    description: 'Create a refund for a charge or payment intent',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        payment_intent: { type: 'string', description: 'Payment intent ID to refund' },\n        amount: { type: 'number', description: 'Amount to refund in cents (partial refund)' },\n        reason: { type: 'string', enum: ['duplicate', 'fraudulent', 'requested_by_customer'] },\n      },\n      required: ['payment_intent'],\n    },\n  },\n  {\n    name: 'get_balance',\n    description: 'Retrieve current account balance',\n    inputSchema: {\n      type: 'object',\n      properties: {},\n    },\n  },\n  {\n    name: 'list_products',\n    description: 'List all products',\n    inputSchema: {\n      type: 'object',\n      properties: {\n        active: { type: 'boolean', description: 'Filter by active status' },\n        limit: { type: 'number', description: 'Number of products to return' },\n        starting_after: { type: 'string', description: 'Cursor for pagination' },\n      },\n    },\n  },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  \n  try {\n    let result;\n    \n    switch (name) {\n      case 'create_customer':\n        result = await stripeRequest('/customers', 'POST', args as Record<string, unknown>);\n        break;\n      case 'get_customer':\n        result = await stripeRequest(`/customers/${(args as { customer_id: string }).customer_id}`);\n        break;\n      case 'list_customers':\n        const customerParams = new URLSearchParams(args as Record<string, string>).toString();\n        result = await stripeRequest(`/customers?${customerParams}`);\n        break;\n      case 'create_payment_intent':\n        result = await stripeRequest('/payment_intents', 'POST', args as Record<string, unknown>);\n        break;\n      case 'confirm_payment_intent':\n        const { payment_intent_id, ...confirmArgs } = args as { payment_intent_id: string };\n        result = await stripeRequest(`/payment_intents/${payment_intent_id}/confirm`, 'POST', confirmArgs);\n        break;\n      case 'create_subscription':\n        result = await stripeRequest('/subscriptions', 'POST', { ...args as Record<string, unknown>, items: [{ price: (args as { price: string }).price }] });\n        break;\n      case 'cancel_subscription':\n        const { subscription_id, ...cancelArgs } = args as { subscription_id: string };\n        result = await stripeRequest(`/subscriptions/${subscription_id}`, 'DELETE', cancelArgs);\n        break;\n      case 'create_invoice':\n        result = await stripeRequest('/invoices', 'POST', args as Record<string, unknown>);\n        break;\n      case 'list_invoices':\n        const invoiceParams = new URLSearchParams(args as Record<string, string>).toString();\n        result = await stripeRequest(`/invoices?${invoiceParams}`);\n        break;\n      case 'create_refund':\n        result = await stripeRequest('/refunds', 'POST', args as Record<string, unknown>);\n        break;\n      case 'get_balance':\n        result = await stripeRequest('/balance');\n        break;\n      case 'list_products':\n        const productParams = new URLSearchParams(args as Record<string, string>).toString();\n        result = await stripeRequest(`/products?${productParams}`);\n        break;\n      default:\n        throw new Error(`Unknown tool: ${name}`);\n    }\n    \n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n  console.error('Stripe MCP server running on stdio');\n}\n\nmain().catch(console.error);\n",
+    "python": "#!/usr/bin/env python3\n\"\"\"Stripe MCP Server - Payment processing tools\"\"\"\n\nimport os\nimport json\nimport httpx\nfrom mcp.server import Server\nfrom mcp.server.stdio import stdio_server\nfrom mcp.types import Tool, TextContent\n\nSTRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')\nSTRIPE_BASE_URL = 'https://api.stripe.com/v1'\n\nif not STRIPE_API_KEY:\n    raise ValueError('STRIPE_API_KEY environment variable is required')\n\nserver = Server('stripe-mcp')\n\nasync def stripe_request(endpoint: str, method: str = 'GET', data: dict = None):\n    async with httpx.AsyncClient() as client:\n        headers = {\n            'Authorization': f'Bearer {STRIPE_API_KEY}',\n            'Content-Type': 'application/x-www-form-urlencoded',\n        }\n        url = f'{STRIPE_BASE_URL}{endpoint}'\n        \n        if method == 'GET':\n            response = await client.get(url, headers=headers, params=data)\n        elif method == 'POST':\n            response = await client.post(url, headers=headers, data=data)\n        elif method == 'DELETE':\n            response = await client.delete(url, headers=headers, data=data)\n        \n        response.raise_for_status()\n        return response.json()\n\n@server.list_tools()\nasync def list_tools():\n    return [\n        Tool(name='create_customer', description='Create a new Stripe customer',\n             inputSchema={'type': 'object', 'properties': {'email': {'type': 'string'}, 'name': {'type': 'string'}}, 'required': ['email']}),\n        Tool(name='get_customer', description='Retrieve a customer by ID',\n             inputSchema={'type': 'object', 'properties': {'customer_id': {'type': 'string'}}, 'required': ['customer_id']}),\n        Tool(name='create_payment_intent', description='Create a payment intent',\n             inputSchema={'type': 'object', 'properties': {'amount': {'type': 'number'}, 'currency': {'type': 'string'}}, 'required': ['amount', 'currency']}),\n        Tool(name='get_balance', description='Get account balance',\n             inputSchema={'type': 'object', 'properties': {}}),\n    ]\n\n@server.call_tool()\nasync def call_tool(name: str, arguments: dict):\n    try:\n        if name == 'create_customer':\n            result = await stripe_request('/customers', 'POST', arguments)\n        elif name == 'get_customer':\n            result = await stripe_request(f\"/customers/{arguments['customer_id']}\")\n        elif name == 'create_payment_intent':\n            result = await stripe_request('/payment_intents', 'POST', arguments)\n        elif name == 'get_balance':\n            result = await stripe_request('/balance')\n        else:\n            raise ValueError(f'Unknown tool: {name}')\n        \n        return [TextContent(type='text', text=json.dumps(result, indent=2))]\n    except Exception as e:\n        return [TextContent(type='text', text=f'Error: {str(e)}')]\n\nasync def main():\n    async with stdio_server() as (read_stream, write_stream):\n        await server.run(read_stream, write_stream, server.create_initialization_options())\n\nif __name__ == '__main__':\n    import asyncio\n    asyncio.run(main())\n"
+  },
+  "configs": {
+    "claude": {
+      "mcpServers": {
+        "stripe": {
+          "command": "npx",
+          "args": ["tsx", "index.ts"],
+          "env": {
+            "STRIPE_API_KEY": "${STRIPE_API_KEY}"
+          }
+        }
+      }
+    },
+    "cursor": {
+      "mcpServers": {
+        "stripe": {
+          "command": "npx",
+          "args": ["tsx", "index.ts"],
+          "env": {
+            "STRIPE_API_KEY": "${STRIPE_API_KEY}"
+          }
+        }
+      }
+    },
+    "vscode": {
+      "mcpServers": {
+        "stripe": {
+          "command": "npx",
+          "args": ["tsx", "index.ts"],
+          "env": {
+            "STRIPE_API_KEY": "${STRIPE_API_KEY}"
+          }
+        }
+      }
+    }
+  },
+  "quality": {
+    "overall": 92,
+    "schemaCompleteness": 95,
+    "documentation": 90,
+    "examples": 88,
+    "authHandling": 95,
+    "parameterTypes": 92
+  },
+  "auth": [
+    {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "scheme": "bearer",
+      "envVar": "STRIPE_API_KEY",
+      "instructions": "Get your API key from https://dashboard.stripe.com/apikeys"
+    }
+  ],
+  "docsUrl": "https://stripe.com/docs",
+  "apiDocsUrl": "https://stripe.com/docs/api",
+  "iconUrl": "https://stripe.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

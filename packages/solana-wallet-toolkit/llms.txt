@@ -1,0 +1,76 @@
+# Solana Wallet Toolkit
+
+> Secure, auditable toolkit for Solana wallet generation and vanity addresses — using only official Solana Labs libraries.
+
+## Critical Security Notice
+
+This toolkit uses ONLY official Solana Labs libraries:
+- Rust: solana-sdk (https://github.com/solana-labs/solana)
+- TypeScript: @solana/web3.js (https://github.com/solana-labs/solana-web3.js)
+- Shell: solana-keygen CLI
+
+NO third-party cryptographic code is used. All key generation uses Ed25519 from official packages.
+
+## Quick Reference
+
+### Rust Key Generation
+```rust
+use solana_sdk::signer::keypair::Keypair;
+use solana_sdk::signature::Signer;
+
+let keypair = Keypair::new();
+let address = keypair.pubkey().to_string(); // Base58 address
+let secret = keypair.to_bytes(); // 64 bytes: [seed(32) | pubkey(32)]
+```
+
+### TypeScript Key Generation
+```typescript
+import { Keypair } from '@solana/web3.js';
+
+const keypair = Keypair.generate();
+const address = keypair.publicKey.toBase58();
+const secret = keypair.secretKey; // Uint8Array(64)
+```
+
+### Solana CLI Format
+Keypairs are stored as JSON arrays of 64 bytes:
+```json
+[174,47,154,16,202,193,206,113,199,190,53,133,169,175,31,56,...]
+```
+- Bytes 0-31: Ed25519 secret key seed
+- Bytes 32-63: Public key
+
+## Vanity Address Generation
+
+Solana addresses use Base58 (58 characters: 1-9, A-Z excluding O, a-z excluding l).
+
+Difficulty estimates:
+- 1 char: 1 in 58 (instant)
+- 2 chars: 1 in 3,364 (<1 sec)
+- 3 chars: 1 in 195,112 (~2 sec)
+- 4 chars: 1 in 11,316,496 (~2 min)
+- 5 chars: 1 in 656,356,768 (~2 hours)
+- 6 chars: 1 in 38+ billion (~4 days)
+
+## Project Structure
+
+- rust/ - High-performance Rust implementation (solana-sdk)
+- typescript/ - Node.js implementation (@solana/web3.js)
+- scripts/ - Shell scripts wrapping solana-keygen
+- tools/ - Verification utilities
+- tests/ - Test suites
+
+## Important Files
+
+- rust/Cargo.toml - Rust dependencies
+- typescript/package.json - Node.js dependencies
+- rust/src/generator.rs - Core Rust generation logic
+- typescript/src/lib/generator.ts - Core TS generation logic
+
+## Security Features
+
+1. Memory zeroization (zeroize crate)
+2. File permissions 0600
+3. RNG quality verification
+4. No network calls (fully offline)
+5. Auditable open source code

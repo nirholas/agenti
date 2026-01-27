@@ -1,0 +1,42 @@
+{
+  "id": "supabase-mcp",
+  "name": "Supabase",
+  "description": "Supabase API - database queries, authentication, storage, and realtime",
+  "sourceRepo": "supabase/supabase-js",
+  "sourceUrl": "https://github.com/supabase/supabase-js",
+  "version": "1.0.0",
+  "sourceVersion": "v2.40.0",
+  "toolCount": 10,
+  "tools": [
+    { "name": "query_table", "description": "Query data from a table", "source": "code", "paramCount": 5, "requiresAuth": true },
+    { "name": "insert_rows", "description": "Insert rows into a table", "source": "code", "paramCount": 3, "requiresAuth": true },
+    { "name": "update_rows", "description": "Update rows in a table", "source": "code", "paramCount": 4, "requiresAuth": true },
+    { "name": "delete_rows", "description": "Delete rows from a table", "source": "code", "paramCount": 3, "requiresAuth": true },
+    { "name": "run_rpc", "description": "Call a database function", "source": "code", "paramCount": 2, "requiresAuth": true },
+    { "name": "upload_file", "description": "Upload a file to storage", "source": "code", "paramCount": 4, "requiresAuth": true },
+    { "name": "download_file", "description": "Download a file from storage", "source": "code", "paramCount": 2, "requiresAuth": true },
+    { "name": "list_files", "description": "List files in a bucket", "source": "code", "paramCount": 3, "requiresAuth": true },
+    { "name": "sign_up", "description": "Sign up a new user", "source": "code", "paramCount": 2, "requiresAuth": false },
+    { "name": "sign_in", "description": "Sign in a user", "source": "code", "paramCount": 2, "requiresAuth": false }
+  ],
+  "categories": ["database", "backend", "api"],
+  "tags": ["supabase", "postgres", "database", "auth", "storage", "realtime"],
+  "popularity": 14250,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst SUPABASE_URL = process.env.SUPABASE_URL;\nconst SUPABASE_KEY = process.env.SUPABASE_KEY;\n\nif (!SUPABASE_URL || !SUPABASE_KEY) {\n  console.error('Error: SUPABASE_URL and SUPABASE_KEY environment variables are required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'supabase-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function supabaseRequest(endpoint: string, method: string = 'GET', body?: unknown, headers?: Record<string, string>) {\n  const response = await fetch(`${SUPABASE_URL}${endpoint}`, {\n    method,\n    headers: {\n      'apikey': SUPABASE_KEY,\n      'Authorization': `Bearer ${SUPABASE_KEY}`,\n      'Content-Type': 'application/json',\n      'Prefer': 'return=representation',\n      ...headers,\n    },\n    body: body ? JSON.stringify(body) : undefined,\n  });\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.message || error.error || 'Supabase API error');\n  }\n  const text = await response.text();\n  return text ? JSON.parse(text) : {};\n}\n\nconst tools = [\n  { name: 'query_table', description: 'Query data from a table', inputSchema: { type: 'object', properties: { table: { type: 'string' }, select: { type: 'string' }, filter: { type: 'string' }, order: { type: 'string' }, limit: { type: 'number' } }, required: ['table'] } },\n  { name: 'insert_rows', description: 'Insert rows', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'array' }, upsert: { type: 'boolean' } }, required: ['table', 'data'] } },\n  { name: 'update_rows', description: 'Update rows', inputSchema: { type: 'object', properties: { table: { type: 'string' }, data: { type: 'object' }, filter: { type: 'string' } }, required: ['table', 'data', 'filter'] } },\n  { name: 'delete_rows', description: 'Delete rows', inputSchema: { type: 'object', properties: { table: { type: 'string' }, filter: { type: 'string' } }, required: ['table', 'filter'] } },\n  { name: 'run_rpc', description: 'Call a database function', inputSchema: { type: 'object', properties: { function_name: { type: 'string' }, params: { type: 'object' } }, required: ['function_name'] } },\n  { name: 'upload_file', description: 'Upload a file', inputSchema: { type: 'object', properties: { bucket: { type: 'string' }, path: { type: 'string' }, file_base64: { type: 'string' }, content_type: { type: 'string' } }, required: ['bucket', 'path', 'file_base64'] } },\n  { name: 'list_files', description: 'List files', inputSchema: { type: 'object', properties: { bucket: { type: 'string' }, path: { type: 'string' }, limit: { type: 'number' } }, required: ['bucket'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, unknown>;\n    switch (name) {\n      case 'query_table': {\n        let url = `/rest/v1/${a.table}?select=${a.select || '*'}`;\n        if (a.filter) url += `&${a.filter}`;\n        if (a.order) url += `&order=${a.order}`;\n        if (a.limit) url += `&limit=${a.limit}`;\n        result = await supabaseRequest(url);\n        break;\n      }\n      case 'insert_rows': result = await supabaseRequest(`/rest/v1/${a.table}`, 'POST', a.data, a.upsert ? { 'Prefer': 'resolution=merge-duplicates,return=representation' } : undefined); break;\n      case 'update_rows': result = await supabaseRequest(`/rest/v1/${a.table}?${a.filter}`, 'PATCH', a.data); break;\n      case 'delete_rows': result = await supabaseRequest(`/rest/v1/${a.table}?${a.filter}`, 'DELETE'); break;\n      case 'run_rpc': result = await supabaseRequest(`/rest/v1/rpc/${a.function_name}`, 'POST', a.params || {}); break;\n      case 'list_files': result = await supabaseRequest(`/storage/v1/object/list/${a.bucket}`, 'POST', { prefix: a.path || '', limit: a.limit || 100 }); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "supabase": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "SUPABASE_URL": "${SUPABASE_URL}", "SUPABASE_KEY": "${SUPABASE_KEY}" } } } },
+    "cursor": { "mcpServers": { "supabase": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "SUPABASE_URL": "${SUPABASE_URL}", "SUPABASE_KEY": "${SUPABASE_KEY}" } } } },
+    "vscode": { "mcpServers": { "supabase": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "SUPABASE_URL": "${SUPABASE_URL}", "SUPABASE_KEY": "${SUPABASE_KEY}" } } } }
+  },
+  "quality": { "overall": 87, "schemaCompleteness": 88, "documentation": 85, "examples": 86, "authHandling": 90, "parameterTypes": 86 },
+  "auth": [{ "type": "apiKey", "name": "apikey", "in": "header", "envVar": "SUPABASE_KEY", "instructions": "Get your API key from your Supabase project settings" }],
+  "docsUrl": "https://supabase.com/docs",
+  "apiDocsUrl": "https://supabase.com/docs/reference",
+  "iconUrl": "https://supabase.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

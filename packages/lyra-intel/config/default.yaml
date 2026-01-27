@@ -1,0 +1,42 @@
+# Lyra Intel - Default Configuration
+
+# Engine settings
+engine:
+  name: lyra-intel
+  version: "0.1.0"
+  mode: local  # local, distributed, cloud_massive
+
+# Target repositories
+targets:
+  repos: []
+  
+# Processing settings
+processing:
+  max_workers: 8
+  batch_size: 1000
+  
+# Analysis options
+analysis:
+  enable_ast: true
+  enable_dependencies: true
+  enable_git_history: true
+  enable_doc_mapping: true
+  enable_patterns: true
+  
+# Storage configuration
+storage:
+  backend: sqlite  # sqlite, postgres, bigquery
+  database_path: ./lyra_intel.db
+  
+# Cloud configuration (for cloud_massive mode)
+cloud:
+  provider: null  # aws, gcp, azure
+  region: us-east-1
+  budget_limit: 0  # Optional budget limit
+  max_instances: 1000
+  spot_instances: true
+  
+# Logging
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
