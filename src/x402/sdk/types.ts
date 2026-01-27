@@ -11,14 +11,24 @@ import type { Address, Hash } from 'viem';
 // ============================================================================
 
 /**
- * Supported blockchain networks
+ * Supported EVM blockchain networks
  */
-export type X402Chain = 'arbitrum' | 'arbitrum-sepolia' | 'base' | 'ethereum' | 'polygon' | 'optimism' | 'bsc';
+export type X402Chain = 'arbitrum' | 'arbitrum-sepolia' | 'base' | 'base-sepolia' | 'ethereum' | 'polygon' | 'optimism' | 'bsc';
+
+/**
+ * Supported Solana (SVM) networks
+ */
+export type X402SvmChain = 'solana-mainnet' | 'solana-devnet';
+
+/**
+ * All supported networks (EVM + SVM)
+ */
+export type X402Network = X402Chain | X402SvmChain;
 
 /**
  * Supported payment tokens
  */
-export type X402Token = 'USDs' | 'USDC' | 'USDT' | 'DAI' | 'ETH';
+export type X402Token = 'USDs' | 'USDC' | 'USDT' | 'DAI' | 'ETH' | 'SOL';
 
 /**
  * Network configuration

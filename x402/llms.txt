@@ -1,115 +1,134 @@
-# x402 - Open Payment Standard for Internet Native Payments
+# x402 - Give Claude Money! 💰
 
-> **For: https://github.com/nirholas/universal-crypto-mcp**
-> 
-> 💰 Give Claude Money!
-> ```bash
-> npx @nirholas/universal-crypto-mcp
-> ```
+> Universal Crypto MCP x402 Integration
+> https://github.com/nirholas/universal-crypto-mcp
 
-## Overview
+## Quick Start
 
-x402 is an open standard built on HTTP 402 that enables:
-- Machine-to-machine payments for AI agents
-- API monetization with micropayments
-- Pay-per-use without accounts or sessions
-- Multi-chain support (EVM + Solana)
-
-## Key Files
-
-### Documentation
-- docs/llms-full.md - Complete LLM-friendly documentation
-- docs/CAIP-2.md - Blockchain ID specification (network identifiers)
-- docs/guides/mcp-server-with-x402.md - MCP Server integration guide
-- docs/getting-started/quickstart-for-buyers.mdx - Client setup
-- docs/getting-started/quickstart-for-sellers.mdx - Server setup
-- X402-INTEGRATION.md - Integration overview
-
-### Examples
-- examples/typescript/clients/mcp/ - MCP client with x402 payments
-- examples/typescript/servers/express/ - Express server with payments
-- examples/typescript/clients/fetch/ - Fetch client
-- examples/typescript/clients/axios/ - Axios client
-
-### Core Packages
-- typescript/packages/core/ - Core protocol
-- typescript/packages/mechanisms/evm/ - EVM payment support
-- typescript/packages/mechanisms/svm/ - Solana payment support
-- typescript/packages/http/axios/ - Axios wrapper
-- typescript/packages/http/fetch/ - Fetch wrapper
-- typescript/packages/http/express/ - Express middleware
-
-### Setup Scripts
-- scripts/setup-x402.sh - Full integration setup
-- scripts/convert-whitepaper-to-md.sh - Convert whitepaper PDF
-
-### Dependencies
-- gin-gonic/ - Go HTTP framework (for Go implementations)
-
-## Quick Integration
-
-### For AI Agents (Buyers)
-
-```typescript
-import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
-import { registerExactEvmScheme } from "@x402/evm/exact/client";
-import { privateKeyToAccount } from "viem/accounts";
-
-const signer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY);
-const client = new x402Client();
-registerExactEvmScheme(client, { signer });
-
-const api = wrapAxiosWithPayment(axios.create(), client);
-const res = await api.get("https://paid-api.com/data"); // Auto-pays!
+```bash
+npx @nirholas/universal-crypto-mcp
 ```
 
-### For APIs (Sellers)
+Configure wallet:
+```bash
+export X402_PRIVATE_KEY=0x...
+```
 
-```typescript
-import { paymentMiddleware } from "@x402/express";
+## What is x402?
 
-app.use(paymentMiddleware({
-  "GET /api/data": {
-    accepts: [{
-      scheme: "exact",
-      price: "$0.001",
-      network: "eip155:8453",
-      payTo: "0xYourAddress",
-    }],
-  },
-}, server));
+x402 = HTTP 402 Payment Required for AI agents.
+- AI agents pay for APIs automatically
+- Micropayments (fractions of a cent)
+- No accounts, sessions, or approval flows
+- Multi-chain: EVM (Base, Arbitrum, Ethereum) + Solana
+
+## MCP Tools (14 tools)
+
+### Payment Tools
+- `x402_pay_request` - Make HTTP request with auto-payment
+- `x402_send` - Send direct payment to address
+- `x402_batch_send` - Send multiple payments (gas efficient)
+- `x402_gasless_send` - Gasless payment via EIP-3009
+
+### Balance Tools
+- `x402_balance` - Check wallet balance (USDC/USDs + native)
+- `x402_address` - Get wallet address for funding
+
+### Info Tools
+- `x402_estimate` - Check cost before paying
+- `x402_networks` - List supported networks
+- `x402_config` - View current configuration
+- `x402_tx_status` - Check transaction status
+
+### Yield Tools (USDs auto-yield stablecoin)
+- `x402_yield` - Get yield info
+- `x402_apy` - Current APY (~5%)
+- `x402_yield_estimate` - Project future yield
+
+### Approval Tools
+- `x402_approve` - Approve token spending
+
+## Quick Examples
+
+### Pay for API data:
+```
+x402_pay_request({ url: "https://api.weather.io/premium", maxPayment: "0.10" })
+```
+
+### Check balance:
+```
+x402_balance()
+→ { usds: "45.23", native: "0.001" }
+```
+
+### Send payment:
+```
+x402_send({ to: "0xABC...", amount: "5.00", token: "USDs" })
+```
+
+### Get wallet address:
+```
+x402_address()
+→ { address: "0x123...", chain: "arbitrum" }
 ```
 
 ## Supported Networks
 
-### EVM (CAIP-2 Format)
-- eip155:8453 - Base Mainnet
-- eip155:84532 - Base Sepolia (testnet)
-- eip155:1 - Ethereum Mainnet
+EVM (CAIP-2 format):
+- eip155:8453 - Base Mainnet (recommended)
 - eip155:42161 - Arbitrum One
+- eip155:1 - Ethereum
 - eip155:137 - Polygon
+- eip155:10 - Optimism
 - eip155:56 - BNB Chain
+- eip155:84532 - Base Sepolia (testnet)
 
-### Solana
+Solana:
 - solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp - Mainnet
 - solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1 - Devnet
 
 ## Protocol Flow
 
-1. Client requests resource
-2. Server returns HTTP 402 + PAYMENT-REQUIRED header
-3. Client signs payment with wallet
-4. Client retries with PAYMENT-SIGNATURE header
-5. Server verifies via facilitator
-6. Server returns resource + PAYMENT-RESPONSE header
+```
+1. Request  →  Client sends GET /resource
+2. 402      ←  Server returns 402 + PAYMENT-REQUIRED
+3. Sign     →  Client signs payment with wallet
+4. Retry    →  Client sends request + PAYMENT-SIGNATURE
+5. Verify   →  Server verifies with facilitator
+6. Response ←  Server returns data + PAYMENT-RESPONSE
+```
+
+## Environment Variables
+
+```
+X402_PRIVATE_KEY=0x...      # EVM private key (required)
+X402_CHAIN=arbitrum         # Default chain
+X402_MAX_PAYMENT=1.00       # Max per request ($)
+X402_ENABLE_GASLESS=true    # Gasless payments
+```
+
+## Security Notes
+
+- Use dedicated wallet (not main wallet)
+- Set payment limits (X402_MAX_PAYMENT)
+- Monitor transactions via x402_tx_status
+- Keep minimal balance in hot wallet
+
+## Documentation
+
+- docs/QUICKSTART.md - 5-minute setup
+- docs/MCP_TOOLS.md - Full tool reference
+- docs/ARCHITECTURE.md - Protocol deep dive
+- docs/EXAMPLES.md - Real-world examples
+- docs/SECURITY.md - Best practices
 
 ## Resources
 
-- Website: https://x402.org
-- Docs: https://docs.x402.org
+- x402 Protocol: https://x402.org
+- x402 Docs: https://docs.x402.org
 - GitHub: https://github.com/coinbase/x402
-- Facilitator (testnet): https://x402.org/facilitator
+- Universal Crypto MCP: https://github.com/nirholas/universal-crypto-mcp
 
 ## License
 
-Apache-2.0 - See LICENSE file
+Apache-2.0

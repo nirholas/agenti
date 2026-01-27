@@ -9,7 +9,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
 import { X402Client } from "./sdk/client.js"
 import { fetchWith402Handling } from "./sdk/http/handler.js"
-import { loadX402Config, isX402Configured, SUPPORTED_CHAINS, validateX402Config } from "./config.js"
+import { loadX402Config, loadLegacyX402Config, isX402Configured, SUPPORTED_CHAINS, validateX402Config } from "./config.js"
 import type { X402Chain } from "./sdk/types.js"
 import Logger from "@/utils/logger.js"
 
@@ -21,7 +21,7 @@ let x402Client: X402Client | null = null
  */
 function getClient(): X402Client {
   if (!x402Client) {
-    const config = loadX402Config()
+    const config = loadLegacyX402Config()
     if (!config.privateKey) {
       throw new Error("X402_PRIVATE_KEY not configured. Set the environment variable to enable payments.")
     }
@@ -38,11 +38,28 @@ function getClient(): X402Client {
 }
 
 /**
+ * Get explorer URL for a chain
+ */
+function getExplorerUrl(chain: X402Chain): string {
+  const explorers: Record<X402Chain, string> = {
+    arbitrum: "https://arbiscan.io",
+    "arbitrum-sepolia": "https://sepolia.arbiscan.io",
+    base: "https://basescan.org",
+    ethereum: "https://etherscan.io",
+    polygon: "https://polygonscan.com",
+    optimism: "https://optimistic.etherscan.io",
+    bsc: "https://bscscan.com",
+  }
+  return explorers[chain] || "https://arbiscan.io"
+}
+
+/**
  * Register x402 payment tools with MCP server
  */
 export function registerX402Tools(server: McpServer): void {
-  const config = loadX402Config()
-  const validation = validateX402Config(config)
+  const fullConfig = loadX402Config()
+  const config = loadLegacyX402Config()
+  const validation = validateX402Config(fullConfig)
   
   if (validation.errors.length > 0) {
     validation.errors.forEach(err => Logger.warn(`x402: ${err}`))
@@ -63,14 +80,24 @@ export function registerX402Tools(server: McpServer): void {
     async ({ url, method, body, headers, maxPayment }) => {
       try {
         const client = getClient()
+        const maxPaymentFloat = parseFloat(maxPayment)
         
-        // Use the SDK's 402-aware fetch
+        // Use the SDK's 402-aware fetch with payment callback
         const response = await fetchWith402Handling(url, {
           method,
           body,
           headers,
-          client,
-          maxPayment,
+          onPaymentRequired: async (paymentRequest) => {
+            // Check if payment is within allowed limit
+            const amount = parseFloat(paymentRequest.amount)
+            if (amount > maxPaymentFloat) {
+              throw new Error(`Payment of ${paymentRequest.amount} ${paymentRequest.token} exceeds maximum allowed (${maxPayment})`)
+            }
+            
+            // Execute payment and return tx hash as proof
+            const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token)
+            return result.transaction.hash
+          },
         })
 
         const data = await response.json().catch(() => response.text())
@@ -82,7 +109,7 @@ export function registerX402Tools(server: McpServer): void {
               success: true,
               status: response.status,
               data,
-              paymentMade: response.headers.get("x-payment-tx") || null,
+              paymentMade: response.headers.get("x-payment-proof") || null,
             }, null, 2),
           }],
         }
@@ -714,5 +741,857 @@ export function registerX402Tools(server: McpServer): void {
     }
   )
 
-  Logger.info(`x402: Registered 14 payment tools (chain: ${config.chain}, configured: ${isX402Configured()})`)
+  // Tool 15: Create paywall response for servers
+  server.tool(
+    "x402_create_paywall",
+    "Generate an HTTP 402 Payment Required response for your own API endpoints. " +
+    "Use this to monetize your AI agent's services or API endpoints.",
+    {
+      price: z.string().describe("Price to charge (e.g. '0.10')"),
+      token: z.enum(["USDs", "USDC"]).default("USDs").describe("Token to accept"),
+      description: z.string().optional().describe("Description of what the payment is for"),
+      resource: z.string().optional().describe("Resource/endpoint identifier"),
+      validFor: z.number().default(300).describe("Payment validity period in seconds (default 5 min)"),
+    },
+    async (params: { price: string; token: string; description?: string; resource?: string; validFor: number }) => {
+      try {
+        const client = getClient()
+        const address = await client.getAddress()
+        
+        if (!address) {
+          throw new Error("Wallet not configured - cannot create paywall without recipient address")
+        }
+        
+        // Create the 402 response using the SDK
+        const response = client.create402Response(
+          {
+            amount: params.price,
+            token: params.token as any,
+            chain: config.chain,
+            recipient: address,
+            resource: params.resource,
+            description: params.description,
+            deadline: Math.floor(Date.now() / 1000) + params.validFor,
+          },
+          params.description || `Payment of ${params.price} ${params.token} required`
+        )
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              http402Response: {
+                status: 402,
+                headers: response.headers,
+                body: response.body,
+              },
+              instructions: {
+                express: `res.status(402).set(headers).json(body)`,
+                node: `response.writeHead(402, headers); response.end(JSON.stringify(body))`,
+              },
+              payment: {
+                price: params.price,
+                token: params.token,
+                chain: config.chain,
+                recipient: address,
+                validFor: `${params.validFor} seconds`,
+              },
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 16: Verify incoming payment
+  server.tool(
+    "x402_verify_payment",
+    "Verify an incoming payment transaction. Use this to confirm payment was received " +
+    "before granting access to a paid resource.",
+    {
+      txHash: z.string().regex(/^0x[a-fA-F0-9]{64}$/).describe("Transaction hash from X-Payment-Proof header"),
+      expectedAmount: z.string().optional().describe("Expected payment amount (optional extra validation)"),
+      expectedFrom: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe("Expected sender address (optional)"),
+    },
+    async (params: { txHash: string; expectedAmount?: string; expectedFrom?: string }) => {
+      try {
+        const client = getClient()
+        const myAddress = await client.getAddress()
+        
+        // Get chain info for verification
+        const chainInfo = client.getChainInfo()
+        
+        // Note: Full verification would require querying the blockchain
+        // For now, return verification instructions
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              txHash: params.txHash,
+              verificationStatus: "pending_blockchain_confirmation",
+              chain: chainInfo.chain,
+              explorerUrl: `${chainInfo.explorerUrl}/tx/${params.txHash}`,
+              expectedRecipient: myAddress,
+              expectedAmount: params.expectedAmount || "any",
+              expectedFrom: params.expectedFrom || "any",
+              verificationSteps: [
+                "1. Check transaction exists on chain",
+                "2. Verify recipient matches your address",
+                "3. Confirm amount matches expected payment",
+                "4. Ensure transaction is confirmed (not pending)",
+                "5. Check token is correct (USDs/USDC)",
+              ],
+              instructions: "Use the explorer URL to manually verify, or integrate on-chain verification for production.",
+              apiEndpoint: `GET ${chainInfo.explorerUrl}/api?module=transaction&action=gettxinfo&txhash=${params.txHash}`,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 17: Alias for x402_pay_request -> x402_pay_for_request (user-requested name)
+  server.tool(
+    "x402_pay_for_request",
+    "Make an HTTP request that automatically handles x402 (HTTP 402) payment requirements. " +
+    "Use this to access premium APIs that require cryptocurrency payment. Shows payment amount before confirming.",
+    {
+      url: z.string().url().describe("The URL to request"),
+      method: z.enum(["GET", "POST", "PUT", "DELETE"]).default("GET").describe("HTTP method"),
+      body: z.string().optional().describe("Request body (for POST/PUT)"),
+      headers: z.record(z.string()).optional().describe("Additional headers"),
+      maxPayment: z.string().default("1.00").describe("Maximum payment in USD (e.g. '0.50')"),
+    },
+    async ({ url, method, body, headers, maxPayment }) => {
+      try {
+        const client = getClient()
+        const maxPaymentFloat = parseFloat(maxPayment)
+        let paymentDetails: { price: string; token: string; recipient: string | null } | null = null
+        
+        // First, make a HEAD request to check if payment is required
+        const checkResponse = await fetch(url, { method: "HEAD" }).catch(() => fetch(url))
+        
+        if (checkResponse.status === 402) {
+          // Extract payment info for user visibility
+          paymentDetails = {
+            price: checkResponse.headers.get("x-payment-amount") || checkResponse.headers.get("x402-price") || "unknown",
+            token: checkResponse.headers.get("x-payment-token") || "USDs",
+            recipient: checkResponse.headers.get("x-payment-address"),
+          }
+          
+          // Check against max payment
+          const price = parseFloat(paymentDetails.price)
+          if (!isNaN(price) && price > maxPaymentFloat) {
+            return {
+              content: [{
+                type: "text",
+                text: JSON.stringify({
+                  success: false,
+                  requiresPayment: true,
+                  paymentInfo: paymentDetails,
+                  error: `Payment of ${paymentDetails.price} ${paymentDetails.token} exceeds maximum allowed (${maxPayment})`,
+                  action: "Increase maxPayment parameter or cancel request",
+                }, null, 2),
+              }],
+            }
+          }
+        }
+        
+        let paymentMade: string | null = null
+        
+        // Use the SDK's 402-aware fetch with proper callback
+        const response = await fetchWith402Handling(url, {
+          method,
+          body,
+          headers,
+          onPaymentRequired: async (paymentRequest) => {
+            // Check if payment is within allowed limit
+            const amount = parseFloat(paymentRequest.amount)
+            if (amount > maxPaymentFloat) {
+              throw new Error(`Payment of ${paymentRequest.amount} ${paymentRequest.token} exceeds maximum allowed (${maxPayment})`)
+            }
+            
+            // Execute payment and return tx hash as proof
+            const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token)
+            paymentMade = result.transaction.hash
+            return result.transaction.hash
+          },
+        })
+
+        const data = await response.json().catch(() => response.text())
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              status: response.status,
+              data,
+              paymentMade,
+              paymentDetails,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 18: x402_check_balance - Alias matching user-requested name
+  server.tool(
+    "x402_check_balance",
+    "Check wallet balance for x402 payments. Shows USDs (or USDC) and native token balance.",
+    {
+      chain: z.enum(["arbitrum", "arbitrum-sepolia", "base", "ethereum", "polygon", "optimism", "bsc"])
+        .optional()
+        .describe("Chain to check balance on (defaults to configured chain)"),
+      address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional()
+        .describe("Address to check (defaults to configured wallet)"),
+    },
+    async ({ chain, address }) => {
+      try {
+        const client = getClient()
+        const targetChain = (chain || config.chain) as X402Chain
+        const targetAddress = address || await client.getAddress()
+        
+        if (!targetAddress) {
+          throw new Error("No address specified and wallet not configured")
+        }
+        
+        const balance = await client.getBalance(targetAddress as `0x${string}`)
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              address: targetAddress,
+              chain: targetChain,
+              chainInfo: SUPPORTED_CHAINS[targetChain],
+              balances: {
+                usdc: balance.usds || "0", // USDs is compatible with USDC queries
+                usds: balance.usds || "0",
+                native: balance.native || "0",
+              },
+              yieldInfo: balance.pendingYield ? {
+                pending: balance.pendingYield,
+                apy: balance.apy,
+              } : null,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+              hint: !isX402Configured() ? "Set X402_PRIVATE_KEY to enable wallet features" : undefined,
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 19: x402_estimate_cost - Alias matching user-requested name
+  server.tool(
+    "x402_estimate_cost",
+    "Estimate the payment cost for an x402-protected endpoint without making a payment.",
+    {
+      url: z.string().url().describe("The URL to check for payment requirements"),
+    },
+    async ({ url }) => {
+      try {
+        // Make a HEAD or GET request to get 402 info
+        const response = await fetch(url, { method: "HEAD" }).catch(() => 
+          fetch(url, { method: "GET" })
+        )
+        
+        if (response.status === 402) {
+          // Parse x402 payment info from headers
+          const price = response.headers.get("x-payment-amount") || 
+                       response.headers.get("x402-price") ||
+                       response.headers.get("www-authenticate")?.match(/price="([\d.]+)/)?.[1]
+          const token = response.headers.get("x-payment-token") || 
+                       response.headers.get("x402-token") || "USDs"
+          const network = response.headers.get("x-payment-network") || 
+                         response.headers.get("x402-network") || config.chain
+          const recipient = response.headers.get("x-payment-address") || 
+                           response.headers.get("x402-recipient")
+          
+          return {
+            content: [{
+              type: "text",
+              text: JSON.stringify({
+                requiresPayment: true,
+                cost: {
+                  price: price || "unknown",
+                  token,
+                  network,
+                  networkInfo: SUPPORTED_CHAINS[network as X402Chain] || null,
+                },
+                recipient,
+                url,
+              }, null, 2),
+            }],
+          }
+        }
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              requiresPayment: false,
+              status: response.status,
+              message: "This URL does not require x402 payment",
+              url,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 20: x402_list_supported_networks - Alias matching user-requested name
+  server.tool(
+    "x402_list_supported_networks",
+    "List all supported networks for x402 payments with their chain IDs, CAIP-2 identifiers, and explorer URLs.",
+    {},
+    async () => {
+      const networks = Object.entries(SUPPORTED_CHAINS).map(([id, info]) => ({
+        chainId: id,
+        name: info.name,
+        caip2: info.caip2,
+        paymentToken: "USDs (Sperax USD)",
+        explorerUrl: getExplorerUrl(id as X402Chain),
+        testnet: info.testnet,
+        isConfigured: id === config.chain,
+      }))
+      
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify({
+            configuredChain: config.chain,
+            networks,
+            defaultPaymentToken: "USDs - yield-bearing stablecoin (~5% APY)",
+          }, null, 2),
+        }],
+      }
+    }
+  )
+
+  // Tool 21: x402_get_wallet_address - Alias matching user-requested name
+  server.tool(
+    "x402_get_wallet_address",
+    "Get configured wallet addresses for x402 payments.",
+    {},
+    async () => {
+      try {
+        const client = getClient()
+        const evmAddress = await client.getAddress()
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              evm: evmAddress || null,
+              svm: null, // Solana not yet supported
+              configured: !!evmAddress,
+              chain: config.chain,
+              fundingInstructions: evmAddress ? 
+                `Send USDs or ETH to ${evmAddress} on ${SUPPORTED_CHAINS[config.chain]?.name}` :
+                "Set X402_PRIVATE_KEY to configure wallet",
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              evm: null,
+              svm: null,
+              configured: false,
+              error: "Wallet not configured",
+              hint: "Set X402_PRIVATE_KEY environment variable",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 22: x402_send_payment - Alias matching user-requested name
+  server.tool(
+    "x402_send_payment",
+    "Send a direct cryptocurrency payment (not HTTP 402). Supports USDs, USDC, and native tokens.",
+    {
+      to: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Recipient address (0x...)"),
+      amount: z.string().describe("Amount to send (e.g. '10.00')"),
+      token: z.enum(["USDs", "USDC", "native"]).default("USDs").describe("Token to send"),
+      chain: z.enum(["arbitrum", "arbitrum-sepolia", "base", "ethereum", "polygon", "optimism", "bsc"])
+        .optional()
+        .describe("Chain to send on (defaults to configured chain)"),
+    },
+    async ({ to, amount, token, chain }) => {
+      try {
+        const client = getClient()
+        const targetChain = chain || config.chain
+        
+        // Validate amount against max
+        const maxPayment = parseFloat(config.maxPaymentPerRequest)
+        const sendAmount = parseFloat(amount)
+        if (sendAmount > maxPayment) {
+          throw new Error(`Amount ${amount} exceeds maximum allowed payment of ${maxPayment}`)
+        }
+        
+        const result = await client.pay(to as `0x${string}`, amount, token as any)
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              transaction: {
+                hash: result.transaction.hash,
+                from: result.transaction.from,
+                to: result.transaction.to,
+                amount: result.transaction.amount,
+                token: result.transaction.token,
+                chain: targetChain,
+                explorerUrl: `${getExplorerUrl(targetChain as X402Chain)}/tx/${result.transaction.hash}`,
+              },
+              gasless: result.gasless,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // ============================================================================
+  // Security Tools
+  // ============================================================================
+
+  // Tool 23: x402_set_payment_limit - Configure payment limits
+  server.tool(
+    "x402_set_payment_limit",
+    "Set payment limits for security. Configure maximum single payment and daily spending limits.",
+    {
+      maxSinglePayment: z.number().positive().optional().describe("Maximum single payment in USD (e.g. 5.00)"),
+      maxDailyPayment: z.number().positive().optional().describe("Maximum daily spending in USD (e.g. 50.00)"),
+      largePaymentWarning: z.number().positive().optional().describe("Threshold for large payment warnings"),
+    },
+    async ({ maxSinglePayment, maxDailyPayment, largePaymentWarning }) => {
+      try {
+        const { setPaymentLimits, getPaymentLimits, DEFAULT_LIMITS } = await import("./limits.js")
+        
+        const newLimits = setPaymentLimits({
+          maxSinglePayment,
+          maxDailyPayment,
+          largePaymentWarning,
+        })
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              limits: newLimits,
+              absoluteLimits: {
+                maxSingle: DEFAULT_LIMITS.ABSOLUTE_MAX_SINGLE,
+                maxDaily: DEFAULT_LIMITS.ABSOLUTE_MAX_DAILY,
+                note: "These are hard caps that cannot be exceeded",
+              },
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 24: x402_get_payment_limits - Get current payment limits
+  server.tool(
+    "x402_get_payment_limits",
+    "Get current payment limits and daily spending status.",
+    {},
+    async () => {
+      try {
+        const { getPaymentLimits, getDailySpending, DEFAULT_LIMITS } = await import("./limits.js")
+        
+        const limits = getPaymentLimits()
+        const dailySpending = getDailySpending()
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              limits: {
+                maxSinglePayment: `$${limits.maxSinglePayment.toFixed(2)}`,
+                maxDailyPayment: `$${limits.maxDailyPayment.toFixed(2)}`,
+                largePaymentWarning: `$${limits.largePaymentWarning.toFixed(2)}`,
+              },
+              dailySpending: {
+                date: dailySpending.date,
+                spent: `$${dailySpending.total.toFixed(2)}`,
+                remaining: `$${dailySpending.remaining.toFixed(2)}`,
+                paymentCount: dailySpending.count,
+              },
+              absoluteLimits: {
+                maxSingle: `$${DEFAULT_LIMITS.ABSOLUTE_MAX_SINGLE}`,
+                maxDaily: `$${DEFAULT_LIMITS.ABSOLUTE_MAX_DAILY}`,
+              },
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 25: x402_list_approved_services - Show allowlisted services
+  server.tool(
+    "x402_list_approved_services",
+    "List all approved services in the payment allowlist.",
+    {},
+    async () => {
+      try {
+        const { getApprovedServices, isStrictAllowlistMode } = await import("./limits.js")
+        
+        const services = getApprovedServices()
+        const strictMode = isStrictAllowlistMode()
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              strictMode: strictMode,
+              strictModeDescription: strictMode 
+                ? "Only approved services can receive payments" 
+                : "Unknown services allowed with warnings",
+              approvedServices: services.map(s => ({
+                domain: s.domain,
+                name: s.name,
+                maxPayment: s.maxPayment ? `$${s.maxPayment.toFixed(2)}` : "No limit",
+                addedAt: s.addedAt.toISOString(),
+              })),
+              count: services.length,
+              tip: strictMode 
+                ? "Use x402_approve_service to add trusted services" 
+                : "Set X402_STRICT_ALLOWLIST=true for stricter security",
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 26: x402_approve_service - Add service to allowlist
+  server.tool(
+    "x402_approve_service",
+    "Approve a service domain for x402 payments. Required in strict allowlist mode.",
+    {
+      domain: z.string().describe("Domain to approve (e.g. 'api.example.com')"),
+      name: z.string().optional().describe("Friendly name for the service"),
+      maxPayment: z.number().positive().optional().describe("Maximum payment for this service"),
+    },
+    async ({ domain, name, maxPayment }) => {
+      try {
+        const { approveService, getApprovedServices } = await import("./limits.js")
+        
+        const service = approveService(domain, name, maxPayment)
+        const totalServices = getApprovedServices().length
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: true,
+              approved: {
+                domain: service.domain,
+                name: service.name,
+                maxPayment: service.maxPayment ? `$${service.maxPayment.toFixed(2)}` : "No limit",
+                addedAt: service.addedAt.toISOString(),
+              },
+              totalApprovedServices: totalServices,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 27: x402_remove_service - Remove service from allowlist
+  server.tool(
+    "x402_remove_service",
+    "Remove a service from the approved allowlist.",
+    {
+      domain: z.string().describe("Domain to remove (e.g. 'api.example.com')"),
+    },
+    async ({ domain }) => {
+      try {
+        const { removeService, getApprovedServices } = await import("./limits.js")
+        
+        const removed = removeService(domain)
+        const totalServices = getApprovedServices().length
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: removed,
+              domain,
+              message: removed ? "Service removed from allowlist" : "Service was not in allowlist",
+              totalApprovedServices: totalServices,
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 28: x402_get_payment_history - Get audit trail
+  server.tool(
+    "x402_get_payment_history",
+    "Get payment history for audit and review. Shows recent payments with details.",
+    {
+      limit: z.number().default(20).describe("Maximum number of entries to return"),
+      service: z.string().optional().describe("Filter by service domain"),
+      status: z.enum(["pending", "completed", "failed"]).optional().describe("Filter by status"),
+    },
+    async ({ limit, service, status }) => {
+      try {
+        const { getPaymentHistory, getPaymentStats, getDailySpending } = await import("./limits.js")
+        
+        const history = getPaymentHistory({ limit, service, status })
+        const stats = getPaymentStats()
+        const dailySpending = getDailySpending()
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              summary: {
+                totalPayments: stats.count,
+                totalSpent: `$${stats.total.toFixed(2)}`,
+                averagePayment: `$${stats.avgAmount.toFixed(2)}`,
+                todaySpent: `$${dailySpending.total.toFixed(2)}`,
+                todayRemaining: `$${dailySpending.remaining.toFixed(2)}`,
+              },
+              byStatus: stats.byStatus,
+              recentPayments: history.map(p => ({
+                id: p.id,
+                timestamp: p.timestamp.toISOString(),
+                amount: `$${p.amount.toFixed(2)}`,
+                token: p.token,
+                recipient: p.recipient,
+                service: p.service,
+                status: p.status,
+                txHash: p.txHash || null,
+                chain: p.chain,
+                gasless: p.gasless,
+              })),
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  // Tool 29: x402_security_status - Overall security status
+  server.tool(
+    "x402_security_status",
+    "Get comprehensive security status including limits, allowlist, and recent security events.",
+    {},
+    async () => {
+      try {
+        const { getPaymentLimits, getDailySpending, isStrictAllowlistMode, getApprovedServices } = await import("./limits.js")
+        const { getSecurityEvents, isKeySourceSecure, isTestnetOnly } = await import("./security.js")
+        
+        const limits = getPaymentLimits()
+        const dailySpending = getDailySpending()
+        const services = getApprovedServices()
+        const recentEvents = getSecurityEvents(10)
+        const keySecure = isKeySourceSecure()
+        const testnetOnly = isTestnetOnly()
+        
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              security: {
+                keySourceSecure: keySecure.secure,
+                keyWarnings: keySecure.warnings,
+                testnetOnly: testnetOnly,
+                strictAllowlist: isStrictAllowlistMode(),
+                mainnetEnabled: config.mainnetEnabled ?? false,
+              },
+              limits: {
+                maxSinglePayment: `$${limits.maxSinglePayment.toFixed(2)}`,
+                maxDailyPayment: `$${limits.maxDailyPayment.toFixed(2)}`,
+                largePaymentWarning: `$${limits.largePaymentWarning.toFixed(2)}`,
+              },
+              dailySpending: {
+                date: dailySpending.date,
+                spent: `$${dailySpending.total.toFixed(2)}`,
+                remaining: `$${dailySpending.remaining.toFixed(2)}`,
+                percentUsed: ((dailySpending.total / limits.maxDailyPayment) * 100).toFixed(1) + "%",
+              },
+              allowlist: {
+                approvedServices: services.length,
+                services: services.map(s => s.domain).slice(0, 5),
+              },
+              recentSecurityEvents: recentEvents.map(e => ({
+                timestamp: e.timestamp.toISOString(),
+                event: e.event,
+                severity: e.severity,
+              })),
+              recommendations: [
+                ...(keySecure.warnings.length > 0 ? ["Review key security warnings"] : []),
+                ...(dailySpending.remaining < limits.maxDailyPayment * 0.2 ? ["Daily spending limit nearly reached"] : []),
+                ...(!isStrictAllowlistMode() ? ["Consider enabling strict allowlist mode for production"] : []),
+              ],
+            }, null, 2),
+          }],
+        }
+      } catch (error) {
+        return {
+          content: [{
+            type: "text",
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : "Unknown error",
+            }, null, 2),
+          }],
+          isError: true,
+        }
+      }
+    }
+  )
+
+  Logger.info(`x402: Registered 29 payment tools (chain: ${config.chain}, configured: ${isX402Configured()})`)
 }

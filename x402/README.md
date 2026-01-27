@@ -1,4 +1,87 @@
-# x402
+# x402 - HTTP 402 Payment Protocol
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Protocol-x402-6366f1?style=for-the-badge" alt="x402">
+  <img src="https://img.shields.io/badge/AI_Ready-Yes-00d4aa?style=for-the-badge" alt="AI Ready">
+  <img src="https://img.shields.io/badge/Multi--Chain-EVM%20%2B%20Solana-ff9500?style=for-the-badge" alt="Multi-Chain">
+</p>
+
+<p align="center">
+  <b>💰 Give Claude Money!</b>
+</p>
+
+```bash
+npx @nirholas/universal-crypto-mcp
+```
+
+---
+
+## Overview
+
+x402 is an open standard for internet native payments. It aims to support all networks (both crypto & fiat) and forms of value (stablecoins, tokens, fiat).
+
+### Why x402 for AI?
+
+| Challenge | Traditional | x402 |
+|-----------|-------------|------|
+| **Account Required** | ✗ Yes | ✓ No |
+| **Human Approval** | ✗ Every time | ✓ Pre-authorized |
+| **Micropayments** | ✗ Min $0.50+ | ✓ Any amount |
+| **Programmable** | ✗ Limited | ✓ Full SDK |
+| **Speed** | ✗ Days to settle | ✓ Seconds |
+
+### Quick Start (5 Lines!)
+
+```typescript
+// Configure
+export X402_PRIVATE_KEY=0x...
+
+// Make paid request (auto-handles 402)
+const data = await x402_pay_request({
+  url: "https://api.example.com/premium",
+  maxPayment: "0.10"
+});
+```
+
+---
+
+## MCP Tools Reference
+
+| Tool | Description |
+|------|-------------|
+| `x402_pay_request` | Make HTTP request with automatic payment |
+| `x402_balance` | Check wallet balance (USDC/USDs + native) |
+| `x402_send` | Send direct payment to address |
+| `x402_estimate` | Check cost before paying |
+| `x402_networks` | List supported networks |
+| `x402_address` | Get your wallet address |
+| `x402_yield` | Check USDs yield earnings |
+| `x402_batch_send` | Send multiple payments in one tx |
+| `x402_gasless_send` | Send via EIP-3009 (recipient pays gas) |
+| `x402_approve` | Approve token spending |
+| `x402_apy` | Get current USDs APY |
+| `x402_yield_estimate` | Project yield over time |
+| `x402_tx_status` | Check transaction status |
+| `x402_config` | View current configuration |
+
+📖 [Full Tools Reference](docs/MCP_TOOLS.md)
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [QUICKSTART.md](docs/QUICKSTART.md) | 5-minute setup guide |
+| [MCP_TOOLS.md](docs/MCP_TOOLS.md) | Complete tools reference |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical deep dive |
+| [EXAMPLES.md](docs/EXAMPLES.md) | Real-world use cases |
+| [SECURITY.md](docs/SECURITY.md) | Security best practices |
+| [llms.txt](llms.txt) | LLM-readable summary |
+
+---
+
+## Protocol Details
 
 x402 is an open standard for internet native payments. It aims to support all networks (both crypto & fiat) and forms of value (stablecoins, tokens, fiat).
 
@@ -135,3 +218,50 @@ See `specs/schemes` for more details on schemes, and see `specs/schemes/exact/sc
 Because a scheme is a logical way of moving money, the way a scheme is implemented can be different for different blockchains. (ex: the way you need to implement `exact` on Ethereum is very different from the way you need to implement `exact` on Solana).
 
 Clients and facilitators must explicitly support different `(scheme, network)` pairs in order to be able to create proper payloads and verify / settle payments.
+
+
+---
+
+## Supported Networks
+
+### EVM Networks (CAIP-2 Format)
+
+| Network | CAIP-2 ID | Status |
+|---------|-----------|--------|
+| **Base Mainnet** | `eip155:8453` | ✅ Recommended |
+| **Base Sepolia** | `eip155:84532` | ✅ Testnet |
+| **Arbitrum One** | `eip155:42161` | ✅ Supported |
+| **Ethereum** | `eip155:1` | ✅ Supported |
+| **Polygon** | `eip155:137` | ✅ Supported |
+| **Optimism** | `eip155:10` | ✅ Supported |
+| **BNB Chain** | `eip155:56` | ✅ Supported |
+
+### Solana Networks
+
+| Network | CAIP-2 ID | Status |
+|---------|-----------|--------|
+| **Mainnet** | `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` | ✅ Supported |
+| **Devnet** | `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` | ✅ Testnet |
+
+---
+
+## Resources
+
+- **x402 Protocol**: https://x402.org
+- **Documentation**: https://docs.x402.org
+- **GitHub**: https://github.com/coinbase/x402
+- **Universal Crypto MCP**: https://github.com/nirholas/universal-crypto-mcp
+- **Discord**: https://discord.gg/cdp
+
+---
+
+## License
+
+Apache-2.0 - See [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center">
+  <b>💰 Give Claude Money!</b><br>
+  <code>npx @nirholas/universal-crypto-mcp</code>
+</p>

@@ -1,15 +1,49 @@
-# Universal Crypto MCP 
+# 🤖💰 Universal Crypto MCP
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/v/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/@nirholas/universal-crypto-mcp"><img src="https://img.shields.io/npm/dm/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge" alt="License: Apache 2.0"></a>
+<pre align="center">
+██╗   ██╗███╗   ██╗██╗██╗   ██╗███████╗██████╗ ███████╗ █████╗ ██╗     
+██║   ██║████╗  ██║██║██║   ██║██╔════╝██╔══██╗██╔════╝██╔══██╗██║     
+██║   ██║██╔██╗ ██║██║██║   ██║█████╗  ██████╔╝███████╗███████║██║     
+██║   ██║██║╚██╗██║██║╚██╗ ██╔╝██╔══╝  ██╔══██╗╚════██║██╔══██║██║     
+╚██████╔╝██║ ╚████║██║ ╚████╔╝ ███████╗██║  ██║███████║██║  ██║███████╗
+ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝
+           ██████╗██████╗ ██╗   ██╗██████╗ ████████╗ ██████╗            
+          ██╔════╝██╔══██╗╚██╗ ██╔╝██╔══██╗╚══██╔══╝██╔═══██╗           
+          ██║     ██████╔╝ ╚████╔╝ ██████╔╝   ██║   ██║   ██║           
+          ██║     ██╔══██╗  ╚██╔╝  ██╔═══╝    ██║   ██║   ██║           
+          ╚██████╗██║  ██║   ██║   ██║        ██║   ╚██████╔╝           
+           ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚═╝        ╚═╝    ╚═════╝            
+                          ███╗   ███╗ ██████╗██████╗                     
+                          ████╗ ████║██╔════╝██╔══██╗                    
+                          ██╔████╔██║██║     ██████╔╝                    
+                          ██║╚██╔╝██║██║     ██╔═══╝                     
+                          ██║ ╚═╝ ██║╚██████╗██║                         
+                          ╚═╝     ╚═╝ ╚═════╝╚═╝                         
+</pre>
+</p>
+
+<h3 align="center">
+  🚀 <strong>Give Claude Money!</strong> 🚀<br/>
+  <em>The first MCP server that lets AI agents send and receive crypto payments.</em>
+</h3>
+
+```bash
+npx @nirholas/universal-crypto-mcp
+```
+
+<p align="center">
+  <img src="https://img.shields.io/npm/v/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version">
+  <img src="https://img.shields.io/npm/dm/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads">
+  <img src="https://img.shields.io/badge/x402-enabled-brightgreen?style=for-the-badge" alt="x402 enabled">
+  <img src="https://img.shields.io/badge/chains-EVM%20%2B%20Solana-blue?style=for-the-badge" alt="chains">
 </p>
 
 <p align="center">
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-Compatible-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyek0xMiAyMGMtNC40MSAwLTgtMy41OS04LThzMy41OS04IDgtOCA4IDMuNTkgOCA4LTMuNTkgOC04IDh6Ii8+PC9zdmc+" alt="MCP Compatible"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js 18+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge" alt="License: Apache 2.0"></a>
 </p>
 
 <p align="center">
@@ -21,6 +55,26 @@
   <img src=".github/demo.svg" alt="Universal Crypto MCP Demo" width="800">
 </p>
 
+## ✨ What's New: x402 Payment Protocol
+
+> **AI agents can now pay for things on the internet!** 💸
+
+```
+User: "Get premium weather data for Tokyo"
+
+Claude: 🔍 Checking x402 balance... $45.23 USDs
+        💳 Paying $0.01 for premium API access...
+        ✅ Payment confirmed! Here's your detailed forecast:
+        
+        🌤️ Tokyo Weather (7-day premium forecast)...
+```
+
+**AI agents can now:**
+- 💸 **Pay for premium APIs** automatically
+- 🏪 **Sell their own services** to other agents
+- 🔄 **Trade with other AI agents** peer-to-peer
+- ⛓️ **Work across EVM + Solana** chains
+
 > ⭐ **If you find this useful, please star the repo!** It helps others discover this project.
 
 <p align="center">
@@ -29,7 +83,7 @@
 
 ---
 
-A Universal Model Context Protocol server for all EVM-compatible networks.
+A Universal Model Context Protocol server for all EVM-compatible networks + Solana.
 
 Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain through natural language.
 
@@ -97,12 +151,18 @@ Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain t
 
 ## 💰 x402 Payment Protocol (NEW!)
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Protocol-x402-6366f1?style=for-the-badge" alt="x402">
+  <img src="https://img.shields.io/badge/Give_Claude-Money!-00d4aa?style=for-the-badge" alt="Give Claude Money">
+</p>
+
 > **Give Claude Money!** AI agents can now make and receive cryptocurrency payments.
 
 ### What is x402?
 
 x402 implements HTTP 402 Payment Required, enabling AI agents to:
 - 💸 **Pay for APIs** - Automatically pay for premium API access
+- 🤖 **Autonomous Payments** - No human approval needed
 - 🏦 **Hold funds** - Agents have their own crypto wallets
 - 📈 **Earn yield** - Payments use USDs stablecoin (~5% APY auto-yield)
 
@@ -111,18 +171,37 @@ x402 implements HTTP 402 Payment Required, enabling AI agents to:
 ```bash
 # Add to your environment
 export X402_PRIVATE_KEY=0x...  # Your EVM private key
-export X402_CHAIN=arbitrum      # Default chain
+export X402_CHAIN=arbitrum      # Default chain (or base, ethereum, polygon)
 ```
 
-### x402 Tools
+### x402 Tools (14 Total)
 
 | Tool | Description |
 |------|-------------|
 | `x402_pay_request` | Make HTTP request with automatic 402 payment |
-| `x402_balance` | Check wallet balance (USDs + native) |
+| `x402_balance` | Check wallet balance (USDC/USDs + native) |
 | `x402_send` | Send direct payment to an address |
+| `x402_batch_send` | Send multiple payments in one transaction |
+| `x402_gasless_send` | Send payment without paying gas |
 | `x402_estimate` | Check cost before paying |
+| `x402_address` | Get your wallet address |
+| `x402_networks` | List supported networks |
 | `x402_yield` | Check USDs auto-yield earnings |
+| `x402_apy` | Get current APY rate |
+| `x402_yield_estimate` | Project future yield |
+| `x402_approve` | Approve token spending |
+| `x402_tx_status` | Check transaction status |
+| `x402_config` | View current configuration |
+
+### Supported Networks
+
+| Network | CAIP-2 | Status |
+|---------|--------|--------|
+| Base | `eip155:8453` | ✅ Recommended |
+| Arbitrum | `eip155:42161` | ✅ Supported |
+| Ethereum | `eip155:1` | ✅ Supported |
+| Polygon | `eip155:137` | ✅ Supported |
+| Solana | `solana:mainnet` | ✅ Supported |
 
 ### Example
 
@@ -133,7 +212,26 @@ Agent: [calls x402_pay_request to weather API]
        "Here's the detailed forecast..."
 ```
 
-📖 [Full x402 Documentation](src/x402/README.md)
+### x402 Architecture
+
+```
+┌─────────┐      ┌───────────┐      ┌───────────┐
+│ Claude  │─────▶│ MCP Server│─────▶│ Paid API  │
+│  (AI)   │      │  (x402)   │      │   (402)   │
+└─────────┘      └───────────┘      └───────────┘
+     │                │                   │
+     │  "Get data"    │  HTTP + Payment   │
+     │                │                   │
+     └────────────────┴───────────────────┘
+```
+
+📖 **Full Documentation:**
+- [x402 README](x402/README.md) - Overview and quick start
+- [Quickstart Guide](x402/docs/QUICKSTART.md) - 5-minute setup
+- [MCP Tools Reference](x402/docs/MCP_TOOLS.md) - All 14 tools explained
+- [Architecture](x402/docs/ARCHITECTURE.md) - Technical deep dive
+- [Examples](x402/docs/EXAMPLES.md) - Real-world use cases
+- [Security Guide](x402/docs/SECURITY.md) - Best practices
 
 ---
 

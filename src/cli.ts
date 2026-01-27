@@ -19,9 +19,43 @@ const colors = {
   blue: "\x1b[34m",
   cyan: "\x1b[36m",
   red: "\x1b[31m",
+  magenta: "\x1b[35m",
+  bgGreen: "\x1b[42m",
+  bgBlue: "\x1b[44m",
+  bgYellow: "\x1b[43m",
 }
 
 const c = (color: keyof typeof colors, text: string) => `${colors[color]}${text}${colors.reset}`
+
+// Beautiful ASCII Banner
+const BANNER = `
+${c("cyan", "   ██╗   ██╗███╗   ██╗██╗    ██████╗██████╗ ██╗   ██╗██████╗ ████████╗ ██████╗ ")}
+${c("cyan", "   ██║   ██║████╗  ██║██║   ██╔════╝██╔══██╗╚██╗ ██╔╝██╔══██╗╚══██╔══╝██╔═══██╗")}
+${c("cyan", "   ██║   ██║██╔██╗ ██║██║   ██║     ██████╔╝ ╚████╔╝ ██████╔╝   ██║   ██║   ██║")}
+${c("cyan", "   ██║   ██║██║╚██╗██║██║   ██║     ██╔══██╗  ╚██╔╝  ██╔═══╝    ██║   ██║   ██║")}
+${c("cyan", "   ╚██████╔╝██║ ╚████║██║   ╚██████╗██║  ██║   ██║   ██║        ██║   ╚██████╔╝")}
+${c("cyan", "    ╚═════╝ ╚═╝  ╚═══╝╚═╝    ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚═╝        ╚═╝    ╚═════╝ ")}
+${c("yellow", "                          ███╗   ███╗ ██████╗██████╗ ")}
+${c("yellow", "                          ████╗ ████║██╔════╝██╔══██╗")}
+${c("yellow", "                          ██╔████╔██║██║     ██████╔╝")}
+${c("yellow", "                          ██║╚██╔╝██║██║     ██╔═══╝ ")}
+${c("yellow", "                          ██║ ╚═╝ ██║╚██████╗██║     ")}
+${c("yellow", "                          ╚═╝     ╚═╝ ╚═════╝╚═╝     ")}
+
+   ${c("bold", "🤖 Give Claude Money!")} ${c("dim", "•")} ${c("green", "💰 x402 Payments")} ${c("dim", "•")} ${c("blue", "⛓️  20+ Chains")} ${c("dim", "•")} ${c("magenta", "🔧 380+ Tools")}
+`
+
+// Compact banner for narrow terminals
+const BANNER_COMPACT = `
+  ${c("cyan", "╔═══════════════════════════════════════════════════════════╗")}
+  ${c("cyan", "║")}  ${c("bold", "🤖💰 UNIVERSAL CRYPTO MCP")}                                 ${c("cyan", "║")}
+  ${c("cyan", "║")}  ${c("dim", "═══════════════════════════════════════════════════════")}  ${c("cyan", "║")}
+  ${c("cyan", "║")}  ${c("yellow", "Give Claude Money!")} AI agents with crypto superpowers.   ${c("cyan", "║")}
+  ${c("cyan", "╚═══════════════════════════════════════════════════════════╝")}
+`
+
+// Loading spinner frames
+const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 
 // Mock data for CLI demo (in production, these would call actual APIs)
 const mockPrices: Record<string, { price: number; change24h: number }> = {
@@ -34,6 +68,7 @@ const mockPrices: Record<string, { price: number; change24h: number }> = {
   NEAR: { price: 5, change24h: 2.8 },
   SUI: { price: 3.5, change24h: 5.5 },
   APT: { price: 9, change24h: 1.5 },
+  USDS: { price: 1.0, change24h: 0.01 },
 }
 
 async function getPrice(symbol: string): Promise<string> {
@@ -101,38 +136,78 @@ ${c("bold", "💰 Balance")}
 
 function showHelp(): string {
   return `
-${c("bold", "Universal Crypto MCP - CLI")}
+${c("bold", "🤖💰 Universal Crypto MCP - Interactive CLI")}
+${c("dim", "Give Claude Money! The first MCP with x402 payments.")}
 
-${c("cyan", "Commands:")}
+${c("cyan", "📊 Market Commands:")}
   ${c("yellow", "price <symbol>")}        Get price for a token (e.g., price btc)
   ${c("yellow", "market")}                Get market overview
   ${c("yellow", "gas <chain>")}           Get gas prices (ethereum, bsc, polygon, arbitrum)
-  ${c("yellow", "balance <addr> <chain>")} Get wallet balance
   ${c("yellow", "chains")}                List supported chains
+
+${c("green", "💰 Wallet Commands:")}
+  ${c("yellow", "balance <addr> <chain>")} Get wallet balance
+  ${c("yellow", "x402")}                  Show x402 payment status
+
+${c("magenta", "🔧 System Commands:")}
   ${c("yellow", "help")}                  Show this help
+  ${c("yellow", "banner")}                Show the beautiful banner again
   ${c("yellow", "exit")}                  Exit CLI
 
-${c("cyan", "Examples:")}
-  > price eth
-  > gas ethereum
-  > balance 0x1234...5678 ethereum
-  > market
+${c("cyan", "📝 Examples:")}
+  ${c("dim", ">")} price eth
+  ${c("dim", ">")} gas arbitrum
+  ${c("dim", ">")} balance 0x1234...5678 ethereum
+  ${c("dim", ">")} market
 `
 }
 
 function showChains(): string {
   return `
-${c("bold", "Supported Chains:")}
+${c("bold", "⛓️  Supported Chains")}
 
-${c("cyan", "EVM:")}
-  • Ethereum   • BSC          • Polygon
-  • Arbitrum   • Avalanche    • Optimism
-  • Base       • Fantom       • zkSync
+${c("cyan", "EVM Chains:")}
+  ${c("green", "●")} Ethereum    ${c("green", "●")} Arbitrum    ${c("green", "●")} Base
+  ${c("green", "●")} Polygon     ${c("green", "●")} Optimism    ${c("green", "●")} BSC
+  ${c("green", "●")} Avalanche   ${c("green", "●")} Fantom      ${c("green", "●")} zkSync
+  ${c("green", "●")} Linea       ${c("green", "●")} Scroll      ${c("green", "●")} Blast
 
-${c("cyan", "Non-EVM:")}
-  • Solana     • Bitcoin      • Cosmos
-  • Near       • Sui          • Aptos
-  • TON        • Ripple       • Thorchain
+${c("yellow", "Non-EVM Chains:")}
+  ${c("green", "●")} Solana      ${c("green", "●")} Bitcoin     ${c("green", "●")} Cosmos
+  ${c("green", "●")} Near        ${c("green", "●")} Sui         ${c("green", "●")} Aptos
+  ${c("green", "●")} TON         ${c("green", "●")} Ripple      ${c("green", "●")} Thorchain
+
+${c("magenta", "x402 Payment Chains:")}
+  ${c("green", "●")} Arbitrum ${c("dim", "(primary)")}
+  ${c("green", "●")} Base
+  ${c("green", "●")} Ethereum
+  ${c("green", "●")} Polygon
+  ${c("green", "●")} Optimism
+  ${c("green", "●")} Solana ${c("dim", "(SVM)")}
+`
+}
+
+function showX402Status(): string {
+  const hasKey = process.env.X402_PRIVATE_KEY ? true : false
+  const chain = process.env.X402_CHAIN || "arbitrum"
+  const maxPayment = process.env.X402_MAX_PAYMENT || "1.00"
+  
+  return `
+${c("bold", "💰 x402 Payment Protocol Status")}
+
+${c("cyan", "╭─────────────────────────────────────────╮")}
+${c("cyan", "│")}  ${c("bold", "Configuration")}                         ${c("cyan", "│")}
+${c("cyan", "├─────────────────────────────────────────┤")}
+${c("cyan", "│")}  Private Key:  ${hasKey ? c("green", "✓ Configured") : c("red", "✗ Not set")}             ${c("cyan", "│")}
+${c("cyan", "│")}  Chain:        ${c("yellow", chain.padEnd(20))}       ${c("cyan", "│")}
+${c("cyan", "│")}  Max Payment:  ${c("green", "$" + maxPayment.padEnd(18))}       ${c("cyan", "│")}
+${c("cyan", "╰─────────────────────────────────────────╯")}
+
+${hasKey ? "" : `${c("yellow", "⚠️  To enable x402 payments, set:")}
+   ${c("dim", "export X402_PRIVATE_KEY=0x...")}
+   ${c("dim", "export X402_CHAIN=arbitrum")}
+`}
+${c("dim", "Learn more: https://github.com/nirholas/universal-crypto-mcp")}
 `
 }
 
@@ -159,6 +234,12 @@ async function processCommand(input: string): Promise<string> {
     case "chains":
       return showChains()
 
+    case "x402":
+      return showX402Status()
+
+    case "banner":
+      return BANNER
+
     case "help":
     case "?":
       return showHelp()
@@ -166,20 +247,26 @@ async function processCommand(input: string): Promise<string> {
     case "exit":
     case "quit":
     case "q":
-      console.log(c("dim", "\nGoodbye! 👋"))
+      console.log(`\n${c("cyan", "👋 Thanks for using Universal Crypto MCP!")}`)
+      console.log(`${c("dim", "⭐ Star us on GitHub: github.com/nirholas/universal-crypto-mcp")}\n`)
       process.exit(0)
 
     case "":
       return ""
 
     default:
-      return `${c("red", "✗")} Unknown command: ${command}. Type 'help' for available commands.`
+      return `${c("red", "✗")} Unknown command: ${c("yellow", command)}
+  ${c("dim", "Type")} ${c("cyan", "'help'")} ${c("dim", "for available commands.")}`
   }
 }
 
 async function main() {
-  console.log(c("bold", "\n🚀 Universal Crypto MCP - Interactive CLI"))
-  console.log(c("dim", "Type 'help' for available commands\n"))
+  // Check terminal width for banner selection
+  const termWidth = process.stdout.columns || 80
+  const banner = termWidth >= 90 ? BANNER : BANNER_COMPACT
+  
+  console.log(banner)
+  console.log(`${c("dim", "  Type")} ${c("cyan", "'help'")} ${c("dim", "for commands,")} ${c("cyan", "'exit'")} ${c("dim", "to quit")}\n`)
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -187,12 +274,12 @@ async function main() {
   })
 
   const prompt = () => {
-    rl.question(c("cyan", "crypto> "), async (input) => {
+    rl.question(`${c("cyan", "🤖")} ${c("bold", "crypto")}${c("dim", ">")} `, async (input) => {
       try {
         const result = await processCommand(input)
         if (result) console.log(result)
       } catch (error) {
-        console.log(c("red", `Error: ${error}`))
+        console.log(`${c("red", "❌ Error:")} ${error}`)
       }
       prompt()
     })
@@ -206,4 +293,4 @@ if (process.argv[1]?.endsWith("cli.ts") || process.argv[1]?.endsWith("cli.js")) 
   main()
 }
 
-export { processCommand, getPrice, getMarketOverview, getGasPrice }
+export { processCommand, getPrice, getMarketOverview, getGasPrice, BANNER, BANNER_COMPACT, SPINNER_FRAMES }
