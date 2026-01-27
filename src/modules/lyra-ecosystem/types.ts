@@ -344,14 +344,54 @@ export interface TestCase {
 // Lyra Client Types
 // ============================================================================
 
+/**
+ * Multi-chain wallet configuration
+ */
+export interface LyraWalletConfig {
+  /** EVM private key (hex with 0x prefix) - works for Base, Arbitrum, BSC, Ethereum, Polygon, Optimism */
+  evmPrivateKey?: `0x${string}`;
+  /** Solana private key (base58 encoded) */
+  svmPrivateKey?: string;
+  /** Legacy: Single wallet key (EVM format, use evmPrivateKey instead) */
+  privateKey?: string;
+}
+
+/**
+ * Chain preference configuration
+ */
+export interface LyraChainPreference {
+  /** Primary chain for payments */
+  primary: string;
+  /** Fallback chains if primary fails */
+  fallbacks?: string[];
+  /** Prefer chains with lowest fees */
+  preferLowFees?: boolean;
+  /** Only use testnet chains */
+  testnetOnly?: boolean;
+}
+
 export interface LyraClientConfig {
+  /** @deprecated Use wallets.evmPrivateKey instead */
   x402Wallet?: string;
+  /** @deprecated Use wallets.evmPrivateKey instead */
   x402PrivateKey?: string;
+  /** Multi-chain wallet configuration */
+  wallets?: LyraWalletConfig;
+  /** Primary payment network (e.g., "base", "arbitrum", "bsc", "solana-mainnet") */
   network?: string;
+  /** Chain preference settings */
+  chainPreference?: LyraChainPreference;
+  /** Maximum daily spend in USD */
   maxDailySpend?: string;
+  /** Automatically pay for services */
   autoPayEnabled?: boolean;
+  /** Preferred stablecoin ("USDC" | "USDT" | "USDs") */
+  preferredToken?: "USDC" | "USDT" | "USDs";
+  /** Intel service config */
   intel?: LyraIntelConfig;
+  /** Registry service config */
   registry?: LyraRegistryConfig;
+  /** Discovery service config */
   discovery?: LyraDiscoveryConfig;
 }
 

@@ -268,15 +268,9 @@ export class ToolRegistry {
  */
 export class ToolMarketplace {
   private readonly registry: ToolRegistry;
-  private readonly config: Required<MarketplaceConfig>;
   
   constructor(config: MarketplaceConfig = {}) {
-    this.config = {
-      registryUrl: config.registryUrl ?? "https://registry.nirholas.dev",
-      chain: config.chain ?? "eip155:42161",
-      platformFeePercent: config.platformFeePercent ?? 5,
-      platformAddress: config.platformAddress ?? "0x0000000000000000000000000000000000000000" as Address,
-    };
+    // Config is passed to registry, not stored separately
     this.registry = new ToolRegistry(config);
   }
   

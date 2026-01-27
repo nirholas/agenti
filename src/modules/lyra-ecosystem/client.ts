@@ -34,7 +34,18 @@ import type {
   LyraServiceName,
   ServiceUsage,
 } from "./types.js";
-import { LYRA_DEFAULT_NETWORK, LYRA_PRICES } from "./constants.js";
+import { 
+  LYRA_DEFAULT_NETWORK, 
+  LYRA_PRICES, 
+  LYRA_NETWORKS,
+  LYRA_RECOMMENDED_NETWORKS,
+  SPERAX_CONTRACTS,
+  USDS_BENEFITS,
+  PAYMENT_TOKENS,
+  DEFAULT_TOKEN_PER_CHAIN,
+  type LyraNetworkId,
+  type PaymentToken,
+} from "./constants.js";
 import Logger from "@/utils/logger.js";
 
 /**
@@ -69,6 +80,22 @@ import Logger from "@/utils/logger.js";
  * const stats = lyra.getUsageStats("day");
  * console.log(`Spent today: $${stats.totalSpent}`);
  * ```
+ * 
+ * @example Multi-Chain Support
+ * ```typescript
+ * const lyra = new LyraClient({
+ *   wallets: {
+ *     evmPrivateKey: process.env.EVM_PRIVATE_KEY,  // Base, Arbitrum, BSC
+ *     svmPrivateKey: process.env.SOL_PRIVATE_KEY,  // Solana
+ *   },
+ *   network: "arbitrum", // Primary network
+ *   chainPreference: {
+ *     primary: "arbitrum",
+ *     fallbacks: ["base", "bsc"],
+ *     preferLowFees: true,
+ *   },
+ * });
+ * ```
  */
 export class LyraClient {
   /** Lyra Intel service (code analysis) */
@@ -85,12 +112,15 @@ export class LyraClient {
   private paymentApi: AxiosInstance;
   private payments: LyraPaymentResult[] = [];
   private dailySpendReset: number = this.getMidnightTimestamp();
+  private activeNetwork: LyraNetworkId;
 
   constructor(config: LyraClientConfig = {}) {
+    this.activeNetwork = (config.network ?? LYRA_DEFAULT_NETWORK) as LyraNetworkId;
     this.config = {
-      network: config.network ?? LYRA_DEFAULT_NETWORK,
+      network: this.activeNetwork,
       maxDailySpend: config.maxDailySpend ?? "100.00",
       autoPayEnabled: config.autoPayEnabled ?? true,
+      preferredToken: config.preferredToken ?? "USDC",
       ...config,
     };
 
@@ -115,15 +145,47 @@ export class LyraClient {
    * Create a LyraClient from environment variables
    * 
    * Environment variables:
-   * - X402_PRIVATE_KEY or X402_EVM_PRIVATE_KEY: Wallet private key
-   * - LYRA_NETWORK: Payment network (default: eip155:8453)
-   * - LYRA_MAX_DAILY_SPEND: Maximum daily spending limit
+   * - X402_EVM_PRIVATE_KEY or X402_PRIVATE_KEY: EVM wallet private key (Base, Arbitrum, BSC, etc.)
+   * - X402_SVM_PRIVATE_KEY: Solana wallet private key
+   * - LYRA_NETWORK: Primary payment network (default: "base")
+   * - LYRA_MAX_DAILY_SPEND: Maximum daily spending limit in USD
+   * - LYRA_PREFERRED_TOKEN: Preferred stablecoin (USDC, USDT, USDs)
    */
   static fromEnv(): LyraClient {
     return new LyraClient({
-      x402Wallet: process.env.X402_PRIVATE_KEY ?? process.env.X402_EVM_PRIVATE_KEY,
-      network: process.env.LYRA_NETWORK,
+      wallets: {
+        evmPrivateKey: (process.env.X402_EVM_PRIVATE_KEY ?? process.env.X402_PRIVATE_KEY) as `0x${string}`,
+        svmPrivateKey: process.env.X402_SVM_PRIVATE_KEY,
+      },
+      network: process.env.LYRA_NETWORK ?? "base",
       maxDailySpend: process.env.LYRA_MAX_DAILY_SPEND,
+      preferredToken: (process.env.LYRA_PREFERRED_TOKEN as "USDC" | "USDT" | "USDs") ?? "USDC",
+    });
+  }
+
+  /**
+   * Create a client optimized for low fees
+   * Uses Base, Arbitrum, or BSC depending on availability
+   */
+  static lowCost(privateKey: `0x${string}`): LyraClient {
+    return new LyraClient({
+      wallets: { evmPrivateKey: privateKey },
+      network: "base",
+      chainPreference: {
+        primary: "base",
+        fallbacks: ["arbitrum", "bsc"],
+        preferLowFees: true,
+      },
+    });
+  }
+
+  /**
+   * Create a Solana-only client
+   */
+  static solana(privateKey: string): LyraClient {
+    return new LyraClient({
+      wallets: { svmPrivateKey: privateKey },
+      network: "solana-mainnet",
     });
   }
 
@@ -136,6 +198,86 @@ export class LyraClient {
     });
   }
 
+  /**
+   * Create a testnet-only client for development
+   */
+  static testnet(evmKey?: `0x${string}`, svmKey?: string): LyraClient {
+    return new LyraClient({
+      wallets: { evmPrivateKey: evmKey, svmPrivateKey: svmKey },
+      network: "base-sepolia",
+      chainPreference: {
+        primary: "base-sepolia",
+        fallbacks: ["arbitrum-sepolia", "solana-devnet"],
+        testnetOnly: true,
+      },
+    });
+  }
+
+  // ==========================================================================
+  // Network Management
+  // ==========================================================================
+
+  /**
+   * Get current active network
+   */
+  getActiveNetwork(): LyraNetworkId {
+    return this.activeNetwork;
+  }
+
+  /**
+   * Get network configuration
+   */
+  getNetworkConfig(network?: LyraNetworkId) {
+    const net = network ?? this.activeNetwork;
+    return LYRA_NETWORKS[net];
+  }
+
+  /**
+   * Switch to a different payment network
+   */
+  async switchNetwork(network: LyraNetworkId): Promise<void> {
+    const networkConfig = LYRA_NETWORKS[network];
+    if (!networkConfig) {
+      throw new Error(`Unknown network: ${network}. Available: ${Object.keys(LYRA_NETWORKS).join(", ")}`);
+    }
+
+    // Check if we have the right wallet type
+    const wallets = this.config.wallets;
+    if (networkConfig.type === "svm" && !wallets?.svmPrivateKey) {
+      throw new Error(`Solana private key required for ${network}`);
+    }
+    if (networkConfig.type === "evm" && !wallets?.evmPrivateKey && !this.config.x402Wallet) {
+      throw new Error(`EVM private key required for ${network}`);
+    }
+
+    this.activeNetwork = network;
+    Logger.info(`[LyraClient] Switched to network: ${networkConfig.name} (${networkConfig.caip2})`);
+
+    // Re-initialize payments if already initialized
+    if (this.x402Client) {
+      await this.initializePayments();
+    }
+  }
+
+  /**
+   * Get all supported networks
+   */
+  getSupportedNetworks(): Array<{ id: LyraNetworkId; name: string; type: "evm" | "svm"; testnet: boolean }> {
+    return Object.entries(LYRA_NETWORKS).map(([id, config]) => ({
+      id: id as LyraNetworkId,
+      name: config.name,
+      type: config.type,
+      testnet: config.testnet,
+    }));
+  }
+
+  /**
+   * Get recommended networks by use case
+   */
+  getRecommendedNetworks() {
+    return LYRA_RECOMMENDED_NETWORKS;
+  }
+
   // ==========================================================================
   // Payment Management
   // ==========================================================================
@@ -145,29 +287,52 @@ export class LyraClient {
    * Call this before making paid requests
    */
   async initializePayments(): Promise<void> {
-    if (!this.config.x402Wallet && !this.config.x402PrivateKey) {
+    const wallets = this.config.wallets;
+    const legacyKey = this.config.x402Wallet ?? this.config.x402PrivateKey;
+    
+    if (!wallets?.evmPrivateKey && !wallets?.svmPrivateKey && !legacyKey) {
       Logger.warn("[LyraClient] No wallet configured - paid features will be unavailable");
       return;
     }
 
     try {
+      const networkConfig = LYRA_NETWORKS[this.activeNetwork];
+      const networksToRegister: string[] = [];
+
+      // Determine which networks to register based on available keys
+      if (wallets?.evmPrivateKey || legacyKey) {
+        // Register all EVM networks
+        networksToRegister.push("base", "arbitrum", "bsc", "ethereum", "polygon", "optimism");
+        if (this.config.chainPreference?.testnetOnly) {
+          networksToRegister.push("base-sepolia", "arbitrum-sepolia", "bsc-testnet");
+        }
+      }
+      if (wallets?.svmPrivateKey) {
+        // Register Solana networks
+        networksToRegister.push("solana-mainnet");
+        if (this.config.chainPreference?.testnetOnly) {
+          networksToRegister.push("solana-devnet");
+        }
+      }
+
       this.x402Client = await createX402Client({
         config: {
-          evmPrivateKey: (this.config.x402Wallet ?? this.config.x402PrivateKey) as `0x${string}`,
+          evmPrivateKey: (wallets?.evmPrivateKey ?? legacyKey) as `0x${string}`,
+          svmPrivateKey: wallets?.svmPrivateKey,
         },
-        networks: [this.config.network as "base" | "base-sepolia" | "arbitrum"],
+        networks: networksToRegister as Array<"base" | "arbitrum" | "solana-mainnet">,
       });
 
       // Wrap the API with payment handling
       this.paymentApi = this.x402Client.wrapAxios(this.paymentApi);
       
       // Re-initialize services with payment-wrapped API
-      const onPayment = this.handlePayment.bind(this);
       (this.intel as unknown as { api: AxiosInstance }).api = this.paymentApi;
       (this.registry as unknown as { api: AxiosInstance }).api = this.paymentApi;
       (this.discovery as unknown as { api: AxiosInstance }).api = this.paymentApi;
 
-      Logger.info("[LyraClient] x402 payments initialized");
+      Logger.info(`[LyraClient] x402 payments initialized on ${networkConfig.name}`);
+      Logger.info(`[LyraClient] Registered networks: ${networksToRegister.join(", ")}`);
     } catch (error) {
       Logger.error("[LyraClient] Failed to initialize x402 payments:", error);
       throw error;
@@ -308,6 +473,111 @@ export class LyraClient {
    */
   async discoverApi(apiUrl: string) {
     return this.discovery.discover(apiUrl);
+  }
+
+  // ==========================================================================
+  // USDs / Sperax Integration (Yield-Bearing Payments)
+  // ==========================================================================
+
+  /**
+   * Check if using USDs (yield-bearing stablecoin)
+   * USDs automatically earns ~5-10% APY while sitting in your wallet
+   */
+  isUsingUSDs(): boolean {
+    return this.activeNetwork === "arbitrum" && 
+           (this.config.preferredToken === "USDs" || DEFAULT_TOKEN_PER_CHAIN[this.activeNetwork] === "USDs");
+  }
+
+  /**
+   * Get Sperax contract addresses for current network
+   */
+  getSperaxContracts() {
+    if (this.activeNetwork === "arbitrum") {
+      return SPERAX_CONTRACTS.arbitrum;
+    }
+    if (this.activeNetwork === "ethereum") {
+      return SPERAX_CONTRACTS.ethereum;
+    }
+    if (this.activeNetwork === "bsc") {
+      return SPERAX_CONTRACTS.bsc;
+    }
+    return null;
+  }
+
+  /**
+   * Get USDs benefits info
+   */
+  getUSDsBenefits() {
+    return USDS_BENEFITS;
+  }
+
+  /**
+   * Estimate yield earned on idle funds
+   * 
+   * @param balance - Current USDs balance in USD
+   * @param days - Number of days to estimate
+   * @returns Estimated yield in USD
+   * 
+   * @example
+   * ```typescript
+   * // $100 USDs for 30 days at ~7.5% APY
+   * const yield = lyra.estimateUSdsYield(100, 30);
+   * // → ~$0.62
+   * ```
+   */
+  estimateUSdsYield(balance: number, days: number): {
+    low: string;
+    high: string;
+    mid: string;
+  } {
+    const lowApy = 0.05; // 5%
+    const highApy = 0.10; // 10%
+    const midApy = 0.075; // 7.5%
+
+    const dailyLow = (balance * lowApy) / 365;
+    const dailyHigh = (balance * highApy) / 365;
+    const dailyMid = (balance * midApy) / 365;
+
+    return {
+      low: (dailyLow * days).toFixed(2),
+      high: (dailyHigh * days).toFixed(2),
+      mid: (dailyMid * days).toFixed(2),
+    };
+  }
+
+  /**
+   * Get supported payment tokens for current network
+   */
+  getSupportedTokens(): PaymentToken[] {
+    const network = this.activeNetwork;
+    return (Object.entries(PAYMENT_TOKENS) as [PaymentToken, typeof PAYMENT_TOKENS[PaymentToken]][])
+      .filter(([_, config]) => config.chains.includes(network))
+      .map(([token]) => token);
+  }
+
+  /**
+   * Get default token for current network
+   */
+  getDefaultToken(): PaymentToken {
+    return DEFAULT_TOKEN_PER_CHAIN[this.activeNetwork];
+  }
+
+  /**
+   * Check if a token is yield-bearing
+   */
+  isYieldBearing(token: PaymentToken): boolean {
+    return PAYMENT_TOKENS[token]?.yieldBearing ?? false;
+  }
+
+  /**
+   * Create a client optimized for yield-bearing payments (USDs on Arbitrum)
+   */
+  static yieldBearing(privateKey: `0x${string}`): LyraClient {
+    return new LyraClient({
+      wallets: { evmPrivateKey: privateKey },
+      network: "arbitrum",
+      preferredToken: "USDs",
+    });
   }
 
   // ==========================================================================

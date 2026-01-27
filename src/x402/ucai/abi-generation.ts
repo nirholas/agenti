@@ -27,7 +27,8 @@ import { UCAI_PRICING } from "./types.js"
 import Logger from "@/utils/logger.js"
 
 // Chain configurations
-const CHAINS: Record<string, typeof mainnet> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CHAINS: Record<string, any> = {
   ethereum: mainnet,
   arbitrum,
   base,
@@ -320,7 +321,7 @@ export class ABIGenerationService {
     try {
       const url = `${apiUrl}?module=contract&action=getabi&address=${address}${apiKey ? `&apikey=${apiKey}` : ""}`
       const response = await fetch(url)
-      const data = await response.json()
+      const data = await response.json() as { status: string; result?: string }
 
       if (data.status === "1" && data.result) {
         const abi = JSON.parse(data.result)
@@ -349,7 +350,7 @@ export class ABIGenerationService {
     while ((match = push4Pattern.exec(hex)) !== null) {
       const selector = match[1]
       // Filter out unlikely selectors (all zeros, common constants)
-      if (selector !== "00000000" && selector !== "ffffffff") {
+      if (selector && selector !== "00000000" && selector !== "ffffffff") {
         selectors.add(selector)
       }
     }
@@ -357,7 +358,10 @@ export class ABIGenerationService {
     // Also look for EQ comparisons with selectors
     const eqPattern = /80([0-9a-f]{8})14/g
     while ((match = eqPattern.exec(hex)) !== null) {
-      selectors.add(match[1])
+      const selector = match[1]
+      if (selector) {
+        selectors.add(selector)
+      }
     }
 
     return Array.from(selectors)
@@ -392,14 +396,17 @@ export class ABIGenerationService {
         const response = await fetch(
           `https://www.4byte.directory/api/v1/signatures/?hex_signature=0x${selector}`
         )
-        const data = await response.json()
+        const data = await response.json() as { results?: Array<{ text_signature: string }> }
 
         if (data.results && data.results.length > 0) {
           // Take the most popular (first) result
-          const sig = data.results[0].text_signature
-          const parsed = this.parseTextSignature(sig)
-          if (parsed) {
-            decoded.push(parsed)
+          const firstResult = data.results[0]
+          if (firstResult) {
+            const sig = firstResult.text_signature
+            const parsed = this.parseTextSignature(sig)
+            if (parsed) {
+              decoded.push(parsed)
+            }
           }
         }
       } catch {
@@ -426,10 +433,13 @@ export class ABIGenerationService {
     if (paramsStr) {
       const params = paramsStr.split(",")
       for (let i = 0; i < params.length; i++) {
-        inputs.push({
-          name: `arg${i}`,
-          type: params[i].trim(),
-        })
+        const param = params[i]
+        if (param) {
+          inputs.push({
+            name: `arg${i}`,
+            type: param.trim(),
+          })
+        }
       }
     }
 
@@ -475,10 +485,10 @@ export class ABIGenerationService {
    * Detect standards from ABI
    */
   private detectStandards(abi: ABIItem[]): ContractStandard[] {
-    const functionNames = new Set(
+    const functionNames = new Set<string>(
       abi
-        .filter(item => item.type === "function")
-        .map(item => item.name)
+        .filter(item => item.type === "function" && item.name)
+        .map(item => item.name!)
     )
 
     return this.detectStandardsFromNames(functionNames)

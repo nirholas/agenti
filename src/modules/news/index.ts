@@ -42,6 +42,24 @@ export type {
   PremiumStatus,
 } from "./client.js"
 
+// Re-export x402scan discovery
+export {
+  generateDiscoveryDocument,
+  getDiscoveryDocumentJSON,
+  createX402DiscoveryHandler,
+  x402DiscoveryMiddleware,
+  validateResource,
+  validateDiscoveryDocument,
+  PREMIUM_NEWS_RESOURCES,
+} from "./x402-discovery.js"
+export type {
+  X402Accepts,
+  X402Resource,
+  X402Response,
+  X402DiscoveryDocument,
+  BazaarExtension,
+} from "./x402-discovery.js"
+
 // Re-export premium pricing
 export { PREMIUM_PRICING, REVENUE_SPLIT }
 

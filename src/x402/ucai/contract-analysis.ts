@@ -14,6 +14,7 @@ import {
   formatUnits,
   type Address,
   type Hex,
+  type PublicClient,
 } from "viem"
 import { arbitrum, base, mainnet, polygon, optimism, bsc } from "viem/chains"
 import type {
@@ -29,7 +30,8 @@ import { UCAI_PRICING } from "./types.js"
 import Logger from "@/utils/logger.js"
 
 // Chain configurations
-const CHAINS: Record<string, typeof mainnet> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CHAINS: Record<string, any> = {
   ethereum: mainnet,
   arbitrum,
   base,
@@ -397,7 +399,8 @@ export class ContractAnalysisService {
    * Run security audit on contract bytecode
    */
   private async runSecurityAudit(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     address: Address,
     code: Hex,
     result: SecurityAuditResult
@@ -454,7 +457,8 @@ export class ContractAnalysisService {
    * Analyze contract ownership
    */
   private async analyzeOwnership(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     address: Address,
     result: SecurityAuditResult
   ): Promise<void> {
@@ -522,7 +526,8 @@ export class ContractAnalysisService {
    * Detect if contract is a proxy
    */
   private async detectProxy(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     address: Address,
     code: Hex,
     result: SecurityAuditResult
@@ -588,7 +593,7 @@ export class ContractAnalysisService {
     try {
       const url = `${apiUrl}?module=contract&action=getsourcecode&address=${address}${apiKey ? `&apikey=${apiKey}` : ""}`
       const response = await fetch(url)
-      const data = await response.json()
+      const data = await response.json() as { status: string; result?: Array<{ SourceCode?: string }> }
 
       if (data.status === "1" && data.result?.[0]?.SourceCode) {
         result.verified = data.result[0].SourceCode !== ""

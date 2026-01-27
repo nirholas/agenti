@@ -12,6 +12,22 @@ This module provides a single payment layer for all Lyra services:
 | **lyra-registry** | [nirholas/lyra-registry](https://github.com/nirholas/lyra-registry) | MCP tool catalog | 9⭐ |
 | **lyra-tool-discovery** | [nirholas/lyra-tool-discovery](https://github.com/nirholas/lyra-tool-discovery) | Automatic API discovery | 6⭐ |
 
+## 💰 Yield-Bearing Payments with USDs
+
+**AI agents can earn while they sleep!** Using [Sperax USDs](https://sperax.io) on Arbitrum, your payment balance automatically earns ~5-10% APY.
+
+```typescript
+// Create a yield-bearing client
+const lyra = LyraClient.yieldBearing(process.env.EVM_KEY as `0x${string}`);
+
+// Your USDs balance earns yield even when not making payments!
+const yield30Days = lyra.estimateUSdsYield(100, 30);
+// → { low: "0.41", mid: "0.62", high: "0.82" }
+
+// Check if using yield-bearing token
+lyra.isUsingUSDs(); // true
+```
+
 ## Quick Start
 
 ```typescript
@@ -190,27 +206,136 @@ console.log(`Can still spend: $${remaining}`);
 ## Environment Variables
 
 ```bash
-# Required for paid features
-X402_PRIVATE_KEY=0x...          # EVM wallet private key
+# EVM wallet (Base, Arbitrum, BSC, Ethereum, Polygon, Optimism)
+X402_EVM_PRIVATE_KEY=0x...
 
-# Optional configuration
-LYRA_NETWORK=eip155:8453        # Payment network (default: Base)
-LYRA_MAX_DAILY_SPEND=10.00      # Daily spending limit
+# Solana wallet (optional)
+X402_SVM_PRIVATE_KEY=...
+
+# Configuration
+LYRA_NETWORK=arbitrum           # Primary network (arbitrum for USDs)
+LYRA_MAX_DAILY_SPEND=10.00      # Daily spending limit in USD
+LYRA_PREFERRED_TOKEN=USDs       # USDC, USDT, or USDs (yield-bearing!)
 ```
 
-## Supported Networks
+## 🪙 Sperax USDs Integration
 
-- **Base Mainnet** (`eip155:8453`) - Default
-- **Base Sepolia** (`eip155:84532`) - Testnet
-- **Arbitrum One** (`eip155:42161`)
-- **Solana Mainnet** (`solana:mainnet`)
+[Sperax USDs](https://docs.sperax.io/) is a yield-bearing stablecoin on Arbitrum. Your balance automatically earns ~5-10% APY with no staking required!
+
+### Why USDs for AI Agents?
+
+| Benefit | Description |
+|---------|-------------|
+| **Auto-Yield** | Earn ~5-10% APY automatically |
+| **No Lock-up** | Fully liquid, use anytime |
+| **AI-Friendly** | Agents earn while idle |
+| **Low Fees** | Arbitrum = cheap transactions |
+
+### USDs Contract Addresses
+
+```typescript
+// Arbitrum One
+const USDS = "0xD74f5255D557944cf7Dd0E45FF521520002D5748";
+const SPA  = "0x5575552988A3A80504bBaeB1311674fCFd40aD4B";
+const xSPA = "0x0966E72256d6055145902F72F9D3B6a194B9cCc3";
+const veSPA = "0x2e2071180682Ce6C247B1eF93d382D509F5F6A17";
+```
+
+### Using USDs in Lyra
+
+```typescript
+// Yield-bearing client (uses USDs on Arbitrum)
+const lyra = LyraClient.yieldBearing(process.env.EVM_KEY as `0x${string}`);
+
+// Check if using yield-bearing token
+if (lyra.isUsingUSDs()) {
+  console.log("✨ Earning yield while idle!");
+}
+
+// Estimate yield on $100 over 30 days
+const yield = lyra.estimateUSdsYield(100, 30);
+console.log(`Expected yield: $${yield.mid}`); // ~$0.62
+
+// Get Sperax contracts
+const contracts = lyra.getSperaxContracts();
+// → { usds: "0xD74...", spa: "0x557...", xspa: "0x096...", vespa: "0x2e2..." }
+
+// Get supported tokens for current network
+const tokens = lyra.getSupportedTokens();
+// On Arbitrum: ["USDC", "USDs"]
+
+// Check if token is yield-bearing
+lyra.isYieldBearing("USDs");  // true
+lyra.isYieldBearing("USDC");  // false
+```
+
+## 🔗 Multi-Chain Support
+
+### Supported Networks
+
+| Network | ID | Type | Token | Gas |
+|---------|----|----|-------|-----|
+| **Base** | `base` | EVM | USDC | ETH |
+| **Arbitrum** | `arbitrum` | EVM | USDC, USDs | ETH |
+| **BNB Chain** | `bsc` | EVM | USDC, USDT | BNB |
+| **Ethereum** | `ethereum` | EVM | USDC, USDT | ETH |
+| **Polygon** | `polygon` | EVM | USDC, USDT | MATIC |
+| **Optimism** | `optimism` | EVM | USDC, USDT | ETH |
+| **Solana** | `solana-mainnet` | SVM | USDC | SOL |
+
+### Testnets
+
+| Network | ID | Type |
+|---------|----|----|
+| Base Sepolia | `base-sepolia` | EVM |
+| Arbitrum Sepolia | `arbitrum-sepolia` | EVM |
+| BNB Testnet | `bsc-testnet` | EVM |
+| Solana Devnet | `solana-devnet` | SVM |
+
+### Multi-Chain Examples
+
+```typescript
+// EVM + Solana support
+const lyra = new LyraClient({
+  wallets: {
+    evmPrivateKey: process.env.EVM_KEY as `0x${string}`,
+    svmPrivateKey: process.env.SOL_KEY,
+  },
+  network: "arbitrum",
+  chainPreference: {
+    primary: "arbitrum",
+    fallbacks: ["base", "bsc"],
+    preferLowFees: true,
+  },
+});
+
+// Low-cost client (uses cheapest chain)
+const cheapLyra = LyraClient.lowCost(process.env.EVM_KEY as `0x${string}`);
+
+// Solana-only client
+const solLyra = LyraClient.solana(process.env.SOL_KEY);
+
+// Testnet for development
+const testLyra = LyraClient.testnet(
+  process.env.EVM_KEY as `0x${string}`,
+  process.env.SOL_KEY
+);
+
+// Switch networks at runtime
+await lyra.switchNetwork("bsc");
+console.log(`Now using: ${lyra.getActiveNetwork()}`);
+
+// Get all supported networks
+const networks = lyra.getSupportedNetworks();
+// → [{ id: "base", name: "Base", type: "evm", testnet: false }, ...]
+```
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                     LyraClient                          │
-│                  (Unified Entry Point)                  │
+│               (Unified Multi-Chain Entry)               │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐ │
@@ -224,16 +349,20 @@ LYRA_MAX_DAILY_SPEND=10.00      # Daily spending limit
 │         │                │                   │          │
 │         └────────────────┼───────────────────┘          │
 │                          ▼                              │
-│               ┌──────────────────┐                      │
-│               │  x402 Payment    │                      │
-│               │  (Auto-handled)  │                      │
-│               └────────┬─────────┘                      │
-│                        │                                │
-└────────────────────────┼────────────────────────────────┘
+│  ┌─────────────────────────────────────────────────┐   │
+│  │              x402 Payment Layer                  │   │
+│  │  ┌─────┐ ┌───────┐ ┌─────┐ ┌────┐ ┌────────┐   │   │
+│  │  │Base │ │Arbitrum│ │ BSC │ │ ETH│ │ Solana │   │   │
+│  │  └──┬──┘ └───┬───┘ └──┬──┘ └─┬──┘ └───┬────┘   │   │
+│  │     └────────┴────────┴──────┴────────┘         │   │
+│  └─────────────────────────────────────────────────┘   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+                         │
                          ▼
               ┌──────────────────┐
-              │  USDC on Base    │
-              │  (or other nets) │
+              │   USDC / USDT    │
+              │  on any chain    │
               └──────────────────┘
 ```
 
