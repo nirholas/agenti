@@ -1,0 +1,217 @@
+# X402 Local Development Docker Compose
+# 
+# Usage:
+#   docker compose up -d        # Start all services
+#   docker compose logs -f      # View logs
+#   docker compose down         # Stop all services
+#
+# Services:
+#   - facilitator: Payment facilitator server (port 3002)
+#   - postgres: Database for persistence (port 5432)
+#   - redis: Cache layer (port 6379)
+#   - prometheus: Metrics collection (port 9090)
+#   - grafana: Dashboards (port 3000)
+
+version: '3.8'
+
+services:
+  # ============================================
+  # Core Services
+  # ============================================
+  
+  facilitator:
+    build:
+      context: ./facilitator
+      dockerfile: Dockerfile
+    container_name: x402-facilitator
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - HOST=0.0.0.0
+      - NETWORK=arbitrum-sepolia
+      - RPC_URL=${RPC_URL:-https://sepolia-rollup.arbitrum.io/rpc}
+      - PRIVATE_KEY=${PRIVATE_KEY:-}
+      - RECIPIENT_ADDRESS=${RECIPIENT_ADDRESS:-0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0}
+      - CORS_ORIGINS=*
+      - RATE_LIMIT_WINDOW_MS=60000
+      - RATE_LIMIT_MAX_REQUESTS=1000
+      - LOG_LEVEL=debug
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - x402-network
+    volumes:
+      - facilitator-logs:/app/logs
+
+  # ============================================
+  # Data Stores
+  # ============================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: x402-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=x402
+      - POSTGRES_PASSWORD=x402_dev_password
+      - POSTGRES_DB=x402
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U x402"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - x402-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: x402-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - x402-network
+
+  # ============================================
+  # Monitoring Stack
+  # ============================================
+
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: x402-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - x402-network
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    container_name: x402-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - x402-network
+
+  # ============================================
+  # Development Tools
+  # ============================================
+
+  # Anvil - Local Ethereum node for testing
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:latest
+    container_name: x402-anvil
+    ports:
+      - "8545:8545"
+    entrypoint: ["anvil", "--host", "0.0.0.0", "--chain-id", "31337", "--block-time", "2"]
+    healthcheck:
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://localhost:8545"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - x402-network
+    profiles:
+      - dev
+
+  # Adminer - Database management UI
+  adminer:
+    image: adminer:4
+    container_name: x402-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - x402-network
+    profiles:
+      - dev
+
+  # Redis Commander - Redis management UI
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: x402-redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - x402-network
+    profiles:
+      - dev
+
+# ============================================
+# Networks
+# ============================================
+
+networks:
+  x402-network:
+    name: x402-network
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+
+volumes:
+  postgres-data:
+    name: x402-postgres-data
+  redis-data:
+    name: x402-redis-data
+  prometheus-data:
+    name: x402-prometheus-data
+  grafana-data:
+    name: x402-grafana-data
+  facilitator-logs:
+    name: x402-facilitator-logs

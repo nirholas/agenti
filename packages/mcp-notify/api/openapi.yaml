@@ -1,0 +1,680 @@
+openapi: 3.0.3
+info:
+  title: MCP Notify API
+  description: |
+    Real-time monitoring and notifications for the MCP Registry ecosystem.
+    
+    MCP Notify monitors the official MCP Registry for changes and delivers 
+    notifications through multiple channels including Discord, Slack, Email, and Webhooks.
+  version: 1.0.0
+  contact:
+    name: MCP Notify
+    url: https://github.com/nirholas/mcp-notify
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://watch.mcpregistry.dev/api/v1
+    description: Production server
+  - url: http://localhost:8080/api/v1
+    description: Local development
+
+tags:
+  - name: subscriptions
+    description: Manage notification subscriptions
+  - name: changes
+    description: View registry changes
+  - name: servers
+    description: Query MCP servers
+  - name: feeds
+    description: RSS and Atom feeds
+  - name: health
+    description: Health and metrics
+
+paths:
+  /subscriptions:
+    post:
+      summary: Create subscription
+      description: Create a new subscription to receive notifications about registry changes
+      operationId: createSubscription
+      tags: [subscriptions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequest'
+      responses:
+        '201':
+          description: Subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    
+    get:
+      summary: List subscriptions
+      description: List all subscriptions (requires authentication)
+      operationId: listSubscriptions
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscriptions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Subscription'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /subscriptions/{id}:
+    parameters:
+      - $ref: '#/components/parameters/subscriptionId'
+    
+    get:
+      summary: Get subscription
+      operationId: getSubscription
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Subscription details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      summary: Update subscription
+      operationId: updateSubscription
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriptionRequest'
+      responses:
+        '200':
+          description: Subscription updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      summary: Delete subscription
+      operationId: deleteSubscription
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '204':
+          description: Subscription deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /subscriptions/{id}/pause:
+    post:
+      summary: Pause subscription
+      operationId: pauseSubscription
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/subscriptionId'
+      responses:
+        '200':
+          description: Subscription paused
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+  /subscriptions/{id}/resume:
+    post:
+      summary: Resume subscription
+      operationId: resumeSubscription
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/subscriptionId'
+      responses:
+        '200':
+          description: Subscription resumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+  /subscriptions/{id}/test:
+    post:
+      summary: Test subscription
+      description: Send a test notification to verify channel configuration
+      operationId: testSubscription
+      tags: [subscriptions]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/subscriptionId'
+      responses:
+        '200':
+          description: Test notification sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "test notification sent"
+
+  /changes:
+    get:
+      summary: List changes
+      description: Get recent changes from the MCP Registry
+      operationId: listChanges
+      tags: [changes]
+      parameters:
+        - name: since
+          in: query
+          description: Return changes since this timestamp
+          schema:
+            type: string
+            format: date-time
+        - name: server
+          in: query
+          description: Filter by server name
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by change type
+          schema:
+            type: string
+            enum: [new, updated, removed]
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: List of changes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangesResponse'
+
+  /changes/{id}:
+    get:
+      summary: Get change details
+      operationId: getChange
+      tags: [changes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Change details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Change'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /servers:
+    get:
+      summary: List servers
+      description: List all servers from the MCP Registry
+      operationId: listServers
+      tags: [servers]
+      responses:
+        '200':
+          description: List of servers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  servers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Server'
+                  count:
+                    type: integer
+
+  /servers/{name}:
+    get:
+      summary: Get server details
+      operationId: getServer
+      tags: [servers]
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Server details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /feeds/rss:
+    get:
+      summary: RSS feed
+      description: Get an RSS feed of recent changes
+      operationId: getRSSFeed
+      tags: [feeds]
+      parameters:
+        - name: namespace
+          in: query
+          description: Filter by namespace pattern
+          schema:
+            type: string
+        - name: keywords
+          in: query
+          description: Filter by keywords
+          schema:
+            type: string
+      responses:
+        '200':
+          description: RSS feed
+          content:
+            application/rss+xml:
+              schema:
+                type: string
+
+  /feeds/atom:
+    get:
+      summary: Atom feed
+      description: Get an Atom feed of recent changes
+      operationId: getAtomFeed
+      tags: [feeds]
+      responses:
+        '200':
+          description: Atom feed
+          content:
+            application/atom+xml:
+              schema:
+                type: string
+
+  /stats:
+    get:
+      summary: Service statistics
+      operationId: getStats
+      tags: [health]
+      responses:
+        '200':
+          description: Service statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    subscriptionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 50
+        maximum: 100
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        default: 0
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    CreateSubscriptionRequest:
+      type: object
+      required: [name, filters, channels]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        filters:
+          $ref: '#/components/schemas/SubscriptionFilter'
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelRequest'
+          minItems: 1
+          maxItems: 10
+
+    UpdateSubscriptionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        filters:
+          $ref: '#/components/schemas/SubscriptionFilter'
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelRequest'
+
+    SubscriptionFilter:
+      type: object
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: Namespace patterns (glob-style)
+        keywords:
+          type: array
+          items:
+            type: string
+        servers:
+          type: array
+          items:
+            type: string
+        change_types:
+          type: array
+          items:
+            type: string
+            enum: [new, updated, removed]
+        package_types:
+          type: array
+          items:
+            type: string
+
+    ChannelRequest:
+      type: object
+      required: [type, config]
+      properties:
+        type:
+          type: string
+          enum: [discord, slack, email, webhook]
+        config:
+          $ref: '#/components/schemas/ChannelConfig'
+
+    ChannelConfig:
+      type: object
+      properties:
+        webhook_url:
+          type: string
+          description: Discord or Slack webhook URL
+        username:
+          type: string
+        avatar_url:
+          type: string
+        email:
+          type: string
+          format: email
+        digest:
+          type: string
+          enum: [immediate, hourly, daily, weekly]
+        url:
+          type: string
+          description: Generic webhook URL
+        method:
+          type: string
+          enum: [POST, PUT]
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        secret:
+          type: string
+          description: HMAC secret for webhook signing
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        filters:
+          $ref: '#/components/schemas/SubscriptionFilter'
+        channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Channel'
+        status:
+          type: string
+          enum: [active, paused, expired]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        last_notified:
+          type: string
+          format: date-time
+
+    SubscriptionResponse:
+      allOf:
+        - $ref: '#/components/schemas/Subscription'
+        - type: object
+          properties:
+            api_key:
+              type: string
+              description: API key (only returned on creation)
+
+    Channel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        config:
+          $ref: '#/components/schemas/ChannelConfig'
+        enabled:
+          type: boolean
+        success_count:
+          type: integer
+        failure_count:
+          type: integer
+        last_success:
+          type: string
+          format: date-time
+        last_failure:
+          type: string
+          format: date-time
+
+    Change:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        server_name:
+          type: string
+        change_type:
+          type: string
+          enum: [new, updated, removed]
+        previous_version:
+          type: string
+        new_version:
+          type: string
+        field_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldChange'
+        server:
+          $ref: '#/components/schemas/Server'
+        detected_at:
+          type: string
+          format: date-time
+
+    FieldChange:
+      type: object
+      properties:
+        field:
+          type: string
+        old_value: {}
+        new_value: {}
+
+    ChangesResponse:
+      type: object
+      properties:
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Change'
+        next_cursor:
+          type: string
+        total_count:
+          type: integer
+
+    Server:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        repository:
+          type: object
+          properties:
+            url:
+              type: string
+            source:
+              type: string
+        version_detail:
+          type: object
+          properties:
+            version:
+              type: string
+            is_latest:
+              type: boolean
+        packages:
+          type: array
+          items:
+            type: object
+            properties:
+              registry_type:
+                type: string
+              name:
+                type: string
+              version:
+                type: string
+              url:
+                type: string
+        remotes:
+          type: array
+          items:
+            type: object
+            properties:
+              transport_type:
+                type: string
+              url:
+                type: string
+
+    StatsResponse:
+      type: object
+      properties:
+        total_subscriptions:
+          type: integer
+        active_subscriptions:
+          type: integer
+        total_changes:
+          type: integer
+        changes_last_24h:
+          type: integer
+        total_notifications:
+          type: integer
+        last_poll_time:
+          type: string
+          format: date-time
+        server_count:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties:
+            type: string

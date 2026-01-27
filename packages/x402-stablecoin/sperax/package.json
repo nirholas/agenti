@@ -1,0 +1,35 @@
+{
+  "name": "@x402/sperax-mcp",
+  "version": "1.0.0",
+  "description": "MCP tools for X402 payments with Sperax USDs on Arbitrum",
+  "main": "dist/index.js",
+  "bin": {
+    "sperax-x402-mcp": "dist/tools/mcp-server.js"
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.ts services/sperax.ts tools/x402-tools.ts tools/mcp-server.ts --format cjs,esm --dts",
+    "dev": "tsup index.ts services/sperax.ts tools/x402-tools.ts --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "ethers": "^6.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "x402",
+    "sperax",
+    "usds",
+    "ai-payments",
+    "arbitrum"
+  ]
+}

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethereum Wallet Toolkit - Offline</title>
+<style>
+:root { --bg: #000; --fg: #fff; --border: #333; --muted: #888; --warn: #fa0; }
+@media (prefers-color-scheme: light) { :root { --bg: #fff; --fg: #000; --border: #ccc; --muted: #666; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace; background: var(--bg); color: var(--fg); min-height: 100vh; padding: 1rem; line-height: 1.5; }
+.container { max-width: 900px; margin: 0 auto; }
+h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+.subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+.security-banner { background: var(--bg); border: 2px solid var(--fg); padding: 1rem; margin-bottom: 1rem; font-size: 0.8rem; }
+.security-banner .status { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+.security-banner .check { display: flex; align-items: center; gap: 0.25rem; }
+.security-banner .check.pass::before { content: '✓'; color: #0f0; }
+.security-banner .check.fail::before { content: '✗'; color: #f00; }
+.security-banner .check.pending::before { content: '○'; color: var(--muted); }
+.tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.tab { background: transparent; border: 1px solid var(--border); color: var(--fg); padding: 0.5rem 1rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+.tab:hover { background: var(--fg); color: var(--bg); }
+.tab.active { background: var(--fg); color: var(--bg); }
+.panel { display: none; padding: 1rem 0; }
+.panel.active { display: block; }
+.section { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid var(--border); }
+.section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+.form-group { margin-bottom: 1rem; }
+label { display: block; font-size: 0.85rem; margin-bottom: 0.25rem; color: var(--muted); }
+input, textarea, select { width: 100%; padding: 0.75rem; background: var(--bg); border: 1px solid var(--border); color: var(--fg); font-family: monospace; font-size: 0.9rem; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--fg); }
+textarea { min-height: 100px; resize: vertical; }
+.btn { display: inline-block; padding: 0.75rem 1.5rem; background: var(--fg); color: var(--bg); border: none; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.8; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: var(--fg); border: 1px solid var(--fg); }
+.btn-small { padding: 0.5rem 1rem; font-size: 0.8rem; }
+.result { margin-top: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--bg); }
+.result-title { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; text-transform: uppercase; }
+.result-value { font-family: monospace; word-break: break-all; margin-bottom: 1rem; }
+.result-value:last-child { margin-bottom: 0; }
+.result-value.blurred { filter: blur(5px); cursor: pointer; transition: filter 0.2s; user-select: none; }
+.result-value.blurred:hover { filter: blur(3px); }
+.result-value.blurred.revealed { filter: none; user-select: text; }
+.error { color: #f00; }
+.success { color: #0f0; }
+.warning { color: var(--warn); }
+.row { display: flex; gap: 1rem; flex-wrap: wrap; }
+.row > * { flex: 1; min-width: 200px; }
+.checkbox-group { display: flex; align-items: center; gap: 0.5rem; }
+.checkbox-group input { width: auto; }
+.hidden { display: none; }
+.key-warning { background: var(--bg); border: 1px solid var(--warn); color: var(--warn); padding: 0.5rem; margin-top: 0.5rem; font-size: 0.75rem; }
+@media (max-width: 600px) { .tabs { gap: 0.5rem; } .tab { padding: 0.4rem 0.6rem; font-size: 0.75rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Ethereum Wallet Toolkit</h1>
+<p class="subtitle">Offline • Official ethereumjs Libraries • Air-gap Recommended</p>
+
+<div class="security-banner">
+<strong>Security Verification</strong>
+<div class="status">
+<span class="check pending" id="check-offline">Offline Status</span>
+<span class="check pending" id="check-crypto">Crypto API</span>
+<span class="check pending" id="check-vectors">Test Vectors</span>
+<span class="check pending" id="check-entropy">Entropy Quality</span>
+</div>
+<div style="margin-top:0.5rem;font-size:0.75rem;color:var(--muted);">
+File Hash: <code id="file-hash">Calculating...</code>
+</div>
+</div>
+
+<div class="tabs">
+<button class="tab active" data-tab="generate">Generate</button>
+<button class="tab" data-tab="mnemonic">Mnemonic</button>
+<button class="tab" data-tab="vanity">Vanity</button>
+<button class="tab" data-tab="sign">Sign</button>
+<button class="tab" data-tab="verify">Verify</button>
+<button class="tab" data-tab="validate">Validate</button>
+<button class="tab" data-tab="keystore">Keystore</button>
+<button class="tab" data-tab="transaction">Transaction</button>
+<button class="tab" data-tab="typed">EIP-712</button>
+</div>
+
+<!-- Generate Panel -->
+<div class="panel active" id="panel-generate">
+<div class="section">
+<div class="section-title">Generate New Wallet</div>
+<p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">Uses cryptographically secure random number generator (CSPRNG). For maximum security, use on an air-gapped machine.</p>
+<div class="checkbox-group" style="margin-bottom:1rem;">
+<input type="checkbox" id="gen-verify" checked>
+<label for="gen-verify">Double-verify derivation (recommended)</label>
+</div>
+<button class="btn" onclick="generateWallet()">Generate Random Wallet</button>
+<div id="generate-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Import Private Key</div>
+<div class="form-group">
+<label>Private Key (with or without 0x prefix)</label>
+<input type="password" id="import-key" placeholder="Enter private key...">
+</div>
+<button class="btn" onclick="importWallet()">Import</button>
+<div id="import-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Mnemonic Panel -->
+<div class="panel" id="panel-mnemonic">
+<div class="section">
+<div class="section-title">Generate New Mnemonic</div>
+<div class="form-group">
+<label>Word Count</label>
+<select id="mnemonic-words">
+<option value="12">12 words</option>
+<option value="15">15 words</option>
+<option value="18">18 words</option>
+<option value="21">21 words</option>
+<option value="24" selected>24 words</option>
+</select>
+</div>
+<button class="btn" onclick="generateMnemonic()">Generate Mnemonic</button>
+<div id="mnemonic-generate-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Recover from Mnemonic</div>
+<div class="form-group">
+<label>Mnemonic Phrase</label>
+<textarea id="mnemonic-phrase" placeholder="Enter 12, 15, 18, 21, or 24 word mnemonic..."></textarea>
+</div>
+<div class="form-group">
+<label>Passphrase (BIP39 - HIGHLY RECOMMENDED for high-value wallets)</label>
+<input type="password" id="mnemonic-passphrase" placeholder="Adds extra security + plausible deniability">
+<div style="font-size:0.75rem;color:var(--warn);margin-top:0.25rem;">⚠ A passphrase creates a completely different wallet. Same mnemonic + different passphrase = different addresses. Provides plausible deniability.</div>
+</div>
+<div class="row">
+<div class="form-group">
+<label>Derivation Path</label>
+<input type="text" id="mnemonic-path" value="m/44'/60'/0'/0" placeholder="m/44'/60'/0'/0">
+</div>
+<div class="form-group">
+<label>Number of Accounts</label>
+<input type="number" id="mnemonic-count" value="5" min="1" max="100">
+</div>
+</div>
+<button class="btn" onclick="recoverMnemonic()">Recover Accounts</button>
+<div id="mnemonic-recover-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Vanity Panel -->
+<div class="panel" id="panel-vanity">
+<div class="section">
+<div class="section-title">Vanity Address Generator</div>
+<p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem;">Generate addresses matching a pattern. Longer patterns take exponentially longer.</p>
+<div class="row">
+<div class="form-group">
+<label>Prefix (after 0x)</label>
+<input type="text" id="vanity-prefix" placeholder="e.g., dead" maxlength="10">
+</div>
+<div class="form-group">
+<label>Suffix</label>
+<input type="text" id="vanity-suffix" placeholder="e.g., beef" maxlength="10">
+</div>
+</div>
+<div class="row">
+<div class="form-group">
+<label>Contains</label>
+<input type="text" id="vanity-contains" placeholder="Address must contain this">
+</div>
+<div class="form-group">
+<label>Regex Pattern</label>
+<input type="text" id="vanity-regex" placeholder="e.g., ^dead.*beef$">
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;margin:1rem 0;">
+<div class="checkbox-group"><input type="checkbox" id="vanity-case"><label for="vanity-case">Case-sensitive (EIP-55)</label></div>
+<div class="checkbox-group"><input type="checkbox" id="vanity-letters"><label for="vanity-letters">Letters only (a-f)</label></div>
+<div class="checkbox-group"><input type="checkbox" id="vanity-numbers"><label for="vanity-numbers">Numbers only (0-9)</label></div>
+<div class="checkbox-group"><input type="checkbox" id="vanity-mirror"><label for="vanity-mirror">Mirror/Palindrome</label></div>
+<div class="checkbox-group"><input type="checkbox" id="vanity-doubles"><label for="vanity-doubles">Leading doubles (aa, bb...)</label></div>
+<div class="checkbox-group"><input type="checkbox" id="vanity-zeros"><label for="vanity-zeros">Many zeros (8+)</label></div>
+<div class="checkbox-group"><input type="checkbox" id="vanity-contract"><label for="vanity-contract">Contract address</label></div>
+</div>
+<div class="row">
+<div class="form-group">
+<label>Leading Character</label>
+<input type="text" id="vanity-leading" placeholder="e.g., 0" maxlength="1">
+</div>
+<div class="form-group">
+<label>Leading Count</label>
+<input type="number" id="vanity-leading-count" value="4" min="1" max="20">
+</div>
+</div>
+<div class="row">
+<div class="form-group">
+<label>Find Count</label>
+<input type="number" id="vanity-count" value="1" min="1" max="100">
+</div>
+<div class="form-group">
+<label>Estimated Difficulty</label>
+<input type="text" id="vanity-difficulty" readonly placeholder="Enter criteria above">
+</div>
+</div>
+<button class="btn" onclick="startVanity()">Start Search</button>
+<button class="btn btn-secondary" onclick="stopVanity()">Stop</button>
+<button class="btn btn-secondary" onclick="exportVanityResults()" id="vanity-export-btn" disabled>Export Results</button>
+<div id="vanity-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Contract Address Calculator</div>
+<div class="form-group">
+<label>Deployer Address</label>
+<input type="text" id="contract-deployer" placeholder="0x...">
+</div>
+<div class="form-group">
+<label>Nonce</label>
+<input type="number" id="contract-nonce" value="0" min="0">
+</div>
+<button class="btn" onclick="calculateContract()">Calculate</button>
+<div id="contract-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Sign Panel -->
+<div class="panel" id="panel-sign">
+<div class="section">
+<div class="section-title">Sign Message</div>
+<div class="form-group">
+<label>Message</label>
+<textarea id="sign-message" placeholder="Enter message to sign..."></textarea>
+</div>
+<div class="form-group">
+<label>Private Key</label>
+<input type="password" id="sign-key" placeholder="Private key to sign with...">
+</div>
+<div class="checkbox-group" style="margin-bottom: 1rem;">
+<input type="checkbox" id="sign-eth-prefix" checked>
+<label for="sign-eth-prefix" style="margin: 0;">Use Ethereum Signed Message prefix (EIP-191)</label>
+</div>
+<button class="btn" onclick="signMessage()">Sign Message</button>
+<div id="sign-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Verify Panel -->
+<div class="panel" id="panel-verify">
+<div class="section">
+<div class="section-title">Verify Signature</div>
+<div class="form-group">
+<label>Message</label>
+<textarea id="verify-message" placeholder="Enter the original message..."></textarea>
+</div>
+<div class="form-group">
+<label>Signature</label>
+<input type="text" id="verify-signature" placeholder="0x... signature">
+</div>
+<div class="form-group">
+<label>Expected Address (optional)</label>
+<input type="text" id="verify-address" placeholder="0x... address to verify against">
+</div>
+<div class="checkbox-group" style="margin-bottom: 1rem;">
+<input type="checkbox" id="verify-eth-prefix" checked>
+<label for="verify-eth-prefix" style="margin: 0;">Message has Ethereum prefix (EIP-191)</label>
+</div>
+<button class="btn" onclick="verifySignature()">Verify</button>
+<div id="verify-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Verify Address/Key Pair</div>
+<div class="form-group">
+<label>Address</label>
+<input type="text" id="pair-address" placeholder="0x...">
+</div>
+<div class="form-group">
+<label>Private Key</label>
+<input type="password" id="pair-key" placeholder="Private key...">
+</div>
+<button class="btn" onclick="verifyPair()">Verify Pair</button>
+<div id="pair-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Validate Panel -->
+<div class="panel" id="panel-validate">
+<div class="section">
+<div class="section-title">Validate Address</div>
+<div class="form-group">
+<label>Address</label>
+<input type="text" id="validate-address" placeholder="0x...">
+</div>
+<button class="btn" onclick="validateAddress()">Validate</button>
+<div id="validate-address-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Validate Private Key</div>
+<div class="form-group">
+<label>Private Key</label>
+<input type="password" id="validate-key" placeholder="Private key...">
+</div>
+<button class="btn" onclick="validateKey()">Validate</button>
+<div id="validate-key-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Checksum Address</div>
+<div class="form-group">
+<label>Address</label>
+<input type="text" id="checksum-address" placeholder="0x...">
+</div>
+<button class="btn" onclick="checksumAddress()">Convert to Checksum</button>
+<div id="checksum-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Keystore Panel -->
+<div class="panel" id="panel-keystore">
+<div class="section">
+<div class="section-title">Encrypt to Keystore (V3)</div>
+<div class="form-group">
+<label>Private Key</label>
+<input type="password" id="keystore-encrypt-key" placeholder="Private key to encrypt...">
+</div>
+<div class="form-group">
+<label>Password</label>
+<input type="password" id="keystore-encrypt-password" placeholder="Encryption password (min 8 chars)...">
+</div>
+<div class="form-group">
+<label>Confirm Password</label>
+<input type="password" id="keystore-encrypt-confirm" placeholder="Confirm password...">
+</div>
+<button class="btn" onclick="encryptKeystore()">Encrypt</button>
+<div id="keystore-encrypt-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Decrypt Keystore</div>
+<div class="form-group">
+<label>Keystore JSON</label>
+<textarea id="keystore-decrypt-json" placeholder="Paste keystore JSON..."></textarea>
+</div>
+<div class="form-group">
+<label>Password</label>
+<input type="password" id="keystore-decrypt-password" placeholder="Decryption password...">
+</div>
+<button class="btn" onclick="decryptKeystore()">Decrypt</button>
+<div id="keystore-decrypt-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- Transaction Panel -->
+<div class="panel" id="panel-transaction">
+<div class="section">
+<div class="section-title">Sign Transaction</div>
+<div class="row">
+<div class="form-group">
+<label>To Address</label>
+<input type="text" id="tx-to" placeholder="0x...">
+</div>
+<div class="form-group">
+<label>Value (wei)</label>
+<input type="text" id="tx-value" placeholder="0" value="0">
+</div>
+</div>
+<div class="row">
+<div class="form-group">
+<label>Nonce</label>
+<input type="number" id="tx-nonce" value="0" min="0">
+</div>
+<div class="form-group">
+<label>Gas Limit</label>
+<input type="number" id="tx-gas" value="21000" min="21000">
+</div>
+<div class="form-group">
+<label>Chain ID</label>
+<input type="number" id="tx-chainid" value="1" min="1">
+</div>
+</div>
+<div class="row">
+<div class="form-group">
+<label>Gas Price (wei) - Legacy</label>
+<input type="text" id="tx-gasprice" placeholder="e.g., 20000000000">
+</div>
+<div class="form-group">
+<label>Max Fee (wei) - EIP-1559</label>
+<input type="text" id="tx-maxfee" placeholder="e.g., 30000000000">
+</div>
+<div class="form-group">
+<label>Priority Fee (wei)</label>
+<input type="text" id="tx-priorityfee" placeholder="e.g., 2000000000">
+</div>
+</div>
+<div class="form-group">
+<label>Data (hex)</label>
+<input type="text" id="tx-data" placeholder="0x" value="0x">
+</div>
+<div class="form-group">
+<label>Private Key</label>
+<input type="password" id="tx-key" placeholder="Private key to sign with...">
+</div>
+<button class="btn" onclick="signTransaction()">Sign Transaction</button>
+<div id="tx-result" class="result hidden"></div>
+</div>
+</div>
+
+<!-- EIP-712 Panel -->
+<div class="panel" id="panel-typed">
+<div class="section">
+<div class="section-title">Sign Typed Data (EIP-712)</div>
+<div class="form-group">
+<label>Typed Data JSON</label>
+<textarea id="typed-data" rows="10" placeholder='{"types":{"EIP712Domain":[...],"Person":[...]},"primaryType":"Person","domain":{...},"message":{...}}'></textarea>
+</div>
+<div class="form-group">
+<label>Private Key</label>
+<input type="password" id="typed-key" placeholder="Private key to sign with...">
+</div>
+<button class="btn" onclick="signTypedData()">Sign</button>
+<div id="typed-sign-result" class="result hidden"></div>
+</div>
+<div class="section">
+<div class="section-title">Verify Typed Data Signature</div>
+<div class="form-group">
+<label>Typed Data JSON</label>
+<textarea id="typed-verify-data" rows="10" placeholder="Same typed data JSON used for signing..."></textarea>
+</div>
+<div class="form-group">
+<label>Signature</label>
+<input type="text" id="typed-verify-sig" placeholder="0x... signature">
+</div>
+<div class="form-group">
+<label>Expected Address (optional)</label>
+<input type="text" id="typed-verify-address" placeholder="0x...">
+</div>
+<button class="btn" onclick="verifyTypedData()">Verify</button>
+<div id="typed-verify-result" class="result hidden"></div>
+</div>
+</div>
+</div>
+
+<script>
+/* BUNDLED_WALLET_CODE */
+</script>
+<script>
+const W = window.EthWallet;
+
+// ============ SECURITY VERIFICATION ============
+// Known test vector: this private key MUST derive to this address
+const TEST_VECTOR = {
+    privateKey: '0x4c0883a69102937d6231471b5dbb6204fe512961708279f3d5b4e5c3e2c0e9d5',
+    expectedAddress: '0xAa616Ad3E5C2B52e0770a329E98e1432FcEdBdDc'
+};
+
+async function runSecurityChecks() {
+    const checks = {
+        offline: false,
+        crypto: false,
+        vectors: false,
+        entropy: false
+    };
+    
+    // 1. Check offline status
+    checks.offline = !navigator.onLine;
+    updateCheck('check-offline', checks.offline, checks.offline ? 'Offline ✓' : 'ONLINE - Disconnect recommended');
+    
+    // 2. Check crypto API availability
+    try {
+        checks.crypto = !!(window.crypto && window.crypto.getRandomValues);
+        updateCheck('check-crypto', checks.crypto, checks.crypto ? 'Crypto API ✓' : 'No CSPRNG!');
+    } catch (e) {
+        updateCheck('check-crypto', false, 'Crypto Error');
+    }
+    
+    // 3. Verify test vectors
+    try {
+        const wallet = W.privateKeyToWallet(TEST_VECTOR.privateKey);
+        checks.vectors = wallet.address.toLowerCase() === TEST_VECTOR.expectedAddress.toLowerCase();
+        updateCheck('check-vectors', checks.vectors, checks.vectors ? 'Test Vectors ✓' : 'VECTOR MISMATCH!');
+    } catch (e) {
+        updateCheck('check-vectors', false, 'Vector Error: ' + e.message);
+    }
+    
+    // 4. Entropy quality test (basic)
+    try {
+        const bytes1 = new Uint8Array(32);
+        const bytes2 = new Uint8Array(32);
+        crypto.getRandomValues(bytes1);
+        crypto.getRandomValues(bytes2);
+        const same = bytes1.every((b, i) => b === bytes2[i]);
+        const unique = new Set(bytes1).size;
+        checks.entropy = !same && unique >= 8;
+        updateCheck('check-entropy', checks.entropy, checks.entropy ? 'Entropy ✓' : 'Poor Entropy!');
+    } catch (e) {
+        updateCheck('check-entropy', false, 'Entropy Error');
+    }
+    
+    calculateFileHash();
+}
+
+function updateCheck(id, pass, text) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.classList.remove('pending', 'pass', 'fail');
+        el.classList.add(pass ? 'pass' : 'fail');
+        el.textContent = text;
+    }
+}
+
+async function calculateFileHash() {
+    try {
+        const html = document.documentElement.outerHTML;
+        const encoder = new TextEncoder();
+        const data = encoder.encode(html);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        document.getElementById('file-hash').textContent = hashHex.slice(0, 16) + '...' + hashHex.slice(-16);
+        document.getElementById('file-hash').title = 'Full SHA-256: ' + hashHex;
+    } catch (e) {
+        document.getElementById('file-hash').textContent = 'Could not calculate';
+    }
+}
+
+setTimeout(runSecurityChecks, 100);
+window.addEventListener('online', () => updateCheck('check-offline', false, 'ONLINE - Disconnect recommended'));
+window.addEventListener('offline', () => updateCheck('check-offline', true, 'Offline ✓'));
+// ============ END SECURITY VERIFICATION ============
+
+// Tab navigation
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+function field(title, value) {
+    return '<div class="result-title">' + title + '</div><div class="result-value">' + value + '</div>';
+}
+
+function showResult(id, html) {
+    const el = document.getElementById(id);
+    el.innerHTML = html;
+    el.classList.remove('hidden');
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert('Copied!');
+    });
+}
+
+// Generate Wallet with double-derivation verification
+function generateWallet() {
+    try {
+        const wallet = W.generateWallet();
+        const verify = document.getElementById('gen-verify').checked;
+        
+        if (verify) {
+            const wallet2 = W.privateKeyToWallet(wallet.privateKey);
+            if (wallet.address !== wallet2.address) {
+                throw new Error('CRITICAL: Double-derivation verification failed! Do not use this wallet.');
+            }
+        }
+        
+        const html = field('Address', wallet.address) + 
+            '<div class="result-title">PRIVATE KEY</div>' +
+            '<div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal">' + wallet.privateKey + '</div>' +
+            '<div class="key-warning">⚠ Private key is blurred for security. Click to reveal. Never share this key.</div>' +
+            field('Public Key', wallet.publicKey) +
+            (verify ? '<div class="success" style="margin-top:0.5rem;">✓ Double-derivation verified</div>' : '');
+        showResult('generate-result', html);
+    } catch (e) { showResult('generate-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Import Wallet
+function importWallet() {
+    try {
+        const key = document.getElementById('import-key').value.trim();
+        if (!W.validatePrivateKey(key)) throw new Error('Invalid private key');
+        const wallet = W.privateKeyToWallet(key);
+        const html = field('Address', wallet.address) + 
+            '<div class="result-title">PRIVATE KEY</div>' +
+            '<div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal">' + wallet.privateKey + '</div>' +
+            '<div class="key-warning">⚠ Private key is blurred for security. Click to reveal.</div>' +
+            field('Public Key', wallet.publicKey);
+        showResult('import-result', html);
+        document.getElementById('import-key').value = '';
+    } catch (e) { showResult('import-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Generate Mnemonic
+function generateMnemonic() {
+    try {
+        const count = parseInt(document.getElementById('mnemonic-words').value);
+        const result = W.createMnemonic(count);
+        const html = '<div class="result-title">MNEMONIC</div>' +
+            '<div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal">' + result.mnemonic + '</div>' +
+            '<div class="key-warning">⚠ Mnemonic is blurred for security. This is the master backup - store securely!</div>' +
+            field('Address', result.address) + 
+            '<div class="result-title">PRIVATE KEY</div>' +
+            '<div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal">' + result.privateKey + '</div>' +
+            field('Path', result.path);
+        showResult('mnemonic-generate-result', html);
+    } catch (e) { showResult('mnemonic-generate-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Recover Mnemonic
+function recoverMnemonic() {
+    try {
+        const mnemonic = document.getElementById('mnemonic-phrase').value.trim();
+        const passphrase = document.getElementById('mnemonic-passphrase').value;
+        const path = document.getElementById('mnemonic-path').value.trim();
+        const count = parseInt(document.getElementById('mnemonic-count').value) || 5;
+        const accounts = W.deriveAccounts(mnemonic, path, count, passphrase);
+        let html = '';
+        accounts.forEach((a, i) => {
+            html += '<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">';
+            html += field('Account ' + i, '');
+            html += field('Path', a.path);
+            html += field('Address', a.address);
+            html += '<div class="result-title">PRIVATE KEY</div>';
+            html += '<div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')" title="Click to reveal">' + a.privateKey + '</div>';
+            html += '</div>';
+        });
+        showResult('mnemonic-recover-result', html);
+    } catch (e) { showResult('mnemonic-recover-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Vanity
+let vanityRunning = false;
+let vanityResults = [];
+
+function isValidHex(s) { return /^[0-9a-fA-F]*$/.test(s); }
+
+function checkVanityMatch(address, opts) {
+    let addr = address.slice(2);
+    const addrCheck = opts.caseSensitive ? addr : addr.toLowerCase();
+    
+    if (opts.prefix) {
+        const p = opts.caseSensitive ? opts.prefix : opts.prefix.toLowerCase();
+        if (!addrCheck.startsWith(p)) return false;
+    }
+    if (opts.suffix) {
+        const s = opts.caseSensitive ? opts.suffix : opts.suffix.toLowerCase();
+        if (!addrCheck.endsWith(s)) return false;
+    }
+    if (opts.contains) {
+        const c = opts.caseSensitive ? opts.contains : opts.contains.toLowerCase();
+        if (!addrCheck.includes(c)) return false;
+    }
+    if (opts.letters && !/^[a-f]+$/i.test(addr)) return false;
+    if (opts.numbers && !/^[0-9]+$/.test(addr)) return false;
+    if (opts.mirror) {
+        const half = Math.floor(addr.length / 2);
+        if (addrCheck.slice(0, half) !== addrCheck.slice(-half).split('').reverse().join('')) return false;
+    }
+    if (opts.leading && opts.leadingCount > 0) {
+        const expected = (opts.caseSensitive ? opts.leading : opts.leading.toLowerCase()).repeat(opts.leadingCount);
+        if (!addrCheck.startsWith(expected)) return false;
+    }
+    if (opts.doubles) {
+        let count = 0;
+        for (let i = 0; i < addrCheck.length - 1; i += 2) {
+            if (addrCheck[i] === addrCheck[i + 1]) count++; else break;
+        }
+        if (count < 2) return false;
+    }
+    if (opts.zeros && (addrCheck.match(/0/g) || []).length < 8) return false;
+    if (opts.regex) {
+        try { if (!new RegExp(opts.regex, opts.caseSensitive ? '' : 'i').test(addrCheck)) return false; }
+        catch { return false; }
+    }
+    return true;
+}
+
+function estimateDifficulty(opts) {
+    let chars = 0;
+    if (opts.prefix) chars += opts.prefix.length;
+    if (opts.suffix) chars += opts.suffix.length;
+    if (opts.contains) chars += opts.contains.length;
+    if (opts.leading && opts.leadingCount) chars = Math.max(chars, opts.leadingCount);
+    if (opts.doubles) chars = Math.max(chars, 4);
+    if (opts.zeros) chars = Math.max(chars, 2);
+    if (opts.letters) chars = Math.max(chars, 8);
+    if (opts.numbers) chars = Math.max(chars, 8);
+    if (opts.mirror) chars = Math.max(chars, 10);
+    if (chars === 0) return null;
+    return Math.pow(opts.caseSensitive ? 22 : 16, chars);
+}
+
+function updateDifficultyEstimate() {
+    const opts = {
+        prefix: document.getElementById('vanity-prefix').value.trim(),
+        suffix: document.getElementById('vanity-suffix').value.trim(),
+        contains: document.getElementById('vanity-contains').value.trim(),
+        caseSensitive: document.getElementById('vanity-case').checked,
+        letters: document.getElementById('vanity-letters').checked,
+        numbers: document.getElementById('vanity-numbers').checked,
+        mirror: document.getElementById('vanity-mirror').checked,
+        doubles: document.getElementById('vanity-doubles').checked,
+        zeros: document.getElementById('vanity-zeros').checked,
+        leading: document.getElementById('vanity-leading').value.trim(),
+        leadingCount: parseInt(document.getElementById('vanity-leading-count').value) || 4
+    };
+    const diff = estimateDifficulty(opts);
+    const el = document.getElementById('vanity-difficulty');
+    if (!diff) { el.value = 'Enter criteria above'; return; }
+    if (diff < 1000) el.value = '~' + diff.toFixed(0) + ' attempts (easy)';
+    else if (diff < 1000000) el.value = '~' + (diff/1000).toFixed(1) + 'K attempts';
+    else if (diff < 1000000000) el.value = '~' + (diff/1000000).toFixed(1) + 'M attempts';
+    else el.value = '~' + (diff/1000000000).toFixed(1) + 'B attempts (hard!)';
+}
+
+['vanity-prefix','vanity-suffix','vanity-contains','vanity-case','vanity-letters','vanity-numbers','vanity-mirror','vanity-doubles','vanity-zeros','vanity-leading','vanity-leading-count'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', updateDifficultyEstimate);
+});
+
+function exportVanityResults() {
+    if (vanityResults.length === 0) return;
+    const data = JSON.stringify(vanityResults, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'vanity-addresses-' + Date.now() + '.json'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+function startVanity() {
+    const opts = {
+        prefix: document.getElementById('vanity-prefix').value.trim(),
+        suffix: document.getElementById('vanity-suffix').value.trim(),
+        contains: document.getElementById('vanity-contains').value.trim(),
+        regex: document.getElementById('vanity-regex').value.trim(),
+        caseSensitive: document.getElementById('vanity-case').checked,
+        letters: document.getElementById('vanity-letters').checked,
+        numbers: document.getElementById('vanity-numbers').checked,
+        mirror: document.getElementById('vanity-mirror').checked,
+        doubles: document.getElementById('vanity-doubles').checked,
+        zeros: document.getElementById('vanity-zeros').checked,
+        contract: document.getElementById('vanity-contract').checked,
+        leading: document.getElementById('vanity-leading').value.trim(),
+        leadingCount: parseInt(document.getElementById('vanity-leading-count').value) || 4
+    };
+    const targetCount = parseInt(document.getElementById('vanity-count').value) || 1;
+
+    if (!opts.prefix && !opts.suffix && !opts.contains && !opts.regex && !opts.letters && 
+        !opts.numbers && !opts.mirror && !opts.doubles && !opts.zeros && !opts.leading) {
+        showResult('vanity-result', '<div class="error">Specify at least one criteria</div>'); return;
+    }
+    if (opts.prefix && !isValidHex(opts.prefix)) { showResult('vanity-result', '<div class="error">Invalid hex prefix</div>'); return; }
+    if (opts.suffix && !isValidHex(opts.suffix)) { showResult('vanity-result', '<div class="error">Invalid hex suffix</div>'); return; }
+
+    vanityRunning = true;
+    vanityResults = [];
+    let attempts = 0;
+    const startTime = performance.now();
+    document.getElementById('vanity-export-btn').disabled = true;
+    showResult('vanity-result', 'Searching...');
+    
+    function search() {
+        if (!vanityRunning) return;
+        for (let i = 0; i < 100; i++) {
+            attempts++;
+            const wallet = W.generateWallet();
+            const checkAddr = opts.contract ? W.calculateContractAddress(wallet.address, 0) : wallet.address;
+            
+            if (checkVanityMatch(checkAddr, opts)) {
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+                const result = opts.contract 
+                    ? { contractAddress: checkAddr, deployerAddress: wallet.address, deployerPrivateKey: wallet.privateKey, attempts, time: elapsed + 's' }
+                    : { address: wallet.address, privateKey: wallet.privateKey, attempts, time: elapsed + 's' };
+                vanityResults.push(result);
+                
+                let html = '';
+                vanityResults.forEach((r, idx) => {
+                    html += '<div style="margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">';
+                    html += '<strong>#' + (idx + 1) + '</strong><br>';
+                    if (r.contractAddress) {
+                        html += field('Contract', r.contractAddress) + field('Deployer', r.deployerAddress);
+                        html += '<div class="result-title">Key</div><div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')">' + r.deployerPrivateKey + '</div>';
+                    } else {
+                        html += field('Address', r.address);
+                        html += '<div class="result-title">Key</div><div class="result-value blurred" onclick="this.classList.toggle(\'revealed\')">' + r.privateKey + '</div>';
+                    }
+                    html += '<small>Found in ' + r.time + ' (' + r.attempts + ' attempts)</small></div>';
+                });
+                showResult('vanity-result', html);
+                
+                if (vanityResults.length >= targetCount) {
+                    vanityRunning = false;
+                    document.getElementById('vanity-export-btn').disabled = false;
+                    return;
+                }
+            }
+        }
+        const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+        showResult('vanity-result', 'Searching... ' + attempts.toLocaleString() + ' attempts (' + elapsed + 's) - Found: ' + vanityResults.length + '/' + targetCount);
+        setTimeout(search, 0);
+    }
+    search();
+}
+
+function stopVanity() {
+    vanityRunning = false;
+    if (vanityResults.length > 0) document.getElementById('vanity-export-btn').disabled = false;
+    showResult('vanity-result', 'Stopped - Found: ' + vanityResults.length);
+}
+
+// Contract Address
+function calculateContract() {
+    try {
+        const deployer = document.getElementById('contract-deployer').value.trim();
+        const nonce = parseInt(document.getElementById('contract-nonce').value) || 0;
+        if (!W.validateAddress(deployer)) throw new Error('Invalid deployer address');
+        const addr = W.calculateContractAddress(deployer, nonce);
+        showResult('contract-result', field('Contract Address', addr));
+    } catch (e) { showResult('contract-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Sign Message
+function signMessage() {
+    try {
+        const msg = document.getElementById('sign-message').value;
+        const key = document.getElementById('sign-key').value.trim();
+        const usePrefix = document.getElementById('sign-eth-prefix').checked;
+        if (!msg) throw new Error('Enter a message');
+        if (!W.validatePrivateKey(key)) throw new Error('Invalid private key');
+        const result = W.signMessage(msg, key, usePrefix);
+        showResult('sign-result', field('Signature', result.signature) + field('r', result.r) + field('s', result.s) + field('v', result.v) + field('Signer', result.address));
+    } catch (e) { showResult('sign-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Verify Signature
+function verifySignature() {
+    try {
+        const msg = document.getElementById('verify-message').value;
+        const sig = document.getElementById('verify-signature').value.trim();
+        const expected = document.getElementById('verify-address').value.trim();
+        const usePrefix = document.getElementById('verify-eth-prefix').checked;
+        if (!msg || !sig) throw new Error('Enter message and signature');
+        const recovered = W.verifyMessage(msg, sig, usePrefix);
+        let html = field('Recovered Address', recovered);
+        if (expected) {
+            const match = recovered.toLowerCase() === expected.toLowerCase();
+            html += '<div class="result-title">Match</div><div class="result-value ' + (match ? 'success' : 'error') + '">' + (match ? 'YES - Valid signature' : 'NO - Signature does not match') + '</div>';
+        }
+        showResult('verify-result', html);
+    } catch (e) { showResult('verify-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Verify Pair
+function verifyPair() {
+    try {
+        const addr = document.getElementById('pair-address').value.trim();
+        const key = document.getElementById('pair-key').value.trim();
+        if (!W.validateAddress(addr)) throw new Error('Invalid address');
+        if (!W.validatePrivateKey(key)) throw new Error('Invalid private key');
+        const wallet = W.privateKeyToWallet(key);
+        const match = wallet.address.toLowerCase() === addr.toLowerCase();
+        showResult('pair-result', '<div class="result-title">Match</div><div class="result-value ' + (match ? 'success' : 'error') + '">' + (match ? 'YES' : 'NO') + '</div>' + field('Derived Address', wallet.address));
+    } catch (e) { showResult('pair-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Validate Address
+function validateAddress() {
+    try {
+        const addr = document.getElementById('validate-address').value.trim();
+        const valid = W.validateAddress(addr);
+        const checksumValid = W.validateChecksumAddress(addr);
+        let html = '<div class="result-title">Valid Format</div><div class="result-value ' + (valid ? 'success' : 'error') + '">' + (valid ? 'YES' : 'NO') + '</div>';
+        if (valid) {
+            html += '<div class="result-title">Valid Checksum</div><div class="result-value ' + (checksumValid ? 'success' : '') + '">' + (checksumValid ? 'YES' : 'No (lowercase or invalid checksum)') + '</div>';
+            html += field('Checksummed', W.toChecksumAddress(addr));
+        }
+        showResult('validate-address-result', html);
+    } catch (e) { showResult('validate-address-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Validate Key
+function validateKey() {
+    try {
+        const key = document.getElementById('validate-key').value.trim();
+        const valid = W.validatePrivateKey(key);
+        let html = '<div class="result-title">Valid</div><div class="result-value ' + (valid ? 'success' : 'error') + '">' + (valid ? 'YES' : 'NO') + '</div>';
+        if (valid) {
+            const wallet = W.privateKeyToWallet(key);
+            html += field('Derived Address', wallet.address);
+        }
+        showResult('validate-key-result', html);
+    } catch (e) { showResult('validate-key-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Checksum
+function checksumAddress() {
+    try {
+        const addr = document.getElementById('checksum-address').value.trim();
+        if (!W.validateAddress(addr)) throw new Error('Invalid address');
+        showResult('checksum-result', field('Checksummed Address', W.toChecksumAddress(addr)));
+    } catch (e) { showResult('checksum-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Keystore Encrypt
+async function encryptKeystore() {
+    try {
+        const key = document.getElementById('keystore-encrypt-key').value.trim();
+        const pw = document.getElementById('keystore-encrypt-password').value;
+        const confirm = document.getElementById('keystore-encrypt-confirm').value;
+        if (!W.validatePrivateKey(key)) throw new Error('Invalid private key');
+        if (pw.length < 8) throw new Error('Password must be at least 8 characters');
+        if (pw !== confirm) throw new Error('Passwords do not match');
+        showResult('keystore-encrypt-result', 'Encrypting...');
+        const ks = await W.encryptKeystore(key, pw);
+        const json = JSON.stringify(ks, null, 2);
+        showResult('keystore-encrypt-result', field('Address', '0x' + ks.address) + '<div class="result-title">Keystore JSON</div><div class="result-value" style="white-space:pre-wrap;font-size:0.7rem;">' + json + '</div><button class="btn-small btn-secondary" onclick="copyText(document.getElementById(\'ks-json\').textContent)">Copy JSON</button><pre id="ks-json" style="display:none">' + json + '</pre>');
+    } catch (e) { showResult('keystore-encrypt-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Keystore Decrypt
+async function decryptKeystore() {
+    try {
+        const json = document.getElementById('keystore-decrypt-json').value.trim();
+        const pw = document.getElementById('keystore-decrypt-password').value;
+        if (!json || !pw) throw new Error('Enter keystore JSON and password');
+        showResult('keystore-decrypt-result', 'Decrypting...');
+        const wallet = await W.decryptKeystore(json, pw);
+        showResult('keystore-decrypt-result', field('Address', wallet.address) + field('Private Key', wallet.privateKey));
+    } catch (e) { showResult('keystore-decrypt-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Sign Transaction
+function signTransaction() {
+    try {
+        const to = document.getElementById('tx-to').value.trim();
+        const value = document.getElementById('tx-value').value.trim() || '0';
+        const nonce = parseInt(document.getElementById('tx-nonce').value) || 0;
+        const gas = parseInt(document.getElementById('tx-gas').value) || 21000;
+        const chainId = parseInt(document.getElementById('tx-chainid').value) || 1;
+        const gasPrice = document.getElementById('tx-gasprice').value.trim();
+        const maxFee = document.getElementById('tx-maxfee').value.trim();
+        const priorityFee = document.getElementById('tx-priorityfee').value.trim();
+        const data = document.getElementById('tx-data').value.trim() || '0x';
+        const key = document.getElementById('tx-key').value.trim();
+        if (!W.validateAddress(to)) throw new Error('Invalid To address');
+        if (!W.validatePrivateKey(key)) throw new Error('Invalid private key');
+        if (!gasPrice && !maxFee) throw new Error('Specify gas price or max fee');
+        const txParams = { to, value, nonce, gas, data };
+        if (maxFee) { txParams.maxFeePerGas = maxFee; txParams.maxPriorityFeePerGas = priorityFee || '0'; }
+        else { txParams.gasPrice = gasPrice; }
+        const result = W.signTransaction(txParams, key, chainId);
+        showResult('tx-result', field('Transaction Hash', result.hash) + field('Raw Transaction', result.rawTransaction) + field('r', result.r) + field('s', result.s) + field('v', result.v.toString()));
+    } catch (e) { showResult('tx-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Sign Typed Data
+function signTypedData() {
+    try {
+        const data = document.getElementById('typed-data').value.trim();
+        const key = document.getElementById('typed-key').value.trim();
+        if (!data) throw new Error('Enter typed data JSON');
+        if (!W.validatePrivateKey(key)) throw new Error('Invalid private key');
+        const parsed = JSON.parse(data);
+        const result = W.signTypedData(parsed, key);
+        showResult('typed-sign-result', field('Signature', result.signature) + field('r', result.r) + field('s', result.s) + field('v', result.v) + field('Signer', result.address));
+    } catch (e) { showResult('typed-sign-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+
+// Verify Typed Data
+function verifyTypedData() {
+    try {
+        const data = document.getElementById('typed-verify-data').value.trim();
+        const sig = document.getElementById('typed-verify-sig').value.trim();
+        const expected = document.getElementById('typed-verify-address').value.trim();
+        if (!data || !sig) throw new Error('Enter typed data and signature');
+        const parsed = JSON.parse(data);
+        const recovered = W.verifyTypedData(parsed, sig);
+        let html = field('Recovered Address', recovered);
+        if (expected) {
+            const match = recovered.toLowerCase() === expected.toLowerCase();
+            html += '<div class="result-title">Match</div><div class="result-value ' + (match ? 'success' : 'error') + '">' + (match ? 'YES - Valid signature' : 'NO - Signature does not match') + '</div>';
+        }
+        showResult('typed-verify-result', html);
+    } catch (e) { showResult('typed-verify-result', '<div class="error">Error: ' + e.message + '</div>'); }
+}
+</script>
+</body>
+</html>

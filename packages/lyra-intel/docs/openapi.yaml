@@ -1,0 +1,512 @@
+openapi: 3.0.3
+info:
+  title: Lyra Intel API
+  description: |
+    Comprehensive code analysis platform with AI-powered insights, security scanning, 
+    and automated code review capabilities.
+  version: 1.0.0
+  contact:
+    name: Lyra Intel Team
+    email: team@lyra-intel.com
+    url: https://github.com/nirholas/lyra-intel
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.lyra-intel.com/api/v1
+    description: Production server
+  - url: http://localhost:8080/api/v1
+    description: Local development server
+
+tags:
+  - name: Analysis
+    description: Code analysis operations
+  - name: Security
+    description: Security scanning
+  - name: Reports
+    description: Report generation and export
+  - name: Projects
+    description: Project management
+  - name: Auth
+    description: Authentication and authorization
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check endpoint
+      description: Returns the health status of the API and its dependencies
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service is unhealthy
+
+  /analyze:
+    post:
+      tags: [Analysis]
+      summary: Analyze code repository
+      description: Performs comprehensive analysis of a code repository
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalysisRequest'
+      responses:
+        '200':
+          description: Analysis completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResult'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+  /analyze/file:
+    post:
+      tags: [Analysis]
+      summary: Analyze single file
+      description: Analyzes a single code file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - language
+              properties:
+                content:
+                  type: string
+                  description: File content to analyze
+                language:
+                  type: string
+                  description: Programming language
+                  enum: [python, javascript, typescript, go, rust, java, cpp, csharp, ruby, php]
+      responses:
+        '200':
+          description: Analysis completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileAnalysisResult'
+
+  /security/scan:
+    post:
+      tags: [Security]
+      summary: Security vulnerability scan
+      description: Scans code for security vulnerabilities
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityScanRequest'
+      responses:
+        '200':
+          description: Scan completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityScanResult'
+
+  /reports/generate:
+    post:
+      tags: [Reports]
+      summary: Generate analysis report
+      description: Generates a report in the specified format
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - analysis_id
+                - format
+              properties:
+                analysis_id:
+                  type: string
+                  format: uuid
+                format:
+                  type: string
+                  enum: [json, html, pdf, sarif, csv, xlsx]
+      responses:
+        '200':
+          description: Report generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download_url:
+                    type: string
+                    format: uri
+
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List projects
+      description: Returns list of all projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Projects list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+
+    post:
+      tags: [Projects]
+      summary: Create project
+      description: Creates a new project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  /projects/{project_id}:
+    get:
+      tags: [Projects]
+      summary: Get project details
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                  expires_in:
+                    type: integer
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+        checks:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              healthy:
+                type: boolean
+              status:
+                type: string
+
+    AnalysisRequest:
+      type: object
+      required:
+        - repository_url
+      properties:
+        repository_url:
+          type: string
+          format: uri
+          example: https://github.com/user/repo
+        branch:
+          type: string
+          default: main
+        analyzers:
+          type: array
+          items:
+            type: string
+            enum: [security, quality, complexity, dependencies, documentation]
+        options:
+          type: object
+          additionalProperties: true
+
+    AnalysisResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        project_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        metrics:
+          $ref: '#/components/schemas/Metrics'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileInfo'
+
+    FileAnalysisResult:
+      type: object
+      properties:
+        metrics:
+          $ref: '#/components/schemas/Metrics'
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+        suggestions:
+          type: array
+          items:
+            type: string
+
+    SecurityScanRequest:
+      type: object
+      required:
+        - repository_url
+      properties:
+        repository_url:
+          type: string
+          format: uri
+        scan_types:
+          type: array
+          items:
+            type: string
+            enum: [vulnerabilities, secrets, dependencies, configuration]
+
+    SecurityScanResult:
+      type: object
+      properties:
+        vulnerabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vulnerability'
+        secrets_found:
+          type: integer
+        risk_score:
+          type: number
+          format: float
+
+    Metrics:
+      type: object
+      properties:
+        complexity:
+          type: number
+          format: float
+        maintainability:
+          type: number
+          format: float
+        coverage:
+          type: number
+          format: float
+        security_score:
+          type: number
+          format: float
+        lines_of_code:
+          type: integer
+        comment_ratio:
+          type: number
+          format: float
+
+    Issue:
+      type: object
+      properties:
+        file:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        severity:
+          type: string
+          enum: [critical, high, medium, low, info]
+        type:
+          type: string
+        message:
+          type: string
+        rule:
+          type: string
+        fixes:
+          type: array
+          items:
+            type: object
+
+    Vulnerability:
+      type: object
+      properties:
+        id:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        description:
+          type: string
+        affected_package:
+          type: string
+        fixed_version:
+          type: string
+        cvss_score:
+          type: number
+          format: float
+
+    FileInfo:
+      type: object
+      properties:
+        path:
+          type: string
+        language:
+          type: string
+        lines:
+          type: integer
+        complexity:
+          type: number
+          format: float
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        repository_url:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+        last_analyzed:
+          type: string
+          format: date-time
+
+    CreateProjectRequest:
+      type: object
+      required:
+        - name
+        - repository_url
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        repository_url:
+          type: string
+          format: uri
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

@@ -1,0 +1,38 @@
+{
+  "id": "resend-mcp",
+  "name": "Resend",
+  "description": "Resend API - send transactional emails with modern APIs",
+  "sourceRepo": "resend/resend-node",
+  "sourceUrl": "https://github.com/resend/resend-node",
+  "version": "1.0.0",
+  "sourceVersion": "v3.0.0",
+  "toolCount": 6,
+  "tools": [
+    { "name": "send_email", "description": "Send an email", "source": "openapi", "paramCount": 7, "requiresAuth": true },
+    { "name": "get_email", "description": "Get email details", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "list_emails", "description": "List sent emails", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "create_domain", "description": "Add a domain for sending", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "list_domains", "description": "List all domains", "source": "openapi", "paramCount": 0, "requiresAuth": true },
+    { "name": "verify_domain", "description": "Verify domain DNS", "source": "openapi", "paramCount": 1, "requiresAuth": true }
+  ],
+  "categories": ["email", "communication", "api"],
+  "tags": ["resend", "email", "transactional", "smtp", "messaging"],
+  "popularity": 5840,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst RESEND_API_KEY = process.env.RESEND_API_KEY;\nconst RESEND_BASE_URL = 'https://api.resend.com';\n\nif (!RESEND_API_KEY) {\n  console.error('Error: RESEND_API_KEY environment variable is required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'resend-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function resendRequest(endpoint: string, method: string = 'GET', body?: unknown) {\n  const response = await fetch(`${RESEND_BASE_URL}${endpoint}`, {\n    method,\n    headers: {\n      'Authorization': `Bearer ${RESEND_API_KEY}`,\n      'Content-Type': 'application/json',\n    },\n    body: body ? JSON.stringify(body) : undefined,\n  });\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.message || 'Resend API error');\n  }\n  return response.json();\n}\n\nconst tools = [\n  { name: 'send_email', description: 'Send an email', inputSchema: { type: 'object', properties: { from: { type: 'string', description: 'Sender email' }, to: { type: 'array', items: { type: 'string' }, description: 'Recipients' }, subject: { type: 'string' }, html: { type: 'string', description: 'HTML body' }, text: { type: 'string', description: 'Plain text body' }, cc: { type: 'array', items: { type: 'string' } }, bcc: { type: 'array', items: { type: 'string' } } }, required: ['from', 'to', 'subject'] } },\n  { name: 'get_email', description: 'Get email details', inputSchema: { type: 'object', properties: { email_id: { type: 'string' } }, required: ['email_id'] } },\n  { name: 'list_emails', description: 'List sent emails', inputSchema: { type: 'object', properties: { limit: { type: 'number' }, cursor: { type: 'string' } } } },\n  { name: 'create_domain', description: 'Add a domain', inputSchema: { type: 'object', properties: { name: { type: 'string' }, region: { type: 'string', enum: ['us-east-1', 'eu-west-1', 'sa-east-1'] } }, required: ['name'] } },\n  { name: 'list_domains', description: 'List domains', inputSchema: { type: 'object', properties: {} } },\n  { name: 'verify_domain', description: 'Verify domain', inputSchema: { type: 'object', properties: { domain_id: { type: 'string' } }, required: ['domain_id'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, unknown>;\n    switch (name) {\n      case 'send_email': result = await resendRequest('/emails', 'POST', a); break;\n      case 'get_email': result = await resendRequest(`/emails/${a.email_id}`); break;\n      case 'list_emails': result = await resendRequest('/emails'); break;\n      case 'create_domain': result = await resendRequest('/domains', 'POST', a); break;\n      case 'list_domains': result = await resendRequest('/domains'); break;\n      case 'verify_domain': result = await resendRequest(`/domains/${a.domain_id}/verify`, 'POST'); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "resend": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "RESEND_API_KEY": "${RESEND_API_KEY}" } } } },
+    "cursor": { "mcpServers": { "resend": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "RESEND_API_KEY": "${RESEND_API_KEY}" } } } },
+    "vscode": { "mcpServers": { "resend": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "RESEND_API_KEY": "${RESEND_API_KEY}" } } } }
+  },
+  "quality": { "overall": 88, "schemaCompleteness": 90, "documentation": 86, "examples": 88, "authHandling": 90, "parameterTypes": 86 },
+  "auth": [{ "type": "http", "scheme": "bearer", "envVar": "RESEND_API_KEY", "instructions": "Get your API key from https://resend.com/api-keys" }],
+  "docsUrl": "https://resend.com/docs",
+  "apiDocsUrl": "https://resend.com/docs/api-reference",
+  "iconUrl": "https://resend.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

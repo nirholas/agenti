@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/extract-llms-docs",
+  "title": "Extract LLMs Docs",
+  "description": "Extract llms.txt from any docs site - Mintlify, Docusaurus, GitBook parser",
+  "repository": {
+    "url": "https://github.com/nirholas/extract-llms-docs",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "icons": {
+    "light": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+    "dark": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/bg.svg"
+  },
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["llms", "docs", "documentation", "mintlify", "docusaurus", "gitbook", "parser", "mcp", "ai"],
+      "category": "Developer Tools"
+    }
+  }
+}

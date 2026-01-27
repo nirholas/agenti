@@ -1,0 +1,231 @@
+/* Custom styling for GitHub to MCP docs - Black/White theme */
+
+:root {
+  /* Light mode - clean white */
+  --md-primary-fg-color: #000000;
+  --md-primary-fg-color--light: #1a1a1a;
+  --md-primary-fg-color--dark: #000000;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #f8f9fa;
+  --md-accent-fg-color: #333333;
+  --md-accent-fg-color--transparent: rgba(51, 51, 51, 0.1);
+}
+
+/* Dark mode - sleek black */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #ffffff;
+  --md-primary-fg-color--light: #e0e0e0;
+  --md-primary-fg-color--dark: #ffffff;
+  --md-primary-bg-color: #0d0d0d;
+  --md-primary-bg-color--light: #1a1a1a;
+  --md-accent-fg-color: #cccccc;
+  --md-accent-fg-color--transparent: rgba(204, 204, 204, 0.1);
+  --md-default-bg-color: #0d0d0d;
+  --md-default-bg-color--light: #1a1a1a;
+  --md-default-bg-color--lighter: #262626;
+  --md-default-bg-color--lightest: #333333;
+}
+
+/* Header styling */
+.md-header {
+  background-color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: #000000;
+}
+
+/* Navigation tabs */
+.md-tabs {
+  background-color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #0a0a0a;
+}
+
+/* Hero section styling */
+.md-typeset .hero {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.md-typeset .hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.md-typeset .hero .lead {
+  font-size: 1.4rem;
+  opacity: 0.85;
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+/* Feature cards */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.feature-card {
+  background: var(--md-code-bg-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.feature-card p {
+  margin-bottom: 0;
+  opacity: 0.85;
+}
+
+/* Code blocks */
+.md-typeset code {
+  background-color: var(--md-code-bg-color);
+  border-radius: 4px;
+}
+
+.md-typeset pre {
+  border-radius: 8px;
+}
+
+/* Buttons */
+.md-typeset .md-button {
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s;
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  border-color: var(--md-primary-fg-color);
+}
+
+.md-typeset .md-button--primary:hover {
+  background-color: var(--md-primary-fg-color--light);
+  border-color: var(--md-primary-fg-color--light);
+}
+
+/* Admonitions */
+.md-typeset .admonition {
+  border-radius: 8px;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-code-bg-color);
+}
+
+/* Navigation - active state */
+.md-nav__link--active {
+  font-weight: 600;
+}
+
+/* Footer */
+.md-footer {
+  background-color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-footer {
+  background-color: #000000;
+}
+
+/* Badge styling */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Installation tabs */
+.md-typeset .tabbed-set {
+  border-radius: 8px;
+}
+
+/* Quick links grid */
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--md-code-bg-color);
+  border-radius: 8px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.quick-link:hover {
+  transform: translateX(4px);
+  border-color: var(--md-accent-fg-color);
+}
+
+.quick-link .icon {
+  font-size: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 76.1875em) {
+  .md-typeset .hero h1 {
+    font-size: 2.2rem;
+  }
+  
+  .md-typeset .hero .lead {
+    font-size: 1.1rem;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus states for accessibility */
+.md-nav__link:focus,
+.md-typeset a:focus {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+
+/* Logo in header - ensure visibility on black background */
+.md-header__button.md-logo img {
+  filter: invert(1);
+}
+
+[data-md-color-scheme="slate"] .md-header__button.md-logo img {
+  filter: none;
+}

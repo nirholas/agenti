@@ -1,0 +1,96 @@
+# UCAI — AI-Powered Smart Contract Tools
+
+> Turn any smart contract into Claude tools. The easiest way to build MCP servers from Ethereum ABIs.
+
+## What is UCAI?
+
+UCAI (Universal Chain AI) connects AI assistants like Claude to blockchain smart contracts through the Model Context Protocol (MCP). Paste a contract address, get a working MCP server.
+
+## Quick Links
+
+- Web App: https://mcp.ucai.tech
+- Documentation: https://docs.ucai.tech
+- GitHub: https://github.com/nirholas/UCAI
+- NPM Package: https://www.npmjs.com/package/ucai
+
+## Core Features
+
+### MCP Server Builder
+Generate complete TypeScript MCP servers from any verified smart contract:
+- Paste contract address → Get working MCP server
+- Supports Ethereum, Base, Arbitrum, Polygon, Optimism, BSC
+- Auto-detects proxy contracts and fetches implementation ABIs
+- Creates typed tool definitions for Claude Desktop
+
+### Security Scanner
+AI-powered smart contract risk analysis:
+- 50+ security patterns detected
+- Risk score 0-100 (higher = safer)
+- Detects rug pulls, honeypots, hidden mints, pause functions
+- Identifies positive indicators (renounced ownership, locked liquidity)
+
+### Contract Whisperer
+Plain English explanations of smart contracts:
+- What does this contract do?
+- Who has special permissions?
+- What are the tokenomics?
+- What are the risks?
+
+### Pro Templates
+Production-ready MCP server templates:
+- DeFi Bundle (Uniswap, Aave, Compound)
+- NFT Bundle (OpenSea, Blur, Reservoir)
+- Governance Bundle (Snapshot, Governor Bravo)
+- Analytics Bundle (Dune, The Graph, Chainlink)
+
+## For AI Developers
+
+### Install via NPM
+```bash
+npm install -g ucai
+ucai generate 0xContractAddress --chain ethereum
+```
+
+### Use the API
+```bash
+curl https://mcp.ucai.tech/api/analyze \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"address": "0x...", "chainId": 1}'
+```
+
+### Claude Desktop Integration
+Add to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "my-contract": {
+      "command": "npx",
+      "args": ["tsx", "path/to/generated-server.ts"]
+    }
+  }
+}
+```
+
+## Supported Chains
+
+| Chain | Chain ID | Explorer |
+|-------|----------|----------|
+| Ethereum | 1 | etherscan.io |
+| Base | 8453 | basescan.org |
+| Arbitrum | 42161 | arbiscan.io |
+| Polygon | 137 | polygonscan.com |
+| Optimism | 10 | optimistic.etherscan.io |
+| BSC | 56 | bscscan.com |
+
+## Keywords
+
+MCP, Model Context Protocol, Claude, AI, smart contracts, Ethereum, blockchain, Web3, DeFi, NFT, security scanner, ABI, TypeScript, vibe coding, AI coding assistant, crypto tools
+
+## Contact
+
+- GitHub Issues: https://github.com/nirholas/UCAI/issues
+- Twitter: @ucai_tech
+
+---
+Built for vibecoders 🎸 by vibecoders

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - XActions Live Sessions</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #000000;
+      --bg-secondary: #16181c;
+      --bg-tertiary: #202327;
+      --accent: #1d9bf0;
+      --text-primary: #e7e9ea;
+      --text-secondary: #71767b;
+      --border: #2f3336;
+      --success: #00ba7c;
+      --error: #f4212e;
+      --warning: #ffad1f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-connected {
+      background: rgba(0, 186, 124, 0.1);
+      color: var(--success);
+    }
+
+    .status-disconnected {
+      background: rgba(244, 33, 46, 0.1);
+      color: var(--error);
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 12px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Payment Sections */
+    .payment-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .section-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .section-card h3 {
+      font-size: 1rem;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .stats-list, .payments-list, .config-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stats-item, .payment-item, .config-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+    }
+
+    .stats-item .operation {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .stats-item .count {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .payment-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .payment-item .header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .payment-item .amount {
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .payment-item .time {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+
+    .payment-item .details {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .config-status {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .config-status.configured {
+      background: rgba(0, 186, 124, 0.2);
+      color: var(--success);
+    }
+
+    .config-status.not-configured {
+      background: rgba(113, 118, 123, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .btn-test-webhook {
+      margin-top: 16px;
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .btn-test-webhook:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .empty-state.small {
+      padding: 24px;
+      font-size: 0.875rem;
+    }
+
+    .sessions-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .session-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .session-card:hover {
+      border-color: var(--accent);
+    }
+
+    .session-card.running {
+      border-color: var(--success);
+      box-shadow: 0 0 20px rgba(0, 186, 124, 0.1);
+    }
+
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .session-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .user-info h3 {
+      font-size: 1rem;
+      margin-bottom: 2px;
+    }
+
+    .user-info p {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+
+    .session-status {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .session-status.waiting { background: var(--bg-tertiary); color: var(--text-secondary); }
+    .session-status.connected { background: rgba(29, 155, 240, 0.2); color: var(--accent); }
+    .session-status.running { background: rgba(0, 186, 124, 0.2); color: var(--success); }
+    .session-status.completed { background: rgba(0, 186, 124, 0.1); color: var(--success); }
+    .session-status.error { background: rgba(244, 33, 46, 0.2); color: var(--error); }
+
+    .session-operation {
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .operation-name {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-primary);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .session-log {
+      max-height: 150px;
+      overflow-y: auto;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.75rem;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .log-entry {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .log-entry:last-child { border: none; }
+    .log-time { color: var(--text-secondary); }
+    .log-action { color: var(--success); }
+    .log-handle { color: var(--accent); }
+
+    .empty-state {
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    #connection-status {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: 9999px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>
+      <span>⚡</span>
+      XActions Admin
+      <span style="font-weight: 400; font-size: 1rem; color: var(--text-secondary);">Live Sessions</span>
+    </h1>
+    <a href="/dashboard" style="color: var(--accent); text-decoration: none;">← Back to Dashboard</a>
+  </header>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('sessions')">📡 Live Sessions</button>
+    <button class="tab-btn" onclick="switchTab('payments')">💰 x402 Payments</button>
+  </div>
+
+  <!-- Sessions Tab -->
+  <div id="tab-sessions" class="tab-content active">
+    <div class="stats-bar">
+      <div class="stat-box">
+        <div class="stat-value" id="total-sessions">0</div>
+        <div class="stat-label">Active Sessions</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="running-sessions">0</div>
+        <div class="stat-label">Running Now</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="total-unfollows">0</div>
+        <div class="stat-label">Unfollows Today</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments Tab -->
+  <div id="tab-payments" class="tab-content" style="display: none;">
+    <div class="stats-bar">
+      <div class="stat-box">
+        <div class="stat-value" id="total-payments">0</div>
+        <div class="stat-label">Total Payments</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="total-revenue">$0.00</div>
+        <div class="stat-label">Revenue (USDC)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="webhook-status">-</div>
+        <div class="stat-label">Webhook Status</div>
+      </div>
+    </div>
+
+    <div class="payment-sections">
+      <div class="section-card">
+        <h3>📊 Payments by Operation</h3>
+        <div id="payments-by-operation" class="stats-list">
+          <div class="empty-state small">No payments yet</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🕐 Recent Payments</h3>
+        <div id="recent-payments" class="payments-list">
+          <div class="empty-state small">No recent payments</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🔔 Webhook Configuration</h3>
+        <div id="webhook-config" class="config-list">
+          <div class="config-item">
+            <span>Custom Webhook</span>
+            <span id="webhook-custom" class="config-status">-</span>
+          </div>
+          <div class="config-item">
+            <span>Discord</span>
+            <span id="webhook-discord" class="config-status">-</span>
+          </div>
+          <div class="config-item">
+            <span>Slack</span>
+            <span id="webhook-slack" class="config-status">-</span>
+          </div>
+          <div class="config-item">
+            <span>Signature Verification</span>
+            <span id="webhook-signature" class="config-status">-</span>
+          </div>
+        </div>
+        <button class="btn-test-webhook" onclick="testWebhooks()">🧪 Test Webhooks</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sessions-grid" id="sessions-container">
+    <div class="empty-state">
+      <div class="icon">📡</div>
+      <h3>No active sessions</h3>
+      <p>Sessions will appear here when users connect their browser</p>
+    </div>
+  </div>
+
+  <div id="connection-status" class="status-badge status-disconnected">
+    <span class="pulse"></span>
+    <span id="connection-text">Connecting...</span>
+  </div>
+
+  <script>
+    const API_URL = window.location.origin;
+    const authToken = localStorage.getItem('authToken');
+    
+    if (!authToken) {
+      window.location.href = '/login';
+    }
+
+    const sessions = new Map();
+    let totalUnfollows = 0;
+
+    // Connect to WebSocket as admin
+    const socket = io(API_URL, {
+      auth: { token: authToken, role: 'admin' }
+    });
+
+    socket.on('connect', () => {
+      document.getElementById('connection-status').className = 'status-badge status-connected';
+      document.getElementById('connection-text').textContent = 'Connected';
+    });
+
+    socket.on('disconnect', () => {
+      document.getElementById('connection-status').className = 'status-badge status-disconnected';
+      document.getElementById('connection-text').textContent = 'Disconnected';
+    });
+
+    socket.on('connect_error', (err) => {
+      if (err.message === 'Admin access required') {
+        alert('You do not have admin access');
+        window.location.href = '/dashboard';
+      }
+    });
+
+    // Initial session list
+    socket.on('sessions:list', (list) => {
+      sessions.clear();
+      list.forEach(s => sessions.set(s.sessionId, s));
+      renderSessions();
+    });
+
+    // New session
+    socket.on('session:new', (session) => {
+      sessions.set(session.sessionId, session);
+      renderSessions();
+    });
+
+    // Session updated
+    socket.on('session:updated', (session) => {
+      if (session) {
+        sessions.set(session.sessionId, { ...sessions.get(session.sessionId), ...session });
+        renderSessions();
+      }
+    });
+
+    // Session started operation
+    socket.on('session:started', (data) => {
+      const session = sessions.get(data.sessionId);
+      if (session) {
+        session.status = 'running';
+        session.operation = data.operation;
+        session.logs = session.logs || [];
+        session.logs.push({ time: new Date(), action: 'started', operation: data.operation });
+        renderSessions();
+      }
+    });
+
+    // Progress update
+    socket.on('session:progress', (data) => {
+      const session = sessions.get(data.sessionId);
+      if (session) {
+        session.progress = data;
+        renderSessions();
+      }
+    });
+
+    // Action (individual unfollow, etc.)
+    socket.on('session:action', (data) => {
+      const session = sessions.get(data.sessionId);
+      if (session) {
+        session.logs = session.logs || [];
+        session.logs.unshift({ time: new Date(), ...data });
+        if (session.logs.length > 50) session.logs.pop();
+        
+        if (data.type === 'unfollow') totalUnfollows++;
+        document.getElementById('total-unfollows').textContent = totalUnfollows;
+        
+        renderSessions();
+      }
+    });
+
+    // Session complete
+    socket.on('session:complete', (data) => {
+      const session = sessions.get(data.sessionId);
+      if (session) {
+        session.status = 'completed';
+        session.result = data;
+        renderSessions();
+      }
+    });
+
+    // Session error
+    socket.on('session:error', (data) => {
+      const session = sessions.get(data.sessionId);
+      if (session) {
+        session.status = 'error';
+        session.error = data.message;
+        renderSessions();
+      }
+    });
+
+    // Session removed
+    socket.on('session:removed', (data) => {
+      sessions.delete(data.sessionId);
+      renderSessions();
+    });
+
+    function renderSessions() {
+      const container = document.getElementById('sessions-container');
+      const sessionList = Array.from(sessions.values());
+      
+      document.getElementById('total-sessions').textContent = sessionList.length;
+      document.getElementById('running-sessions').textContent = sessionList.filter(s => s.status === 'running').length;
+
+      if (sessionList.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">📡</div>
+            <h3>No active sessions</h3>
+            <p>Sessions will appear here when users connect their browser</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sessionList.map(session => `
+        <div class="session-card ${session.status === 'running' ? 'running' : ''}">
+          <div class="session-header">
+            <div class="session-user">
+              <div class="user-avatar">👤</div>
+              <div class="user-info">
+                <h3>@${session.username || 'Unknown'}</h3>
+                <p>${session.sessionId.slice(0, 20)}...</p>
+              </div>
+            </div>
+            <span class="session-status ${session.status}">${session.status}</span>
+          </div>
+          
+          ${session.operation ? `
+            <div class="session-operation">
+              <div class="operation-name">${formatOperation(session.operation)}</div>
+              ${session.progress ? `
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${session.progress.percent || 0}%"></div>
+                </div>
+                <div class="progress-text">
+                  <span>${session.progress.message || ''}</span>
+                  <span>${session.progress.current || 0}/${session.progress.max || '?'}</span>
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+          
+          ${session.logs?.length ? `
+            <div class="session-log">
+              ${session.logs.slice(0, 10).map(log => `
+                <div class="log-entry">
+                  <span class="log-time">${new Date(log.time).toLocaleTimeString()}</span>
+                  <span class="log-action">${log.type || log.action}</span>
+                  ${log.handle ? `<span class="log-handle">@${log.handle}</span>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function formatOperation(op) {
+      const names = {
+        unfollowNonFollowers: '🧹 Unfollow Non-Followers',
+        unfollowEveryone: '💥 Unfollow Everyone',
+        detectUnfollowers: '🔍 Detect Unfollowers'
+      };
+      return names[op] || op;
+    }
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      document.getElementById(`tab-${tab}`).style.display = 'block';
+      
+      // Hide other tabs
+      document.querySelectorAll('.tab-content:not(.active)').forEach(t => t.style.display = 'none');
+      
+      if (tab === 'payments') {
+        loadPaymentStats();
+      }
+    }
+
+    // Load x402 payment statistics
+    async function loadPaymentStats() {
+      const adminKey = localStorage.getItem('adminKey') || prompt('Enter Admin API Key:');
+      if (!adminKey) return;
+      localStorage.setItem('adminKey', adminKey);
+
+      try {
+        // Load stats
+        const statsRes = await fetch('/api/admin/x402/stats', {
+          headers: { 'X-Admin-Key': adminKey }
+        });
+        
+        if (statsRes.status === 401) {
+          localStorage.removeItem('adminKey');
+          alert('Invalid admin key');
+          return;
+        }
+        
+        const statsData = await statsRes.json();
+        if (statsData.success) {
+          renderPaymentStats(statsData.stats);
+        }
+
+        // Load webhook status
+        const webhookRes = await fetch('/api/admin/x402/webhooks', {
+          headers: { 'X-Admin-Key': adminKey }
+        });
+        const webhookData = await webhookRes.json();
+        if (webhookData.success) {
+          renderWebhookStatus(webhookData.webhooks);
+        }
+      } catch (err) {
+        console.error('Failed to load payment stats:', err);
+      }
+    }
+
+    function renderPaymentStats(stats) {
+      document.getElementById('total-payments').textContent = stats.totalPayments || 0;
+      document.getElementById('total-revenue').textContent = '$' + (stats.totalRevenueUSD || '0.00');
+
+      // Render by operation
+      const byOpContainer = document.getElementById('payments-by-operation');
+      const operations = Object.entries(stats.byOperation || {});
+      
+      if (operations.length === 0) {
+        byOpContainer.innerHTML = '<div class="empty-state small">No payments yet</div>';
+      } else {
+        byOpContainer.innerHTML = operations
+          .sort((a, b) => b[1] - a[1])
+          .map(([op, count]) => `
+            <div class="stats-item">
+              <span class="operation">${op}</span>
+              <span class="count">${count}</span>
+            </div>
+          `).join('');
+      }
+
+      // Render recent payments
+      const recentContainer = document.getElementById('recent-payments');
+      const recent = stats.recentPayments || [];
+      
+      if (recent.length === 0) {
+        recentContainer.innerHTML = '<div class="empty-state small">No recent payments</div>';
+      } else {
+        recentContainer.innerHTML = recent.slice(0, 10).map(p => `
+          <div class="payment-item">
+            <div class="header">
+              <span class="amount">${p.price}</span>
+              <span class="time">${new Date(p.timestamp).toLocaleString()}</span>
+            </div>
+            <div class="details">${p.operation} • ${p.network || 'unknown'}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderWebhookStatus(webhooks) {
+      const { configured, delivery } = webhooks;
+      
+      // Update status indicators
+      document.getElementById('webhook-custom').textContent = configured.customWebhook ? '✓ Configured' : 'Not configured';
+      document.getElementById('webhook-custom').className = 'config-status ' + (configured.customWebhook ? 'configured' : 'not-configured');
+      
+      document.getElementById('webhook-discord').textContent = configured.discord ? '✓ Configured' : 'Not configured';
+      document.getElementById('webhook-discord').className = 'config-status ' + (configured.discord ? 'configured' : 'not-configured');
+      
+      document.getElementById('webhook-slack').textContent = configured.slack ? '✓ Configured' : 'Not configured';
+      document.getElementById('webhook-slack').className = 'config-status ' + (configured.slack ? 'configured' : 'not-configured');
+      
+      document.getElementById('webhook-signature').textContent = configured.signatureEnabled ? '✓ Enabled' : 'Disabled';
+      document.getElementById('webhook-signature').className = 'config-status ' + (configured.signatureEnabled ? 'configured' : 'not-configured');
+
+      // Update overall status
+      const anyConfigured = configured.customWebhook || configured.discord || configured.slack;
+      document.getElementById('webhook-status').textContent = anyConfigured ? delivery.successRate : 'None';
+    }
+
+    async function testWebhooks() {
+      const adminKey = localStorage.getItem('adminKey');
+      if (!adminKey) {
+        alert('Please load payment stats first to set admin key');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/x402/webhooks/test', {
+          method: 'POST',
+          headers: { 'X-Admin-Key': adminKey }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          alert('Test webhooks sent! Check your configured endpoints.');
+        } else {
+          alert('Failed: ' + (data.message || data.error));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    // Listen for real-time payment events
+    socket.on('x402:payment', (payment) => {
+      console.log('💰 Real-time payment:', payment);
+      // Refresh stats if on payments tab
+      if (document.getElementById('tab-payments').classList.contains('active')) {
+        loadPaymentStats();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{
+  "name": "xactions",
+  "version": "3.0.42",
+  "description": "XActions - The Complete X/Twitter Automation Toolkit. Scrapers, MCP server for AI agents, CLI, and browser scripts. No API required. Open source by @nichxbt. Don't Panic.",
+  "homepage": "https://xactions.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/xactions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nirholas/xactions/issues"
+  },
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./scrapers": "./src/scrapers/index.js",
+    "./mcp": "./src/mcp/server.js",
+    "./cli": "./src/cli/index.js"
+  },
+  "bin": {
+    "xactions": "./src/cli/index.js"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon api/server.js",
+    "start": "NODE_ENV=production node api/server.js",
+    "cli": "node src/cli/index.js",
+    "mcp": "node src/mcp/server.js",
+    "worker": "node api/services/jobQueue.js",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "prisma studio",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:x402": "vitest run tests/x402.test.js",
+    "test:x402:integration": "vitest run tests/x402-integration.test.js",
+    "test:x402:all": "vitest run tests/x402*.test.js",
+    "verify:x402": "node scripts/verify-x402.js",
+    "test:payment": "node scripts/test-x402-payment.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@prisma/client": "^5.7.1",
+    "axios": "^1.6.2",
+    "bcryptjs": "^2.4.3",
+    "bull": "^4.12.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "inquirer": "^9.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "ora": "^8.0.0",
+    "prisma": "^5.7.1",
+    "puppeteer": "^24.34.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "redis": "^4.6.11",
+    "socket.io": "^4.8.3",
+    "stripe": "^14.10.0"
+  },
+  "optionalDependencies": {
+    "@x402/core": "^0.1.0",
+    "@x402/evm": "^0.1.0",
+    "@x402/express": "^0.1.0",
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.4",
+    "vitest": "^1.6.1"
+  },
+  "author": {
+    "name": "nich",
+    "url": "https://github.com/nirholas",
+    "twitter": "@nichxbt"
+  },
+  "license": "MIT",
+  "keywords": [
+    "xactions",
+    "twitter",
+    "x",
+    "twitter-automation",
+    "twitter-bot",
+    "twitter-scraper",
+    "twitter-unfollow",
+    "twitter-growth",
+    "mass-unfollow",
+    "unfollow-tool",
+    "twitter-tools",
+    "social-media-automation",
+    "twitter-api-alternative",
+    "puppeteer",
+    "twitter-manager",
+    "follower-management",
+    "twitter-cleanup",
+    "auto-follow",
+    "auto-like",
+    "twitter-analytics",
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "claude",
+    "gpt",
+    "chatgpt",
+    "saas",
+    "hypefury-alternative",
+    "tweethunter-alternative",
+    "free-twitter-api",
+    "twitter-without-api",
+    "bulk-unfollow",
+    "who-unfollowed-me",
+    "twitter-followers-tracker",
+    "download-twitter-video",
+    "twitter-thread-saver",
+    "twitter-bookmark-export",
+    "vibe-coding",
+    "no-code-twitter"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,15 @@
+/**
+ * @author Nich
+ * @website x.com/nichxbt
+ * @github github.com/nirholas
+ * @license MIT
+ */
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+
+import { registerBridgeTools } from "./tools.js"
+import { registerBridgePrompts } from "./prompts.js"
+
+export function registerBridge(server: McpServer) {
+  registerBridgeTools(server)
+  registerBridgePrompts(server)
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/x402-stablecoin",
+  "title": "x402 Stablecoin MCP",
+  "description": "MCP server for x402 stablecoin protocol interactions and payments",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/x402-stablecoin",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/x402-stablecoin",
+    "bugs": "https://github.com/nirholas/x402-stablecoin/issues"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/x402-stablecoin/main/assets/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@x402/monorepo",
+      "version": "1.0.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RPC_URL",
+          "description": "Ethereum RPC endpoint URL",
+          "required": false,
+          "secret": false
+        },
+        {
+          "name": "PRIVATE_KEY",
+          "description": "Wallet private key for transactions",
+          "required": false,
+          "secret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": [
+        "x402",
+        "stablecoin",
+        "payments",
+        "mcp",
+        "defi",
+        "ethereum"
+      ],
+      "category": "Blockchain"
+    }
+  }
+}

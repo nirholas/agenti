@@ -1,0 +1,123 @@
+site_name: llm.energy
+site_url: https://llm.energy/docs/
+site_description: Extract documentation for AI agents from any site with llms.txt and install.md support
+site_author: nich
+
+repo_name: nirholas/extract-llms-docs
+repo_url: https://github.com/nirholas/extract-llms-docs
+edit_uri: edit/main/docs-site/docs/
+
+theme:
+  name: material
+  
+  palette:
+    - scheme: slate
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  
+  font:
+    text: Inter
+    code: JetBrains Mono
+  
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/lightning-bolt
+  
+  favicon: assets/favicon.svg
+
+plugins:
+  - search
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: overview.md
+    - Examples: examples.md
+  - Standards:
+    - llms.txt: llms-txt-standard.md
+    - install.md: install-md-standard.md
+  - MCP Server:
+    - Installation: mcp-server/installation.md
+    - Available Tools: mcp-server/tools.md
+  - API Reference: api-reference.md
+  - Self Hosting: self-hosting.md
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/extract-llms-docs
+      name: GitHub
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/nichxbt
+      name: X (Twitter)
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: Copyright &copy; 2024-2026 nich

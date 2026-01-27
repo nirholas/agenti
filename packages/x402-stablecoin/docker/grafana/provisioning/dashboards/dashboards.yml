@@ -1,0 +1,17 @@
+# Grafana Dashboard Provisioning
+# Automatically loads dashboards from /var/lib/grafana/dashboards
+
+apiVersion: 1
+
+providers:
+  - name: 'X402 Dashboards'
+    orgId: 1
+    folder: 'X402'
+    folderUid: 'x402'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

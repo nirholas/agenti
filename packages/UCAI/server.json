@@ -1,0 +1,80 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/abi-to-mcp",
+  "title": "UCAI - ABI to MCP",
+  "description": "UCAI — The ABI-to-MCP Server Generator. Convert any smart contract ABI into an AI-ready MCP server.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/UCAI",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/UCAI",
+    "bugs": "https://github.com/nirholas/UCAI/issues",
+    "pypi": "https://pypi.org/project/abi-to-mcp/"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "abi-to-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RPC_URL",
+          "description": "Ethereum RPC endpoint URL (e.g., Infura, Alchemy, https://eth.llamarpc.com)",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "PRIVATE_KEY",
+          "description": "Wallet private key for signing transactions (with or without 0x prefix)",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "ETHERSCAN_API_KEY",
+          "description": "Etherscan API key for fetching verified contract ABIs",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": [
+        "ucai",
+        "abi",
+        "smart-contract",
+        "ethereum",
+        "solidity",
+        "mcp",
+        "generator",
+        "web3",
+        "ai",
+        "claude",
+        "defi",
+        "blockchain",
+        "code-generator"
+      ],
+      "category": "Blockchain"
+    }
+  }
+}

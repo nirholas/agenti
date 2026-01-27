@@ -1,0 +1,1038 @@
+openapi: 3.1.0
+info:
+  title: Sweep API
+  description: |
+    Multi-chain dust sweeper API that consolidates small token balances across EVM chains and Solana into DeFi yield positions.
+    
+    ## Authentication
+    Most endpoints require authentication via SIWE (Sign-In with Ethereum).
+    Send the signature in the `Authorization` header as `Bearer <signature>`.
+    
+    ## Rate Limits
+    - General endpoints: 100 requests/minute
+    - Quote endpoints: 50 requests/minute
+    - Sweep execution: 10 requests/minute
+    
+    ## x402 Payments
+    Some endpoints require payment via the x402 protocol. When payment is required,
+    the API returns HTTP 402 with payment instructions.
+  version: 1.0.0
+  contact:
+    name: Sweep Team
+    url: https://github.com/nirholas/sweep
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.sweep.exchange
+    description: Production
+  - url: http://localhost:3000
+    description: Development
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Wallet
+    description: Wallet scanning and dust detection
+  - name: Quote
+    description: Swap quote generation
+  - name: Sweep
+    description: Sweep execution and status
+  - name: DeFi
+    description: DeFi protocol integration
+  - name: Bridge
+    description: Cross-chain bridging
+
+paths:
+  # ============================================================
+  # Health Endpoints
+  # ============================================================
+  /health:
+    get:
+      tags: [Health]
+      summary: Basic health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: integer
+                    example: 1705924800000
+                  service:
+                    type: string
+                    example: sweep-api
+                  version:
+                    type: string
+                    example: 1.0.0
+
+  /health/ready:
+    get:
+      tags: [Health]
+      summary: Readiness check
+      description: Verifies all dependencies (database, Redis) are available
+      operationId: getHealthReady
+      responses:
+        '200':
+          description: All dependencies healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+        '503':
+          description: One or more dependencies unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+
+  /health/live:
+    get:
+      tags: [Health]
+      summary: Liveness check
+      description: Confirms the service is running
+      operationId: getHealthLive
+      responses:
+        '200':
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: alive
+                  timestamp:
+                    type: integer
+                  uptime:
+                    type: number
+                    description: Uptime in seconds
+
+  # ============================================================
+  # Wallet Endpoints
+  # ============================================================
+  /api/wallet/{address}/dust:
+    get:
+      tags: [Wallet]
+      summary: Scan wallet for dust tokens
+      description: |
+        Scans a wallet across multiple chains to find small token balances ("dust").
+        Can run synchronously or asynchronously for large scans.
+      operationId: getWalletDust
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+          example: '0x742d35Cc6634C0532925a3b844Bc9e7595f8B123'
+        - name: chains
+          in: query
+          description: Comma-separated list of chains to scan
+          schema:
+            type: string
+          example: 'ethereum,base,arbitrum'
+        - name: threshold
+          in: query
+          description: Maximum USD value to consider as dust
+          schema:
+            type: number
+            default: 10
+          example: 10
+        - name: async
+          in: query
+          description: Run scan asynchronously
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Dust tokens found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DustScanResponse'
+
+  /api/wallet/{address}/dust/status/{jobId}:
+    get:
+      tags: [Wallet]
+      summary: Check async scan status
+      operationId: getWalletDustStatus
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/JobPendingResponse'
+                  - $ref: '#/components/schemas/DustScanResponse'
+
+  # ============================================================
+  # Quote Endpoints
+  # ============================================================
+  /api/quote:
+    post:
+      tags: [Quote]
+      summary: Get sweep quote
+      description: |
+        Generates a quote for sweeping dust tokens to a destination token or DeFi position.
+        Quotes expire after 5 minutes.
+      operationId: createQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+      responses:
+        '200':
+          description: Quote generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ============================================================
+  # Sweep Endpoints
+  # ============================================================
+  /api/sweep:
+    post:
+      tags: [Sweep]
+      summary: Execute sweep
+      description: |
+        Executes a sweep based on a previously generated quote.
+        Requires authentication and may require x402 payment ($0.10).
+      operationId: executeSweep
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SweepRequest'
+      responses:
+        '200':
+          description: Sweep started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SweepExecuteResponse'
+        '402':
+          description: Payment required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/X402PaymentRequired'
+        '403':
+          description: Not authorized
+        '404':
+          description: Quote not found
+        '410':
+          description: Quote expired
+
+  /api/sweep/preview:
+    post:
+      tags: [Sweep]
+      summary: Preview sweep
+      description: Preview a sweep without executing (no payment required)
+      operationId: previewSweep
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wallet, quoteId]
+              properties:
+                wallet:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                quoteId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Sweep preview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SweepPreviewResponse'
+
+  /api/sweep/{id}/status:
+    get:
+      tags: [Sweep]
+      summary: Get sweep status
+      operationId: getSweepStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sweep status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SweepStatusResponse'
+        '404':
+          description: Sweep not found
+
+  # ============================================================
+  # DeFi Endpoints
+  # ============================================================
+  /api/defi/chains:
+    get:
+      tags: [DeFi]
+      summary: Get supported chains
+      operationId: getDefiChains
+      responses:
+        '200':
+          description: List of supported chains
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: string
+
+  /api/defi/protocols:
+    get:
+      tags: [DeFi]
+      summary: Get supported protocols
+      operationId: getDefiProtocols
+      responses:
+        '200':
+          description: List of supported protocols
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: string
+                      enum: [aave, yearn, beefy, lido, jito]
+
+  /api/defi/{chain}/vaults:
+    get:
+      tags: [DeFi]
+      summary: Get vaults on a chain
+      operationId: getDefiVaults
+      parameters:
+        - name: chain
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of vaults
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VaultsResponse'
+
+  /api/defi/{chain}/{protocol}/{vaultAddress}/quote:
+    get:
+      tags: [DeFi]
+      summary: Get deposit quote
+      operationId: getDefiQuote
+      parameters:
+        - name: chain
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: protocol
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [aave, yearn, beefy, lido]
+        - name: vaultAddress
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: userAddress
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deposit quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefiQuoteResponse'
+
+  # ============================================================
+  # Bridge Endpoints
+  # ============================================================
+  /api/bridge/routes:
+    get:
+      tags: [Bridge]
+      summary: Get bridge routes
+      operationId: getBridgeRoutes
+      parameters:
+        - name: sourceChain
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [ethereum, base, arbitrum, polygon, bsc, linea, optimism]
+        - name: destChain
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [ethereum, base, arbitrum, polygon, bsc, linea, optimism]
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: userAddress
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Available bridge routes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeRoutesResponse'
+
+  /api/bridge/quote:
+    get:
+      tags: [Bridge]
+      summary: Get bridge quote
+      operationId: getBridgeQuote
+      parameters:
+        - name: sourceChain
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: destChain
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: sourceToken
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: destToken
+          in: query
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: sender
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: recipient
+          in: query
+          schema:
+            type: string
+        - name: slippage
+          in: query
+          schema:
+            type: number
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [speed, cost, reliability]
+      responses:
+        '200':
+          description: Bridge quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeQuoteResponse'
+
+  /api/bridge/status/{txHash}:
+    get:
+      tags: [Bridge]
+      summary: Get bridge transaction status
+      operationId: getBridgeStatus
+      parameters:
+        - name: txHash
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{64}$'
+        - name: sourceChain
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: provider
+          in: query
+          schema:
+            type: string
+            enum: [across, stargate, hop, cbridge, socket]
+      responses:
+        '200':
+          description: Bridge status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeStatusResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: SIWE signature token
+
+  schemas:
+    # ============================================================
+    # Common Schemas
+    # ============================================================
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+    # ============================================================
+    # Health Schemas
+    # ============================================================
+    ReadinessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ready, degraded]
+        timestamp:
+          type: integer
+        checks:
+          type: object
+          properties:
+            redis:
+              $ref: '#/components/schemas/HealthCheck'
+            database:
+              $ref: '#/components/schemas/HealthCheck'
+
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, error]
+        latencyMs:
+          type: integer
+        error:
+          type: string
+
+    # ============================================================
+    # Wallet Schemas
+    # ============================================================
+    DustScanResponse:
+      type: object
+      properties:
+        wallet:
+          type: string
+        dust:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/DustToken'
+        summary:
+          type: object
+          properties:
+            totalTokens:
+              type: integer
+            totalValueUsd:
+              type: number
+            chains:
+              type: array
+              items:
+                type: string
+            scannedAt:
+              type: integer
+
+    DustToken:
+      type: object
+      properties:
+        token:
+          type: object
+          properties:
+            address:
+              type: string
+            symbol:
+              type: string
+            balance:
+              type: string
+            decimals:
+              type: integer
+        usdValue:
+          type: number
+        validation:
+          type: object
+          properties:
+            canSweep:
+              type: boolean
+            reasons:
+              type: array
+              items:
+                type: string
+
+    JobPendingResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [queued, active, waiting]
+        progress:
+          type: number
+
+    # ============================================================
+    # Quote Schemas
+    # ============================================================
+    QuoteRequest:
+      type: object
+      required: [wallet, chains, destination]
+      properties:
+        wallet:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+        chains:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        tokens:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+              chain:
+                type: string
+              amount:
+                type: string
+        destination:
+          type: object
+          required: [chain, token]
+          properties:
+            chain:
+              type: string
+            token:
+              type: string
+            protocol:
+              type: string
+              description: DeFi protocol (e.g., aave, yearn)
+            vault:
+              type: string
+        slippageBps:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+        gasToken:
+          type: string
+          description: Token address to pay gas with
+
+    QuoteResponse:
+      type: object
+      properties:
+        quoteId:
+          type: string
+          format: uuid
+        wallet:
+          type: string
+        tokens:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+              chain:
+                type: string
+              symbol:
+                type: string
+              amount:
+                type: string
+              usdValue:
+                type: number
+              canSweep:
+                type: boolean
+              reason:
+                type: string
+        destination:
+          type: object
+          properties:
+            chain:
+              type: string
+            token:
+              type: string
+            symbol:
+              type: string
+            protocol:
+              type: string
+            vault:
+              type: string
+        summary:
+          type: object
+          properties:
+            totalInputValueUsd:
+              type: number
+            estimatedOutputAmount:
+              type: string
+            estimatedOutputValueUsd:
+              type: number
+            estimatedGasUsd:
+              type: number
+            netValueUsd:
+              type: number
+            savingsVsManual:
+              type: number
+        route:
+          type: object
+          properties:
+            aggregator:
+              type: string
+            steps:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [swap, bridge, deposit]
+                  chain:
+                    type: string
+                  protocol:
+                    type: string
+                  tokenIn:
+                    type: string
+                  tokenOut:
+                    type: string
+                  amountIn:
+                    type: string
+                  amountOut:
+                    type: string
+        expiresAt:
+          type: integer
+        createdAt:
+          type: integer
+
+    # ============================================================
+    # Sweep Schemas
+    # ============================================================
+    SweepRequest:
+      type: object
+      required: [wallet, quoteId, signature]
+      properties:
+        wallet:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+        quoteId:
+          type: string
+          format: uuid
+        signature:
+          type: string
+        gasToken:
+          type: string
+
+    SweepExecuteResponse:
+      type: object
+      properties:
+        sweepId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending]
+        jobId:
+          type: string
+        message:
+          type: string
+        statusUrl:
+          type: string
+        streamUrl:
+          type: string
+
+    SweepPreviewResponse:
+      type: object
+      properties:
+        sweepId:
+          type: string
+        tokens:
+          type: array
+          items:
+            type: object
+        estimatedOutput:
+          type: object
+        gasEstimate:
+          type: object
+
+    SweepStatusResponse:
+      type: object
+      properties:
+        sweepId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        createdAt:
+          type: integer
+        updatedAt:
+          type: integer
+        completedAt:
+          type: integer
+        chains:
+          type: array
+          items:
+            type: string
+        tokens:
+          type: array
+          items:
+            type: object
+        txHashes:
+          type: array
+          items:
+            type: string
+        outputToken:
+          type: string
+        outputAmount:
+          type: string
+        outputChain:
+          type: string
+        totalInputValueUsd:
+          type: string
+        totalOutputValueUsd:
+          type: string
+        errorMessage:
+          type: string
+        defiProtocol:
+          type: string
+        defiDestination:
+          type: string
+
+    # ============================================================
+    # x402 Schemas
+    # ============================================================
+    X402PaymentRequired:
+      type: object
+      properties:
+        x402Version:
+          type: integer
+          example: 1
+        accepts:
+          type: array
+          items:
+            type: object
+            properties:
+              scheme:
+                type: string
+                example: exact
+              network:
+                type: string
+                example: base
+              asset:
+                type: string
+                example: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+              payTo:
+                type: string
+              maxAmountRequired:
+                type: string
+                example: '100000'
+              resource:
+                type: string
+              description:
+                type: string
+
+    # ============================================================
+    # DeFi Schemas
+    # ============================================================
+    VaultsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+              name:
+                type: string
+              protocol:
+                type: string
+              apy:
+                type: number
+              tvl:
+                type: number
+              riskLevel:
+                type: string
+                enum: [low, medium, high]
+              underlyingAsset:
+                type: string
+
+    DefiQuoteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            vault:
+              type: string
+            amountIn:
+              type: string
+            expectedShares:
+              type: string
+            expectedApy:
+              type: number
+            gasEstimate:
+              type: string
+
+    # ============================================================
+    # Bridge Schemas
+    # ============================================================
+    BridgeRoutesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        routes:
+          type: array
+          items:
+            type: object
+            properties:
+              provider:
+                type: string
+              estimatedTime:
+                type: integer
+              fee:
+                type: string
+              feeUsd:
+                type: number
+
+    BridgeQuoteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        quote:
+          type: object
+          properties:
+            quoteId:
+              type: string
+            provider:
+                type: string
+            sourceChain:
+              type: string
+            destChain:
+              type: string
+            sourceToken:
+              type: string
+            destToken:
+              type: string
+            amountIn:
+              type: string
+            amountOut:
+              type: string
+            fee:
+              type: string
+            feeUsd:
+              type: number
+            estimatedTime:
+              type: integer
+            expiresAt:
+              type: integer
+
+    BridgeStatusResponse:
+      type: object
+      properties:
+        txHash:
+          type: string
+        status:
+          type: string
+          enum: [pending, inflight, completed, failed]
+        sourceChain:
+          type: string
+        destChain:
+          type: string
+        sourceTxHash:
+          type: string
+        destTxHash:
+          type: string
+        completedAt:
+          type: integer

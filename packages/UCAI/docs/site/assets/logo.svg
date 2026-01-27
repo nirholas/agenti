@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Ethereum-inspired hexagon background -->
+  <polygon 
+    points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" 
+    fill="#627EEA" 
+    opacity="0.9"
+  />
+  
+  <!-- Arrow representing ABI transformation -->
+  <path 
+    d="M30,50 L45,50 L45,40 L60,50 L45,60 L45,50" 
+    fill="white" 
+    stroke="white" 
+    stroke-width="2"
+  />
+  
+  <!-- MCP server icon (simplified) -->
+  <rect x="62" y="38" width="16" height="24" rx="2" fill="white" opacity="0.9"/>
+  <line x1="65" y1="44" x2="75" y2="44" stroke="#627EEA" stroke-width="2"/>
+  <line x1="65" y1="50" x2="75" y2="50" stroke="#627EEA" stroke-width="2"/>
+  <line x1="65" y1="56" x2="72" y2="56" stroke="#627EEA" stroke-width="2"/>
+  
+  <!-- Code brackets representing ABI -->
+  <text x="22" y="56" font-family="monospace" font-size="20" fill="white" font-weight="bold">{</text>
+</svg>

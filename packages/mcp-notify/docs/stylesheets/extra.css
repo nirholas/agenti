@@ -1,0 +1,156 @@
+/* MCP Notify - Custom Styles */
+
+/* Hero section styling */
+[data-md-color-scheme="slate"] .hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #4051b5 50%, #0ea5e9 100%);
+}
+
+/* Cards grid */
+.grid.cards > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+
+.grid.cards > ul > li {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.grid.cards > ul > li:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background: #10b981;
+  color: white;
+}
+
+.status-badge.paused {
+  background: #f59e0b;
+  color: white;
+}
+
+/* Change type badges */
+.change-new {
+  background: #22c55e;
+  color: white;
+}
+
+.change-updated {
+  background: #3b82f6;
+  color: white;
+}
+
+.change-removed {
+  background: #ef4444;
+  color: white;
+}
+
+/* Channel icons */
+.channel-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+/* Code blocks with filename */
+.md-typeset code {
+  font-size: 0.85rem;
+}
+
+/* API method badges */
+.api-method {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-right: 0.5rem;
+}
+
+.api-method.get {
+  background: #22c55e;
+  color: white;
+}
+
+.api-method.post {
+  background: #3b82f6;
+  color: white;
+}
+
+.api-method.put {
+  background: #f59e0b;
+  color: white;
+}
+
+.api-method.delete {
+  background: #ef4444;
+  color: white;
+}
+
+/* Result boxes */
+.result {
+  background: var(--md-code-bg-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left: 4px solid var(--md-primary-fg-color);
+}
+
+/* Feature comparison table */
+.comparison-table th {
+  text-align: center;
+}
+
+.comparison-table td:not(:first-child) {
+  text-align: center;
+}
+
+/* Keyboard shortcuts */
+kbd {
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.85rem;
+}
+
+/* Version badges */
+.version-badge {
+  display: inline-block;
+  background: var(--md-primary-fg-color);
+  color: white;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Announcement bar */
+.md-banner {
+  background: linear-gradient(90deg, #4051b5, #6366f1);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 76.25em) {
+  .hero h1 {
+    font-size: 2rem;
+  }
+}

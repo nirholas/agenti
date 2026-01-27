@@ -1,0 +1,40 @@
+{
+  "id": "vercel-mcp",
+  "name": "Vercel",
+  "description": "Vercel API - manage deployments, domains, projects, and serverless functions",
+  "sourceRepo": "vercel/vercel",
+  "sourceUrl": "https://github.com/vercel/vercel",
+  "version": "1.0.0",
+  "sourceVersion": "v33.0.0",
+  "toolCount": 8,
+  "tools": [
+    { "name": "list_deployments", "description": "List all deployments", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "get_deployment", "description": "Get deployment details", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "create_deployment", "description": "Create a new deployment", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "list_projects", "description": "List all projects", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "get_project", "description": "Get project details", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "list_domains", "description": "List all domains", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "add_domain", "description": "Add a domain to a project", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "get_env_vars", "description": "Get environment variables", "source": "openapi", "paramCount": 1, "requiresAuth": true }
+  ],
+  "categories": ["deployment", "hosting", "api"],
+  "tags": ["vercel", "deployment", "serverless", "hosting", "nextjs"],
+  "popularity": 8920,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst VERCEL_TOKEN = process.env.VERCEL_TOKEN;\nconst VERCEL_BASE_URL = 'https://api.vercel.com';\n\nif (!VERCEL_TOKEN) {\n  console.error('Error: VERCEL_TOKEN environment variable is required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'vercel-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function vercelRequest(endpoint: string, method: string = 'GET', body?: unknown) {\n  const response = await fetch(`${VERCEL_BASE_URL}${endpoint}`, {\n    method,\n    headers: {\n      'Authorization': `Bearer ${VERCEL_TOKEN}`,\n      'Content-Type': 'application/json',\n    },\n    body: body ? JSON.stringify(body) : undefined,\n  });\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.error?.message || 'Vercel API error');\n  }\n  return response.json();\n}\n\nconst tools = [\n  { name: 'list_deployments', description: 'List deployments', inputSchema: { type: 'object', properties: { projectId: { type: 'string' }, limit: { type: 'number' }, state: { type: 'string' }, target: { type: 'string' } } } },\n  { name: 'get_deployment', description: 'Get deployment', inputSchema: { type: 'object', properties: { deploymentId: { type: 'string' } }, required: ['deploymentId'] } },\n  { name: 'list_projects', description: 'List projects', inputSchema: { type: 'object', properties: { limit: { type: 'number' }, search: { type: 'string' } } } },\n  { name: 'get_project', description: 'Get project', inputSchema: { type: 'object', properties: { projectId: { type: 'string' } }, required: ['projectId'] } },\n  { name: 'list_domains', description: 'List domains', inputSchema: { type: 'object', properties: { projectId: { type: 'string' }, limit: { type: 'number' } } } },\n  { name: 'add_domain', description: 'Add domain', inputSchema: { type: 'object', properties: { projectId: { type: 'string' }, domain: { type: 'string' } }, required: ['projectId', 'domain'] } },\n  { name: 'get_env_vars', description: 'Get env vars', inputSchema: { type: 'object', properties: { projectId: { type: 'string' } }, required: ['projectId'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, unknown>;\n    switch (name) {\n      case 'list_deployments': result = await vercelRequest(`/v6/deployments${a.projectId ? `?projectId=${a.projectId}` : ''}`); break;\n      case 'get_deployment': result = await vercelRequest(`/v13/deployments/${a.deploymentId}`); break;\n      case 'list_projects': result = await vercelRequest('/v9/projects'); break;\n      case 'get_project': result = await vercelRequest(`/v9/projects/${a.projectId}`); break;\n      case 'list_domains': result = await vercelRequest(`/v5/projects/${a.projectId}/domains`); break;\n      case 'add_domain': result = await vercelRequest(`/v10/projects/${a.projectId}/domains`, 'POST', { name: a.domain }); break;\n      case 'get_env_vars': result = await vercelRequest(`/v9/projects/${a.projectId}/env`); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "vercel": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "VERCEL_TOKEN": "${VERCEL_TOKEN}" } } } },
+    "cursor": { "mcpServers": { "vercel": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "VERCEL_TOKEN": "${VERCEL_TOKEN}" } } } },
+    "vscode": { "mcpServers": { "vercel": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "VERCEL_TOKEN": "${VERCEL_TOKEN}" } } } }
+  },
+  "quality": { "overall": 84, "schemaCompleteness": 85, "documentation": 82, "examples": 80, "authHandling": 88, "parameterTypes": 85 },
+  "auth": [{ "type": "http", "scheme": "bearer", "envVar": "VERCEL_TOKEN", "instructions": "Create a token at https://vercel.com/account/tokens" }],
+  "docsUrl": "https://vercel.com/docs",
+  "apiDocsUrl": "https://vercel.com/docs/rest-api",
+  "iconUrl": "https://vercel.com/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

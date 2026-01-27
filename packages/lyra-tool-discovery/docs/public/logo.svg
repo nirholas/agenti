@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="prismGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a78bfa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5b21b6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="lightGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Crystal/Prism shape -->
+  <polygon 
+    points="50,5 85,35 85,70 50,95 15,70 15,35" 
+    fill="url(#prismGradient)" 
+    stroke="#5b21b6" 
+    stroke-width="2"
+  />
+  
+  <!-- Inner facets -->
+  <polygon 
+    points="50,5 50,50 85,35" 
+    fill="rgba(255,255,255,0.2)"
+  />
+  <polygon 
+    points="50,50 85,35 85,70" 
+    fill="rgba(255,255,255,0.1)"
+  />
+  <polygon 
+    points="50,50 50,95 85,70" 
+    fill="rgba(0,0,0,0.1)"
+  />
+  
+  <!-- Light ray entering -->
+  <line 
+    x1="0" y1="30" 
+    x2="35" y2="45" 
+    stroke="url(#lightGradient)" 
+    stroke-width="3" 
+    stroke-linecap="round"
+  />
+  
+  <!-- Light rays exiting (dispersed) -->
+  <line x1="65" y1="55" x2="100" y2="45" stroke="#ef4444" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <line x1="65" y1="58" x2="100" y2="55" stroke="#f97316" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <line x1="65" y1="61" x2="100" y2="65" stroke="#eab308" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <line x1="65" y1="64" x2="100" y2="75" stroke="#22c55e" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <line x1="65" y1="67" x2="100" y2="85" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  
+  <!-- Sparkle/star effects -->
+  <circle cx="50" cy="30" r="2" fill="white" opacity="0.8"/>
+  <circle cx="70" cy="50" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="35" cy="60" r="1" fill="white" opacity="0.4"/>
+</svg>

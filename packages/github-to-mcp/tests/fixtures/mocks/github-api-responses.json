@@ -1,0 +1,63 @@
+{
+  "repo": {
+    "id": 123456789,
+    "name": "example-repo",
+    "full_name": "owner/example-repo",
+    "private": false,
+    "owner": {
+      "login": "owner",
+      "id": 12345
+    },
+    "description": "An example repository for testing",
+    "stargazers_count": 100,
+    "language": "TypeScript",
+    "default_branch": "main",
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT"
+    }
+  },
+  "readme": {
+    "path": "README.md",
+    "content": "IyBFeGFtcGxlIFJlcG8KClRoaXMgaXMgYW4gZXhhbXBsZSByZXBvc2l0b3J5LgoKIyMgQXZhaWxhYmxlIFRvb2xzCgotICoqRWRpdCoqOiBFZGl0IGZpbGVzIGluIHRoZSByZXBvc2l0b3J5Ci0gKipWaWV3Kio6IFZpZXcgZmlsZSBjb250ZW50cwoKIyMgVXNhZ2UKCmBgYGphdmFzY3JpcHQKY29uc3QgcmVzdWx0ID0gYXdhaXQgY2xpZW50LmdldCh7IGlkOiAxMjMsIG5hbWU6ICd0ZXN0JyB9KTsKYGBgCg==",
+    "sha": "abc123",
+    "encoding": "base64",
+    "type": "file"
+  },
+  "directory": [
+    { "path": "src", "type": "dir", "sha": "def456" },
+    { "path": "README.md", "type": "file", "sha": "abc123" },
+    { "path": "package.json", "type": "file", "sha": "ghi789" },
+    { "path": "openapi.json", "type": "file", "sha": "jkl012" }
+  ],
+  "file_content": {
+    "path": "src/index.ts",
+    "content": "ZXhwb3J0IGNsYXNzIEV4YW1wbGVDbGllbnQgewogIC8qKgogICAqIEdldCBhIHJlc291cmNlIGJ5IElECiAgICovCiAgYXN5bmMgZ2V0UmVzb3VyY2UoaWQ6IHN0cmluZyk6IFByb21pc2U8UmVzb3VyY2U+IHsKICAgIC8vIGltcGxlbWVudGF0aW9uCiAgICByZXR1cm4ge30gYXMgUmVzb3VyY2U7CiAgfQp9Cg==",
+    "sha": "xyz789",
+    "encoding": "base64",
+    "type": "file"
+  },
+  "rate_limit": {
+    "resources": {
+      "core": {
+        "limit": 5000,
+        "remaining": 4999,
+        "reset": 1700000000
+      }
+    },
+    "rate": {
+      "limit": 5000,
+      "remaining": 4999,
+      "reset": 1700000000
+    }
+  },
+  "not_found": {
+    "message": "Not Found",
+    "documentation_url": "https://docs.github.com/rest/repos/contents#get-repository-content"
+  },
+  "rate_limit_error": {
+    "message": "API rate limit exceeded",
+    "documentation_url": "https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting"
+  }
+}

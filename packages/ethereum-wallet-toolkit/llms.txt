@@ -1,0 +1,80 @@
+# Ethereum Wallet Toolkit
+
+> A comprehensive Python CLI toolkit for Ethereum wallet operations using official Ethereum Foundation libraries.
+
+## Quick Summary
+
+This toolkit provides secure, auditable tools for:
+- Generating random Ethereum wallets
+- Creating vanity addresses (prefix/suffix matching)
+- BIP39 mnemonic generation and restoration
+- BIP32 HD wallet derivation
+- Message signing and verification (EIP-191)
+- Address and key validation
+- Contract address prediction (CREATE/CREATE2)
+
+## Core Files
+
+- `eth_toolkit.py` - Main CLI tool (1500 lines, full-featured)
+- `vanity.py` - Standalone vanity address generator
+- `offline.html` - Offline wallet generator (browser-based)
+
+## Documentation
+
+- `/docs/API.md` - Complete API reference with code examples
+- `/docs/SECURITY.md` - Security best practices and threat model
+- `/docs/VANITY.md` - Vanity address technical guide
+- `/docs/VANITY_RESOURCES.md` - Research compilation on vanity address security
+
+## Dependencies
+
+All from Ethereum Foundation (audited, official):
+- eth-account: Key generation, signing, HD wallets
+- eth-keys: ECDSA operations
+- eth-utils: Utility functions
+- eth-rlp: RLP encoding
+
+## Usage Examples
+
+```bash
+# Generate random wallet
+python eth_toolkit.py generate
+
+# Generate with 24-word mnemonic
+python eth_toolkit.py generate --mnemonic --words 24
+
+# Vanity address (prefix "dead")
+python eth_toolkit.py vanity --prefix dead
+
+# Sign message
+python eth_toolkit.py sign --key <key> --message "Hello"
+
+# Verify signature
+python eth_toolkit.py verify --address <addr> --message "Hello" --signature <sig>
+```
+
+## Key Security Notes
+
+- EDUCATIONAL PURPOSES ONLY - no liability
+- Uses OS-level CSPRNG (not weak seeds like Profanity)
+- Always audit code before use
+- Never use with real funds
+- Run offline for maximum security
+
+## For AI/LLM Integration
+
+This codebase is well-documented and suitable for:
+- Learning Ethereum wallet mechanics
+- Understanding BIP39/BIP32 implementation
+- Studying vanity address generation approaches
+- Code review and security auditing practice
+
+## Links
+
+- Repository: https://github.com/nirholas/ethereum-wallet-toolkit
+- Author: @nichxbt (Twitter/X)
+- License: MIT
+
+
+
+

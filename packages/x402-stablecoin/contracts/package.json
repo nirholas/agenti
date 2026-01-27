@@ -1,0 +1,20 @@
+{
+  "name": "@x402/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "X402 Protocol Smart Contracts",
+  "scripts": {
+    "build": "forge build",
+    "compile": "forge build",
+    "test": "forge test -vvv",
+    "test:gas": "forge test --gas-report",
+    "coverage": "forge coverage",
+    "deploy:sepolia": "forge script script/Deploy.s.sol:DeployScript --rpc-url $ARBITRUM_SEPOLIA_RPC_URL --broadcast --verify",
+    "deploy:mainnet": "forge script script/Deploy.s.sol:DeployScript --rpc-url $ARBITRUM_RPC_URL --broadcast --verify",
+    "verify": "forge verify-contract",
+    "clean": "forge clean"
+  },
+  "devDependencies": {
+    "solhint": "^4.0.0"
+  }
+}

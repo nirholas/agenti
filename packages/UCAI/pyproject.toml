@@ -1,0 +1,168 @@
+[project]
+name = "abi-to-mcp"
+version = "0.1.0"
+description = "UCAI — The ABI-to-MCP Server Generator. Convert smart contract ABIs to AI-ready MCP servers."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "nich", email = "nirholas@users.noreply.github.com" }
+]
+keywords = [
+    "ucai",
+    "universal-contract-ai-interface",
+    "mcp",
+    "model-context-protocol",
+    "ethereum",
+    "smart-contracts",
+    "abi",
+    "web3",
+    "blockchain",
+    "ai",
+    "llm",
+    "claude",
+    "defi",
+    "solana",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Internet :: WWW/HTTP",
+]
+
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+    "jinja2>=3.1.0",
+    "web3>=6.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+]
+
+[project.scripts]
+abi-to-mcp = "abi_to_mcp.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/nirholas/UCAI"
+Documentation = "https://ucai.tech"
+Repository = "https://github.com/nirholas/UCAI"
+Issues = "https://github.com/nirholas/UCAI/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/abi_to_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "pyproject.toml",
+    "README.md",
+    "LICENSE",
+]
+exclude = [
+    "docs/",
+    "web/",
+    "web-v2/",
+    "ucai/",
+    "examples/",
+    "tests/",
+    "scripts/",
+    ".git/",
+    ".github/",
+    "dist/",
+    "*.pyc",
+    "__pycache__/",
+    "node_modules/",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning:websockets.legacy",
+]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in argument defaults
+    "F401",  # unused imports (keep for public API re-exports in __init__.py)
+    "F841",  # unused variables (may be intentional placeholders)
+    "W293",  # blank line contains whitespace (cosmetic only)
+    "I001",  # import sorting (cosmetic, don't auto-fix)
+    "UP006", # Dict/List vs dict/list type hints (style preference)
+    "UP007", # Optional[X] vs X | None (style preference)
+    "UP015", # unnecessary open mode (cosmetic)
+    "UP035", # deprecated typing imports (style preference)
+    "UP045", # Optional[X] vs X | None (style preference)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["abi_to_mcp"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "web3.*"
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["src/abi_to_mcp"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

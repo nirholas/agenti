@@ -1,0 +1,300 @@
+site_name: MCP Notify
+site_url: !ENV [SITE_URL, 'https://mcp-notify-docs.vercel.app']
+site_description: Real-time notifications for MCP Registry changes — Monitor, track, and get alerted when MCP servers are added, updated, or removed
+site_author: nirholas
+
+repo_name: nirholas/mcp-notify
+repo_url: https://github.com/nirholas/mcp-notify
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    # Dark mode  
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  
+  features:
+    # Navigation
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - navigation.path
+    
+    # Search
+    - search.suggest
+    - search.highlight
+    - search.share
+    
+    # Content
+    - content.tabs.link
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tooltips
+    - content.action.edit
+    - content.action.view
+    
+    # Table of contents
+    - toc.follow
+    
+    # Announce
+    - announce.dismiss
+  
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    annotation: material/information
+  
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+  - minify:
+      minify_html: true
+  - social:
+      cards_layout_options:
+        background_color: "#4051b5"
+  - tags:
+      tags_file: tags.md
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - git-committers:
+      repository: nirholas/mcp-notify
+      branch: main
+
+markdown_extensions:
+  # Admonitions
+  - admonition
+  - pymdownx.details
+  
+  # Code blocks
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      auto_title: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      auto_append:
+        - docs/includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  
+  # Tabs
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  
+  # Formatting
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.smartsymbols
+  
+  # Lists
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  
+  # Emoji
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  
+  # Attributes & HTML
+  - attr_list
+  - md_in_html
+  - abbr
+  
+  # Tables
+  - tables
+  
+  # Table of contents
+  - toc:
+      permalink: true
+      permalink_title: Link to this section
+      toc_depth: 4
+  
+  # Footnotes
+  - footnotes
+  
+  # Math (for any technical formulas)
+  - pymdownx.arithmatex:
+      generic: true
+
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  
+  - Getting Started:
+    - getting-started/index.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Your First Subscription: getting-started/first-subscription.md
+    - Configuration: getting-started/configuration.md
+  
+  - Notification Channels:
+    - channels/index.md
+    - Discord: channels/discord.md
+    - Slack: channels/slack.md
+    - Email: channels/email.md
+    - Telegram: channels/telegram.md
+    - Microsoft Teams: channels/teams.md
+    - Webhooks: channels/webhooks.md
+    - RSS/Atom Feeds: channels/rss.md
+  
+  - CLI Reference:
+    - cli/index.md
+    - mcp-notify-cli changes: cli/changes.md
+    - mcp-notify-cli watch: cli/watch.md
+    - mcp-notify-cli subscribe: cli/subscribe.md
+    - mcp-notify-cli subscriptions: cli/subscriptions.md
+    - mcp-notify-cli servers: cli/servers.md
+    - mcp-notify-cli snapshot: cli/snapshot.md
+    - mcp-notify-cli config: cli/config.md
+  
+  - API Reference:
+    - api/index.md
+    - Authentication: api/authentication.md
+    - Subscriptions: api/subscriptions.md
+    - Changes: api/changes.md
+    - Servers: api/servers.md
+    - Feeds: api/feeds.md
+    - Statistics: api/statistics.md
+    - Errors: api/errors.md
+  
+  - MCP Server:
+    - mcp-server/index.md
+    - Setup: mcp-server/setup.md
+    - Tools Reference: mcp-server/tools.md
+    - Claude Desktop: mcp-server/claude-desktop.md
+  
+  - Go SDK:
+    - sdk/index.md
+    - Client: sdk/client.md
+    - Types: sdk/types.md
+    - Examples: sdk/examples.md
+  
+  - Dashboard:
+    - dashboard/index.md
+    - Features: dashboard/features.md
+    - Self-Hosting: dashboard/self-hosting.md
+  
+  - Deployment:
+    - deployment/index.md
+    - Vercel (Docs): deployment/vercel-docs.md
+    - Railway: deployment/railway.md
+    - Docker: deployment/docker.md
+    - Kubernetes: deployment/kubernetes.md
+    - Configuration Reference: deployment/configuration.md
+  
+  - Architecture:
+    - architecture/index.md
+    - System Design: architecture/system-design.md
+    - Database Schema: architecture/database.md
+    - Notification Flow: architecture/notifications.md
+  
+  - Contributing:
+    - contributing/index.md
+    - Development Setup: contributing/development.md
+    - Code Style: contributing/code-style.md
+    - Testing: contributing/testing.md
+    - Pull Requests: contributing/pull-requests.md
+  
+  - Changelog: changelog.md
+  - Tags: tags.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/mcp-notify
+      name: GitHub Repository
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/mcp-registry
+      name: Discord Community
+  
+  version:
+    provider: mike
+    default: stable
+  
+  # analytics:
+  #   provider: google
+  #   property: G-XXXXXXXXXX  # TODO: Add real Google Analytics ID
+  #   feedback:
+  #     title: Was this page helpful?
+  #     ratings:
+  #       - icon: material/emoticon-happy-outline
+  #         name: This page was helpful
+  #         data: 1
+  #         note: Thanks for your feedback!
+  #       - icon: material/emoticon-sad-outline
+  #         name: This page could be improved
+  #         data: 0
+  #         note: Thanks for your feedback! Help us improve by opening an issue.
+  
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation. With your consent,
+      you're helping us make our documentation better.
+  
+  status:
+    new: Recently added
+    deprecated: Deprecated
+  
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+copyright: >
+  Copyright &copy; 2024-2026 nirholas –
+  <a href="#__consent">Change cookie settings</a>
+
+watch:
+  - docs
+  - mkdocs.yml

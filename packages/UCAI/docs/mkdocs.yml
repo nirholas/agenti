@@ -1,0 +1,153 @@
+site_name: UCAI
+site_url: https://ucai.tech
+site_description: The ABI-to-MCP Server Generator — Convert smart contract ABIs to AI-ready MCP servers
+site_author: nirholas
+
+repo_name: nirholas/UCAI
+repo_url: https://github.com/nirholas/UCAI
+edit_uri: edit/main/docs/docs/
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  
+  icon:
+    repo: fontawesome/brands/github
+  
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            members_order: source
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Web Builder: guides/web-builder.md
+  - Getting Started:
+    - getting-started/index.md
+    - Installation: getting-started/installation.md
+    - Quickstart: getting-started/quickstart.md
+    - First MCP Server: getting-started/first-server.md
+  - CLI Reference:
+    - cli/index.md
+    - generate: cli/generate.md
+    - inspect: cli/inspect.md
+    - validate: cli/validate.md
+    - serve: cli/serve.md
+  - Concepts:
+    - concepts/index.md
+    - Type Mapping: concepts/type-mapping.md
+    - Tool Types: concepts/tool-types.md
+    - Events & Resources: concepts/events.md
+    - Safety Features: concepts/safety.md
+    - Security Scanner: concepts/security-scanner.md
+  - Guides:
+    - guides/index.md
+    - Web Builder: guides/web-builder.md
+    - ERC20 Tokens: guides/erc20-token.md
+    - NFT Collections: guides/nft-collection.md
+    - DeFi Protocols: guides/defi-protocol.md
+    - Custom Networks: guides/custom-network.md
+    - Claude Desktop: guides/claude-desktop.md
+  - Python API:
+    - api/index.md
+    - Parser: api/parser.md
+    - Fetchers: api/fetchers.md
+    - Mapper: api/mapper.md
+    - Generator: api/generator.md
+    - Runtime: api/runtime.md
+    - Core: api/core.md
+    - Utilities: api/utils.md
+    - CLI Internals: api/cli.md
+  - Reference:
+    - reference/index.md
+    - Networks: reference/networks.md
+    - Type Mapping: reference/type-table.md
+    - ERC Standards: reference/erc-standards.md
+    - Errors: reference/errors.md
+  - Contributing:
+    - contributing/index.md
+    - Development Setup: contributing/development.md
+    - Architecture: contributing/architecture.md
+    - Testing: contributing/testing.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/UCAI
+  
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: Copyright &copy; 2024-2026 nich

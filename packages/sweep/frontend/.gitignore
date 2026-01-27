@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js build
+.next/
+out/
+build/
+
+# ============================================
+# SECURITY - NEVER COMMIT THESE
+# ============================================
+# Environment files
+.env
+.env.*
+!.env.example
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# WalletConnect project IDs or API keys
+walletconnect-config.json
+
+# ============================================
+# Standard ignores
+# ============================================
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+coverage/
+.vitest/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Vercel
+.vercel/
+
+# PWA
+**/public/sw.js
+**/public/workbox-*.js
+**/public/swe-worker-*.js
+
+# Misc
+*.bak
+.cache/

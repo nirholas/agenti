@@ -1,0 +1,8 @@
+# X402 Kubernetes Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: x402
+  labels:
+    app.kubernetes.io/name: x402
+    app.kubernetes.io/part-of: x402-protocol

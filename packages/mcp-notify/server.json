@@ -1,0 +1,59 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nirholas/mcp-notify",
+  "title": "MCP Notify",
+  "description": "Monitor MCP registry for new servers - Discord, Slack notifications and alerts",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "nich",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/nirholas/mcp-notify",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "links": {
+    "homepage": "https://github.com/nirholas/mcp-notify",
+    "bugs": "https://github.com/nirholas/mcp-notify/issues"
+  },
+  "icons": [
+    {
+      "url": "https://raw.githubusercontent.com/nirholas/g1t/d9a0ee206b8136472c04384905999369f198b3c9/milady.svg",
+      "type": "svg"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "mcp-notify",
+      "version": "1.0.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "DISCORD_WEBHOOK_URL",
+          "description": "Discord webhook URL for notifications",
+          "required": false,
+          "secret": true
+        },
+        {
+          "name": "SLACK_WEBHOOK_URL",
+          "description": "Slack webhook URL for notifications",
+          "required": false,
+          "secret": true
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "keywords": ["mcp", "notify", "monitor", "discord", "slack", "alerts", "notifications", "ai"],
+      "category": "Developer Tools"
+    }
+  }
+}

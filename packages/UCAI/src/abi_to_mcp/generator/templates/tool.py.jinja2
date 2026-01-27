@@ -1,0 +1,116 @@
+{# Template for generating a single MCP tool function #}
+@mcp.tool()
+def {{ tool.name }}(
+{%- for param in tool.parameters %}
+    {{ param.name }}: {{ param.python_type }}{{ "," if not loop.last or not is_read else "" }}
+{%- endfor %}
+{%- if is_payable %}
+    value_wei: str = "0",
+{%- endif %}
+{%- if not is_read %}
+    simulate: bool = SIMULATION_DEFAULT
+{%- endif %}
+) -> {% if is_read %}{{ tool.return_schema.get('python_type', 'Any') }}{% else %}Dict[str, Any]{% endif %}:
+    """
+    {{ tool.description }}
+{% if tool.parameters %}
+
+    Args:
+{%- for param in tool.parameters %}
+        {{ param.name }}: {{ param.description }}
+{%- endfor %}
+{%- endif %}
+{%- if is_payable %}
+        value_wei: Amount of ETH to send (in wei)
+{%- endif %}
+{%- if not is_read %}
+        simulate: If True (default), only simulate the transaction without executing
+{%- endif %}
+
+    Returns:
+        {{ tool.return_description }}
+    """
+{% if is_read %}
+{#- Read-only function body #}
+{%- if tool.parameters %}
+    result = contract.functions.{{ tool.original_name }}(
+{%- for param in tool.parameters %}
+        {{ param.name }}{{ "," if not loop.last else "" }}
+{%- endfor %}
+    ).call()
+{%- else %}
+    result = contract.functions.{{ tool.original_name }}().call()
+{%- endif %}
+    return result
+{% else %}
+{#- Write function body with simulation support #}
+    if READ_ONLY_MODE:
+        return {"error": "Server is in read-only mode. Write operations disabled."}
+
+    signer = _get_signer()
+
+    # Build transaction
+    tx_params = {
+        "from": signer.address,
+        "nonce": w3.eth.get_transaction_count(signer.address),
+        "gas": 0,
+        "gasPrice": w3.eth.gas_price,
+{%- if is_payable %}
+        "value": int(value_wei),
+{%- endif %}
+    }
+
+{%- if tool.parameters %}
+    func = contract.functions.{{ tool.original_name }}(
+{%- for param in tool.parameters %}
+        {{ param.name }}{{ "," if not loop.last else "" }}
+{%- endfor %}
+    )
+{%- else %}
+    func = contract.functions.{{ tool.original_name }}()
+{%- endif %}
+
+    tx = func.build_transaction(tx_params)
+    tx["gas"] = _estimate_gas(tx)
+
+    if simulate:
+        # Simulation only - does not execute
+        try:
+            result = func.call({
+                "from": signer.address
+{%- if is_payable %},
+                "value": int(value_wei)
+{%- endif %}
+            })
+            return {
+                "simulated": True,
+                "success": True,
+                "result": result,
+                "estimated_gas": tx["gas"],
+                "gas_price_gwei": float(w3.from_wei(tx["gasPrice"], "gwei")),
+                "estimated_cost_eth": float(w3.from_wei(tx["gas"] * tx["gasPrice"], "ether")),
+                "note": "This was a simulation. Set simulate=False to execute for real."
+            }
+        except Exception as e:
+            return {
+                "simulated": True,
+                "success": False,
+                "error": str(e),
+                "note": "Simulation failed. The transaction would likely revert."
+            }
+
+    # Execute transaction for real
+    signed = w3.eth.account.sign_transaction(tx, PRIVATE_KEY)
+    tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+
+    return {
+        "simulated": False,
+        "success": receipt.status == 1,
+        "tx_hash": receipt.transactionHash.hex(),
+        "block_number": receipt.blockNumber,
+        "gas_used": receipt.gasUsed,
+        "effective_gas_price": receipt.effectiveGasPrice,
+        "cost_eth": float(w3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, "ether")),
+    }
+{% endif %}

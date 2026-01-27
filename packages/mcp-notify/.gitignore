@@ -1,0 +1,49 @@
+# Binaries
+bin/
+/mcp-notify
+/mcp-notify-cli
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Go workspace file
+go.work
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local config
+config.yaml
+*.local.yaml
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+.tmp/
+
+# Node
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+*.d.ts
+vite.config.js

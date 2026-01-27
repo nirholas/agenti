@@ -1,0 +1,152 @@
+# Solana Wallet Toolkit - Full Context
+
+This file provides comprehensive context for AI assistants working with this codebase.
+
+## Project Overview
+
+A secure toolkit for generating Solana wallets and vanity addresses using ONLY official Solana Labs libraries. No third-party cryptographic dependencies.
+
+## Official Libraries Only
+
+| Implementation | Library | Maintainer |
+|----------------|---------|------------|
+| Rust | solana-sdk | Solana Labs |
+| TypeScript | @solana/web3.js | Solana Labs |
+| Shell | solana-keygen | Solana Labs |
+
+## Architecture
+
+### Rust Implementation (rust/)
+
+Entry point: src/main.rs
+Core modules:
+- generator.rs - Parallel key generation using rayon
+- matcher.rs - Pattern matching (prefix/suffix/case-insensitive)
+- output.rs - File output in Solana CLI format
+- security.rs - Memory zeroization, RNG verification
+
+Key generation flow:
+1. Parse CLI args with clap
+2. Spawn rayon thread pool
+3. Each thread: generate Keypair::new() via solana-sdk
+4. Check if pubkey matches pattern
+5. On match: save to JSON, zeroize memory
+
+### TypeScript Implementation (typescript/)
+
+Entry point: src/index.ts
+Core modules:
+- lib/generator.ts - Key generation using @solana/web3.js
+- lib/matcher.ts - Pattern matching
+- lib/output.ts - File output
+- lib/security.ts - Security utilities
+
+Key generation flow:
+1. Parse CLI args
+2. Loop: Keypair.generate() via @solana/web3.js
+3. Check if publicKey.toBase58() matches pattern
+4. On match: save secretKey array to JSON
+
+### Shell Scripts (scripts/)
+
+Wrappers around `solana-keygen grind` CLI tool.
+- generate-vanity.sh - Single address
+- batch-generate.sh - Multiple from file
+- verify-keypair.sh - Verify keypair file
+
+## Solana Address Format
+
+- Algorithm: Ed25519
+- Address encoding: Base58
+- Address length: 32-44 characters
+- Secret key: 64 bytes [seed(32) | pubkey(32)]
+
+Base58 alphabet: 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
+(Note: no 0, O, I, l to avoid confusion)
+
+## File Format
+
+Solana CLI compatible JSON array of 64 bytes:
+```json
+[174,47,154,16,202,193,206,113,...]
+```
+
+Load with: `solana config set --keypair keypair.json`
+
+## Non-Cryptographic Dependencies
+
+These DO NOT touch private keys:
+
+Rust:
+- clap: CLI parsing
+- rayon: Parallelism
+- serde/serde_json: JSON serialization
+- zeroize: Secure memory clearing
+- thiserror: Error handling
+- log: Logging
+- num_cpus: CPU detection
+- libc/nix: Unix permissions
+
+TypeScript:
+- commander: CLI parsing
+- chalk: Terminal colors
+
+## Security Checklist
+
+✅ Uses official Solana Labs cryptographic libraries only
+✅ Memory zeroization after key use
+✅ File permissions set to 0600
+✅ No network calls (fully offline capable)
+✅ RNG quality verification
+✅ Open source and auditable
+
+## Common Operations
+
+### Generate vanity address (Rust)
+```bash
+cd rust && cargo run --release -- --prefix ABC
+```
+
+### Generate vanity address (TypeScript)
+```bash
+cd typescript && npx ts-node src/index.ts --prefix ABC
+```
+
+### Generate vanity address (Shell)
+```bash
+./scripts/generate-vanity.sh ABC
+```
+
+### Verify keypair
+```bash
+cd tools && npx ts-node verify-keypair.ts ../output/keypair.json
+```
+
+## Testing
+
+```bash
+# Rust
+cd rust && cargo test
+
+# TypeScript
+cd typescript && npm test
+
+# Integration
+./tests/integration/test_keypair_validity.sh
+```
+
+## AI Assistant Guidelines
+
+When modifying this codebase:
+1. NEVER add non-official cryptographic dependencies
+2. Ensure all key material is zeroized after use
+3. Maintain Solana CLI output format compatibility
+4. Keep file permissions at 0600
+5. Test across all implementations (Rust, TS, Shell)
+
+Approved official dependencies:
+- Rust: solana-sdk (solana-labs/solana)
+- TypeScript: @solana/web3.js (solana-labs/solana-web3.js)
+- Shell: solana-keygen CLI
+
+DO NOT add: web3.py, solders, or any third-party crypto libraries.

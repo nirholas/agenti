@@ -1,0 +1,91 @@
+# llm.energy MCP Server
+
+> Extract documentation from any website with llms.txt support using the Model Context Protocol
+
+## Overview
+
+llm.energy MCP Server is a Model Context Protocol server that allows AI assistants to extract, parse, and access documentation from websites that implement the llms.txt standard.
+
+## Installation
+
+Install via npx (no installation required):
+```json
+{
+  "mcpServers": {
+    "llm-energy": {
+      "command": "npx",
+      "args": ["-y", "@llm-energy/mcp-server"]
+    }
+  }
+}
+```
+
+Or install globally:
+```bash
+npm install -g @llm-energy/mcp-server
+```
+
+## Available Tools
+
+### extract_documentation
+Extract and parse documentation from a website.
+- Input: `{ "url": "docs.anthropic.com" }`
+- Returns: Extraction summary with document list and statistics
+- Caches results for subsequent access
+
+### fetch_llms_txt
+Fetch raw llms.txt content without parsing.
+- Input: `{ "url": "stripe.com" }`
+- Returns: Raw markdown content
+
+### get_document_section
+Get a specific document section by filename.
+- Input: `{ "url": "docs.anthropic.com", "filename": "getting-started.md" }`
+- Returns: Markdown content of that section
+- Requires: Prior extraction
+
+### list_extracted_documents
+List all available document sections.
+- Input: `{ "url": "docs.anthropic.com" }`
+- Returns: List of all documents with token counts
+- Requires: Prior extraction
+
+### get_full_documentation
+Get complete consolidated documentation with table of contents.
+- Input: `{ "url": "docs.anthropic.com" }`
+- Returns: Full llms-full.md content
+- Requires: Prior extraction
+
+### get_agent_guide
+Get AI agent usage guide.
+- Input: `{ "url": "docs.anthropic.com" }`
+- Returns: AGENT-GUIDE.md with usage instructions
+- Requires: Prior extraction
+
+## Example Workflow
+
+1. Extract documentation: `extract_documentation({ "url": "docs.anthropic.com" })`
+2. List sections: `list_extracted_documents({ "url": "docs.anthropic.com" })`
+3. Read section: `get_document_section({ "url": "docs.anthropic.com", "filename": "api-reference.md" })`
+
+## Supported Websites
+
+Works with any website implementing the llms.txt standard including:
+- docs.anthropic.com
+- stripe.com
+- modelcontextprotocol.io
+- And many more
+
+## Source Code
+
+GitHub: https://github.com/nirholas/lyra-tool-discovery/tree/main/llms-forge/mcp-server
+
+## Author
+
+Created by nich
+- Twitter: https://x.com/nichxbt
+- GitHub: https://github.com/nirholas
+
+## License
+
+MIT

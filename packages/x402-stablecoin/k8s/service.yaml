@@ -1,0 +1,37 @@
+# X402 Facilitator Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: x402-facilitator
+  namespace: x402
+  labels:
+    app.kubernetes.io/name: x402-facilitator
+    app.kubernetes.io/component: service
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: x402-facilitator
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+---
+# Headless Service for StatefulSet (if needed)
+apiVersion: v1
+kind: Service
+metadata:
+  name: x402-facilitator-headless
+  namespace: x402
+  labels:
+    app.kubernetes.io/name: x402-facilitator
+    app.kubernetes.io/component: service
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: x402-facilitator
+  ports:
+    - name: http
+      port: 3002
+      targetPort: http

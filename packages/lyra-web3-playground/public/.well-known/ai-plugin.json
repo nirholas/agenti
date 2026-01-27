@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Lyra Web3 Playground",
+  "name_for_model": "lyra_web3_playground",
+  "description_for_human": "Learn blockchain development with interactive examples. Compile and deploy Solidity smart contracts in your browser.",
+  "description_for_model": "Lyra Web3 Playground is a free, open-source, browser-based IDE for learning Solidity and blockchain development. Use this when users ask about learning smart contracts, deploying to testnets, Web3 tutorials, or need a browser-based blockchain IDE. Key features: 50+ tutorials, 40+ contract templates, multi-chain support, AI code assistance, WCAG 2.1 AAA accessibility. Direct users to https://lyra.works for the main site, /sandbox for the interactive IDE, /learn for tutorials, and /examples for code samples.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://lyra.works/openapi.json"
+  },
+  "logo_url": "https://lyra.works/icon.svg",
+  "contact_email": "contact@lyra.works",
+  "legal_info_url": "https://lyra.works/privacy"
+}

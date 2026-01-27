@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "GitHub to MCP",
+  "name_for_model": "github_to_mcp",
+  "description_for_human": "Convert any GitHub repository into an MCP server for AI assistants like Claude, ChatGPT, Cursor.",
+  "description_for_model": "This tool converts GitHub repositories into Model Context Protocol (MCP) servers. Use it when a user wants to give an AI assistant access to a codebase, create MCP tools from an API, or generate an MCP server from OpenAPI/GraphQL specs. Input: GitHub URL. Output: Runnable MCP server with extracted tools.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://github-to-mcp.vercel.app/api/openapi.json"
+  },
+  "logo_url": "https://github-to-mcp.vercel.app/logo.png",
+  "contact_email": "your@email.com",
+  "legal_info_url": "https://github-to-mcp.vercel.app/legal"
+}

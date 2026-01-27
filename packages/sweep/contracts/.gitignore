@@ -1,0 +1,62 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Docs
+docs/
+
+# ============================================
+# SECURITY - NEVER COMMIT THESE
+# ============================================
+# Environment files
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+
+# Private keys - CRITICAL
+*.pem
+*.key
+private-key.txt
+deployer-key.txt
+
+# Foundry keystore
+keystore/
+*.keystore.json
+
+# Deployment artifacts with sensitive data
+broadcast/**/run-*.json
+!broadcast/**/*-dry-run/
+
+# Tenderly configs with API keys
+.tenderly/
+
+# Slither output (may contain contract details)
+slither-output/
+
+# ============================================
+# Standard ignores
+# ============================================
+# Coverage
+lcov.info
+coverage/
+
+# Node modules (if using npm for tooling)
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Forge script artifacts
+script/*.s.sol.bak

@@ -1,0 +1,96 @@
+{
+  "name": "@x402/sdk",
+  "version": "1.0.0",
+  "description": "X402 Payment Protocol SDK for Sperax USDs - Gasless payments, yield tracking, and HTTP 402 handling",
+  "author": "nirholas",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./payments": {
+      "types": "./dist/payments/index.d.ts",
+      "import": "./dist/payments/index.js",
+      "require": "./dist/payments/index.cjs"
+    },
+    "./http": {
+      "types": "./dist/http/index.d.ts",
+      "import": "./dist/http/index.js",
+      "require": "./dist/http/index.cjs"
+    },
+    "./yield": {
+      "types": "./dist/yield/index.d.ts",
+      "import": "./dist/yield/index.js",
+      "require": "./dist/yield/index.cjs"
+    },
+    "./contracts": {
+      "types": "./dist/contracts/index.d.ts",
+      "import": "./dist/contracts/index.js",
+      "require": "./dist/contracts/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "x402",
+    "payments",
+    "crypto",
+    "web3",
+    "arbitrum",
+    "sperax",
+    "usds",
+    "stablecoin",
+    "gasless",
+    "eip-3009",
+    "http-402",
+    "yield"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/x402.git"
+  },
+  "homepage": "https://github.com/nirholas/x402#readme",
+  "bugs": {
+    "url": "https://github.com/nirholas/x402/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

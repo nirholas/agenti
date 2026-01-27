@@ -1,0 +1,36 @@
+# Prettier ignore file
+# ✨ built by nich
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+build/
+.vite/
+coverage/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.code-workspace
+
+# Generated files
+*.min.js
+*.min.css
+*.bundle.js
+
+# Documentation that shouldn't be reformatted
+CHANGELOG.md
+
+# Public assets
+public/
+
+# Solidity compiler artifacts
+artifacts/
+cache/
+typechain-types/
+
+# Docker
+*.log

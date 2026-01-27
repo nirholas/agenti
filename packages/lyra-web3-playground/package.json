@@ -1,0 +1,112 @@
+{
+  "name": "lyra-web3-playground",
+  "version": "0.1.0",
+  "description": "Lyra Web3 Playground - Learn blockchain development with interactive examples. Compile and deploy Solidity in your browser. Built by nich.",
+  "author": {
+    "name": "nich (nirholas)",
+    "email": "nich@lyra.works",
+    "url": "https://github.com/nirholas"
+  },
+  "contributors": [
+    {
+      "name": "nich",
+      "url": "https://x.com/nichxbt"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "nirholas",
+      "url": "https://github.com/nirholas"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/lyra-web3-playground.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nirholas/lyra-web3-playground/issues"
+  },
+  "homepage": "https://lyra.works/",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nirholas"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --max-warnings 20",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "attribution": "node scripts/inject-attribution.js"
+  },
+  "dependencies": {
+    "@icons-pack/react-simple-icons": "^13.8.0",
+    "@monaco-editor/react": "^4.7.0",
+    "@privy-io/react-auth": "^3.11.0",
+    "@solana/web3.js": "^1.98.4",
+    "@supabase/supabase-js": "^2.90.1",
+    "@types/dompurify": "^3.2.0",
+    "clsx": "^2.1.1",
+    "dompurify": "^3.3.1",
+    "ethers": "^6.16.0",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-live": "^4.1.8",
+    "react-router-dom": "^7.12.0",
+    "tailwind-merge": "^3.4.0",
+    "viem": "^2.44.4",
+    "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "@vercel/node": "^5.5.23",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/ui": "^4.0.17",
+    "autoprefixer": "^10.4.23",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^17.0.0",
+    "jsdom": "^27.4.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.0",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.17"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "web3",
+    "blockchain",
+    "ethereum",
+    "solana",
+    "ai",
+    "machine-learning",
+    "dapp",
+    "smart-contracts",
+    "nft",
+    "defi",
+    "playground",
+    "education"
+  ],
+  "engines": {
+    "node": "20.x"
+  },
+  "overrides": {
+    "diff": "^8.0.3",
+    "path-to-regexp": "^8.0.0",
+    "undici": "^7.0.0"
+  }
+}

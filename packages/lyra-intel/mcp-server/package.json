@@ -1,0 +1,32 @@
+{
+  "name": "lyra-intel-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Lyra Intel codebase analysis",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "lyra-intel-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "code-analysis",
+    "lyra-intel"
+  ],
+  "author": "Lyra Intel",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}

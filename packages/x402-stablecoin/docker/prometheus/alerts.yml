@@ -1,0 +1,242 @@
+# Prometheus Alerting Rules for X402
+#
+# Severity Levels:
+#   - critical: Immediate response required (pages on-call)
+#   - warning: Investigation needed (Slack notification)
+#   - info: For dashboards and tracking
+
+groups:
+  # ============================================
+  # Service Health Alerts
+  # ============================================
+  - name: x402-service-health
+    rules:
+      # Facilitator service down
+      - alert: X402FacilitatorDown
+        expr: up{app="x402-facilitator"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: x402-facilitator
+        annotations:
+          summary: "X402 Facilitator is down"
+          description: "Facilitator service has been unavailable for more than 1 minute"
+          runbook_url: "https://docs.x402.io/runbooks/facilitator-down"
+
+      # High restart count
+      - alert: X402HighRestartCount
+        expr: increase(process_restarts_total{app="x402-facilitator"}[1h]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "High restart count for Facilitator"
+          description: "Facilitator has restarted {{ $value }} times in the last hour"
+
+  # ============================================
+  # Error Rate Alerts
+  # ============================================
+  - name: x402-error-rates
+    rules:
+      # High HTTP error rate
+      - alert: X402HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{app="x402-facilitator",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{app="x402-facilitator"}[5m]))
+          ) * 100 > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "High error rate on X402 Facilitator"
+          description: "Error rate is {{ $value | printf \"%.2f\" }}% over the last 5 minutes"
+
+      # Critical error rate
+      - alert: X402CriticalErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{app="x402-facilitator",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{app="x402-facilitator"}[5m]))
+          ) * 100 > 20
+        for: 2m
+        labels:
+          severity: critical
+          service: x402-facilitator
+        annotations:
+          summary: "Critical error rate on X402 Facilitator"
+          description: "Error rate is {{ $value | printf \"%.2f\" }}% - immediate investigation required"
+
+  # ============================================
+  # Latency Alerts
+  # ============================================
+  - name: x402-latency
+    rules:
+      # High p99 latency
+      - alert: X402HighLatencyP99
+        expr: |
+          histogram_quantile(0.99, 
+            sum(rate(http_request_duration_seconds_bucket{app="x402-facilitator"}[5m])) by (le)
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "High p99 latency on X402 Facilitator"
+          description: "p99 latency is {{ $value | printf \"%.2f\" }}s"
+
+      # High p95 latency
+      - alert: X402HighLatencyP95
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(http_request_duration_seconds_bucket{app="x402-facilitator"}[5m])) by (le)
+          ) > 2
+        for: 10m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "High p95 latency on X402 Facilitator"
+          description: "p95 latency is {{ $value | printf \"%.2f\" }}s"
+
+  # ============================================
+  # Payment Alerts
+  # ============================================
+  - name: x402-payments
+    rules:
+      # Payment settlement failures
+      - alert: X402SettlementFailure
+        expr: increase(payment_settlements_failed_total{app="x402-facilitator"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: x402-facilitator
+        annotations:
+          summary: "Payment settlement failure detected"
+          description: "{{ $value }} payment settlements failed in the last 5 minutes"
+          runbook_url: "https://docs.x402.io/runbooks/settlement-failure"
+
+      # Low settlement success rate
+      - alert: X402LowSettlementSuccessRate
+        expr: |
+          (
+            sum(rate(payment_settlements_success_total{app="x402-facilitator"}[1h]))
+            /
+            (sum(rate(payment_settlements_success_total{app="x402-facilitator"}[1h])) + 
+             sum(rate(payment_settlements_failed_total{app="x402-facilitator"}[1h])))
+          ) * 100 < 95
+        for: 15m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "Low settlement success rate"
+          description: "Settlement success rate is {{ $value | printf \"%.2f\" }}%"
+
+      # No payments in extended period
+      - alert: X402NoPayments
+        expr: |
+          increase(payment_verifications_total{app="x402-facilitator"}[1h]) == 0
+        for: 2h
+        labels:
+          severity: info
+          service: x402-facilitator
+        annotations:
+          summary: "No payments processed in 2+ hours"
+          description: "This may indicate an issue or simply low traffic"
+
+  # ============================================
+  # RPC/Blockchain Alerts
+  # ============================================
+  - name: x402-rpc
+    rules:
+      # High RPC error rate
+      - alert: X402HighRPCErrorRate
+        expr: |
+          (
+            sum(rate(rpc_errors_total{app="x402-facilitator"}[5m]))
+            /
+            sum(rate(rpc_requests_total{app="x402-facilitator"}[5m]))
+          ) * 100 > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "High RPC error rate"
+          description: "RPC error rate is {{ $value | printf \"%.2f\" }}% - check RPC provider status"
+
+      # RPC completely unavailable
+      - alert: X402RPCUnavailable
+        expr: |
+          (
+            sum(rate(rpc_errors_total{app="x402-facilitator"}[5m]))
+            /
+            sum(rate(rpc_requests_total{app="x402-facilitator"}[5m]))
+          ) * 100 > 90
+        for: 2m
+        labels:
+          severity: critical
+          service: x402-facilitator
+        annotations:
+          summary: "RPC provider unavailable"
+          description: "RPC error rate is {{ $value | printf \"%.2f\" }}% - immediate failover required"
+
+  # ============================================
+  # Resource Alerts
+  # ============================================
+  - name: x402-resources
+    rules:
+      # High memory usage
+      - alert: X402HighMemoryUsage
+        expr: |
+          (
+            process_resident_memory_bytes{app="x402-facilitator"}
+            /
+            (1024 * 1024 * 1024)
+          ) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | printf \"%.2f\" }} GB"
+
+      # Low cache hit rate
+      - alert: X402LowCacheHitRate
+        expr: |
+          (
+            sum(rate(cache_hits_total{app="x402-facilitator"}[1h]))
+            /
+            (sum(rate(cache_hits_total{app="x402-facilitator"}[1h])) + 
+             sum(rate(cache_misses_total{app="x402-facilitator"}[1h])))
+          ) * 100 < 50
+        for: 30m
+        labels:
+          severity: warning
+          service: x402-facilitator
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | printf \"%.2f\" }}%"
+
+  # ============================================
+  # Rate Limiting Alerts
+  # ============================================
+  - name: x402-rate-limiting
+    rules:
+      # High rate limit hits
+      - alert: X402HighRateLimitHits
+        expr: increase(rate_limit_hits_total{app="x402-facilitator"}[5m]) > 100
+        for: 5m
+        labels:
+          severity: info
+          service: x402-facilitator
+        annotations:
+          summary: "High rate limit hits"
+          description: "{{ $value }} requests were rate limited in the last 5 minutes"

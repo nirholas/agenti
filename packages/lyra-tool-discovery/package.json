@@ -1,0 +1,120 @@
+{
+  "name": "@nirholas/lyra-tool-discovery",
+  "version": "0.1.0",
+  "description": "AI-powered MCP tool discovery - find, analyze, and generate plugin configs for Model Context Protocol servers",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/cli.js",
+      "types": "./dist/cli.d.ts"
+    }
+  },
+  "bin": {
+    "lyra-discover": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli.ts",
+    "discover": "tsx src/cli.ts discover",
+    "discover:dry": "tsx src/cli.ts discover --dry-run",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "pnpm run build && pnpm run test",
+    "example:basic": "tsx examples/basic-discovery.ts",
+    "example:repo": "tsx examples/analyze-single-repo.ts",
+    "example:npm": "tsx examples/analyze-npm-package.ts",
+    "example:ai": "tsx examples/custom-ai-provider.ts",
+    "example:batch": "tsx examples/batch-processing.ts",
+    "example:filter": "tsx examples/filter-by-template.ts",
+    "example:json": "tsx examples/json-output.ts",
+    "example:dry": "tsx examples/dry-run-mode.ts",
+    "example:search": "tsx examples/custom-search-queries.ts",
+    "example:pipeline": "tsx examples/pipeline-integration.ts",
+    "example:errors": "tsx examples/11-error-handling.ts",
+    "example:action": "tsx examples/12-github-action-script.ts",
+    "dashboard": "pnpm --dir dashboard dev",
+    "dashboard:build": "pnpm --dir dashboard build",
+    "dashboard:start": "pnpm --dir dashboard start"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "tool-discovery",
+    "plugin",
+    "crypto",
+    "defi",
+    "blockchain",
+    "web3",
+    "ethereum",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "speraxos",
+    "plugin-delivery"
+  ],
+  "author": {
+    "name": "nirholas",
+    "url": "https://github.com/nirholas"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nirholas/lyra-tool-discovery.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nirholas/lyra-tool-discovery/issues"
+  },
+  "homepage": "https://github.com/nirholas/lyra-tool-discovery#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "commander": "^13.0.0",
+    "debug": "^4.3.4",
+    "openai": "^4.77.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/node": "^22.10.5",
+    "@vitest/coverage-v8": "^2.1.8",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.50.0",
+    "openai": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    },
+    "openai": {
+      "optional": true
+    }
+  }
+}

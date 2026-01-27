@@ -1,0 +1,92 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please describe what you'd like to see added.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm always frustrated when I can't filter subscriptions by server tags...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the solution you'd like.
+      placeholder: Add a "tags" field to filters that accepts an array of tag strings...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe any alternative solutions or features you've considered.
+      placeholder: I considered using keywords, but they're not as specific...
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component would this feature be for?
+      options:
+        - API
+        - Web Dashboard
+        - CLI Tool
+        - Notification Channels
+        - Filters/Matching
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this feature to you?
+      options:
+        - Nice to have
+        - Important - affects my workflow
+        - Critical - blocking my use case
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: Describe your use case for this feature.
+      placeholder: |
+        As a DevOps engineer, I want to receive notifications only for servers
+        tagged with "production" so that I can prioritize critical updates.
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Design/Mockups
+      description: If applicable, add mockups, diagrams, or screenshots.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any other context about the feature request here.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Are you willing to contribute?
+      description: Let us know if you'd like to help implement this feature.
+      options:
+        - label: I would be willing to submit a PR for this feature

@@ -1,0 +1,130 @@
+site_name: Sperax MCP
+site_url: https://mcp.sperax.io
+site_description: The official Model Context Protocol server for Sperax DeFi ecosystem
+site_author: Sperax Team
+
+repo_name: sperax/sperax-mcp-server
+repo_url: https://github.com/sperax/sperax-mcp-server
+edit_uri: edit/main/docs/docs/
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  
+  icon:
+    repo: fontawesome/brands/github
+  
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            members_order: source
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+docs_dir: content
+
+nav:
+  - Home: index.md
+  - Overview: overview.md
+  - MCP Server:
+    - Tools Reference: mcp-server/tools.md
+    - Extended Tools: mcp-server/tools-extended.md
+    - EVM Module: mcp-server/evm-module.md
+    - Universal EVM: mcp-server/universal-evm.md
+    - Resources & Prompts: mcp-server/resources-prompts.md
+    - Development: mcp-server/development.md
+  - Protocol:
+    - protocol/index.md
+    - Overview: protocol/overview.md
+    - USDs Token: protocol/usds-token.md
+    - Vault Core: protocol/vault-core.md
+    - Collateral Manager: protocol/collateral-manager.md
+    - Strategies: protocol/strategies.md
+    - Rebase Dripper: protocol/rebase-dripper.md
+    - Oracles: protocol/oracles.md
+    - SPA Buyback: protocol/spa-buyback.md
+    - SPA Staking: protocol/spa-staking.md
+    - Demeter Farms: protocol/demeter-farms.md
+    - Rewarder: protocol/rewarder.md
+    - Addresses: protocol/addresses.md
+    - Errors & Events: protocol/errors-events.md
+  - Contracts:
+    - contracts/index.md
+    - ABIs: contracts/abis.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nirholas/UCAI
+  
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: Copyright &copy; 2024-2026 nich

@@ -1,0 +1,70 @@
+# EditorConfig - Consistent coding styles across IDEs
+# ✨ built by nich
+# https://editorconfig.org
+
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 100
+
+# TypeScript and JavaScript
+[*.{ts,tsx,js,jsx,mjs,cjs}]
+indent_size = 2
+
+# JSON files
+[*.{json,jsonc}]
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Solidity
+[*.sol]
+indent_size = 4
+max_line_length = 120
+
+# Shell scripts
+[*.sh]
+indent_size = 2
+
+# Makefiles require tabs
+[Makefile]
+indent_style = tab
+
+# Docker
+[Dockerfile*]
+indent_size = 2
+
+# HTML
+[*.html]
+indent_size = 2
+
+# CSS
+[*.{css,scss,less}]
+indent_size = 2
+
+# Configuration files
+[*.{toml,ini,conf}]
+indent_size = 2
+
+# Git files
+[.git*]
+indent_size = 2
+
+# Package manager lock files - don't modify
+[{package-lock.json,yarn.lock,pnpm-lock.yaml}]
+indent_size = 2
+insert_final_newline = false

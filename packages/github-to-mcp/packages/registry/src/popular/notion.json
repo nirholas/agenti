@@ -1,0 +1,42 @@
+{
+  "id": "notion-mcp",
+  "name": "Notion",
+  "description": "Notion API - manage pages, databases, blocks, and workspaces",
+  "sourceRepo": "makenotion/notion-sdk-js",
+  "sourceUrl": "https://github.com/makenotion/notion-sdk-js",
+  "version": "1.0.0",
+  "sourceVersion": "v2.2.0",
+  "toolCount": 10,
+  "tools": [
+    { "name": "get_page", "description": "Get a page by ID", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "create_page", "description": "Create a new page", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "update_page", "description": "Update page properties", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "query_database", "description": "Query a database with filters", "source": "openapi", "paramCount": 4, "requiresAuth": true },
+    { "name": "create_database", "description": "Create a new database", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "get_block", "description": "Get a block by ID", "source": "openapi", "paramCount": 1, "requiresAuth": true },
+    { "name": "get_block_children", "description": "Get children of a block", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "append_block_children", "description": "Append children to a block", "source": "openapi", "paramCount": 2, "requiresAuth": true },
+    { "name": "search", "description": "Search pages and databases", "source": "openapi", "paramCount": 3, "requiresAuth": true },
+    { "name": "get_user", "description": "Get user information", "source": "openapi", "paramCount": 1, "requiresAuth": true }
+  ],
+  "categories": ["productivity", "documentation", "api"],
+  "tags": ["notion", "notes", "wiki", "database", "workspace"],
+  "popularity": 12840,
+  "lastUpdated": "2026-01-15T00:00:00.000Z",
+  "createdAt": "2025-06-01T00:00:00.000Z",
+  "generatedCode": {
+    "typescript": "import { Server } from '@modelcontextprotocol/sdk/server/index.js';\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\nimport { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';\n\nconst NOTION_TOKEN = process.env.NOTION_TOKEN;\nconst NOTION_BASE_URL = 'https://api.notion.com/v1';\n\nif (!NOTION_TOKEN) {\n  console.error('Error: NOTION_TOKEN environment variable is required');\n  process.exit(1);\n}\n\nconst server = new Server({ name: 'notion-mcp', version: '1.0.0' }, { capabilities: { tools: {} } });\n\nasync function notionRequest(endpoint: string, method: string = 'GET', body?: unknown) {\n  const response = await fetch(`${NOTION_BASE_URL}${endpoint}`, {\n    method,\n    headers: {\n      'Authorization': `Bearer ${NOTION_TOKEN}`,\n      'Notion-Version': '2022-06-28',\n      'Content-Type': 'application/json',\n    },\n    body: body ? JSON.stringify(body) : undefined,\n  });\n  if (!response.ok) {\n    const error = await response.json();\n    throw new Error(error.message || 'Notion API error');\n  }\n  return response.json();\n}\n\nconst tools = [\n  { name: 'get_page', description: 'Get a page by ID', inputSchema: { type: 'object', properties: { page_id: { type: 'string' } }, required: ['page_id'] } },\n  { name: 'create_page', description: 'Create a new page', inputSchema: { type: 'object', properties: { parent: { type: 'object' }, properties: { type: 'object' }, children: { type: 'array' } }, required: ['parent', 'properties'] } },\n  { name: 'update_page', description: 'Update page properties', inputSchema: { type: 'object', properties: { page_id: { type: 'string' }, properties: { type: 'object' } }, required: ['page_id', 'properties'] } },\n  { name: 'query_database', description: 'Query a database', inputSchema: { type: 'object', properties: { database_id: { type: 'string' }, filter: { type: 'object' }, sorts: { type: 'array' }, page_size: { type: 'number' } }, required: ['database_id'] } },\n  { name: 'get_block', description: 'Get a block by ID', inputSchema: { type: 'object', properties: { block_id: { type: 'string' } }, required: ['block_id'] } },\n  { name: 'get_block_children', description: 'Get block children', inputSchema: { type: 'object', properties: { block_id: { type: 'string' }, page_size: { type: 'number' } }, required: ['block_id'] } },\n  { name: 'append_block_children', description: 'Append children to a block', inputSchema: { type: 'object', properties: { block_id: { type: 'string' }, children: { type: 'array' } }, required: ['block_id', 'children'] } },\n  { name: 'search', description: 'Search pages and databases', inputSchema: { type: 'object', properties: { query: { type: 'string' }, filter: { type: 'object' }, page_size: { type: 'number' } } } },\n  { name: 'get_user', description: 'Get user information', inputSchema: { type: 'object', properties: { user_id: { type: 'string' } }, required: ['user_id'] } },\n];\n\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));\n\nserver.setRequestHandler(CallToolRequestSchema, async (request) => {\n  const { name, arguments: args } = request.params;\n  try {\n    let result;\n    const a = args as Record<string, unknown>;\n    switch (name) {\n      case 'get_page': result = await notionRequest(`/pages/${a.page_id}`); break;\n      case 'create_page': result = await notionRequest('/pages', 'POST', a); break;\n      case 'update_page': result = await notionRequest(`/pages/${a.page_id}`, 'PATCH', { properties: a.properties }); break;\n      case 'query_database': result = await notionRequest(`/databases/${a.database_id}/query`, 'POST', { filter: a.filter, sorts: a.sorts, page_size: a.page_size }); break;\n      case 'get_block': result = await notionRequest(`/blocks/${a.block_id}`); break;\n      case 'get_block_children': result = await notionRequest(`/blocks/${a.block_id}/children?page_size=${a.page_size || 100}`); break;\n      case 'append_block_children': result = await notionRequest(`/blocks/${a.block_id}/children`, 'PATCH', { children: a.children }); break;\n      case 'search': result = await notionRequest('/search', 'POST', { query: a.query, filter: a.filter, page_size: a.page_size }); break;\n      case 'get_user': result = await notionRequest(`/users/${a.user_id}`); break;\n      default: throw new Error(`Unknown tool: ${name}`);\n    }\n    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };\n  } catch (error) {\n    return { content: [{ type: 'text', text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}` }], isError: true };\n  }\n});\n\nasync function main() {\n  const transport = new StdioServerTransport();\n  await server.connect(transport);\n}\n\nmain().catch(console.error);\n"
+  },
+  "configs": {
+    "claude": { "mcpServers": { "notion": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "NOTION_TOKEN": "${NOTION_TOKEN}" } } } },
+    "cursor": { "mcpServers": { "notion": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "NOTION_TOKEN": "${NOTION_TOKEN}" } } } },
+    "vscode": { "mcpServers": { "notion": { "command": "npx", "args": ["tsx", "index.ts"], "env": { "NOTION_TOKEN": "${NOTION_TOKEN}" } } } }
+  },
+  "quality": { "overall": 88, "schemaCompleteness": 90, "documentation": 85, "examples": 85, "authHandling": 92, "parameterTypes": 88 },
+  "auth": [{ "type": "http", "scheme": "bearer", "envVar": "NOTION_TOKEN", "instructions": "Create an integration at https://www.notion.so/my-integrations" }],
+  "docsUrl": "https://developers.notion.com",
+  "apiDocsUrl": "https://developers.notion.com/reference",
+  "iconUrl": "https://www.notion.so/favicon.ico",
+  "verified": true,
+  "author": "github-to-mcp"
+}

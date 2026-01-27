@@ -1,0 +1,78 @@
+# X402 Facilitator Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: x402-facilitator
+  namespace: x402
+  labels:
+    app.kubernetes.io/name: x402-facilitator
+    app.kubernetes.io/component: ingress
+  annotations:
+    # NGINX Ingress Controller
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "50"
+    nginx.ingress.kubernetes.io/limit-rpm: "1000"
+    
+    # CORS
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, X-Payment, X-Request-ID"
+    
+    # TLS with cert-manager
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - facilitator.x402.io
+      secretName: x402-facilitator-tls
+  rules:
+    - host: facilitator.x402.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: x402-facilitator
+                port:
+                  number: 80
+---
+# Alternative: Internal Ingress for staging
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: x402-facilitator-staging
+  namespace: x402
+  labels:
+    app.kubernetes.io/name: x402-facilitator
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/environment: staging
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - staging.facilitator.x402.io
+      secretName: x402-facilitator-staging-tls
+  rules:
+    - host: staging.facilitator.x402.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: x402-facilitator
+                port:
+                  number: 80

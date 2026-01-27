@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: Petstore API
+  description: A sample Pet Store API
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+servers:
+  - url: https://api.petstore.example.com/v1
+    description: Production server
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List all pets
+      description: Returns a list of pets in the store
+      tags:
+        - pets
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: A list of pets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        '500':
+          description: Server error
+    post:
+      operationId: createPet
+      summary: Create a pet
+      description: Creates a new pet in the store
+      tags:
+        - pets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '201':
+          description: Pet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '400':
+          description: Invalid input
+  /pets/{petId}:
+    get:
+      operationId: getPet
+      summary: Get a pet by ID
+      description: Returns a single pet by ID
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The ID of the pet to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+    put:
+      operationId: updatePet
+      summary: Update a pet
+      description: Updates an existing pet
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: Pet updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+    delete:
+      operationId: deletePet
+      summary: Delete a pet
+      description: Deletes a pet from the store
+      tags:
+        - pets
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Pet deleted
+        '404':
+          description: Pet not found
+components:
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the pet
+        name:
+          type: string
+          description: Name of the pet
+        tag:
+          type: string
+          description: Tag for categorizing the pet
+        status:
+          type: string
+          enum:
+            - available
+            - pending
+            - sold
+          description: Status of the pet in the store
+    NewPet:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the pet
+        tag:
+          type: string
+          description: Tag for categorizing the pet
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+  - bearerAuth: []

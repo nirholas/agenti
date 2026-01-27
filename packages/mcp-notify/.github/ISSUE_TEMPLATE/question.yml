@@ -1,0 +1,67 @@
+name: ❓ Question / Support
+description: Ask a question or get help
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about MCP Notify? We're here to help!
+        
+        Before asking, please check:
+        - 📖 [Documentation](../docs/)
+        - 🔍 [Existing issues](https://github.com/nirholas/mcp-notify/issues?q=is%3Aissue)
+        - 💬 [Discussions](https://github.com/nirholas/mcp-notify/discussions)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What would you like to know?
+      placeholder: How do I configure webhook signature verification?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      description: What area is your question about?
+      options:
+        - Installation/Setup
+        - Configuration
+        - API Usage
+        - Dashboard Usage
+        - CLI Usage
+        - Notification Channels
+        - Filters/Subscriptions
+        - Deployment
+        - Performance
+        - Security
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: What steps have you already taken to find an answer?
+      placeholder: |
+        - Searched the documentation
+        - Looked at existing issues
+        - Tried the following configuration...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any additional information that might help us answer your question.
+      placeholder: |
+        I'm trying to set up MCP Watch in a corporate environment with a proxy...
+
+  - type: input
+    id: version
+    attributes:
+      label: Version (if applicable)
+      placeholder: v1.2.3

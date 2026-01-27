@@ -1,0 +1,102 @@
+# GitHub to MCP
+
+> Convert any GitHub repository into an MCP server for AI assistants
+
+## Summary
+
+GitHub to MCP is a tool that automatically generates Model Context Protocol (MCP) servers from GitHub repositories. It enables AI assistants like Claude, ChatGPT, Cursor, and Cline to interact with any codebase through standardized tools.
+
+## What This Project Does
+
+- Takes a GitHub repository URL as input
+- Analyzes the repository structure and content
+- Extracts tools from OpenAPI specs, GraphQL schemas, Python decorators, and documentation
+- Generates a complete MCP server (TypeScript or Python) with all dependencies
+- Provides universal tools: read_file, list_files, search_code, get_readme
+
+## Key Concepts
+
+**MCP (Model Context Protocol)**: An open standard by Anthropic that allows AI models to securely connect to external tools and data sources.
+
+**MCP Server**: A program that exposes tools to AI assistants. Tools are functions the AI can call to read files, query APIs, execute commands, etc.
+
+**Tool Extraction**: The process of analyzing code and documentation to automatically identify functions that should become MCP tools.
+
+## Usage
+
+### Web UI
+Visit https://github-to-mcp.vercel.app and paste any GitHub URL.
+
+### CLI
+```bash
+npx @nirholas/github-to-mcp https://github.com/owner/repo
+```
+
+### Programmatic
+```typescript
+import { generateFromGithub } from '@nirholas/github-to-mcp';
+const result = await generateFromGithub('https://github.com/owner/repo');
+await result.save('./output');
+```
+
+## Project Structure
+
+- `packages/core/` - Main conversion engine (npm: @nirholas/github-to-mcp)
+- `packages/openapi-parser/` - OpenAPI and GraphQL parsing
+- `apps/web/` - Next.js web interface
+- `apps/docs/` - Documentation site
+
+## Key Files
+
+- `packages/core/src/index.ts` - Main API exports
+- `packages/core/src/github-client.ts` - GitHub API interaction
+- `packages/core/src/code-extractor.ts` - Extract tools from Python/TypeScript code
+- `packages/core/src/readme-extractor.ts` - Extract tools from documentation
+- `packages/openapi-parser/src/parser.ts` - OpenAPI spec parsing
+
+## Supported Extraction Sources
+
+1. **OpenAPI/Swagger specs** - REST API endpoints become tools
+2. **GraphQL schemas** - Queries and mutations become tools
+3. **Python code** - Functions with `@mcp.tool` decorators
+4. **TypeScript code** - `server.tool()` registrations
+5. **README documentation** - Command and function patterns
+
+## API Reference
+
+### generateFromGithub(url: string, options?: Options)
+
+Main function to convert a repository.
+
+**Parameters:**
+- `url` - GitHub repository URL
+- `options.token` - GitHub token for private repos
+- `options.outputFormat` - 'typescript' or 'python'
+
+**Returns:**
+- `tools` - Array of extracted tools
+- `classification` - Detected repo type
+- `save(path)` - Save generated server to disk
+- `generate()` - Get generated code as string
+
+## Common Tasks
+
+### Give an AI access to a codebase
+1. Run: `npx @nirholas/github-to-mcp https://github.com/owner/repo`
+2. Add the generated server to Claude Desktop config
+3. The AI can now read files and search code
+
+### Convert a REST API to MCP tools
+1. Find a repo with an OpenAPI/Swagger spec
+2. Run the converter - API endpoints become callable tools
+3. AI assistants can now query the API
+
+### Access private repositories
+Set GITHUB_TOKEN environment variable with a token that has repo access.
+
+## Links
+
+- Website: https://github-to-mcp.vercel.app
+- npm: https://www.npmjs.com/package/@nirholas/github-to-mcp
+- GitHub: https://github.com/nirholas/github-to-mcp
+- MCP Protocol: https://modelcontextprotocol.io

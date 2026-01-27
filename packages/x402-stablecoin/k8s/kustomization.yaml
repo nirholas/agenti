@@ -1,0 +1,39 @@
+# Kustomization for X402 Kubernetes Resources
+# 
+# Usage:
+#   kubectl apply -k k8s/
+#   kubectl apply -k k8s/ --dry-run=client
+#   kustomize build k8s/ | kubectl apply -f -
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: x402
+
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/part-of: x402-protocol
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
+  - network-policy.yaml
+
+# Images can be overridden per environment
+images:
+  - name: ghcr.io/nirholas/x402/facilitator
+    newTag: latest
+
+# Common labels
+commonLabels:
+  app.kubernetes.io/instance: x402
+
+# Common annotations
+commonAnnotations:
+  app.kubernetes.io/version: "1.0.0"

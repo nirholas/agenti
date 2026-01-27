@@ -1,0 +1,222 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'testnet'
+        type: choice
+        options:
+          - testnet
+          - production
+      component:
+        description: 'Component to deploy'
+        required: true
+        type: choice
+        options:
+          - all
+          - contracts
+          - services
+          - npm
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/facilitator
+
+jobs:
+  # ============================================
+  # Pre-deployment Validation
+  # ============================================
+  validate:
+    name: Pre-deployment Checks
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and test
+        run: |
+          pnpm build
+          pnpm test
+
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p "require('./packages/sdk/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Test contracts
+        working-directory: contracts
+        run: forge test -vvv
+
+  # ============================================
+  # Deploy Smart Contracts
+  # ============================================
+  deploy-contracts:
+    name: Deploy Contracts to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event.inputs.component == 'all' || github.event.inputs.component == 'contracts'
+    environment: ${{ github.event.inputs.environment }}
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Deploy to ${{ github.event.inputs.environment }}
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            RPC_URL="${{ secrets.ARBITRUM_MAINNET_RPC_URL }}"
+          else
+            RPC_URL="${{ secrets.ARBITRUM_SEPOLIA_RPC_URL }}"
+          fi
+          
+          forge script script/DeployX402Suite.s.sol:DeployX402Suite \
+            --rpc-url $RPC_URL \
+            --broadcast \
+            --verify \
+            --etherscan-api-key ${{ secrets.ARBISCAN_API_KEY }} \
+            -vvvv
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          PLATFORM_WALLET: ${{ secrets.PLATFORM_WALLET }}
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployments-${{ github.event.inputs.environment }}-${{ github.run_number }}
+          path: contracts/broadcast/
+          retention-days: 90
+
+  # ============================================
+  # Deploy Backend Services
+  # ============================================
+  deploy-services:
+    name: Deploy Services to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event.inputs.component == 'all' || github.event.inputs.component == 'services'
+    environment: ${{ github.event.inputs.environment }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./facilitator
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.environment }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Kubernetes
+        if: github.event.inputs.environment == 'production'
+        run: |
+          echo "kubectl -n x402 set image deployment/x402-facilitator facilitator=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate.outputs.version }}"
+          # Uncomment when KUBECONFIG is configured
+          # kubectl -n x402 set image deployment/x402-facilitator facilitator=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate.outputs.version }}
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+  # ============================================
+  # Publish NPM Packages
+  # ============================================
+  publish-npm:
+    name: Publish NPM Packages
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event.inputs.component == 'all' || github.event.inputs.component == 'npm'
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Publish packages
+        run: |
+          for pkg in packages/sdk cli sperax; do
+            echo "Publishing $pkg..."
+            cd $pkg && npm publish --access public --provenance || echo "Failed to publish $pkg (may already exist)"
+            cd -
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ============================================
+  # Summary
+  # ============================================
+  summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [validate, deploy-contracts, deploy-services, publish-npm]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Validation | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Contracts | ${{ needs.deploy-contracts.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Services | ${{ needs.deploy-services.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| NPM | ${{ needs.publish-npm.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.validate.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
