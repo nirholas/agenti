@@ -2,7 +2,7 @@
 set -e
 
 # Rebuild Binance-US-MCP with individual commits for each file
-REPO_DIR="/workspaces/universal-crypto-mcp/binance-us-mcp-server"
+REPO_DIR="/workspaces/agenti/binance-us-mcp-server"
 WORK_DIR="/tmp/binance-us-mcp-individual"
 
 echo "🚀 Rebuilding Binance-US-MCP with individual file commits..."

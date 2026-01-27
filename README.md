@@ -1,4 +1,4 @@
-# 🤖💰 Universal Crypto MCP
+# 🤖💰 Agenti
 
 <p align="center">
 <pre align="center">
@@ -29,12 +29,12 @@
 </h3>
 
 ```bash
-npx @nirholas/universal-crypto-mcp
+npx @nirholas/agenti
 ```
 
 <p align="center">
-  <img src="https://img.shields.io/npm/v/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version">
-  <img src="https://img.shields.io/npm/dm/@nirholas/universal-crypto-mcp.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads">
+  <img src="https://img.shields.io/npm/v/@nirholas/agenti.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version">
+  <img src="https://img.shields.io/npm/dm/@nirholas/agenti.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads">
   <img src="https://img.shields.io/badge/x402-enabled-brightgreen?style=for-the-badge" alt="x402 enabled">
   <img src="https://img.shields.io/badge/chains-EVM%20%2B%20Solana-blue?style=for-the-badge" alt="chains">
 </p>
@@ -47,12 +47,12 @@ npx @nirholas/universal-crypto-mcp
 </p>
 
 <p align="center">
-  <a href="https://github.com/nirholas/universal-crypto-mcp/stargazers"><img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars"></a>
-  <a href="https://github.com/nirholas/universal-crypto-mcp/issues"><img src="https://img.shields.io/github/issues/nirholas/universal-crypto-mcp?style=for-the-badge&color=orange" alt="Issues"></a>
+  <a href="https://github.com/nirholas/agenti/stargazers"><img src="https://img.shields.io/github/stars/nirholas/agenti?style=for-the-badge&logo=github&color=yellow" alt="GitHub Stars"></a>
+  <a href="https://github.com/nirholas/agenti/issues"><img src="https://img.shields.io/github/issues/nirholas/agenti?style=for-the-badge&color=orange" alt="Issues"></a>
 </p>
 
 <p align="center">
-  <img src=".github/demo.svg" alt="Universal Crypto MCP Demo" width="800">
+  <img src=".github/demo.svg" alt="Agenti Demo" width="800">
 </p>
 
 ## ✨ What's New: x402 Payment Protocol
@@ -87,9 +87,9 @@ A Universal Model Context Protocol server for all EVM-compatible networks + Sola
 
 Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain through natural language.
 
-## 🆚 Why Universal Crypto MCP?
+## 🆚 Why Agenti?
 
-| Feature | Universal Crypto MCP | Other MCP Servers |
+| Feature | Agenti | Other MCP Servers |
 |---------|---------------------|-------------------|
 | **Tools** | 380+ tools | 10-50 tools |
 | **Chains** | 20+ chains (EVM + multi-chain) | 1-3 chains |
@@ -244,9 +244,9 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -262,9 +262,9 @@ Add to your MCP settings:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -278,7 +278,7 @@ Add to your MCP settings:
 1. Enable [Developer Mode](https://chatgpt.com/#settings/Connectors/Advanced) in ChatGPT settings
 2. Start the HTTP server:
    ```bash
-   npx @nirholas/universal-crypto-mcp@latest --http
+   npx @nirholas/agenti@latest --http
    ```
 3. In ChatGPT Settings → Apps, click **Create app**
 4. Enter your server URL: `http://localhost:3001/mcp`
@@ -290,9 +290,9 @@ For detailed setup instructions, see [ChatGPT Setup Guide](https://mcp.giving/mc
 
 | Mode | Command | Use Case |
 |------|---------|----------|
-| stdio | `npx @nirholas/universal-crypto-mcp` | Claude Desktop, Cursor |
-| HTTP | `npx @nirholas/universal-crypto-mcp --http` | ChatGPT Developer Mode |
-| SSE | `npx @nirholas/universal-crypto-mcp --sse` | Legacy HTTP clients |
+| stdio | `npx @nirholas/agenti` | Claude Desktop, Cursor |
+| HTTP | `npx @nirholas/agenti --http` | ChatGPT Developer Mode |
+| SSE | `npx @nirholas/agenti --sse` | Legacy HTTP clients |
 
 ---
 
@@ -633,8 +633,8 @@ src/
 
 ```bash
 # Clone
-git clone https://github.com/nirholas/universal-crypto-mcp
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti
+cd agenti
 
 # Install
 npm install
@@ -654,8 +654,8 @@ npm run dev:sse
 ## 🧪 Testing
 
 <p align="center">
-  <a href="https://codecov.io/gh/nirholas/universal-crypto-mcp"><img src="https://img.shields.io/codecov/c/github/nirholas/universal-crypto-mcp?style=flat-square&logo=codecov&label=coverage" alt="Code Coverage"></a>
-  <a href="https://github.com/nirholas/universal-crypto-mcp/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nirholas/universal-crypto-mcp/ci.yml?branch=main&style=flat-square&logo=github&label=tests" alt="Tests"></a>
+  <a href="https://codecov.io/gh/nirholas/agenti"><img src="https://img.shields.io/codecov/c/github/nirholas/agenti?style=flat-square&logo=codecov&label=coverage" alt="Code Coverage"></a>
+  <a href="https://github.com/nirholas/agenti/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nirholas/agenti/ci.yml?branch=main&style=flat-square&logo=github&label=tests" alt="Tests"></a>
 </p>
 
 ### Running Tests
@@ -1633,7 +1633,7 @@ Built by **[nich](https://x.com/nichxbt)** ([github.com/nirholas](https://github
 
 ## 🏢 Who's Using This?
 
-Universal Crypto MCP is used by developers and teams building:
+Agenti is used by developers and teams building:
 
 - 🤖 **AI Trading Bots** - Automated portfolio management
 - 📊 **Analytics Dashboards** - DeFi monitoring tools
@@ -1642,7 +1642,7 @@ Universal Crypto MCP is used by developers and teams building:
 - 📱 **Mobile Apps** - Crypto portfolio trackers
 - 🎓 **Educational Tools** - Blockchain learning platforms
 
-> **Using Universal Crypto MCP?** [Let us know!](https://github.com/nirholas/universal-crypto-mcp/issues/new?title=Add%20my%20project%20to%20Who's%20Using%20This) We'd love to feature your project.
+> **Using Agenti?** [Let us know!](https://github.com/nirholas/agenti/issues/new?title=Add%20my%20project%20to%20Who's%20Using%20This) We'd love to feature your project.
 
 ---
 
@@ -1654,8 +1654,8 @@ We welcome contributions of all kinds! Please read our [Contributing Guide](CONT
 
 ```bash
 # Fork and clone the repo
-git clone https://github.com/YOUR_USERNAME/universal-crypto-mcp.git
-cd universal-crypto-mcp
+git clone https://github.com/YOUR_USERNAME/agenti.git
+cd agenti
 
 # Install dependencies
 npm install
@@ -1687,11 +1687,11 @@ npm run lint:fix  # Auto-fix issues
 
 ### Ways to Contribute
 
-- 🐛 [Report bugs](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=bug_report.yml)
-- 💡 [Request features](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=feature_request.yml)
-- 📖 [Improve docs](https://github.com/nirholas/universal-crypto-mcp/edit/main/README.md)
+- 🐛 [Report bugs](https://github.com/nirholas/agenti/issues/new?template=bug_report.yml)
+- 💡 [Request features](https://github.com/nirholas/agenti/issues/new?template=feature_request.yml)
+- 📖 [Improve docs](https://github.com/nirholas/agenti/edit/main/README.md)
 - 🔧 Submit pull requests
-- ⭐ [Star the repo](https://github.com/nirholas/universal-crypto-mcp/stargazers)
+- ⭐ [Star the repo](https://github.com/nirholas/agenti/stargazers)
 
 ---
 
@@ -1707,7 +1707,7 @@ Apache-2.0 © [nich](https://github.com/nirholas)
 </p>
 
 <p align="center">
-  <a href="https://github.com/nirholas/universal-crypto-mcp/stargazers">
-    <img src="https://img.shields.io/github/stars/nirholas/universal-crypto-mcp?style=social" alt="Star on GitHub">
+  <a href="https://github.com/nirholas/agenti/stargazers">
+    <img src="https://img.shields.io/github/stars/nirholas/agenti?style=social" alt="Star on GitHub">
   </a>
 </p>

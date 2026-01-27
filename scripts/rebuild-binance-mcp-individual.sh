@@ -4,7 +4,7 @@ set -e
 # Rebuild Binance-MCP with individual commits for each file
 # Each file gets a unique commit with emoji and description
 
-REPO_DIR="/workspaces/universal-crypto-mcp/binance-mcp-server"
+REPO_DIR="/workspaces/agenti/binance-mcp-server"
 WORK_DIR="/tmp/binance-mcp-individual"
 GITHUB_USER="nirholas"
 REPO_NAME="Binance-MCP"

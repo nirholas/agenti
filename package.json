@@ -1,5 +1,5 @@
 {
-  "name": "@nirholas/universal-crypto-mcp",
+  "name": "@nirholas/agenti",
   "version": "0.1.0",
   "description": "Universal MCP server for all EVM-compatible networks including BSC, opBNB, Arbitrum, Ethereum, Polygon, Base, Optimism and more.",
   "type": "module",
@@ -46,7 +46,7 @@
     "x402:mainnet": "tsx src/x402/cli/index.ts mainnet"
   },
   "bin": {
-    "universal-crypto-mcp": "./dist/index.js",
+    "agenti": "./dist/index.js",
     "x402": "./dist/x402/cli/index.js"
   },
   "files": [
@@ -63,7 +63,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/universal-crypto-mcp"
+    "url": "https://github.com/nirholas/agenti"
   },
   "keywords": [
     "mcp",

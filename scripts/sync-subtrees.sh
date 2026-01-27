@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════
-#  universal-crypto-mcp | universal-crypto-mcp
+#  agenti | agenti
 #  ID: bmljaHhidA==
 # ═══════════════════════════════════════════════════════════════
 
@@ -25,7 +25,7 @@ if ! git remote | grep -q "^binance$"; then
     exit 1
 fi
 
-# [universal-crypto-mcp] implementation
+# [agenti] implementation
 # Check for uncommitted changes
 if ! git diff-index --quiet HEAD --; then
     echo "Warning: You have uncommitted changes. Please commit them first."
@@ -46,4 +46,4 @@ echo "Sync complete!"
 echo "============================================"
 
 
-# universal-crypto-mcp © nicholas
+# agenti © nicholas
