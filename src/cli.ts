@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Universal Crypto MCP - Interactive CLI
+ * Agenti - Interactive CLI
  * Query crypto data directly from the command line
  *
  * @author nich
@@ -136,7 +136,7 @@ ${c("bold", "💰 Balance")}
 
 function showHelp(): string {
   return `
-${c("bold", "🤖💰 Universal Crypto MCP - Interactive CLI")}
+${c("bold", "🤖💰 Agenti - Interactive CLI")}
 ${c("dim", "Give Claude Money! The first MCP with x402 payments.")}
 
 ${c("cyan", "📊 Market Commands:")}
@@ -207,7 +207,7 @@ ${hasKey ? "" : `${c("yellow", "⚠️  To enable x402 payments, set:")}
    ${c("dim", "export X402_PRIVATE_KEY=0x...")}
    ${c("dim", "export X402_CHAIN=arbitrum")}
 `}
-${c("dim", "Learn more: https://github.com/nirholas/universal-crypto-mcp")}
+${c("dim", "Learn more: https://github.com/nirholas/agenti")}
 `
 }
 
@@ -247,8 +247,8 @@ async function processCommand(input: string): Promise<string> {
     case "exit":
     case "quit":
     case "q":
-      console.log(`\n${c("cyan", "👋 Thanks for using Universal Crypto MCP!")}`)
-      console.log(`${c("dim", "⭐ Star us on GitHub: github.com/nirholas/universal-crypto-mcp")}\n`)
+      console.log(`\n${c("cyan", "👋 Thanks for using Agenti!")}`)
+      console.log(`${c("dim", "⭐ Star us on GitHub: github.com/nirholas/agenti")}\n`)
       process.exit(0)
 
     case "":

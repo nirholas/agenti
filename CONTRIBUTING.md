@@ -1,6 +1,6 @@
-# Contributing to Universal Crypto MCP
+# Contributing to Agenti
 
-Thank you for your interest in contributing to Universal Crypto MCP! This document provides comprehensive guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to Agenti! This document provides comprehensive guidelines and instructions for contributing to the project.
 
 <p align="center">
   <a href="#getting-started">Getting Started</a> •
@@ -31,17 +31,17 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 1. **Fork the repository**
    
-   Click the "Fork" button on [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+   Click the "Fork" button on [GitHub](https://github.com/nirholas/agenti)
 
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/universal-crypto-mcp.git
-   cd universal-crypto-mcp
+   git clone https://github.com/YOUR_USERNAME/agenti.git
+   cd agenti
    ```
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/nirholas/universal-crypto-mcp.git
+   git remote add upstream https://github.com/nirholas/agenti.git
    ```
 
 4. **Install dependencies**
@@ -89,7 +89,7 @@ npm run dev:sse
 ### Project Structure
 
 ```
-universal-crypto-mcp/
+agenti/
 ├── src/
 │   ├── index.ts           # Entry point
 │   ├── cli.ts             # CLI handling
@@ -380,7 +380,7 @@ describe("Your Module Tools", () => {
 
 ### 🐛 Bug Reports
 
-Found a bug? Please [open an issue](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=bug_report.yml) with:
+Found a bug? Please [open an issue](https://github.com/nirholas/agenti/issues/new?template=bug_report.yml) with:
 - Clear description of the bug
 - Steps to reproduce
 - Expected vs actual behavior
@@ -388,7 +388,7 @@ Found a bug? Please [open an issue](https://github.com/nirholas/universal-crypto
 
 ### 💡 Feature Requests
 
-Have an idea? [Request a feature](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=feature_request.yml) with:
+Have an idea? [Request a feature](https://github.com/nirholas/agenti/issues/new?template=feature_request.yml) with:
 - Clear description of the feature
 - Use case and benefits
 - Potential implementation approach
@@ -413,9 +413,9 @@ We welcome code contributions of all sizes:
 
 ## Getting Help
 
-- 💬 [GitHub Discussions](https://github.com/nirholas/universal-crypto-mcp/discussions) - Questions and discussions
-- 🐛 [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues) - Bug reports and feature requests
-- 📖 [Documentation](https://universal-crypto-mcp.vercel.app) - Full documentation
+- 💬 [GitHub Discussions](https://github.com/nirholas/agenti/discussions) - Questions and discussions
+- 🐛 [GitHub Issues](https://github.com/nirholas/agenti/issues) - Bug reports and feature requests
+- 📖 [Documentation](https://agenti.vercel.app) - Full documentation
 
 ---
 

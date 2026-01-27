@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setup script to push binance-us-mcp-server and binance-mcp-server as standalone repos
-# while keeping them in the universal-crypto-mcp monorepo
+# while keeping them in the agenti monorepo
 
 set -e
 

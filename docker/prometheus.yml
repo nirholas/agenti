@@ -1,7 +1,7 @@
 # @file prometheus.yml
 # @author nicholas
 # @copyright (c) 2026 @nichxbt
-# @repository universal-crypto-mcp
+# @repository agenti
 
 global:
   scrape_interval: 15s
@@ -37,4 +37,4 @@ scrape_configs:
     metrics_path: /stub_status
 
 
-# universal-crypto-mcp © nirholas/universal-crypto-mcp
+# agenti © nirholas/agenti

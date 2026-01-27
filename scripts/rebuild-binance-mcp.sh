@@ -4,7 +4,7 @@ set -e
 # Rebuild Binance-MCP with curated commit history
 # Each logical group gets a unique commit with emoji
 
-REPO_DIR="/workspaces/universal-crypto-mcp/binance-mcp-server"
+REPO_DIR="/workspaces/agenti/binance-mcp-server"
 WORK_DIR="/tmp/binance-mcp-rebuild"
 GITHUB_USER="nirholas"
 REPO_NAME="Binance-MCP"
