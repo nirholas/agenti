@@ -23,7 +23,7 @@
  * ```
  */
 
-import { createPublicClient, createWalletClient, http, parseUnits, formatUnits } from "viem";
+import { createPublicClient, createWalletClient, http, formatUnits } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrum, base } from "viem/chains";
 import type { 
@@ -205,7 +205,7 @@ export class AgentWallet {
  */
 export class PayableAgent {
   private wallet?: AgentWallet;
-  private readonly config: Required<PayableAgentConfig>;
+  private readonly config: Omit<Required<PayableAgentConfig>, 'privateKey'> & { privateKey?: `0x${string}` };
   private dailySpend = 0;
   private lastDayReset = Date.now();
   private paymentHistory: PaymentHistoryEntry[] = [];
@@ -224,7 +224,7 @@ export class PayableAgent {
     
     if (config.privateKey) {
       this.wallet = new AgentWallet({
-        privateKey: config.privateKey,
+        privateKey: config.privateKey!,
         chain: this.config.chain,
       });
     }

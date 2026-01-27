@@ -24,7 +24,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { PayableAgent, createPayableAgentFromEnv } from "./agent.js";
 import { ToolMarketplace, createToolListing } from "./marketplace.js";
-import { PricingStrategy, PaywallBuilder, createPremiumTier } from "./premium.js";
+import { createPremiumTier } from "./premium.js";
 import { YieldProjector } from "./yield.js";
 import { SUPPORTED_NETWORKS, TOOL_CATEGORIES } from "./constants.js";
 import type { Address } from "./types.js";
@@ -122,7 +122,7 @@ export function registerX402Ecosystem(
       "Discover paid AI tools in the x402 marketplace",
       {
         maxPrice: z.string().optional().describe("Maximum price filter (e.g., '0.01')"),
-        category: z.enum(TOOL_CATEGORIES as [string, ...string[]]).optional().describe("Tool category"),
+        category: z.enum([...TOOL_CATEGORIES] as [string, ...string[]]).optional().describe("Tool category"),
         search: z.string().optional().describe("Search query"),
         limit: z.number().optional().describe("Max results to return"),
       },
@@ -162,7 +162,7 @@ export function registerX402Ecosystem(
         description: z.string().describe("Tool description"),
         endpoint: z.string().url().describe("Tool API endpoint"),
         price: z.string().describe("Price per request in USD (e.g., '0.001')"),
-        category: z.enum(TOOL_CATEGORIES as [string, ...string[]]).optional().describe("Tool category"),
+        category: z.enum([...TOOL_CATEGORIES] as [string, ...string[]]).optional().describe("Tool category"),
         owner: z.string().describe("Owner wallet address"),
       },
       async ({ name, description, endpoint, price, category, owner }) => {
@@ -378,13 +378,6 @@ export function registerX402Ecosystem(
         durationUnit: z.enum(["day", "week", "month", "year"]).describe("Duration unit"),
       },
       async ({ tierPrice, tierPeriod, durationValue, durationUnit }) => {
-        const tier = {
-          name: "custom",
-          price: tierPrice,
-          period: tierPeriod,
-          features: [],
-        };
-        
         // Simplified calculation
         const daysInDuration = {
           day: durationValue,

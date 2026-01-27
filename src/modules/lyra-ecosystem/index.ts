@@ -103,6 +103,10 @@ export type {
   IntegrationAssistance,
   CodeSnippet,
   TestCase,
+
+  // Multi-chain types
+  LyraWalletConfig,
+  LyraChainPreference,
 } from "./types.js";
 
 // Constants
@@ -115,11 +119,24 @@ export {
   LYRA_DEFAULT_NETWORK,
   LYRA_FACILITATOR_URL,
   LYRA_TREASURY_ADDRESS,
+  LYRA_TREASURY_ADDRESSES,
   LYRA_API_VERSION,
   LYRA_CACHE_CONFIG,
   SUPPORTED_LANGUAGES,
   TOOL_CATEGORIES,
   DISCOVERABLE_PROTOCOLS,
+  // Multi-chain exports
+  LYRA_NETWORKS,
+  LYRA_RECOMMENDED_NETWORKS,
+  LYRA_CHAIN_FACILITATORS,
+  // Sperax USDs integration
+  SPERAX_CONTRACTS,
+  USDS_BENEFITS,
+  PAYMENT_TOKENS,
+  DEFAULT_TOKEN_PER_CHAIN,
+  type LyraNetworkId,
+  type LyraNetworkConfig,
+  type PaymentToken,
 } from "./constants.js";
 
 // Pricing constant for convenience

@@ -98,7 +98,7 @@ export class YieldingWallet {
   
   constructor(config: YieldConfig) {
     this.config = {
-      privateKey: config.privateKey,
+      privateKey: config.privateKey ?? ("0x" as `0x${string}`),
       address: config.address ?? ("0x" as Address),
       autoConvert: config.autoConvert ?? false,
       autoConvertThreshold: config.autoConvertThreshold ?? "10.00",

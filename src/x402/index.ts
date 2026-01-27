@@ -136,6 +136,47 @@ export {
 // Re-export CLI utilities for developers
 export * from "./utils/index.js"
 
+// Re-export UCAI (Universal Contract AI) module
+export {
+  registerUCAI,
+  registerUCAITools,
+  // Services
+  GasSponsorshipService,
+  getGasSponsorService,
+  ContractAnalysisService,
+  getContractAnalysisService,
+  TransactionSimulationService,
+  getTransactionSimulationService,
+  HistoricalDataService,
+  getHistoricalDataService,
+  ABIGenerationService,
+  getABIGenerationService,
+  UCAIPaymentService,
+  getUCAIPaymentService,
+  // Constants
+  UCAI_PRICING,
+  UCAP_TOOLS,
+  SUBSCRIPTION_TIERS,
+} from "./ucai/index.js"
+
+// Re-export UCAI types
+export type {
+  GasSponsorshipRequest,
+  GasSponsorshipResult,
+  ContractAnalysisRequest,
+  SecurityAuditResult,
+  Vulnerability,
+  RugPullIndicators,
+  SimulationRequest,
+  SimulationResult,
+  HistoricalDataRequest,
+  HistoricalDataResult,
+  ABIGenerationRequest,
+  ABIGenerationResult,
+  UCAPSubscription,
+  SubscriptionTier,
+} from "./ucai/types.js"
+
 // Re-export types
 export type {
   X402ClientConfig,
@@ -270,6 +311,14 @@ export {
  * - x402_server_status: Check server configuration
  * - x402_export_analytics: Export payment data
  * - x402_list_endpoints: List protected endpoints
+ * 
+ * Tools registered (UCAI - Smart Contract AI Payments):
+ * - ucai_sponsor_gas: Pay for user's gas via x402
+ * - ucai_analyze_contract: Premium security analysis ($0.05)
+ * - ucai_detect_rug_pull: Rug pull detection ($0.05)
+ * - ucai_simulate_transaction: Preview outcomes ($0.01)
+ * - ucai_query_historical_data: Query past data ($0.02)
+ * - ucai_generate_abi: Generate ABI from bytecode ($0.10)
  */
 export function registerX402(server: McpServer): void {
   const config = loadX402Config()
@@ -298,7 +347,11 @@ export function registerX402(server: McpServer): void {
   // Register server-side tools (receiving payments)
   registerX402ServerTools(server)
   
+  // Register UCAI tools (smart contract AI payments)
+  registerUCAITools(server)
+  
   Logger.info("x402: Payment protocol ready 💰")
+  Logger.info("x402: UCAI smart contract tools registered 🔐")
 }
 
 /**

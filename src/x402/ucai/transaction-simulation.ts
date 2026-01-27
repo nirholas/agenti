@@ -33,7 +33,8 @@ import { UCAI_PRICING } from "./types.js"
 import Logger from "@/utils/logger.js"
 
 // Chain configurations
-const CHAINS: Record<string, typeof mainnet> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CHAINS: Record<string, any> = {
   ethereum: mainnet,
   arbitrum,
   base,
@@ -264,28 +265,35 @@ export class TransactionSimulationService {
     const transfers: TokenTransfer[] = []
 
     for (const event of events) {
-      if (event.topics?.[0] === ERC20_TRANSFER_TOPIC) {
+      if (event.topics?.[0] === ERC20_TRANSFER_TOPIC && event.topics.length >= 1) {
         try {
+          // Ensure topics array has the required format for decodeEventLog
+          const firstTopic = event.topics[0] as `0x${string}`
+          const restTopics = event.topics.slice(1) as `0x${string}`[]
           const decoded = decodeEventLog({
             abi: ERC20_ABI,
             data: event.topics[3] as Hex ?? "0x",
-            topics: event.topics,
+            topics: [firstTopic, ...restTopics],
           })
 
           // Get token info
           const tokenInfo = await this.getTokenInfo(client, event.address)
-
-          transfers.push({
-            token: event.address,
-            symbol: tokenInfo?.symbol,
-            decimals: tokenInfo?.decimals,
-            from: decoded.args.from as Address,
-            to: decoded.args.to as Address,
-            amount: decoded.args.value as bigint,
-            formattedAmount: tokenInfo
-              ? formatUnits(decoded.args.value as bigint, tokenInfo.decimals)
-              : undefined,
-          })
+          
+          // Type guard to check if this is a Transfer event (not Approval)
+          if (decoded.eventName === "Transfer") {
+            const args = decoded.args as { from: Address; to: Address; value: bigint }
+            transfers.push({
+              token: event.address,
+              symbol: tokenInfo?.symbol,
+              decimals: tokenInfo?.decimals,
+              from: args.from,
+              to: args.to,
+              amount: args.value,
+              formattedAmount: tokenInfo
+                ? formatUnits(args.value, tokenInfo.decimals)
+                : undefined,
+            })
+          }
         } catch {
           // Could not decode transfer event
         }

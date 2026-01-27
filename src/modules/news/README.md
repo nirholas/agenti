@@ -401,6 +401,105 @@ const export = await news.export({
 });
 ```
 
+## x402scan Integration
+
+This module implements the [x402scan](https://x402scan.com) V2 schema for automatic resource discovery.
+
+### Enable Discovery Document
+
+Implement `/.well-known/x402` to have all premium resources automatically discovered by x402scan:
+
+#### Next.js (App Router)
+
+```typescript
+// app/.well-known/x402/route.ts
+import { createX402DiscoveryHandler } from "@nirholas/universal-crypto-mcp/news";
+
+export const GET = createX402DiscoveryHandler();
+```
+
+#### Express
+
+```typescript
+import express from 'express';
+import { x402DiscoveryMiddleware } from "@nirholas/universal-crypto-mcp/news";
+
+const app = express();
+app.get('/.well-known/x402', x402DiscoveryMiddleware);
+```
+
+#### Manual
+
+```typescript
+import { getDiscoveryDocumentJSON } from "@nirholas/universal-crypto-mcp/news";
+
+// Get JSON string
+const json = getDiscoveryDocumentJSON();
+
+// Or get object
+import { generateDiscoveryDocument } from "@nirholas/universal-crypto-mcp/news";
+const doc = generateDiscoveryDocument();
+```
+
+### V2 Schema Compliance
+
+All premium resources comply with x402scan V2 schema:
+
+```typescript
+type X402Response = {
+  x402Version: 2,
+  accepts?: Array<{
+    scheme: "exact",
+    network: "eip155:8453", // Base mainnet
+    amount: string,
+    payTo: string,
+    maxTimeoutSeconds: number,
+    asset: string,
+    extra: Record<string, any>
+  }>,
+  resource?: {
+    url: string,
+    description: string,
+    mimeType: string
+  },
+  extensions?: {
+    bazaar?: {
+      info?: { input: any, output?: any },
+      schema?: any // JSON Schema
+    }
+  }
+}
+```
+
+### Bazaar Extension
+
+Each resource includes the `bazaar` extension with:
+
+- **info.input**: Example request payload
+- **info.output**: Example response payload  
+- **schema**: JSON Schema for validation
+
+This allows x402scan to render interactive UI for invoking resources directly from the app.
+
+### Validate Resources
+
+```typescript
+import { validateDiscoveryDocument } from "@nirholas/universal-crypto-mcp/news";
+
+const { valid, errors } = validateDiscoveryDocument();
+if (!valid) {
+  console.error("Validation errors:", errors);
+}
+```
+
+### Environment Variables
+
+```bash
+# Required for discovery document
+PREMIUM_NEWS_API_URL=https://your-api.example.com
+X402_PAY_TO_ADDRESS=0x1234...your-address
+```
+
 ## License
 
 Apache-2.0
@@ -410,3 +509,4 @@ Apache-2.0
 **💰 Revenue Split**: 70% to content sources, 30% platform fee.
 
 Built with [x402](https://x402.org) | Powered by [free-crypto-news](https://github.com/nirholas/free-crypto-news)
+

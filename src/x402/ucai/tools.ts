@@ -26,6 +26,71 @@ import { UCAI_PRICING, UCAP_TOOLS } from "./types.js"
 import Logger from "@/utils/logger.js"
 import { mcpToolRes } from "@/utils/helper.js"
 
+// Tool parameter types
+interface GasSponsorParams {
+  userAddress: string
+  contractAddress: string
+  functionName: string
+  args: unknown[]
+  abi: unknown[]
+  network: string
+  maxGasUsd?: string
+}
+
+interface GasEstimateParams {
+  contractAddress: string
+  functionName: string
+  args: unknown[]
+  abi: unknown[]
+  network: string
+}
+
+interface ContractAnalysisParams {
+  contractAddress: string
+  network: string
+  analysisType: string[]
+}
+
+interface RugPullParams {
+  tokenAddress: string
+  network: string
+}
+
+interface SimulationParams {
+  contractAddress: string
+  functionName: string
+  args: unknown[]
+  abi: unknown[]
+  from: string
+  value?: string
+  network: string
+}
+
+interface HistoricalDataParams {
+  contractAddress: string
+  network: string
+  dataType: string
+  fromBlock?: string
+  toBlock?: string
+  eventFilter?: {
+    eventName?: string
+    topics?: (string | null)[]
+  }
+  limit: number
+}
+
+interface ContractStatsParams {
+  contractAddress: string
+  network: string
+}
+
+interface ABIGenerationParams {
+  contractAddress: string
+  network: string
+  includeDescriptions: boolean
+  detectStandards: boolean
+}
+
 // Default network parameter
 const networkParam = z
   .enum(["ethereum", "arbitrum", "base", "polygon", "optimism", "bsc"])
@@ -55,7 +120,8 @@ export function registerUCAITools(server: McpServer): void {
       network: networkParam,
       maxGasUsd: z.string().optional().describe("Maximum gas in USD to sponsor (default: $5)"),
     },
-    async ({ userAddress, contractAddress, functionName, args, abi, network, maxGasUsd }) => {
+    async (params: GasSponsorParams) => {
+      const { userAddress, contractAddress, functionName, args, abi, network, maxGasUsd } = params
       try {
         // Process payment first
         const paymentService = getUCAIPaymentService()
@@ -68,12 +134,12 @@ export function registerUCAITools(server: McpServer): void {
         )
 
         if (!estimate.supported) {
-          return mcpToolRes.error(new Error(`Network ${network} not supported for gas sponsorship`))
+          return mcpToolRes.error(`Network ${network} not supported for gas sponsorship`, "checking network support")
         }
 
         const paymentResult = await paymentService.processPayment("gas_sponsor", estimate.paymentAmount)
         if (!paymentResult.success) {
-          return mcpToolRes.error(new Error(`Payment failed: ${paymentResult.error}`))
+          return mcpToolRes.error(`Payment failed: ${paymentResult.error}`, "processing payment")
         }
 
         // Execute gas sponsorship
@@ -90,7 +156,7 @@ export function registerUCAITools(server: McpServer): void {
         if (!result.success) {
           // Refund on failure
           await paymentService.refundPayment(paymentResult.paymentId!)
-          return mcpToolRes.error(new Error(result.error ?? "Gas sponsorship failed"))
+          return mcpToolRes.error(result.error ?? "Gas sponsorship failed", "sponsoring transaction")
         }
 
         return mcpToolRes.success({
@@ -122,7 +188,8 @@ export function registerUCAITools(server: McpServer): void {
       abi: z.array(z.any()).describe("Contract ABI"),
       network: networkParam,
     },
-    async ({ contractAddress, functionName, args, abi, network }) => {
+    async (params: GasEstimateParams) => {
+      const { contractAddress, functionName, args, abi, network } = params
       try {
         const estimate = await getGasSponsorService().estimateSponsorshipCost(
           contractAddress as Address,
@@ -170,7 +237,8 @@ export function registerUCAITools(server: McpServer): void {
         "full_audit",
       ])).default(["full_audit"]).describe("Types of analysis to perform"),
     },
-    async ({ contractAddress, network, analysisType }) => {
+    async (params: ContractAnalysisParams) => {
+      const { contractAddress, network, analysisType } = params
       try {
         // Process payment
         const paymentService = getUCAIPaymentService()
@@ -180,7 +248,7 @@ export function registerUCAITools(server: McpServer): void {
         )
 
         if (!paymentResult.success) {
-          return mcpToolRes.error(new Error(`Payment failed: ${paymentResult.error}`))
+          return mcpToolRes.error(`Payment failed: ${paymentResult.error}`, "processing payment")
         }
 
         // Perform analysis
@@ -221,7 +289,8 @@ export function registerUCAITools(server: McpServer): void {
       tokenAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Token contract address"),
       network: networkParam,
     },
-    async ({ tokenAddress, network }) => {
+    async (params: RugPullParams) => {
+      const { tokenAddress, network } = params
       try {
         // Process payment
         const paymentService = getUCAIPaymentService()
@@ -231,7 +300,7 @@ export function registerUCAITools(server: McpServer): void {
         )
 
         if (!paymentResult.success) {
-          return mcpToolRes.error(new Error(`Payment failed: ${paymentResult.error}`))
+          return mcpToolRes.error(`Payment failed: ${paymentResult.error}`, "processing payment")
         }
 
         // Perform rug pull analysis
@@ -287,7 +356,8 @@ export function registerUCAITools(server: McpServer): void {
       value: z.string().optional().describe("ETH value to send (in wei)"),
       network: networkParam,
     },
-    async ({ contractAddress, functionName, args, abi, from, value, network }) => {
+    async (params: SimulationParams) => {
+      const { contractAddress, functionName, args, abi, from, value, network } = params
       try {
         // Process payment
         const paymentService = getUCAIPaymentService()
@@ -297,7 +367,7 @@ export function registerUCAITools(server: McpServer): void {
         )
 
         if (!paymentResult.success) {
-          return mcpToolRes.error(new Error(`Payment failed: ${paymentResult.error}`))
+          return mcpToolRes.error(`Payment failed: ${paymentResult.error}`, "processing payment")
         }
 
         // Perform simulation
@@ -372,7 +442,8 @@ export function registerUCAITools(server: McpServer): void {
       }).optional().describe("Filter for event logs"),
       limit: z.number().max(1000).default(100).describe("Maximum results to return"),
     },
-    async ({ contractAddress, network, dataType, fromBlock, toBlock, eventFilter, limit }) => {
+    async (params: HistoricalDataParams) => {
+      const { contractAddress, network, dataType, fromBlock, toBlock, eventFilter, limit } = params
       try {
         // Process payment
         const paymentService = getUCAIPaymentService()
@@ -382,7 +453,7 @@ export function registerUCAITools(server: McpServer): void {
         )
 
         if (!paymentResult.success) {
-          return mcpToolRes.error(new Error(`Payment failed: ${paymentResult.error}`))
+          return mcpToolRes.error(`Payment failed: ${paymentResult.error}`, "processing payment")
         }
 
         // Query historical data
@@ -422,7 +493,8 @@ export function registerUCAITools(server: McpServer): void {
       contractAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe("Contract address"),
       network: networkParam,
     },
-    async ({ contractAddress, network }) => {
+    async (params: ContractStatsParams) => {
+      const { contractAddress, network } = params
       try {
         const stats = await getHistoricalDataService().getContractStats(
           contractAddress as Address,
@@ -455,7 +527,8 @@ export function registerUCAITools(server: McpServer): void {
       includeDescriptions: z.boolean().default(true).describe("Include AI-generated descriptions"),
       detectStandards: z.boolean().default(true).describe("Detect ERC standards (ERC20, ERC721, etc.)"),
     },
-    async ({ contractAddress, network, includeDescriptions, detectStandards }) => {
+    async (params: ABIGenerationParams) => {
+      const { contractAddress, network, includeDescriptions, detectStandards } = params
       try {
         // Process payment
         const paymentService = getUCAIPaymentService()
@@ -465,7 +538,7 @@ export function registerUCAITools(server: McpServer): void {
         )
 
         if (!paymentResult.success) {
-          return mcpToolRes.error(new Error(`Payment failed: ${paymentResult.error}`))
+          return mcpToolRes.error(`Payment failed: ${paymentResult.error}`, "processing payment")
         }
 
         // Generate ABI
