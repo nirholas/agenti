@@ -3,11 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --text-ghost: rgba(255, 255, 255, 0.35);
-  --text-whisper: rgba(255, 255, 255, 0.55);
-  --text-soft: rgba(255, 255, 255, 0.75);
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  /* Opal theme - bright pearly white on pure black */
+  --text-ghost: rgba(255, 255, 255, 0.4);
+  --text-whisper: rgba(255, 255, 255, 0.6);
+  --text-soft: rgba(255, 255, 255, 0.8);
+  --text-opal: rgba(255, 255, 255, 0.95);
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.06);
 }
 
 * {
@@ -18,20 +20,36 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #0a0a0f 0%, #0d0d14 50%, #08080c 100%);
-  color: var(--text-whisper);
+  background: #000000;
+  color: rgba(255, 255, 255, 0.9);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glassy panels */
+/* Opal glass panels - simplified */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  position: relative;
+}
+
+/* Subtle top sheen */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  pointer-events: none;
 }
 
 .glass-hover {
@@ -39,30 +57,47 @@ body {
 }
 
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-/* See-through text */
+/* Translucent text */
 .text-ghost { color: var(--text-ghost); }
 .text-whisper { color: var(--text-whisper); }
 .text-soft { color: var(--text-soft); }
 
-/* Gradient fade headline */
-.text-glass {
+/* OPAL TEXT - bright pearly white with subtle color shimmer */
+.text-glass,
+.text-opal {
   background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 0.4) 100%
+    90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 250, 255, 0.98) 15%,
+    rgba(250, 255, 255, 0.96) 30%,
+    rgba(255, 255, 250, 0.98) 45%,
+    rgba(255, 250, 255, 0.96) 60%,
+    rgba(250, 255, 255, 0.98) 75%,
+    rgba(255, 255, 255, 1) 100%
   );
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: opal-shift 8s ease-in-out infinite;
 }
 
-/* Subtle glow */
+@keyframes opal-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Opal glow - soft pearly halo */
 .glow-subtle {
-  text-shadow: 0 0 60px rgba(255, 255, 255, 0.08);
+  text-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.3),
+    0 0 40px rgba(255, 255, 255, 0.15),
+    0 0 60px rgba(255, 255, 255, 0.08);
 }
 
 /* Minimal scrollbar */
@@ -80,6 +115,6 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.98);
 }
