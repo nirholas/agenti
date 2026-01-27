@@ -1,42 +1,106 @@
-# Repo Integration Guide
+# Agenti Repo Integration Guide
 
-How to bring external repos into this x402-powered monorepo.
+**Purpose:** x402-powered monorepo for AI agent crypto tools with monetization.
 
 ## Architecture Overview
 
 ```
-universal-crypto-mcp/
+agenti/
 ├── src/
-│   ├── modules/          ← MCP tool modules (API integrations)
-│   │   ├── coingecko/
-│   │   ├── defi/
-│   │   └── your-module/
-│   ├── evm/              ← Core EVM functionality
-│   ├── x402/             ← x402 payment protocol
-│   └── server/           ← MCP server implementations
-├── packages/             ← Standalone packages (full repos with own package.json)
-│   ├── binance-mcp-server/
-│   ├── x402-ecosystem/
-│   └── your-package/
-├── plugins/              ← Plugin.delivery plugins (embeddable UIs)
-│   ├── crypto-market-data/   ← React frontend → standalone plugin
-│   ├── portfolio-tracker/
-│   └── your-plugin/
-└── x402/                 ← Upstream x402 protocol (subtree)
+│   ├── modules/          ← Core MCP tool modules
+│   ├── evm/              ← EVM chain functionality
+│   ├── x402/             ← x402 payment protocol (CORE)
+│   └── server/           ← MCP server (stdio/http/sse)
+│
+├── packages/             ← Categorized packages
+│   ├── exchanges/        ← CEX integrations (Binance, etc)
+│   ├── chains/           ← Blockchain-specific (BSC, Solana)
+│   ├── data/             ← Market data, news, aggregators
+│   ├── tools/            ← Tool discovery, registries, agents
+│   ├── wallets/          ← Wallet generation, sweep, signing
+│   ├── generators/       ← MCP generators (UCAI, github-to-mcp)
+│   ├── protocols/        ← Protocol integrations (x402, Sperax)
+│   ├── social/           ← Social automation (XActions)
+│   ├── infra/            ← Infrastructure (notify, proxy)
+│   └── web/              ← React frontends for plugins
+│
+├── plugins/              ← plugin.delivery ecosystem
+│   └── plugin.delivery/  ← AI plugin marketplace SDK
+│
+├── x402/                 ← Upstream x402 protocol (subtree)
+└── campaign/             ← Landing page & marketing
 ```
 
 ---
 
-## Three Integration Patterns
+## x402 Integration (THE CORE PURPOSE)
 
-### Pattern 1: Module (MCP Tools)
-**For:** API wrappers, data providers, backend logic
+Every package can monetize tools via x402 payments.
 
-### Pattern 2: Package (Full Repo)  
-**For:** Complex projects with own dependencies
+### Quick Start
+```bash
+# Add x402 to any package
+./scripts/add-x402-integration.sh packages/exchanges/binance-mcp
+```
 
-### Pattern 3: Plugin (Embeddable UI) ⭐ NEW
-**For:** React/HTML frontends that render inside chat via function calls
+### Manual Integration
+```typescript
+import { withX402, pricingInfo } from "./x402/index.js"
+
+server.tool(
+  "premium_analysis",
+  `AI market analysis. ${pricingInfo({ price: "0.01", token: "USDC" })}`,
+  { symbol: z.string() },
+  withX402(
+    async ({ symbol }) => {
+      const result = await analyze(symbol)
+      return { content: [{ type: "text", text: result }] }
+    },
+    { 
+      price: "0.01", 
+      token: "USDC",
+      chain: "base",
+      freeTier: ({ symbol }) => ["BTC", "ETH"].includes(symbol)
+    }
+  )
+)
+```
+
+---
+
+## Package Categories
+
+| Category | Path | Purpose |
+|----------|------|---------|
+| **exchanges** | `packages/exchanges/` | CEX APIs (Binance, etc) |
+| **chains** | `packages/chains/` | Chain-specific tools (BSC, Solana) |
+| **data** | `packages/data/` | Market data, news, aggregators |
+| **tools** | `packages/tools/` | Registries, discovery, agents |
+| **wallets** | `packages/wallets/` | Wallet ops, signing, sweeping |
+| **generators** | `packages/generators/` | ABI→MCP, GitHub→MCP |
+| **protocols** | `packages/protocols/` | x402, Sperax, DeFi protocols |
+| **social** | `packages/social/` | Twitter/X automation |
+| **infra** | `packages/infra/` | Notifications, proxies |
+| **web** | `packages/web/` | React frontends |
+
+---
+
+## Scripts
+
+```bash
+# Import a new repo
+./scripts/import-repo.sh <github-url> <name> [--package]
+
+# Add x402 to a package
+./scripts/add-x402-integration.sh <package-path>
+
+# Consolidate & organize
+./scripts/consolidate-packages.sh
+```
+
+---
+
+## Integration Patterns
 
 ## Two Integration Patterns
 
