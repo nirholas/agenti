@@ -182,8 +182,8 @@ function percentile(sortedArr: number[], p: number): number {
   const index = (p / 100) * (sortedArr.length - 1)
   const lower = Math.floor(index)
   const upper = Math.ceil(index)
-  if (lower === upper) return sortedArr[lower]
-  return sortedArr[lower] * (upper - index) + sortedArr[upper] * (index - lower)
+  if (lower === upper) return sortedArr[lower]!
+  return sortedArr[lower]! * (upper - index) + sortedArr[upper]! * (index - lower)
 }
 
 /**
@@ -228,8 +228,8 @@ function aggregatePoints(
     count: points.length,
     sum,
     avg,
-    min: sortedValues[0],
-    max: sortedValues[sortedValues.length - 1],
+    min: sortedValues[0]!,
+    max: sortedValues[sortedValues.length - 1]!,
     stddev: stddev(values, avg),
     percentiles: {
       p50: percentile(sortedValues, 50),
@@ -422,10 +422,10 @@ export class TimeSeriesDB {
     const buckets = Array.from(metric.raw.keys()).sort((a, b) => b - a)
     if (buckets.length === 0) return null
 
-    const latestBucket = metric.raw.get(buckets[0])
+    const latestBucket = metric.raw.get(buckets[0]!)
     if (!latestBucket || latestBucket.points.length === 0) return null
 
-    return latestBucket.points[latestBucket.points.length - 1]
+    return latestBucket.points[latestBucket.points.length - 1] ?? null
   }
 
   /**

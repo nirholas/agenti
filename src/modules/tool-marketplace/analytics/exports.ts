@@ -561,14 +561,16 @@ export class ExportReportingService {
     if (responseTimeData.length > 0) {
       const latestRT = responseTimeData[responseTimeData.length - 1]
       
-      lines.push("")
-      lines.push("# HELP marketplace_response_time_seconds Response time in seconds")
-      lines.push("# TYPE marketplace_response_time_seconds summary")
-      lines.push(`marketplace_response_time_seconds{quantile="0.5"} ${(latestRT.percentiles.p50 / 1000).toFixed(3)}`)
-      lines.push(`marketplace_response_time_seconds{quantile="0.95"} ${(latestRT.percentiles.p95 / 1000).toFixed(3)}`)
-      lines.push(`marketplace_response_time_seconds{quantile="0.99"} ${(latestRT.percentiles.p99 / 1000).toFixed(3)}`)
-      lines.push(`marketplace_response_time_seconds_sum ${(latestRT.sum / 1000).toFixed(3)}`)
-      lines.push(`marketplace_response_time_seconds_count ${latestRT.count}`)
+      if (latestRT) {
+        lines.push("")
+        lines.push("# HELP marketplace_response_time_seconds Response time in seconds")
+        lines.push("# TYPE marketplace_response_time_seconds summary")
+        lines.push(`marketplace_response_time_seconds{quantile="0.5"} ${(latestRT.percentiles.p50 / 1000).toFixed(3)}`)
+        lines.push(`marketplace_response_time_seconds{quantile="0.95"} ${(latestRT.percentiles.p95 / 1000).toFixed(3)}`)
+        lines.push(`marketplace_response_time_seconds{quantile="0.99"} ${(latestRT.percentiles.p99 / 1000).toFixed(3)}`)
+        lines.push(`marketplace_response_time_seconds_sum ${(latestRT.sum / 1000).toFixed(3)}`)
+        lines.push(`marketplace_response_time_seconds_count ${latestRT.count}`)
+      }
     }
 
     return lines.join("\n")

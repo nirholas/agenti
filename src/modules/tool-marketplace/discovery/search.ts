@@ -102,24 +102,24 @@ function levenshteinDistance(a: string, b: string): number {
   }
 
   for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j
+    matrix[0]![j] = j
   }
 
   for (let i = 1; i <= b.length; i++) {
     for (let j = 1; j <= a.length; j++) {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1]
+        matrix[i]![j] = matrix[i - 1]![j - 1]!
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
+        matrix[i]![j] = Math.min(
+          matrix[i - 1]![j - 1]! + 1,
+          matrix[i]![j - 1]! + 1,
+          matrix[i - 1]![j]! + 1
         )
       }
     }
   }
 
-  return matrix[b.length][a.length]
+  return matrix[b.length]![a.length]!
 }
 
 /**
@@ -145,8 +145,8 @@ export class FullTextSearchEngine {
       fields: ["name", "displayName", "description", "tagsText"],
       storeFields: ["toolId", "name", "displayName", "description", "category", "tags"],
       idField: "toolId",
-      tokenize: (text) => this.tokenize(text),
-      processTerm: (term) => this.processTerm(term),
+      tokenize: (text: string) => this.tokenize(text),
+      processTerm: (term: string) => this.processTerm(term),
       searchOptions: {
         boost: {
           name: this.config.defaultBoosts.name,
@@ -340,6 +340,7 @@ export class FullTextSearchEngine {
 
     for (let i = offset; i < Math.min(miniSearchResults.length, offset + limit); i++) {
       const msResult = miniSearchResults[i]
+      if (!msResult) continue
       const tool = this.tools.get(msResult.id as string)
 
       if (tool) {
@@ -457,7 +458,7 @@ export class FullTextSearchEngine {
 
     return suggestions
       .slice(0, limit)
-      .map(s => s.suggestion)
+      .map((s: { suggestion: string }) => s.suggestion)
   }
 
   /**

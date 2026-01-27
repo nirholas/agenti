@@ -32,7 +32,9 @@ function generateId(prefix: string): string {
 /**
  * Period durations in milliseconds
  */
-const PERIOD_MS: Record<string, number> = {
+type AnalyticsPeriod = "1h" | "24h" | "7d" | "30d"
+
+const PERIOD_MS: Record<AnalyticsPeriod, number> = {
   "1h": 60 * 60 * 1000,
   "24h": 24 * 60 * 60 * 1000,
   "7d": 7 * 24 * 60 * 60 * 1000,
@@ -388,8 +390,10 @@ export class SearchAnalytics {
     for (const [queryId, queryClicks] of clicksByQuery) {
       if (queryClicks.length > 0) {
         const firstClick = queryClicks.sort((a, b) => a.timestamp - b.timestamp)[0]
-        mrrSum += 1 / firstClick.position
-        mrrCount++
+        if (firstClick) {
+          mrrSum += 1 / firstClick.position
+          mrrCount++
+        }
       }
     }
     const meanReciprocalRank = mrrCount > 0 ? mrrSum / mrrCount : 0
@@ -476,24 +480,24 @@ export class SearchAnalytics {
     }
 
     for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j
+      matrix[0]![j] = j
     }
 
     for (let i = 1; i <= b.length; i++) {
       for (let j = 1; j <= a.length; j++) {
         if (b.charAt(i - 1) === a.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1]
+          matrix[i]![j] = matrix[i - 1]![j - 1]!
         } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
+          matrix[i]![j] = Math.min(
+            matrix[i - 1]![j - 1]! + 1,
+            matrix[i]![j - 1]! + 1,
+            matrix[i - 1]![j]! + 1
           )
         }
       }
     }
 
-    return matrix[b.length][a.length]
+    return matrix[b.length]![a.length]!
   }
 
   // ============================================================================

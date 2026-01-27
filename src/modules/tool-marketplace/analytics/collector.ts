@@ -459,7 +459,7 @@ export class MetricsCollectorService {
     const weightedAvg = data.reduce((sum, d) => sum + d.avg * d.count, 0) / totalCount
 
     // Use the percentiles from the aggregated data (approximation)
-    const latestWithData = data.find(d => d.count > 0) || data[0]
+    const latestWithData = data.find(d => d.count > 0) ?? data[0]!
 
     return {
       avg: Math.round(weightedAvg),
@@ -549,7 +549,7 @@ export class MetricsCollectorService {
 
     const topRegions = Array.from(regionCount.entries())
       .map(([key, count]) => {
-        const [region, country] = key.split(", ")
+        const [region = "Unknown", country = "Unknown"] = key.split(", ")
         return { region, country, count }
       })
       .sort((a, b) => b.count - a.count)
@@ -646,7 +646,7 @@ export class MetricsCollectorService {
     })
 
     return data.map(point => ({
-      date: new Date(point.timestamp).toISOString().split("T")[0],
+      date: new Date(point.timestamp).toISOString().split("T")[0] ?? new Date(point.timestamp).toISOString(),
       value: point.sum.toFixed(6),
     }))
   }

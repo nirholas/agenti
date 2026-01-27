@@ -32,15 +32,20 @@ import type {
 import { UCAI_PRICING } from "./types.js"
 import Logger from "@/utils/logger.js"
 
-// Chain configurations
+// Chain configurations - use any to avoid viem's strict chain typing
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CHAINS: Record<string, any> = {
   ethereum: mainnet,
-  arbitrum,
-  base,
-  polygon,
-  optimism,
-  bsc,
+  arbitrum: arbitrum,
+  base: base,
+  polygon: polygon,
+  optimism: optimism,
+  bsc: bsc,
+}
+
+// Type-safe chain accessor
+function getChain(network: string) {
+  return CHAINS[network] ?? mainnet
 }
 
 // ERC20 Transfer event signature
@@ -80,7 +85,7 @@ export class TransactionSimulationService {
   async simulateTransaction(request: SimulationRequest): Promise<SimulationResult> {
     const { contractAddress, functionName, args, abi, from, value, network } = request
 
-    const chain = CHAINS[network]
+    const chain = getChain(network)
     if (!chain) {
       throw new Error(`Unsupported network: ${network}`)
     }
@@ -213,8 +218,12 @@ export class TransactionSimulationService {
   /**
    * Simulate transaction with trace (if supported by node)
    */
+  /**
+   * Simulate transaction with trace (if supported by node)
+   */
   private async simulateWithTrace(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     from: Address,
     to: Address,
     data: Hex,
@@ -259,41 +268,40 @@ export class TransactionSimulationService {
    * Parse token transfers from events
    */
   private async parseTokenTransfers(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     events: SimulatedEvent[]
   ): Promise<TokenTransfer[]> {
     const transfers: TokenTransfer[] = []
 
     for (const event of events) {
-      if (event.topics?.[0] === ERC20_TRANSFER_TOPIC && event.topics.length >= 1) {
+      const topics = event.topics ?? []
+      if (topics[0] === ERC20_TRANSFER_TOPIC && topics.length >= 3) {
         try {
-          // Ensure topics array has the required format for decodeEventLog
-          const firstTopic = event.topics[0] as `0x${string}`
-          const restTopics = event.topics.slice(1) as `0x${string}`[]
-          const decoded = decodeEventLog({
-            abi: ERC20_ABI,
-            data: event.topics[3] as Hex ?? "0x",
-            topics: [firstTopic, ...restTopics],
-          })
-
-          // Get token info
-          const tokenInfo = await this.getTokenInfo(client, event.address)
+          // Decode Transfer event: Transfer(address indexed from, address indexed to, uint256 value)
+          // topics[1] = from (indexed), topics[2] = to (indexed), data = value
+          const topic1 = topics[1]
+          const topic2 = topics[2]
+          if (!topic1 || !topic2) continue
+          const from = ("0x" + topic1.slice(26)) as Address
+          const to = ("0x" + topic2.slice(26)) as Address
           
-          // Type guard to check if this is a Transfer event (not Approval)
-          if (decoded.eventName === "Transfer") {
-            const args = decoded.args as { from: Address; to: Address; value: bigint }
-            transfers.push({
-              token: event.address,
-              symbol: tokenInfo?.symbol,
-              decimals: tokenInfo?.decimals,
-              from: args.from,
-              to: args.to,
-              amount: args.value,
-              formattedAmount: tokenInfo
-                ? formatUnits(args.value, tokenInfo.decimals)
-                : undefined,
-            })
-          }
+          // Get token info and value from data
+          const tokenInfo = await this.getTokenInfo(client, event.address)
+          const eventData = (event as SimulatedEvent & { data?: Hex }).data
+          const value = eventData && eventData !== "0x" ? BigInt(eventData) : 0n
+          
+          transfers.push({
+            token: event.address,
+            symbol: tokenInfo?.symbol,
+            decimals: tokenInfo?.decimals,
+            from,
+            to,
+            amount: value,
+            formattedAmount: tokenInfo
+              ? formatUnits(value, tokenInfo.decimals)
+              : undefined,
+          })
         } catch {
           // Could not decode transfer event
         }
@@ -307,7 +315,8 @@ export class TransactionSimulationService {
    * Get token info (symbol, decimals)
    */
   private async getTokenInfo(
-    client: ReturnType<typeof createPublicClient>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    client: any,
     tokenAddress: Address
   ): Promise<{ symbol: string; decimals: number } | null> {
     const cacheKey = `${tokenAddress}`

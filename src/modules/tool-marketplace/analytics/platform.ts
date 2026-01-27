@@ -5,7 +5,8 @@
  * @license Apache-2.0
  */
 
-import { toolRegistry, type RegisteredTool, type ToolCategory } from "../registry.js"
+import { toolRegistry } from "../registry.js"
+import { type RegisteredTool, type ToolCategory } from "../types.js"
 import { timeseriesDB } from "./timeseries.js"
 import { metricsCollector, METRIC_NAMES } from "./collector.js"
 import Logger from "@/utils/logger.js"
@@ -181,7 +182,7 @@ const platformStorage: PlatformStorage = {
  * Get date key
  */
 function getDateKey(timestamp: number): string {
-  return new Date(timestamp).toISOString().split("T")[0]
+  return new Date(timestamp).toISOString().split("T")[0] ?? new Date(timestamp).toISOString().slice(0, 10)
 }
 
 /**

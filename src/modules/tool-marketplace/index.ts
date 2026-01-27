@@ -401,13 +401,94 @@ export {
 export {
   CompetitorAnalysisService,
   competitorAnalysis,
-  type CompetitorAnalysis,
+  type CompetitorAnalysisReport,
   type PriceBenchmark,
   type MarketShare,
-  type CompetitorProfile,
+  type CompetitorSummary,
   type FeatureGap,
-  type PerformanceRanking,
+  type FeatureComparison,
 } from "./dashboard/competitor.js"
+
+// ============================================================================
+// Discovery & Recommendations Exports
+// ============================================================================
+
+export {
+  // Search engines
+  fullTextSearch,
+  FullTextSearchEngine,
+  semanticSearch,
+  SemanticSearchEngine,
+  // Filter engine
+  filterEngine,
+  FilterEngine,
+  // Recommendation engine
+  recommendationEngine,
+  RecommendationEngine,
+  // Trending engine
+  trendingEngine,
+  TrendingEngine,
+  // Bundle manager
+  bundleManager,
+  BundleManager,
+  BUNDLE_TEMPLATES,
+  // UI formatters
+  UIFormatter,
+  formatToolCard,
+  formatComparison,
+  formatSearchResults,
+  // Analytics
+  searchAnalytics,
+  SearchAnalytics,
+  // Tools registration
+  registerDiscoveryTools,
+  // Initialization
+  initializeDiscovery,
+  configureDiscovery,
+} from "./discovery/index.js"
+
+// Discovery types
+export type {
+  // Search types
+  SearchResult,
+  FullTextSearchOptions,
+  SemanticSearchOptions,
+  SearchResponse,
+  SearchConfig,
+  SynonymMap,
+  ToolEmbedding,
+  // Filter types
+  PriceRangeFilter,
+  FilterOperator,
+  FilterCondition,
+  CombinedFilter,
+  AdvancedFilterOptions,
+  // Recommendation types
+  UserProfile,
+  RecommendedTool,
+  CoUsagePattern,
+  ContentSimilarity,
+  // Trending types
+  TrendingPeriod,
+  TrendingTool,
+  HotTool,
+  NewTool,
+  RisingStarTool,
+  FeaturedTool,
+  // Bundle types
+  ToolBundle,
+  BundleSubscription,
+  CreateBundleInput,
+  // Analytics types
+  SearchQueryRecord,
+  ClickRecord,
+  ConversionRecord,
+  ZeroResultQuery,
+  SearchAnalyticsSummary,
+  // Comparison types
+  ToolComparison,
+  ToolAlternative,
+} from "./discovery/types.js"
 
 /**
  * Register tool marketplace module with the MCP server
@@ -418,7 +499,8 @@ export function registerToolMarketplace(server: McpServer): void {
   registerToolMarketplacePrompts(server)
   registerAccessControlTools(server)
   registerAnalyticsMCPTools(server)
-  Logger.info("Tool Marketplace module registered (with access control, trust system & analytics)")
+  registerDiscoveryTools(server)
+  Logger.info("Tool Marketplace module registered (with access control, trust system, analytics & discovery)")
 }
 
 /**

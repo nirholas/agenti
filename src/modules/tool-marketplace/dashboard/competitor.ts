@@ -6,7 +6,8 @@
  */
 
 import type { Address } from "viem"
-import { toolRegistry, type RegisteredTool } from "../registry.js"
+import { toolRegistry } from "../registry.js"
+import type { RegisteredTool } from "../types.js"
 import { metricsCollector } from "../analytics/collector.js"
 import Logger from "@/utils/logger.js"
 
@@ -316,9 +317,9 @@ export class CompetitorAnalysisService {
     return {
       yourPrice: yourPrice.toFixed(6),
       categoryAvg: avg.toFixed(6),
-      categoryMedian: median.toFixed(6),
-      categoryMin: min.toFixed(6),
-      categoryMax: max.toFixed(6),
+      categoryMedian: (median ?? 0).toFixed(6),
+      categoryMin: (min ?? 0).toFixed(6),
+      categoryMax: (max ?? 0).toFixed(6),
       percentile,
       recommendation,
     }
@@ -436,7 +437,7 @@ export class CompetitorAnalysisService {
     tool: RegisteredTool,
     competitors: RegisteredTool[]
   ): FeatureComparison[] {
-    const categoryFeatures = CATEGORY_FEATURES[tool.category] || CATEGORY_FEATURES.utilities
+    const categoryFeatures = CATEGORY_FEATURES[tool.category] ?? CATEGORY_FEATURES.utilities ?? []
     const comparisons: FeatureComparison[] = []
 
     for (const feature of categoryFeatures) {
@@ -478,7 +479,7 @@ export class CompetitorAnalysisService {
     tool: RegisteredTool,
     competitors: RegisteredTool[]
   ): FeatureGap[] {
-    const categoryFeatures = CATEGORY_FEATURES[tool.category] || CATEGORY_FEATURES.utilities
+    const categoryFeatures = CATEGORY_FEATURES[tool.category] ?? CATEGORY_FEATURES.utilities ?? []
     const gaps: FeatureGap[] = []
 
     for (const feature of categoryFeatures) {

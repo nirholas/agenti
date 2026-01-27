@@ -111,6 +111,21 @@ export class OnChainRegistry {
   private toolCache: Map<`0x${string}`, OnChainTool> = new Map();
   private lastCacheUpdate: Date | null = null;
 
+  /**
+   * Get the account address from the wallet client
+   * @throws Error if no account is available
+   */
+  private async getAccount(): Promise<`0x${string}`> {
+    if (!this.walletClient) {
+      throw new Error('Wallet client required');
+    }
+    const [account] = await this.walletClient.getAddresses();
+    if (!account) {
+      throw new Error('No account available in wallet client');
+    }
+    return account;
+  }
+
   constructor(
     chainId: ChainId,
     rpcUrl?: string,
@@ -156,6 +171,9 @@ export class OnChainRegistry {
     }
 
     const [account] = await this.walletClient.getAddresses();
+    if (!account) {
+      throw new Error('No account available in wallet client');
+    }
 
     // Calculate expected tool ID
     const toolId = this.computeToolId(params.name, account);
@@ -172,7 +190,7 @@ export class OnChainRegistry {
         recipients,
         shares,
       ],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
 
@@ -191,7 +209,7 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
     const priceWei = pricePerCall ? parseUnits(pricePerCall, 18) : 0n;
 
     return this.walletClient.writeContract({
@@ -199,7 +217,7 @@ export class OnChainRegistry {
       abi: TOOL_REGISTRY_ABI,
       functionName: 'updateTool',
       args: [toolId, metadataURI || '', priceWei],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -212,14 +230,14 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     return this.walletClient.writeContract({
       address: this.addresses.toolRegistry,
       abi: TOOL_REGISTRY_ABI,
       functionName: 'updateEndpoint',
       args: [toolId, newEndpoint],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -232,14 +250,14 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     return this.walletClient.writeContract({
       address: this.addresses.toolRegistry,
       abi: TOOL_REGISTRY_ABI,
       functionName: 'pauseTool',
       args: [toolId],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -252,14 +270,14 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     return this.walletClient.writeContract({
       address: this.addresses.toolRegistry,
       abi: TOOL_REGISTRY_ABI,
       functionName: 'activateTool',
       args: [toolId],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -272,14 +290,14 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     return this.walletClient.writeContract({
       address: this.addresses.toolRegistry,
       abi: TOOL_REGISTRY_ABI,
       functionName: 'transferOwnership',
       args: [toolId, newOwner],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -448,14 +466,14 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     return this.walletClient.writeContract({
       address: this.addresses.revenueRouter,
       abi: REVENUE_ROUTER_ABI,
       functionName: 'claimPayout',
       args: [],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -500,7 +518,7 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
     const amountWei = parseUnits(amount, 18);
 
     // First approve the staking contract
@@ -511,7 +529,7 @@ export class OnChainRegistry {
       abi: TOOL_STAKING_ABI,
       functionName: 'stake',
       args: [amountWei],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -524,7 +542,7 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
     const amountWei = parseUnits(amount, 18);
 
     return this.walletClient.writeContract({
@@ -532,7 +550,7 @@ export class OnChainRegistry {
       abi: TOOL_STAKING_ABI,
       functionName: 'requestUnstake',
       args: [amountWei],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -545,14 +563,14 @@ export class OnChainRegistry {
       throw new Error('Wallet client required for write operations');
     }
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     return this.walletClient.writeContract({
       address: this.addresses.toolStaking,
       abi: TOOL_STAKING_ABI,
       functionName: 'unstake',
       args: [],
-      account,
+      account: account,
       chain: CHAIN_CONFIG[this.chainId],
     });
   }
@@ -735,7 +753,7 @@ export class OnChainRegistry {
   private async approveToken(spender: Address, amount: bigint): Promise<void> {
     if (!this.walletClient) return;
 
-    const [account] = await this.walletClient.getAddresses();
+    const account = await this.getAccount();
 
     // Check current allowance
     const allowance = await this.publicClient.readContract({
@@ -751,7 +769,7 @@ export class OnChainRegistry {
         abi: ERC20_ABI,
         functionName: 'approve',
         args: [spender, amount],
-        account,
+        account: account,
         chain: CHAIN_CONFIG[this.chainId],
       });
     }
