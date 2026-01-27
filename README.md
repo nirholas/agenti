@@ -23,17 +23,12 @@
 </pre>
 </p>
 
-<h3 align="center">
-  🚀 <strong>Give Claude Money!</strong> 🚀<br/>
-  <em>The first MCP server that lets AI agents send and receive crypto payments.</em>
-</h3>
 
 ```bash
 npx @nirholas/agenti
 ```
 
 <p align="center">
-  <img src="https://img.shields.io/npm/v/@nirholas/agenti.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm version">
   <img src="https://img.shields.io/npm/dm/@nirholas/agenti.svg?style=for-the-badge&logo=npm&color=cb3837" alt="npm downloads">
   <img src="https://img.shields.io/badge/x402-enabled-brightgreen?style=for-the-badge" alt="x402 enabled">
   <img src="https://img.shields.io/badge/chains-EVM%20%2B%20Solana-blue?style=for-the-badge" alt="chains">
@@ -87,7 +82,7 @@ A Universal Model Context Protocol server for all EVM-compatible networks + Sola
 
 Enable AI agents (Claude, ChatGPT, Cursor) to interact with any EVM blockchain through natural language.
 
-## 🆚 Why Agenti?
+## 🆚 Agenti Features 
 
 | Feature | Agenti | Other MCP Servers |
 |---------|---------------------|-------------------|
