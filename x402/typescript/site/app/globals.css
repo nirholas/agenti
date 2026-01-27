@@ -3,30 +3,24 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark crystalline theme */
-  --color-background: #050508;
-  --color-foreground: rgba(255, 255, 255, 0.85);
+  /* Deep black with opal text */
+  --color-background: #000000;
+  --color-foreground: rgba(255, 255, 255, 0.95);
   --color-accent-green: #22c55e;
   --color-accent-orange: #f97316;
   
-  /* Translucent text layers - crystal clear */
-  --color-ghost: rgba(255, 255, 255, 0.3);
-  --color-whisper: rgba(255, 255, 255, 0.5);
-  --color-soft: rgba(255, 255, 255, 0.7);
-  --color-bright: rgba(255, 255, 255, 0.9);
+  /* Opal text layers - pearly bright */
+  --color-ghost: rgba(255, 255, 255, 0.4);
+  --color-whisper: rgba(255, 255, 255, 0.6);
+  --color-soft: rgba(255, 255, 255, 0.8);
+  --color-bright: rgba(255, 255, 255, 0.98);
   
-  /* Bubble/Glass effects - iridescent */
+  /* Glass effects */
   --color-glass-bg: rgba(255, 255, 255, 0.02);
   --color-glass-border: rgba(255, 255, 255, 0.06);
   --color-glass-hover: rgba(255, 255, 255, 0.04);
   
-  /* Iridescent accent colors for bubble effect */
-  --color-iris-pink: rgba(255, 120, 200, 0.15);
-  --color-iris-blue: rgba(100, 180, 255, 0.15);
-  --color-iris-purple: rgba(180, 130, 255, 0.12);
-  --color-iris-cyan: rgba(100, 255, 230, 0.1);
-  
-  /* Legacy gray mapping (inverted for dark mode) */
+  /* Legacy gray mapping */
   --color-gray-10: rgba(255, 255, 255, 0.1);
   --color-gray-20: rgba(255, 255, 255, 0.2);
   --color-gray-40: rgba(255, 255, 255, 0.4);
@@ -44,89 +38,46 @@
 
 body {
   color: var(--color-foreground);
-  background: #050508;
+  background: #000000;
   font-family: var(--font-sans);
   container-type: inline-size;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Bubble/Crystal glass panels */
+/* Opal glass panels */
 .glass {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.03) 0%,
-    rgba(255, 255, 255, 0.01) 50%,
-    rgba(255, 255, 255, 0.02) 100%
-  );
-  backdrop-filter: blur(24px) saturate(1.2);
-  -webkit-backdrop-filter: blur(24px) saturate(1.2);
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  background-clip: padding-box;
   position: relative;
-  overflow: hidden;
 }
 
-/* Iridescent border effect - like a soap bubble */
+/* Opal sheen on glass */
 .glass::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(180, 130, 255, 0.08) 25%,
-    rgba(100, 180, 255, 0.06) 50%,
-    rgba(100, 255, 230, 0.08) 75%,
-    rgba(255, 120, 200, 0.1) 100%
-  );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* Inner shimmer/refraction */
-.glass::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(
-    180deg,
     rgba(255, 255, 255, 0.04) 0%,
-    transparent 100%
+    transparent 50%,
+    rgba(255, 255, 255, 0.02) 100%
   );
-  border-radius: inherit;
   pointer-events: none;
 }
 
 .glass-hover {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .glass-hover:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(180, 130, 255, 0.03) 50%,
-    rgba(100, 180, 255, 0.04) 100%
-  );
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 /* Translucent text utilities */
@@ -135,46 +86,37 @@ body {
 .text-soft { color: var(--color-soft); }
 .text-bright { color: var(--color-bright); }
 
-/* Crystal clear gradient text - like light through glass */
-.text-glass {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(200, 220, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0.35) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Iridescent text shimmer */
-.text-iridescent {
+/* OPAL TEXT - bright pearly white with subtle rainbow shimmer */
+.text-glass,
+.text-opal {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(200, 180, 255, 0.8) 25%,
-    rgba(180, 220, 255, 0.85) 50%,
-    rgba(200, 255, 240, 0.8) 75%,
-    rgba(255, 255, 255, 0.9) 100%
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 250, 255, 0.98) 15%,
+    rgba(250, 255, 255, 0.96) 30%,
+    rgba(255, 255, 250, 0.98) 45%,
+    rgba(255, 250, 255, 0.96) 60%,
+    rgba(250, 255, 255, 0.98) 75%,
+    rgba(255, 255, 255, 1) 100%
   );
-  background-size: 200% 100%;
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 8s ease-in-out infinite;
+  animation: opal-shift 8s ease-in-out infinite;
 }
 
-@keyframes shimmer {
+@keyframes opal-shift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
-/* Subtle prismatic glow */
+/* Opal glow - soft pearly halo */
 .glow-subtle {
   text-shadow: 
-    0 0 40px rgba(180, 130, 255, 0.15),
-    0 0 80px rgba(100, 180, 255, 0.1);
+    0 0 20px rgba(255, 255, 255, 0.3),
+    0 0 40px rgba(255, 255, 255, 0.15),
+    0 0 60px rgba(255, 255, 255, 0.08);
 }
 
 /* REPOMARK:SCOPE: 2 - Add skip-to-content accessibility styles */

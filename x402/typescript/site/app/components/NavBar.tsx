@@ -60,6 +60,12 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
           {/* Desktop: Left side navigation - flattened */}
           <div className="hidden lg:flex flex-1 items-center gap-6 justify-start">
             <Link
+              href="/playground"
+              className="text-sm font-medium text-whisper hover:text-soft transition-colors"
+            >
+              Playground
+            </Link>
+            <Link
               href="/ecosystem"
               className="text-sm font-medium text-whisper hover:text-soft transition-colors"
             >

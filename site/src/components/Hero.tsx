@@ -21,7 +21,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-glass glow-subtle text-7xl md:text-9xl font-light tracking-tight mb-8"
+          className="text-glass glow-subtle text-7xl md:text-9xl font-light tracking-tight mb-8 leading-[1.1] pb-2"
         >
           Agenti
         </motion.h1>
