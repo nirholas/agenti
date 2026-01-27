@@ -10,13 +10,13 @@ interface FeatureCardProps {
 
 export function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="w-12 h-12 flex items-center justify-center" aria-hidden="true">
+    <div className="glass glass-hover p-6 flex flex-col gap-6">
+      <div className="w-12 h-12 flex items-center justify-center text-whisper" aria-hidden="true">
         {icon}
       </div>
       <div className="flex flex-col gap-3">
-        <h3 className="text-2xl font-medium">{title}</h3>
-        <p className="text-base text-black">{description}</p>
+        <h3 className="text-2xl font-medium text-soft">{title}</h3>
+        <p className="text-base text-ghost">{description}</p>
       </div>
     </div>
   );
