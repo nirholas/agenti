@@ -38,26 +38,22 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
   const LogoComponent = animateLogo ? AnimatedLogo : NavBarLogo;
 
   return (
-    <nav className="w-full bg-white" role="navigation" aria-label="Main navigation">
+    <nav className="w-full bg-transparent" role="navigation" aria-label="Main navigation">
       <div className="max-w-container mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between gap-4 sm:gap-8">
           {/* Mobile: Hamburger button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1 -ml-1 text-black hover:bg-gray-10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+            className="lg:hidden p-1 -ml-1 text-soft hover:bg-glass-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
               <CloseIcon />
             ) : (
-              <Image
-                src="/images/hamburger.svg"
-                alt=""
-                width={24}
-                height={24}
-                aria-hidden="true"
-              />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H21M3 12H21M3 18H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
             )}
           </button>
 
@@ -65,13 +61,13 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
           <div className="hidden lg:flex flex-1 items-center gap-6 justify-start">
             <Link
               href="/ecosystem"
-              className="text-sm font-medium text-black hover:text-gray-600 transition-colors"
+              className="text-sm font-medium text-whisper hover:text-soft transition-colors"
             >
               Ecosystem
             </Link>
             <Link
               href="/writing/x402-v2-launch"
-              className="text-sm font-medium text-black hover:text-gray-600 transition-colors"
+              className="text-sm font-medium text-whisper hover:text-soft transition-colors"
             >
               Writing
             </Link>
@@ -79,7 +75,7 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
               href="https://www.x402.org/x402-whitepaper.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-black hover:text-gray-600 transition-colors"
+              className="text-sm font-medium text-whisper hover:text-soft transition-colors"
             >
               Whitepaper
             </Link>
@@ -93,11 +89,11 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
           </div>
 
           {/* Desktop: Right side actions */}
-          <div className="hidden lg:flex flex-1 items-center gap-6 justify-end">
+          <div className="hidden lg:flex flex-1 items-center gap-4 justify-end">
             {/* Docs button */}
             <Link
               href="https://docs.x402.org"
-              className="flex items-center gap-1 px-4 py-2 border border-black text-black font-medium text-sm hover:bg-gray-10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+              className="glass glass-hover flex items-center gap-1 px-4 py-2 text-whisper font-medium text-sm transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -134,7 +130,7 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
               href="https://docs.google.com/forms/d/e/1FAIpQLSc2rlaeH31rZpJ_RFNL7egxi9fYTEUjW9r2kwkhd2pMae2dog/viewform"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-4 py-2 bg-black text-white font-medium text-sm hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+              className="glass glass-hover flex items-center gap-1 px-4 py-2 text-soft font-medium text-sm transition-colors border-white/20"
             >
               <svg
                 width="20"
@@ -164,21 +160,21 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-10 bg-white">
+        <div className="lg:hidden glass border-t border-glass-border mx-4 mt-2">
           <div className="px-4 py-4 space-y-4">
             {/* Navigation links */}
             <div className="space-y-1">
 // [nirholas/universal-crypto-mcp] implementation
               <Link
                 href="/ecosystem"
-                className="block py-2 text-black font-medium text-sm hover:text-gray-60 transition-colors"
+                className="block py-2 text-whisper font-medium text-sm hover:text-soft transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Ecosystem
               </Link>
               <Link
                 href="/writing/x402-v2-launch"
-                className="block py-2 text-black font-medium text-sm hover:text-gray-60 transition-colors"
+                className="block py-2 text-whisper font-medium text-sm hover:text-soft transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Writing
@@ -187,7 +183,7 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
                 href="https://www.x402.org/x402-whitepaper.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block py-2 text-black font-medium text-sm hover:text-gray-60 transition-colors"
+                className="block py-2 text-whisper font-medium text-sm hover:text-soft transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Whitepaper
@@ -195,13 +191,13 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
             </div>
 
             {/* Divider */}
-            <div className="border-t border-gray-10" />
+            <div className="border-t border-glass-border" />
 
             {/* CTA buttons */}
             <div className="space-y-3 pt-2">
               <Link
                 href="https://docs.x402.org"
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-black text-black font-medium text-sm hover:bg-gray-10 transition-colors"
+                className="glass glass-hover flex items-center justify-center gap-2 w-full px-4 py-3 text-whisper font-medium text-sm transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
@@ -212,7 +208,7 @@ export function NavBar({ animateLogo = false }: NavBarProps): React.ReactElement
                 href="https://docs.google.com/forms/d/e/1FAIpQLSc2rlaeH31rZpJ_RFNL7egxi9fYTEUjW9r2kwkhd2pMae2dog/viewform"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-black text-white font-medium text-sm hover:bg-gray-800 transition-colors"
+                className="glass glass-hover flex items-center justify-center gap-2 w-full px-4 py-3 text-soft font-medium text-sm transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact

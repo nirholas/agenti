@@ -35,7 +35,8 @@
     "react-router-dom": "^6.21.0",
     "tailwind-merge": "^2.2.0",
     "viem": "^2.0.0",
-    "zustand": "^4.4.7"
+    "zustand": "^4.4.7",
+    "@x402/client": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
@@ -71,5 +72,8 @@
     "defi",
     "playground",
     "education"
-  ]
+  ],
+  "peerDependencies": {
+    "@nirholas/agenti": ">= 0.1.0"
+  }
 }

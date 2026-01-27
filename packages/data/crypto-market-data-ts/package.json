@@ -69,5 +69,11 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@x402/client": "workspace:*"
+  },
+  "peerDependencies": {
+    "@nirholas/agenti": ">= 0.1.0"
   }
 }

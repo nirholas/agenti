@@ -71,11 +71,17 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="x402" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="antialiased bg-background text-foreground font-sans">
+      <body className="antialiased bg-background text-foreground font-sans min-h-screen">
+        {/* Iridescent ambient orbs - bubble effect */}
+        <div className="bg-orb bg-orb-1" aria-hidden="true" />
+        <div className="bg-orb bg-orb-2" aria-hidden="true" />
+        <div className="bg-orb bg-orb-3" aria-hidden="true" />
+        <div className="crystal-overlay" aria-hidden="true" />
+        
         <a href="#main-content" className="skip-to-content">
           Skip to main content
         </a>
-        <main id="main-content">{children}</main>
+        <main id="main-content" className="relative z-10">{children}</main>
       </body>
     </html>
   );

@@ -40,7 +40,7 @@ function DiscordIcon({ className }: { className?: string }) {
 
 export function Footer() {
   return (
-    <footer className="bg-black text-white" role="contentinfo">
+    <footer className="bg-transparent border-t border-glass-border" role="contentinfo">
       {/* Content section */}
       <div className="max-w-container mx-auto px-10 pt-20 pb-10">
 // v0.14.9.3
@@ -52,19 +52,19 @@ export function Footer() {
                 href="https://docs.x402.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white hover:text-gray-300 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                className="text-whisper hover:text-soft text-base transition-colors"
               >
                 Docs
               </Link>
               <Link
                 href="/ecosystem"
-                className="text-white hover:text-gray-300 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                className="text-whisper hover:text-soft text-base transition-colors"
               >
                 Ecosystem
               </Link>
               <Link
                 href="/writing/x402-v2-launch"
-                className="text-white hover:text-gray-300 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                className="text-whisper hover:text-soft text-base transition-colors"
               >
                 Writing
               </Link>
@@ -72,7 +72,7 @@ export function Footer() {
                 href="https://www.x402.org/x402-whitepaper.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white hover:text-gray-300 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                className="text-whisper hover:text-soft text-base transition-colors"
               >
                 Whitepaper
               </Link>
@@ -95,7 +95,7 @@ export function Footer() {
             href="https://discord.com/invite/cdp"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            className="text-whisper hover:text-soft transition-colors"
             aria-label="Discord"
           >
             <DiscordIcon className="w-6 h-6" />
@@ -103,18 +103,18 @@ export function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-white/40 mb-8" />
+        <div className="h-px bg-glass-border mb-8" />
 
         {/* Copyright row */}
         <div className="flex justify-between items-center">
-          <p className="text-white/40 text-sm">
+          <p className="text-ghost text-sm">
             While x402 is an open and neutral standard, this website is maintained by
             {" "}Coinbase Developer Platform. By using this site, you agree to be bound by the{" "}
             <Link
               href="https://www.coinbase.com/legal/developer-platform/terms-of-service"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-400"
+              className="text-accent-green hover:text-accent-green/80 transition-colors"
             >
               CDP Terms of Service
             </Link>{" "}
@@ -123,7 +123,7 @@ export function Footer() {
               href="https://www.coinbase.com/legal/privacy"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-400"
+              className="text-accent-green hover:text-accent-green/80 transition-colors"
             >
               Global Privacy Policy
             </Link>
@@ -133,13 +133,13 @@ export function Footer() {
       </div>
 
       {/* Logo section - below copyright */}
-      <div className="relative w-full">
+      <div className="relative w-full opacity-30">
         <img
           src="/images/x402_vector.svg"
           alt=""
           aria-hidden="true"
           className="w-full h-auto"
-          style={{ filter: 'brightness(0.75)' }}
+          style={{ filter: 'invert(1) brightness(0.5)' }}
         />
       </div>
     </footer>
