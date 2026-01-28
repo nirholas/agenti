@@ -4,24 +4,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
+import { hashPassword, users, emailToId } from '../signin/route';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'agenti-jwt-secret-change-in-production';
-const BCRYPT_ROUNDS = 12;
-
-// TODO: Replace with database (Prisma)
-// In-memory storage for development
-const users = new Map<string, {
-  id: string;
-  email: string;
-  username: string;
-  passwordHash: string;
-  tier: string;
-  createdAt: Date;
-}>();
-
-const emailToId = new Map<string, string>();
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'agenti-jwt-secret-change-in-production'
+);
 
 interface SignUpRequest {
   email: string;
@@ -59,8 +47,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+    // Hash password using Web Crypto API
+    const passwordHash = await hashPassword(password);
 
     // Generate user ID and username
     const id = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -79,12 +67,12 @@ export async function POST(request: NextRequest) {
     users.set(id, user);
     emailToId.set(email.toLowerCase(), id);
 
-    // Generate JWT
-    const token = jwt.sign(
-      { userId: id, email: user.email, tier: user.tier },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    // Generate JWT using jose
+    const token = await new jose.SignJWT({ userId: id, email: user.email, tier: user.tier })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(JWT_SECRET);
 
     console.log('User signed up:', { id, email: user.email });
 
@@ -105,6 +93,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Export users map for use in other auth routes
-export { users, emailToId };

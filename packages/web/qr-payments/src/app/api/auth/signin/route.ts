@@ -4,10 +4,25 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'agenti-jwt-secret-change-in-production';
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'agenti-jwt-secret-change-in-production'
+);
+
+// Simple hash function for passwords (in production, use a proper KDF like Argon2)
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + 'agenti-salt');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  const computedHash = await hashPassword(password);
+  return computedHash === hash;
+}
 
 // TODO: Replace with database (Prisma)
 // Import from shared store (in production, this would be the database)
@@ -59,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const validPassword = await bcrypt.compare(password, user.passwordHash);
+    const validPassword = await verifyPassword(password, user.passwordHash);
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -67,12 +82,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate JWT
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, tier: user.tier },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    // Generate JWT using jose
+    const token = await new jose.SignJWT({ userId: user.id, email: user.email, tier: user.tier })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(JWT_SECRET);
 
     console.log('User signed in:', { id: user.id, email: user.email });
 
@@ -95,4 +110,4 @@ export async function POST(request: NextRequest) {
 }
 
 // Export for sharing with signup route
-export { users, emailToId };
+export { users, emailToId, hashPassword, verifyPassword };
