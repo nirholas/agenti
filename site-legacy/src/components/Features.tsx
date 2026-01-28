@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import { Zap, Database, Bot } from 'lucide-react';
 

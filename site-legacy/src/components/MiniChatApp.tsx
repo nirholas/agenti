@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,7 +21,10 @@ interface CoinData {
   image: string;
 }
 
-const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY || '';
+// Support both Vite and Next.js environment variables
+const GROQ_API_KEY = typeof window !== 'undefined' 
+  ? (process.env.NEXT_PUBLIC_GROQ_API_KEY || (import.meta as any).env?.VITE_GROQ_API_KEY || '')
+  : (process.env.NEXT_PUBLIC_GROQ_API_KEY || '');
 
 const SYSTEM_PROMPT = `You are Agenti, a helpful AI assistant specialized in cryptocurrency data. You have access to real-time crypto prices via the Agenti MCP server.
 

@@ -1,0 +1,301 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --glass: rgba(255, 255, 255, 0.95);
+  --whisper: rgba(255, 255, 255, 0.75);
+  --ghost: rgba(255, 255, 255, 0.55);
+  --faint: rgba(255, 255, 255, 0.3);
+  --shimmer: rgba(255, 255, 255, 0.08);
+  --surface: rgba(255, 255, 255, 0.03);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+body {
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  background: #000000;
+  color: var(--glass);
+  min-height: 100vh;
+}
+
+/* Glass morphism utilities */
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--shimmer);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+}
+
+.glass-button {
+  background: var(--shimmer);
+  border: 1px solid var(--faint);
+  color: var(--glass);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-button-primary {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
+  border: 1px solid rgba(96, 165, 250, 0.5);
+  color: white;
+}
+
+.glass-button-primary:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(37, 99, 235, 1));
+}
+
+/* Input styling */
+.glass-input {
+  background: var(--surface);
+  border: 1px solid var(--shimmer);
+  color: var(--glass);
+  padding: 14px 18px;
+  border-radius: 12px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.glass-input::placeholder {
+  color: var(--ghost);
+}
+
+/* Text classes */
+.text-glass {
+  color: var(--glass);
+}
+
+.text-whisper {
+  color: var(--whisper);
+}
+
+.text-ghost {
+  color: var(--ghost);
+}
+
+.text-faint {
+  color: var(--faint);
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.modal {
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--glass);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--ghost);
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: var(--shimmer);
+  color: var(--glass);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* Scrollbar thin */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Input group */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--ghost);
+  pointer-events: none;
+}
+
+.input-group .input {
+  padding-left: 44px;
+}
+
+.input {
+  background: var(--surface);
+  border: 1px solid var(--shimmer);
+  color: var(--glass);
+  padding: 14px 18px;
+  border-radius: 12px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Notification toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  min-width: 320px;
+  max-width: 420px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 100;
+  animation: slideIn 0.3s ease;
+}
+
+.toast-success {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.toast-error {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Chain badge */
+.chain-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--shimmer);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--whisper);
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Tab styling */
+.tab-button {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  color: var(--ghost);
+}
+
+.tab-button:hover {
+  color: var(--whisper);
+}
+
+.tab-button-active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
+  color: white;
+}
+
+/* Rainbow-kit overrides for dark theme */
+[data-rk] {
+  --rk-colors-accentColor: #3b82f6;
+  --rk-colors-accentColorForeground: white;
+  --rk-colors-modalBackground: #0a0a0a;
+  --rk-colors-modalBorder: rgba(255, 255, 255, 0.1);
+  --rk-colors-modalText: rgba(255, 255, 255, 0.95);
+  --rk-colors-modalTextSecondary: rgba(255, 255, 255, 0.6);
+}
