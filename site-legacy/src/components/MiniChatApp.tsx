@@ -173,7 +173,7 @@ export default function MiniChatApp() {
                 <div
                   className={`max-w-[85%] px-3 py-2 rounded-2xl ${
                     msg.role === 'user'
-                      ? 'bg-blue-500 text-white rounded-br-sm'
+                      ? 'bg-gradient-to-br from-white/20 to-white/10 text-white border border-white/10 rounded-br-sm'
                       : 'bg-white/10 text-white/90 rounded-bl-sm'
                   }`}
                 >
@@ -227,7 +227,7 @@ export default function MiniChatApp() {
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || isTyping}
-            className="text-blue-400 disabled:text-white/20 text-sm"
+            className="text-white/80 hover:text-white disabled:text-white/20 text-sm transition-colors"
           >
             ↑
           </button>

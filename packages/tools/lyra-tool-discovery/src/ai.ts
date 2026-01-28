@@ -14,12 +14,13 @@ import type {
 // AI Provider Types
 // ============================================
 
-export type AIProvider = 'anthropic' | 'openai';
+export type AIProvider = 'anthropic' | 'openai' | 'openrouter';
 
 export interface AIConfig {
   provider?: AIProvider;
   apiKey?: string;
   model?: string;
+  baseUrl?: string;
 }
 
 // ============================================
@@ -147,6 +148,16 @@ export class AIAnalyzer {
       this.anthropic = new Anthropic({
         apiKey: config.apiKey || process.env.ANTHROPIC_API_KEY
       });
+    } else if (this.provider === 'openrouter') {
+      // OpenRouter uses OpenAI-compatible API
+      this.openai = new OpenAI({
+        apiKey: config.apiKey || process.env.OPENROUTER_API_KEY,
+        baseURL: config.baseUrl || 'https://openrouter.ai/api/v1',
+        defaultHeaders: {
+          'HTTP-Referer': process.env.OPENROUTER_REFERER || 'https://github.com/nirholas/lyra-tool-discovery',
+          'X-Title': 'Lyra Tool Discovery',
+        }
+      });
     } else {
       this.openai = new OpenAI({
         apiKey: config.apiKey || process.env.OPENAI_API_KEY
@@ -164,8 +175,12 @@ export class AIAnalyzer {
     const explicit = process.env.AI_PROVIDER?.toLowerCase();
     if (explicit === 'openai') return 'openai';
     if (explicit === 'anthropic') return 'anthropic';
+    if (explicit === 'openrouter') return 'openrouter';
     
-    // Auto-detect based on available API keys
+    // Auto-detect based on available API keys (priority: OpenRouter > OpenAI > Anthropic)
+    if (process.env.OPENROUTER_API_KEY) {
+      return 'openrouter';
+    }
     if (process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
       return 'openai';
     }
@@ -193,6 +208,9 @@ export class AIAnalyzer {
     
     if (this.provider === 'openai') {
       return 'gpt-4o'; // or gpt-4-turbo, gpt-3.5-turbo
+    }
+    if (this.provider === 'openrouter') {
+      return process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4'; // OpenRouter model format
     }
     return 'claude-sonnet-4-20250514';
   }
@@ -359,5 +377,6 @@ export function getAvailableProviders(): AIProvider[] {
   const available: AIProvider[] = [];
   if (process.env.ANTHROPIC_API_KEY) available.push('anthropic');
   if (process.env.OPENAI_API_KEY) available.push('openai');
+  if (process.env.OPENROUTER_API_KEY) available.push('openrouter');
   return available;
 }

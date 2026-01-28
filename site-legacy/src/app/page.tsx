@@ -28,7 +28,7 @@ export default function HomePage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
       </div>
     );
   }
@@ -96,8 +96,8 @@ export default function HomePage() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <div className="w-9 h-9 bg-gradient-to-br from-white/20 to-white/5 border border-white/15 rounded-xl flex items-center justify-center opal-shimmer">
+              <svg className="w-4 h-4 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M12 2L2 7l10 5 10-5-10-5z" />
                 <path d="M2 17l10 5 10-5" />
                 <path d="M2 12l10 5 10-5" />
@@ -116,7 +116,7 @@ export default function HomePage() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setShowSwap(true)}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 text-sm font-medium hover:bg-blue-500/20 transition-colors"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white/80 text-sm font-medium hover:bg-white/10 hover:border-white/20 transition-all opal-shimmer"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M7 16V4m0 0L3 8m4-4l4 4" />
@@ -176,7 +176,7 @@ export default function HomePage() {
               </div>
               <h2 className="text-4xl md:text-5xl font-bold mb-4 text-glass">
                 Universal
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500"> Swap</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/90 via-white/70 to-white/50"> Swap</span>
               </h2>
               <p className="text-lg text-ghost max-w-xl mx-auto">
                 Trade any token on any chain with the best rates from 55+ aggregators.
