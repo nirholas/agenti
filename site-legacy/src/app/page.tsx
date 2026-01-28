@@ -51,7 +51,7 @@ export default function HomePage() {
             filter: 'blur(100px)',
           }}
         />
-        {/* Soft blue-white orb */}
+        {/* Soft pearl orb */}
         <motion.div
           animate={{
             x: [0, -15, 10, -20, 0],
