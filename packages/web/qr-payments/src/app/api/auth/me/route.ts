@@ -4,18 +4,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
+import { users } from '../signin/route';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'agenti-jwt-secret-change-in-production';
-
-// TODO: Import from database
-const users = new Map<string, {
-  id: string;
-  email: string;
-  username: string;
-  tier: string;
-  stripeCustomerId?: string;
-}>();
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'agenti-jwt-secret-change-in-production'
+);
 
 interface JWTPayload {
   userId: string;
@@ -36,12 +30,13 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.slice(7);
 
-    // Verify token
+    // Verify token using jose
     let payload: JWTPayload;
     try {
-      payload = jwt.verify(token, JWT_SECRET) as JWTPayload;
+      const { payload: jwtPayload } = await jose.jwtVerify(token, JWT_SECRET);
+      payload = jwtPayload as unknown as JWTPayload;
     } catch (err) {
-      if (err instanceof jwt.TokenExpiredError) {
+      if (err instanceof jose.errors.JWTExpired) {
         return NextResponse.json(
           { error: 'Token expired' },
           { status: 401 }
@@ -71,7 +66,6 @@ export async function GET(request: NextRequest) {
         email: userData.email,
         username: userData.username,
         tier: userData.tier,
-        stripeCustomerId: user?.stripeCustomerId,
       },
     });
   } catch (error) {

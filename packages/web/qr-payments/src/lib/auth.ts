@@ -1,7 +1,22 @@
 import { NextRequest } from 'next/server';
 import { prisma } from './prisma';
-import { MCPUser } from '@prisma/client';
 import * as jose from 'jose';
+
+// Type that matches MCPUser from Prisma schema
+export interface MCPUser {
+  id: string;
+  email: string;
+  passwordHash: string;
+  tier: string;
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+  apiKey: string;
+  apiKeyHash: string;
+  requestCount: number;
+  lastRequestAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'agenti-mcp-hosting-secret-key-change-in-production'
