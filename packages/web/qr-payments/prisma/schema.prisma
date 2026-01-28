@@ -1,0 +1,432 @@
+// Prisma Schema for QR Pay
+// Supports User, Transaction, Merchant, Invoice, and Webhook models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER MODEL
+// ============================================================================
+
+model User {
+  id              String    @id @default(cuid())
+  walletAddress   String    @unique
+  username        String?   @unique // X/Twitter handle
+  displayName     String?
+  email           String?
+  avatarUrl       String?
+  
+  // Verification
+  isVerified      Boolean   @default(false)
+  verifiedAt      DateTime?
+  
+  // Preferences
+  defaultChainId  Int       @default(8453) // Base
+  preferredToken  String    @default("USDC")
+  notifyOnPayment Boolean   @default(true)
+  
+  // Stats
+  totalReceived   String    @default("0") // Cumulative USD value
+  totalSent       String    @default("0")
+  transactionCount Int      @default(0)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastActiveAt    DateTime?
+  
+  // Relations
+  sentTransactions      Transaction[] @relation("Sender")
+  receivedTransactions  Transaction[] @relation("Recipient")
+  merchant              Merchant?
+  
+  @@index([walletAddress])
+  @@index([username])
+}
+
+// ============================================================================
+// TRANSACTION MODEL
+// ============================================================================
+
+model Transaction {
+  id                String            @id @default(cuid())
+  
+  // Participants
+  senderId          String?
+  sender            User?             @relation("Sender", fields: [senderId], references: [id])
+  senderAddress     String
+  recipientId       String?
+  recipient         User?             @relation("Recipient", fields: [recipientId], references: [id])
+  recipientAddress  String
+  
+  // Token details
+  inputTokenAddress   String
+  inputTokenSymbol    String
+  inputTokenDecimals  Int
+  inputAmount         String          // Raw amount
+  inputAmountFormatted String         // Human readable
+  
+  outputTokenAddress  String
+  outputTokenSymbol   String
+  outputTokenDecimals Int
+  outputAmount        String          // Raw amount
+  outputAmountFormatted String        // Human readable
+  
+  // Value tracking
+  inputValueUSD       String?
+  outputValueUSD      String?
+  
+  // Chain info
+  chainId             Int
+  isCrossChain        Boolean         @default(false)
+  sourceChainId       Int?
+  destinationChainId  Int?
+  
+  // Transaction details
+  txHash              String          @unique
+  blockNumber         Int?
+  gasUsed             String?
+  gasFeeUSD           String?
+  
+  // Status
+  status              TransactionStatus @default(PENDING)
+  confirmations       Int             @default(0)
+  errorMessage        String?
+  
+  // Metadata
+  memo                String?
+  invoiceId           String?
+  invoice             Invoice?        @relation(fields: [invoiceId], references: [id])
+  
+  // Swap details
+  swapRoute           String?         // JSON encoded route
+  slippage            Float?
+  priceImpact         Float?
+  aggregator          String?         // Which aggregator was used
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  confirmedAt         DateTime?
+  
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([txHash])
+  @@index([chainId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  CONFIRMED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+// ============================================================================
+// MERCHANT MODEL
+// ============================================================================
+
+model Merchant {
+  id              String          @id @default(cuid())
+  
+  // Owner
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id])
+  
+  // Business info
+  businessName    String
+  displayName     String?
+  description     String?
+  logoUrl         String?
+  websiteUrl      String?
+  supportEmail    String?
+  category        MerchantCategory @default(OTHER)
+  
+  // Verification
+  isVerified      Boolean         @default(false)
+  verifiedAt      DateTime?
+  
+  // Payment settings
+  defaultChainId  Int             @default(8453)
+  acceptedChains  Int[]           @default([1, 10, 137, 42161, 8453])
+  acceptedTokens  String[]        @default(["USDC", "USDT", "DAI"])
+  autoConvert     Boolean         @default(true)
+  preferredStable String          @default("USDC")
+  
+  // Limits
+  minPaymentUSD   String?
+  maxPaymentUSD   String?
+  dailyLimitUSD   String?
+  
+  // Notifications
+  webhookUrl      String?
+  webhookSecret   String?
+  notifyEmail     Boolean         @default(true)
+  
+  // Stats
+  totalVolume     String          @default("0")
+  totalTransactions Int           @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  invoices        Invoice[]
+  webhooks        Webhook[]
+  apiKeys         ApiKey[]
+  
+  @@index([userId])
+  @@index([businessName])
+}
+
+enum MerchantCategory {
+  RETAIL
+  RESTAURANT
+  SERVICES
+  SOFTWARE
+  NONPROFIT
+  CREATOR
+  OTHER
+}
+
+// ============================================================================
+// INVOICE MODEL
+// ============================================================================
+
+model Invoice {
+  id              String          @id @default(cuid())
+  
+  // Merchant
+  merchantId      String
+  merchant        Merchant        @relation(fields: [merchantId], references: [id])
+  
+  // Amount
+  amount          String          // Raw amount
+  amountFormatted String          // Human readable
+  currency        String          @default("USDC")
+  chainId         Int             @default(8453)
+  
+  // Recipient
+  recipientAddress String
+  
+  // Status
+  status          InvoiceStatus   @default(PENDING)
+  
+  // Payment info
+  paidAt          DateTime?
+  paidTxHash      String?
+  paidAmount      String?
+  paidToken       String?
+  paidChainId     Int?
+  
+  // Metadata
+  memo            String?
+  metadata        Json?           // Custom key-value pairs
+  externalId      String?         // Merchant's reference ID
+  customerEmail   String?
+  
+  // URLs
+  paymentUrl      String
+  qrCodeUrl       String?
+  redirectUrl     String?
+  
+  // Expiration
+  expiresAt       DateTime
+  
+  // Refund
+  refundedAt      DateTime?
+  refundTxHash    String?
+  refundAmount    String?
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  transactions    Transaction[]
+  
+  @@index([merchantId])
+  @@index([status])
+  @@index([externalId])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PROCESSING
+  PAID
+  EXPIRED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+// ============================================================================
+// WEBHOOK MODEL
+// ============================================================================
+
+model Webhook {
+  id              String          @id @default(cuid())
+  
+  // Merchant
+  merchantId      String
+  merchant        Merchant        @relation(fields: [merchantId], references: [id])
+  
+  // Configuration
+  url             String
+  secret          String
+  events          WebhookEvent[]
+  
+  // Status
+  isActive        Boolean         @default(true)
+  
+  // Health tracking
+  failureCount    Int             @default(0)
+  lastTriggeredAt DateTime?
+  lastSuccessAt   DateTime?
+  lastFailureAt   DateTime?
+  lastError       String?
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  deliveries      WebhookDelivery[]
+  
+  @@index([merchantId])
+  @@index([isActive])
+}
+
+enum WebhookEvent {
+  INVOICE_CREATED
+  INVOICE_PAID
+  INVOICE_EXPIRED
+  INVOICE_CANCELLED
+  PAYMENT_RECEIVED
+  PAYMENT_CONFIRMED
+  PAYMENT_FAILED
+  REFUND_INITIATED
+  REFUND_COMPLETED
+}
+
+// ============================================================================
+// WEBHOOK DELIVERY MODEL
+// ============================================================================
+
+model WebhookDelivery {
+  id              String          @id @default(cuid())
+  
+  // Webhook
+  webhookId       String
+  webhook         Webhook         @relation(fields: [webhookId], references: [id])
+  
+  // Event
+  event           WebhookEvent
+  payload         Json
+  
+  // Delivery status
+  statusCode      Int?
+  response        String?
+  error           String?
+  
+  // Retry info
+  attempts        Int             @default(1)
+  maxAttempts     Int             @default(5)
+  nextRetryAt     DateTime?
+  
+  // Timestamps
+  deliveredAt     DateTime?
+  createdAt       DateTime        @default(now())
+  
+  @@index([webhookId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([nextRetryAt])
+}
+
+// ============================================================================
+// API KEY MODEL
+// ============================================================================
+
+model ApiKey {
+  id              String          @id @default(cuid())
+  
+  // Merchant
+  merchantId      String
+  merchant        Merchant        @relation(fields: [merchantId], references: [id])
+  
+  // Key info
+  name            String
+  keyPrefix       String          // First 8 chars for identification
+  keyHash         String          // Hashed full key
+  
+  // Permissions
+  permissions     ApiPermission[]
+  
+  // Rate limiting
+  rateLimit       Int             @default(100) // requests per minute
+  
+  // Status
+  isActive        Boolean         @default(true)
+  expiresAt       DateTime?
+  
+  // Usage tracking
+  lastUsedAt      DateTime?
+  usageCount      Int             @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@index([merchantId])
+  @@index([keyPrefix])
+  @@index([isActive])
+}
+
+enum ApiPermission {
+  INVOICES_READ
+  INVOICES_WRITE
+  PAYMENTS_READ
+  WEBHOOKS_MANAGE
+  SETTINGS_READ
+  SETTINGS_WRITE
+}
+
+// ============================================================================
+// PRICE CACHE MODEL (Optional - for caching token prices)
+// ============================================================================
+
+model PriceCache {
+  id              String          @id @default(cuid())
+  
+  // Token info
+  tokenAddress    String
+  chainId         Int
+  
+  // Price data
+  priceUSD        String
+  priceChange24h  Float?
+  volume24h       String?
+  marketCap       String?
+  
+  // Timestamps
+  updatedAt       DateTime        @updatedAt
+  
+  @@unique([tokenAddress, chainId])
+  @@index([chainId])
+  @@index([updatedAt])
+}
