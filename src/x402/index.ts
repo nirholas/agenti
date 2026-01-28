@@ -291,6 +291,26 @@ export {
   type PaymentReceipt,
 } from "./verification.js"
 
+// Re-export on-chain payment verification
+export {
+  verifyUSDCTransfer,
+  verifyPaymentForTool,
+  verifyBatchPayments,
+  isPaymentUsed,
+  getVerifiedPayment,
+  getCacheStats,
+  isSupportedChain,
+  getUSDCAddress as getUSDCAddressForChain,
+  getChainName,
+  getSupportedChains,
+  USDC_ADDRESSES,
+  USDC_DECIMALS,
+  type USDCTransferVerification,
+  type PaymentVerification,
+  type SupportedChainId,
+  type BatchVerificationResult,
+} from "./verify.js"
+
 /**
  * Register all x402 payment tools with an MCP server
  * 

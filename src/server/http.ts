@@ -170,16 +170,23 @@ export const startHTTPServer = async (config: HTTPServerConfig = {}) => {
           return
         }
 
+        // Create the appropriate server based on mode
+        const server = hostedConfig 
+          ? await createHostedServer(hostedConfig)
+          : startServer()
+
         // Create new session
         const transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: () => crypto.randomUUID(),
           onsessioninitialized: (newSessionId) => {
-            Logger.info("New HTTP session initialized", { sessionId: newSessionId })
+            Logger.info("New HTTP session initialized", { 
+              sessionId: newSessionId,
+              mode: hostedConfig ? "hosted" : "default",
+              subdomain: hostedConfig?.subdomain,
+            })
             sessions.set(newSessionId, { transport, server })
           }
         })
-
-        const server = startServer()
 
         // Handle session close
         transport.onclose = () => {
@@ -261,11 +268,15 @@ export const startHTTPServer = async (config: HTTPServerConfig = {}) => {
       res.redirect(307, "/mcp")
     })
 
-    const PORT = process.env.PORT || 3001
+    const PORT = config.port || process.env.PORT || 3001
     app.listen(PORT, () => {
-      Logger.info(`Universal Crypto MCP HTTP Server running on http://localhost:${PORT}`)
+      const serverName = hostedConfig?.name || "Universal Crypto MCP"
+      Logger.info(`${serverName} HTTP Server running on http://localhost:${PORT}`)
       Logger.info(`ChatGPT Developer Mode URL: http://localhost:${PORT}/mcp`)
       Logger.info(`Health check: http://localhost:${PORT}/health`)
+      if (hostedConfig) {
+        Logger.info(`Hosted subdomain: ${hostedConfig.subdomain}.agenti.xyz`)
+      }
     })
 
     return { sessions }

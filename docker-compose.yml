@@ -1,8 +1,8 @@
 # Docker Compose for Universal Crypto MCP
-# Provides the MCP server and supporting services
+# Provides the MCP server, hosting platform, and supporting services
 
 services:
-  # Main MCP Server
+  # Main MCP Server (api.agenti.xyz, www.agenti.xyz)
   mcp-server:
     build:
       context: .
@@ -11,11 +11,9 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-      - "3001:3001"  # SSE endpoint
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - SSE_PORT=3001
       # Chain RPC URLs (override with your own)
       - ETHEREUM_RPC_URL=${ETHEREUM_RPC_URL:-https://eth.llamarpc.com}
       - BSC_RPC_URL=${BSC_RPC_URL:-https://bsc-dataseed.binance.org}
@@ -36,6 +34,44 @@ services:
       - ./logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - crypto-mcp
+
+  # Wildcard Subdomain Server (*.agenti.xyz)
+  mcp-hosting:
+    build:
+      context: .
+      dockerfile: Dockerfile.hosting
+    container_name: mcp-hosting-server
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+      - "4001:4001"  # Health check port
+    environment:
+      - NODE_ENV=production
+      - WILDCARD_PORT=3001
+      # Database connection (for hosted server configs)
+      - DATABASE_URL=${DATABASE_URL:-}
+      # Redis for session caching
+      - REDIS_URL=redis://redis:6379
+      # Stripe for billing
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      # x402 payments
+      - X402_PRIVATE_KEY=${X402_PRIVATE_KEY:-}
+      - X402_NETWORK=${X402_NETWORK:-base}
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - ./data:/app/data
+      - ./logs/hosting:/app/logs
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
