@@ -3,12 +3,13 @@
 // Also includes MCP Hosting models for Agenti
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // ============================================================================
@@ -497,7 +498,7 @@ model MCPServer {
   
   // Stats
   totalCalls      Int             @default(0)
-  totalRevenue    Decimal         @default(0) @db.Decimal(18, 8)
+  totalRevenue    Decimal         @default(0)
   callsThisMonth  Int             @default(0)
   
   // Timestamps
@@ -544,7 +545,7 @@ model MCPTool {
   proxyTarget     String?       // For PROXY type
   
   // Pricing
-  price           Decimal       @default(0) @db.Decimal(18, 8)
+  price           Decimal       @default(0)
   
   // Rate limiting (JSON object with limits config)
   rateLimit       Json?
@@ -585,11 +586,11 @@ model MCPPrompt {
   // Prompt info
   name            String
   description     String?
-  template        String      @db.Text
+  template        String
   arguments       Json?       // Array of argument definitions
   
   // Pricing
-  price           Decimal     @default(0) @db.Decimal(18, 8)
+  price           Decimal     @default(0)
   
   // Status
   enabled         Boolean     @default(true)
@@ -623,11 +624,11 @@ model MCPResource {
   
   // Implementation type
   type            MCPResourceType   @default(STATIC)
-  content         String?           @db.Text   // For STATIC type
+  content         String?           // For STATIC type
   endpoint        String?           // For DYNAMIC/PROXY types
   
   // Pricing
-  price           Decimal           @default(0) @db.Decimal(18, 8)
+  price           Decimal           @default(0)
   
   // Status
   enabled         Boolean           @default(true)
@@ -670,7 +671,7 @@ model MCPUsageLog {
   
   // Payment
   paymentTx       String?     // Transaction hash if paid
-  amount          Decimal     @default(0) @db.Decimal(18, 8)
+  amount          Decimal     @default(0)
   
   // Timestamp
   timestamp       DateTime    @default(now())

@@ -4,6 +4,8 @@
  * @author nirholas
  */
 
+import "dotenv/config"
+import { randomUUID } from 'node:crypto'
 import express, { Router, Request, Response, NextFunction } from 'express'
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js"
@@ -80,7 +82,7 @@ export async function incrementCallCount(serverId: string): Promise<void> {
 export async function logUsage(log: Omit<UsageLog, 'id'>): Promise<void> {
   const usageLog: UsageLog = {
     ...log,
-    id: crypto.randomUUID(),
+    id: randomUUID(),
   }
   usageLogsDB.push(usageLog)
   
@@ -107,7 +109,7 @@ export function extractSubdomain(hostname: string): string | null {
   // Handle localhost for development
   if (hostname.includes('localhost')) {
     const parts = hostname.split('.')
-    if (parts.length >= 2 && parts[0] !== 'localhost') {
+    if (parts.length >= 2 && parts[0] && parts[0] !== 'localhost') {
       return parts[0].toLowerCase()
     }
     return null
@@ -115,14 +117,14 @@ export function extractSubdomain(hostname: string): string | null {
   
   // Handle agenti.xyz domain
   const domainMatch = hostname.match(/^([^.]+)\.agenti\.xyz$/i)
-  if (domainMatch) {
+  if (domainMatch && domainMatch[1]) {
     return domainMatch[1].toLowerCase()
   }
   
   // Handle custom domains (check against database)
   // For now, extract first part of any multi-part domain
   const parts = hostname.split('.')
-  if (parts.length >= 3) {
+  if (parts.length >= 3 && parts[0]) {
     return parts[0].toLowerCase()
   }
   
@@ -384,8 +386,8 @@ export function createHostingRouter(): Router {
         const mcpServer = await createHostedServer(hostedConfig)
         
         const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: () => crypto.randomUUID(),
-          onsessioninitialized: (newSessionId) => {
+          sessionIdGenerator: () => randomUUID(),
+          onsessioninitialized: (newSessionId: string) => {
             Logger.info("New hosted session initialized", {
               sessionId: newSessionId,
               subdomain: hostedConfig.subdomain,
