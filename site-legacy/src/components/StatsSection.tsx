@@ -8,9 +8,9 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { value: "50+", label: "MCP Tools" },
-  { value: "10K+", label: "API Calls/day" },
-  { value: "15+", label: "Data Sources" },
+  { value: "55+", label: "DEX Aggregators" },
+  { value: "89+", label: "Chains Supported" },
+  { value: "380+", label: "MCP Tools" },
   { value: "0", label: "API Keys Required" },
 ];
 
