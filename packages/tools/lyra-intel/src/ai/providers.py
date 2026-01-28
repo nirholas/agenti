@@ -4,12 +4,14 @@ AI Providers - Interfaces for various AI/LLM providers.
 Supports:
 - OpenAI (GPT-4, GPT-3.5)
 - Anthropic (Claude)
+- OpenRouter (200+ models with single API key)
 - Local models (Ollama, llama.cpp)
 - Mock provider for testing
 """
 
 import asyncio
 import logging
+import os
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
@@ -190,6 +192,87 @@ class AnthropicProvider(AIProvider):
             return False
 
 
+class OpenRouterProvider(AIProvider):
+    """OpenRouter API provider - unified access to 200+ models."""
+    
+    def __init__(self, config: 'AIConfig'):
+        self.config = config
+        self._client = None
+    
+    async def _get_client(self):
+        """Get or create OpenRouter client (uses OpenAI SDK)."""
+        if self._client is None:
+            try:
+                import openai
+                self._client = openai.AsyncOpenAI(
+                    api_key=self.config.api_key or os.getenv("OPENROUTER_API_KEY"),
+                    base_url=self.config.api_base or "https://openrouter.ai/api/v1",
+                    default_headers={
+                        "HTTP-Referer": os.getenv("OPENROUTER_REFERER", "https://github.com/nirholas/lyra-intel"),
+                        "X-Title": "Lyra Intel",
+                    }
+                )
+            except ImportError:
+                logger.warning("openai package not installed (required for OpenRouter)")
+                return None
+        return self._client
+    
+    async def complete(self, prompt: str) -> Dict[str, Any]:
+        """Complete using OpenRouter API."""
+        client = await self._get_client()
+        
+        if client is None:
+            return {
+                "content": "OpenRouter client not available",
+                "tokens_used": 0,
+                "confidence": 0.0,
+                "metadata": {"error": "client_unavailable"},
+            }
+        
+        try:
+            model = self.config.model or os.getenv("OPENROUTER_MODEL", "anthropic/claude-sonnet-4")
+            response = await client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are an expert code analyst."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=self.config.max_tokens,
+                temperature=self.config.temperature,
+            )
+            
+            content = response.choices[0].message.content
+            tokens = response.usage.total_tokens if response.usage else 0
+            
+            return {
+                "content": content,
+                "tokens_used": tokens,
+                "confidence": 0.9,
+                "metadata": {
+                    "model": response.model,
+                    "finish_reason": response.choices[0].finish_reason,
+                    "provider": "openrouter",
+                },
+            }
+            
+        except Exception as e:
+            logger.error(f"OpenRouter API error: {e}")
+            return {
+                "content": f"Error: {str(e)}",
+                "tokens_used": 0,
+                "confidence": 0.0,
+                "metadata": {"error": str(e)},
+            }
+    
+    async def health_check(self) -> bool:
+        """Check if OpenRouter is available."""
+        try:
+            client = await self._get_client()
+            return client is not None
+        except Exception:
+            return False
+
+
 class LocalProvider(AIProvider):
     """Local model provider (Ollama, llama.cpp)."""
     
@@ -311,6 +394,7 @@ def get_provider(config: 'AIConfig') -> AIProvider:
     providers = {
         "openai": OpenAIProvider,
         "anthropic": AnthropicProvider,
+        "openrouter": OpenRouterProvider,
         "local": LocalProvider,
         "ollama": LocalProvider,
         "mock": MockProvider,

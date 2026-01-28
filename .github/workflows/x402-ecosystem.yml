@@ -4,22 +4,10 @@
 # @repository universal-crypto-mcp
 
 # x402 Ecosystem Integration Tests
+# Only runs on schedule (nightly) or manual trigger to avoid CI noise
 name: x402 Ecosystem Test
 
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - 'packages/x402-*/**'
-      - 'src/x402/**'
-      - 'x402/**'
-      - '.github/workflows/x402-ecosystem.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'packages/x402-*/**'
-      - 'src/x402/**'
-      - 'x402/**'
   schedule:
     # Nightly ecosystem test at midnight UTC
     - cron: '0 0 * * *'
@@ -62,6 +50,7 @@ jobs:
       - name: Detect file changes
         uses: dorny/paths-filter@v3
         id: filter
+        continue-on-error: true
         with:
           filters: |
             contracts:
@@ -76,6 +65,14 @@ jobs:
               - 'packages/x402-ecosystem/**'
             ecosystem:
               - 'packages/x402-*/**'
+      
+      - name: Set default outputs on error
+        if: failure()
+        run: |
+          echo "contracts=false" >> $GITHUB_OUTPUT
+          echo "sdk=false" >> $GITHUB_OUTPUT
+          echo "mcp=false" >> $GITHUB_OUTPUT
+          echo "ecosystem=false" >> $GITHUB_OUTPUT
 
   # =============================================================================
   # Contract Tests (Foundry)

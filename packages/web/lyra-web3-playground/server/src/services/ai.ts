@@ -7,9 +7,45 @@
 import OpenAI from 'openai';
 import { AppError } from '../middleware/errorHandler.js';
 
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+// AI Provider configuration with priority: OpenRouter > OpenAI
+type AIProvider = 'openai' | 'openrouter';
+
+interface AIConfig {
+  client: OpenAI;
+  provider: AIProvider;
+  model: string;
+}
+
+function initializeAI(): AIConfig | null {
+  // Priority 1: OpenRouter (supports 200+ models with single key)
+  if (process.env.OPENROUTER_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.OPENROUTER_API_KEY,
+        baseURL: 'https://openrouter.ai/api/v1',
+        defaultHeaders: {
+          'HTTP-Referer': process.env.SITE_URL || 'https://github.com/nirholas/lyra-web3-playground',
+          'X-Title': 'Lyra Web3 Playground',
+        }
+      }),
+      provider: 'openrouter',
+      model: process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4'
+    };
+  }
+  
+  // Priority 2: OpenAI
+  if (process.env.OPENAI_API_KEY) {
+    return {
+      client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY }),
+      provider: 'openai',
+      model: process.env.OPENAI_MODEL || 'gpt-4'
+    };
+  }
+  
+  return null;
+}
+
+const ai = initializeAI();
 
 // Fallback templates for when AI is not available
 const fallbackTemplates: Record<string, string> = {
@@ -48,8 +84,8 @@ contract MyNFT is ERC721, Ownable {
 };
 
 export async function generateContract(prompt: string): Promise<{ code: string; explanation: string }> {
-  // If OpenAI is not configured, use fallback templates
-  if (!openai) {
+  // If AI is not configured, use fallback templates
+  if (!ai) {
     const lowerPrompt = prompt.toLowerCase();
     let template = fallbackTemplates.erc20;
     
@@ -59,13 +95,13 @@ export async function generateContract(prompt: string): Promise<{ code: string; 
 
     return {
       code: template,
-      explanation: 'AI service not configured. Using template match for your request.'
+      explanation: 'AI service not configured. Set OPENROUTER_API_KEY or OPENAI_API_KEY.'
     };
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+    const completion = await ai.client.chat.completions.create({
+      model: ai.model,
       messages: [
         {
           role: 'system',
@@ -88,7 +124,7 @@ export async function generateContract(prompt: string): Promise<{ code: string; 
 
     return {
       code: code.replace(/```solidity\n?/g, '').replace(/```\n?/g, '').trim(),
-      explanation: 'Contract generated using AI'
+      explanation: `Contract generated using ${ai.provider} (${ai.model})`
     };
   } catch (error: any) {
     throw new AppError(`AI generation failed: ${error.message}`, 500);
@@ -96,9 +132,9 @@ export async function generateContract(prompt: string): Promise<{ code: string; 
 }
 
 export async function explainCode(code: string, question?: string): Promise<{ explanation: string }> {
-  if (!openai) {
+  if (!ai) {
     return {
-      explanation: 'AI explanation service not configured. Please add OPENAI_API_KEY to your environment variables.'
+      explanation: 'AI explanation service not configured. Set OPENROUTER_API_KEY or OPENAI_API_KEY.'
     };
   }
 
@@ -107,8 +143,8 @@ export async function explainCode(code: string, question?: string): Promise<{ ex
       ? `Explain this Solidity code, focusing on: ${question}\n\n${code}`
       : `Explain this Solidity code in detail:\n\n${code}`;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+    const completion = await ai.client.chat.completions.create({
+      model: ai.model,
       messages: [
         {
           role: 'system',
@@ -132,15 +168,15 @@ export async function explainCode(code: string, question?: string): Promise<{ ex
 }
 
 export async function generateTests(code: string, framework: string): Promise<{ tests: string }> {
-  if (!openai) {
+  if (!ai) {
     return {
-      tests: `// Tests for ${framework}\n// AI service not configured. Please add OPENAI_API_KEY to generate tests.`
+      tests: `// Tests for ${framework}\n// AI service not configured. Set OPENROUTER_API_KEY or OPENAI_API_KEY.`
     };
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+    const completion = await ai.client.chat.completions.create({
+      model: ai.model,
       messages: [
         {
           role: 'system',
