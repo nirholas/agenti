@@ -14,6 +14,21 @@ import type { Request, Response } from "express"
 
 import Logger from "@/utils/logger"
 import { startServer } from "./base"
+import { createHostedServer, getServerForSubdomain } from "@/hosting/runtime.js"
+import { getServerBySubdomain } from "@/hosting/router.js"
+import type { HostedMCPServer } from "@/hosting/types.js"
+
+/**
+ * HTTP Server Configuration
+ */
+export interface HTTPServerConfig {
+  /** Port to listen on (default: 3001 or PORT env var) */
+  port?: number
+  /** Optional subdomain to load hosted server config */
+  subdomain?: string
+  /** Optional hosted server config (if already loaded) */
+  hostedConfig?: HostedMCPServer
+}
 
 /**
  * HTTP-based MCP Server for ChatGPT Developer Mode
@@ -23,13 +38,14 @@ import { startServer } from "./base"
  * - Session management for stateful connections
  * - CORS for cross-origin requests
  * - Health check endpoint
+ * - Optional subdomain routing for hosted servers
  * 
  * ChatGPT Developer Mode requires:
  * - SSE or Streamable HTTP protocol
  * - No authentication (or OAuth)
  * - readOnlyHint annotations on tools
  */
-export const startHTTPServer = async () => {
+export const startHTTPServer = async (config: HTTPServerConfig = {}) => {
   try {
     const app = express()
     
@@ -37,7 +53,7 @@ export const startHTTPServer = async () => {
     app.use(cors({
       origin: "*",
       methods: ["GET", "POST", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "mcp-session-id", "last-event-id"],
+      allowedHeaders: ["Content-Type", "mcp-session-id", "last-event-id", "x-payment-proof"],
       exposedHeaders: ["mcp-session-id"]
     }))
     app.use(express.json())
@@ -45,18 +61,43 @@ export const startHTTPServer = async () => {
     // Log startup
     Logger.info(`Starting HTTP server with log level: ${Logger.getLevel()}`)
 
+    // Determine if we're running in hosted mode
+    let hostedConfig: HostedMCPServer | null = null
+    
+    if (config.hostedConfig) {
+      hostedConfig = config.hostedConfig
+      Logger.info("Running in hosted mode with provided config", { 
+        name: hostedConfig.name,
+        subdomain: hostedConfig.subdomain 
+      })
+    } else if (config.subdomain) {
+      hostedConfig = await getServerBySubdomain(config.subdomain)
+      if (hostedConfig) {
+        Logger.info("Running in hosted mode for subdomain", { 
+          subdomain: config.subdomain,
+          name: hostedConfig.name 
+        })
+      } else {
+        Logger.warn("Subdomain not found, falling back to default server", { 
+          subdomain: config.subdomain 
+        })
+      }
+    }
+
     // Session management for stateful connections
     const sessions: Map<string, {
       transport: StreamableHTTPServerTransport
-      server: ReturnType<typeof startServer>
+      server: ReturnType<typeof startServer> | Awaited<ReturnType<typeof createHostedServer>>
     }> = new Map()
 
     // Health check endpoint
     app.get("/health", (_req: Request, res: Response) => {
       res.json({
         status: "healthy",
-        name: "Universal Crypto MCP",
+        name: hostedConfig?.name || "Universal Crypto MCP",
         version: "1.0.0",
+        mode: hostedConfig ? "hosted" : "default",
+        subdomain: hostedConfig?.subdomain || null,
         sessions: sessions.size,
         timestamp: new Date().toISOString()
       })
@@ -64,6 +105,31 @@ export const startHTTPServer = async () => {
 
     // Server info endpoint (for ChatGPT app discovery)
     app.get("/", (_req: Request, res: Response) => {
+      if (hostedConfig) {
+        // Return hosted server info
+        res.json({
+          name: hostedConfig.name,
+          description: hostedConfig.description,
+          version: "1.0.0",
+          url: `https://${hostedConfig.subdomain}.agenti.xyz`,
+          protocol: "mcp",
+          transport: "streamable-http",
+          endpoints: {
+            mcp: "/mcp",
+            health: "/health",
+          },
+          tools: hostedConfig.tools
+            .filter(t => t.enabled)
+            .map(t => ({
+              name: t.name,
+              description: t.description,
+              price: t.price > 0 ? { amount: t.price, currency: "USDC" } : null,
+            })),
+          capabilities: hostedConfig.tools.filter(t => t.enabled).map(t => t.name),
+        })
+        return
+      }
+      
       res.json({
         name: "Universal Crypto MCP",
         version: "1.0.0",

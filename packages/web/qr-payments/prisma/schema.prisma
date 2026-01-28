@@ -430,3 +430,258 @@ model PriceCache {
   @@index([chainId])
   @@index([updatedAt])
 }
+
+// ============================================================================
+// MCP HOSTING MODELS
+// ============================================================================
+// These models support the Agenti MCP server hosting platform
+
+// ============================================================================
+// MCP USER MODEL
+// ============================================================================
+
+model MCPUser {
+  id                    String      @id @default(cuid())
+  email                 String      @unique
+  passwordHash          String
+  username              String      @unique
+  tier                  MCPUserTier @default(FREE)
+  
+  // Stripe integration
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  
+  // Timestamps
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  
+  // Relations
+  servers               MCPServer[]
+  
+  @@index([email])
+  @@index([username])
+  @@index([stripeCustomerId])
+}
+
+enum MCPUserTier {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+// ============================================================================
+// MCP SERVER MODEL
+// ============================================================================
+
+model MCPServer {
+  id              String          @id @default(cuid())
+  
+  // Owner
+  userId          String
+  user            MCPUser         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Server info
+  name            String
+  description     String?
+  subdomain       String          @unique
+  customDomain    String?         @unique
+  
+  // Status
+  status          MCPServerStatus @default(ACTIVE)
+  
+  // Payment settings
+  payoutAddress   String?
+  creatorShare    Int             @default(85) // Percentage creator keeps
+  
+  // Stats
+  totalCalls      Int             @default(0)
+  totalRevenue    Decimal         @default(0) @db.Decimal(18, 8)
+  callsThisMonth  Int             @default(0)
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  tools           MCPTool[]
+  prompts         MCPPrompt[]
+  resources       MCPResource[]
+  usageLogs       MCPUsageLog[]
+  
+  @@index([userId])
+  @@index([subdomain])
+  @@index([status])
+}
+
+enum MCPServerStatus {
+  ACTIVE
+  PAUSED
+  SUSPENDED
+}
+
+// ============================================================================
+// MCP TOOL MODEL
+// ============================================================================
+
+model MCPTool {
+  id              String        @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer     @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Tool info
+  name            String
+  description     String?
+  inputSchema     Json          // JSON Schema for tool inputs
+  
+  // Implementation type
+  type            MCPToolType   @default(HTTP)
+  endpoint        String?       // For HTTP type
+  code            String?       // For CODE type (JavaScript)
+  proxyTarget     String?       // For PROXY type
+  
+  // Pricing
+  price           Decimal       @default(0) @db.Decimal(18, 8)
+  
+  // Rate limiting (JSON object with limits config)
+  rateLimit       Json?
+  
+  // Status
+  enabled         Boolean       @default(true)
+  callCount       Int           @default(0)
+  
+  // Timestamps
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  // Relations
+  usageLogs       MCPUsageLog[]
+  
+  @@unique([serverId, name])
+  @@index([serverId])
+  @@index([enabled])
+}
+
+enum MCPToolType {
+  HTTP
+  CODE
+  PROXY
+}
+
+// ============================================================================
+// MCP PROMPT MODEL
+// ============================================================================
+
+model MCPPrompt {
+  id              String      @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Prompt info
+  name            String
+  description     String?
+  template        String      @db.Text
+  arguments       Json?       // Array of argument definitions
+  
+  // Pricing
+  price           Decimal     @default(0) @db.Decimal(18, 8)
+  
+  // Status
+  enabled         Boolean     @default(true)
+  callCount       Int         @default(0)
+  
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@unique([serverId, name])
+  @@index([serverId])
+  @@index([enabled])
+}
+
+// ============================================================================
+// MCP RESOURCE MODEL
+// ============================================================================
+
+model MCPResource {
+  id              String            @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer         @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Resource info
+  uri             String
+  name            String
+  description     String?
+  mimeType        String            @default("text/plain")
+  
+  // Implementation type
+  type            MCPResourceType   @default(STATIC)
+  content         String?           @db.Text   // For STATIC type
+  endpoint        String?           // For DYNAMIC/PROXY types
+  
+  // Pricing
+  price           Decimal           @default(0) @db.Decimal(18, 8)
+  
+  // Status
+  enabled         Boolean           @default(true)
+  
+  // Timestamps
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  @@unique([serverId, uri])
+  @@index([serverId])
+  @@index([enabled])
+}
+
+enum MCPResourceType {
+  STATIC
+  DYNAMIC
+  PROXY
+}
+
+// ============================================================================
+// MCP USAGE LOG MODEL
+// ============================================================================
+
+model MCPUsageLog {
+  id              String      @id @default(cuid())
+  
+  // Server
+  serverId        String
+  server          MCPServer   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  
+  // Tool (optional - could be prompt or resource call)
+  toolId          String?
+  tool            MCPTool?    @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  
+  // Call type
+  type            MCPUsageType
+  
+  // Caller info
+  callerIp        String?
+  
+  // Payment
+  paymentTx       String?     // Transaction hash if paid
+  amount          Decimal     @default(0) @db.Decimal(18, 8)
+  
+  // Timestamp
+  timestamp       DateTime    @default(now())
+  
+  @@index([serverId])
+  @@index([toolId])
+  @@index([type])
+  @@index([timestamp])
+}
+
+enum MCPUsageType {
+  TOOL_CALL
+  PROMPT_GET
+  RESOURCE_READ
+}
