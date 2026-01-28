@@ -140,10 +140,11 @@ function cacheVerifiedPayment(payment: VerifiedPayment): void {
   const key = getCacheKey(payment.txHash, payment.chainId)
   
   if (verifiedPayments.has(key)) {
-    logSecurityEvent("payment_replay_attempt", {
+    logSecurityEvent("replay_detected", {
       txHash: payment.txHash,
       chainId: payment.chainId,
       toolName: payment.toolName,
+      type: "payment_replay_attempt",
     }, "critical")
     throw new Error("Payment has already been used - replay attack detected")
   }
@@ -445,11 +446,12 @@ export async function verifyPaymentForTool(
   if (cachedPayment) {
     // Payment was already verified for a different tool - potential replay
     if (cachedPayment.toolName !== toolName) {
-      logSecurityEvent("payment_reuse_attempt", {
+      logSecurityEvent("replay_detected", {
         txHash,
         chainId,
         originalTool: cachedPayment.toolName,
         attemptedTool: toolName,
+        type: "payment_reuse_attempt",
       }, "warning")
       
       return {

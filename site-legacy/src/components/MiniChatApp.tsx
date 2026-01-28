@@ -49,12 +49,20 @@ export default function MiniChatApp() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Only scroll within the chat container, not the whole page
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
   };
 
+  // Only auto-scroll after user interaction, not on initial mount
+  const [hasInteracted, setHasInteracted] = useState(false);
+  
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (hasInteracted) {
+      scrollToBottom();
+    }
+  }, [messages, hasInteracted]);
 
   const fetchCryptoData = async (): Promise<CoinData[]> => {
     try {
@@ -111,6 +119,8 @@ export default function MiniChatApp() {
     const query = text || input;
     if (!query.trim() || isTyping) return;
 
+    setHasInteracted(true); // Enable auto-scroll after first interaction
+    
     const userMsg: Message = { id: Date.now(), role: 'user', content: query };
     setMessages(prev => [...prev, userMsg]);
     setInput('');

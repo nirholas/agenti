@@ -1,13 +1,14 @@
 // Prisma Schema for QR Pay
 // Supports User, Transaction, Merchant, Invoice, and Webhook models
+// Also includes MCP Hosting models for Agenti
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
 }
 
 // ============================================================================
