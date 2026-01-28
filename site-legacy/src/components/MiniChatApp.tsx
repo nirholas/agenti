@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
@@ -46,23 +46,6 @@ export default function MiniChatApp() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    // Only scroll within the chat container, not the whole page
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-    }
-  };
-
-  // Only auto-scroll after user interaction, not on initial mount
-  const [hasInteracted, setHasInteracted] = useState(false);
-  
-  useEffect(() => {
-    if (hasInteracted) {
-      scrollToBottom();
-    }
-  }, [messages, hasInteracted]);
 
   const fetchCryptoData = async (): Promise<CoinData[]> => {
     try {
@@ -118,8 +101,6 @@ export default function MiniChatApp() {
   const handleSend = async (text?: string) => {
     const query = text || input;
     if (!query.trim() || isTyping) return;
-
-    setHasInteracted(true); // Enable auto-scroll after first interaction
     
     const userMsg: Message = { id: Date.now(), role: 'user', content: query };
     setMessages(prev => [...prev, userMsg]);
@@ -205,7 +186,6 @@ export default function MiniChatApp() {
             <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
           </motion.div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Suggested prompts */}

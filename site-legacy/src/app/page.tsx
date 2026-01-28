@@ -23,8 +23,6 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true);
-    // Reset scroll to top on mount
-    window.scrollTo(0, 0);
   }, []);
 
   if (!mounted) {

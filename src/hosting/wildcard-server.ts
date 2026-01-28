@@ -14,14 +14,14 @@
 
 import "dotenv/config"
 
-import express, { Request, Response, NextFunction } from 'express'
+import express from 'express'
+import type { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 
 import {
   extractSubdomain,
   isReservedSubdomain,
   routeToHostedServer,
-  createHostingRouter,
 } from './router.js'
 import Logger from '@/utils/logger.js'
 
@@ -54,7 +54,7 @@ app.set('trust proxy', true)
 
 // CORS configuration
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true)
     
