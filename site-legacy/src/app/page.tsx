@@ -7,7 +7,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
 import PhoneMockup from '@/components/PhoneMockup';
-import StatsSection from '@/components/StatsSection';
+import LivePrices from '@/components/LivePrices';
 import ComparisonSection from '@/components/ComparisonSection';
 import CodeExample from '@/components/CodeExample';
 import FAQ from '@/components/FAQ';
@@ -163,7 +163,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <StatsSection />
+        <LivePrices />
         <Features />
         
         {/* Swap Section */}
