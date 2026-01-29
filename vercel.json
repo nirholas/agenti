@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "npm install -g pnpm@10.7.0 && cd x402/typescript && pnpm install",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.7.0 --activate && cd x402/typescript && pnpm install",
   "buildCommand": "cd x402/typescript && pnpm --filter @x402/core build && pnpm --filter @x402/evm build && pnpm --filter @x402/svm build && pnpm --filter @x402/next build && pnpm --filter @x402/paywall build && cd site && pnpm build",
   "outputDirectory": "x402/typescript/site/.next"
 }
