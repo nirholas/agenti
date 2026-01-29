@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "cd x402/typescript && npx pnpm@10.7.0 install",
-  "buildCommand": "cd x402/typescript && bash build-vercel.sh",
-  "outputDirectory": "x402/typescript/site/.next"
+  "buildCommand": "cd x402/typescript && npx pnpm@10.7.0 install && npx pnpm@10.7.0 run build && cd site && npx pnpm@10.7.0 build",
+  "outputDirectory": "x402/typescript/site/.next",
+  "installCommand": "npm install"
 }
