@@ -111,7 +111,7 @@ export const startHTTPServer = async (config: HTTPServerConfig = {}) => {
           name: hostedConfig.name,
           description: hostedConfig.description,
           version: "1.0.0",
-          url: `https://${hostedConfig.subdomain}.agenti.xyz`,
+          url: `https://${hostedConfig.subdomain}.agenti.cash`,
           protocol: "mcp",
           transport: "streamable-http",
           endpoints: {
@@ -275,7 +275,7 @@ export const startHTTPServer = async (config: HTTPServerConfig = {}) => {
       Logger.info(`ChatGPT Developer Mode URL: http://localhost:${PORT}/mcp`)
       Logger.info(`Health check: http://localhost:${PORT}/health`)
       if (hostedConfig) {
-        Logger.info(`Hosted subdomain: ${hostedConfig.subdomain}.agenti.xyz`)
+        Logger.info(`Hosted subdomain: ${hostedConfig.subdomain}.agenti.cash`)
       }
     })
 

@@ -100,10 +100,10 @@ export async function logUsage(log: Omit<UsageLog, 'id'>): Promise<void> {
 /**
  * Extract subdomain from hostname
  * Examples:
- * - myserver.agenti.xyz -> myserver
+ * - myserver.agenti.cash -> myserver
  * - myserver.localhost -> myserver
- * - api.agenti.xyz -> api (reserved)
- * - agenti.xyz -> null
+ * - api.agenti.cash -> api (reserved)
+ * - agenti.cash -> null
  */
 export function extractSubdomain(hostname: string): string | null {
   // Handle localhost for development
@@ -115,8 +115,8 @@ export function extractSubdomain(hostname: string): string | null {
     return null
   }
   
-  // Handle agenti.xyz domain
-  const domainMatch = hostname.match(/^([^.]+)\.agenti\.xyz$/i)
+  // Handle agenti.cash domain
+  const domainMatch = hostname.match(/^([^.]+)\.agenti\.cash$/i)
   if (domainMatch && domainMatch[1]) {
     return domainMatch[1].toLowerCase()
   }
@@ -193,8 +193,8 @@ export async function loadServerConfig(
   if (!server) {
     res.status(404).json({
       error: "Server not found",
-      message: `No MCP server found at ${subdomain}.agenti.xyz`,
-      hint: "Create a server at https://agenti.xyz/dashboard"
+      message: `No MCP server found at ${subdomain}.agenti.cash`,
+      hint: "Create a server at https://agenti.cash/dashboard"
     })
     return
   }
@@ -202,7 +202,7 @@ export async function loadServerConfig(
   if (server.status !== 'active') {
     res.status(503).json({
       error: "Server unavailable",
-      message: `The MCP server at ${subdomain}.agenti.xyz is currently ${server.status}`,
+      message: `The MCP server at ${subdomain}.agenti.cash is currently ${server.status}`,
       status: server.status
     })
     return
@@ -280,7 +280,7 @@ export function generate402Response(
         x402: {
           version: "1.0",
           accepts: ["x402"],
-          paymentUrl: `https://${server.subdomain}.agenti.xyz/mcp`,
+          paymentUrl: `https://${server.subdomain}.agenti.cash/mcp`,
           paymentHeader: "X-Payment-Proof",
         },
         acceptedMethods: server.pricing.acceptedPayments,
@@ -330,7 +330,7 @@ export function createHostingRouter(): Router {
     res.json({
       name: server.name,
       description: server.description,
-      url: `https://${server.subdomain}.agenti.xyz`,
+      url: `https://${server.subdomain}.agenti.cash`,
       protocol: "mcp",
       transport: "streamable-http",
       endpoints: {

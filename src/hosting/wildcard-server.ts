@@ -1,14 +1,14 @@
 /**
  * MCP Hosting Platform - Wildcard Server
- * @description Standalone Express server for handling *.agenti.xyz subdomain requests
+ * @description Standalone Express server for handling *.agenti.cash subdomain requests
  * @author nirholas
  * 
  * This server runs on port 3001 and handles all wildcard subdomain traffic.
  * It routes requests to the appropriate hosted MCP server based on the subdomain.
  * 
  * Architecture:
- * - Main app runs on port 3000 (api.agenti.xyz, www.agenti.xyz)
- * - This wildcard server runs on port 3001 (*.agenti.xyz)
+ * - Main app runs on port 3000 (api.agenti.cash, www.agenti.cash)
+ * - This wildcard server runs on port 3001 (*.agenti.cash)
  * - Nginx routes traffic based on subdomain
  */
 
@@ -58,8 +58,8 @@ app.use(cors({
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true)
     
-    // Allow any agenti.xyz subdomain
-    if (origin.match(/^https?:\/\/([^.]+\.)?agenti\.xyz$/)) {
+    // Allow any agenti.cash subdomain
+    if (origin.match(/^https?:\/\/([^.]+\.)?agenti\.cash$/)) {
       return callback(null, true)
     }
     
@@ -120,7 +120,7 @@ app.use(async (req: WildcardRequest, res: Response, next: NextFunction) => {
   // No subdomain - shouldn't reach this server, but handle gracefully
   if (!subdomain) {
     Logger.warn('Request without subdomain', { hostname: req.hostname })
-    return res.redirect('https://agenti.xyz')
+    return res.redirect('https://agenti.cash')
   }
   
   // Reserved subdomains should be handled by main app
@@ -128,7 +128,7 @@ app.use(async (req: WildcardRequest, res: Response, next: NextFunction) => {
     Logger.debug('Reserved subdomain, proxying to main app', { subdomain })
     // In production, nginx should route these directly to main app
     // For now, redirect
-    return res.redirect(`https://agenti.xyz${req.path}`)
+    return res.redirect(`https://agenti.cash${req.path}`)
   }
   
   // Check for other reserved subdomains
@@ -170,7 +170,7 @@ app.use((req: Request, res: Response) => {
   res.status(404).json({
     error: 'Not Found',
     message: `No route found for ${req.method} ${req.path}`,
-    help: 'Visit https://agenti.xyz/docs for API documentation',
+    help: 'Visit https://agenti.cash/docs for API documentation',
   })
 })
 
@@ -230,7 +230,7 @@ export async function startWildcardServer(): Promise<void> {
     app.listen(WILDCARD_PORT, () => {
       Logger.info(`🚀 MCP Wildcard Server running on port ${WILDCARD_PORT}`)
       Logger.info(`   Environment: ${NODE_ENV}`)
-      Logger.info(`   Handling: *.agenti.xyz`)
+      Logger.info(`   Handling: *.agenti.cash`)
       Logger.info(`   Health check: http://localhost:${WILDCARD_PORT}/health`)
     })
     

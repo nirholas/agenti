@@ -1,5 +1,5 @@
 # MCP Hosting Platform - Wildcard Server
-# Handles *.agenti.xyz subdomain routing to hosted MCP servers
+# Handles *.agenti.cash subdomain routing to hosted MCP servers
 
 FROM node:20-alpine AS builder
 

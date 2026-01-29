@@ -1,6 +1,6 @@
 /**
  * MCP Hosting Platform - "Shopify of MCP"
- * @description Allow users to create and host their own MCP servers under agenti.xyz subdomains
+ * @description Allow users to create and host their own MCP servers under agenti.cash subdomains
  * @author nirholas
  * 
  * Business Model:
@@ -29,7 +29,7 @@ export interface HostedMCPServer {
   userId: string;
   name: string;
   description: string;
-  subdomain: string; // e.g., "myserver" -> myserver.agenti.xyz
+  subdomain: string; // e.g., "myserver" -> myserver.agenti.cash
   customDomain?: string; // For business/enterprise tiers
   status: 'active' | 'paused' | 'suspended';
   
@@ -192,7 +192,7 @@ export function getServerUrl(subdomain: string, customDomain?: string): string {
   if (customDomain) {
     return `https://${customDomain}`;
   }
-  return `https://${subdomain}.agenti.xyz`;
+  return `https://${subdomain}.agenti.cash`;
 }
 
 /**

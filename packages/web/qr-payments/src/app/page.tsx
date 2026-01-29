@@ -831,7 +831,7 @@ function ReceiveForm({ address }: { address?: string }) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const paymentUrl = `https://agenti.xyz/pay/${username || address}${fixedAmount ? `?amount=${fixedAmount}` : ''}`;
+  const paymentUrl = `https://agenti.cash/pay/${username || address}${fixedAmount ? `?amount=${fixedAmount}` : ''}`;
 
   const generateQR = async () => {
     if (!address) return;
@@ -863,7 +863,7 @@ function ReceiveForm({ address }: { address?: string }) {
           <label className="block text-xs text-zinc-500 mb-2 uppercase tracking-wider">Your Handle</label>
           <div className="flex">
             <span className="px-4 py-3 bg-zinc-800 rounded-l-xl border border-r-0 border-zinc-700 text-zinc-400 text-sm">
-              agenti.xyz/
+              agenti.cash/
             </span>
             <input
               type="text"

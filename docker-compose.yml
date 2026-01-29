@@ -2,7 +2,7 @@
 # Provides the MCP server, hosting platform, and supporting services
 
 services:
-  # Main MCP Server (api.agenti.xyz, www.agenti.xyz)
+  # Main MCP Server (api.agenti.cash, www.agenti.cash)
   mcp-server:
     build:
       context: .
@@ -41,7 +41,7 @@ services:
     networks:
       - crypto-mcp
 
-  # Wildcard Subdomain Server (*.agenti.xyz)
+  # Wildcard Subdomain Server (*.agenti.cash)
   mcp-hosting:
     build:
       context: .

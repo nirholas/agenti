@@ -89,7 +89,7 @@ export default function DashboardOverview() {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-medium text-white group-hover:text-white/90">{server.name}</h3>
-                  <p className="mt-1 text-sm text-white/50">{server.subdomain}.agenti.xyz</p>
+                  <p className="mt-1 text-sm text-white/50">{server.subdomain}.agenti.cash</p>
                 </div>
                 <span
                   className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${

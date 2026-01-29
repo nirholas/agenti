@@ -43,7 +43,7 @@ export default function ServerDetailPage() {
     ));
   };
 
-  const serverUrl = `https://${mockServer.subdomain}.agenti.xyz`;
+  const serverUrl = `https://${mockServer.subdomain}.agenti.cash`;
 
   return (
     <div className="space-y-6">

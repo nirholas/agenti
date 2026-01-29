@@ -166,7 +166,7 @@ export default function CreateServerPage() {
                 }`}
               />
               <div className="px-4 py-3 bg-white/[0.03] border border-l-0 border-white/10 rounded-r-lg text-white/50">
-                .agenti.xyz
+                .agenti.cash
               </div>
             </div>
             {errors.subdomain ? (
@@ -179,7 +179,7 @@ export default function CreateServerPage() {
             {formData.subdomain && !errors.subdomain && (
               <p className="mt-2 text-sm text-white/60">
                 Your server will be available at{' '}
-                <span className="text-white font-mono">{formData.subdomain}.agenti.xyz</span>
+                <span className="text-white font-mono">{formData.subdomain}.agenti.cash</span>
               </p>
             )}
           </div>

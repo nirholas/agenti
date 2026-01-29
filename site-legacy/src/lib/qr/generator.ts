@@ -6,7 +6,7 @@
 import QRCode from 'qrcode';
 
 const QR_VERSION = 1;
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://agenti.xyz';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://agenti.cash';
 
 export interface PaymentQRData {
   version: number;

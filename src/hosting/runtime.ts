@@ -255,7 +255,7 @@ export async function routeToHostedServer(
     return {
       error: "Server not found",
       code: 404,
-      message: `No MCP server found at ${subdomain}.agenti.xyz`
+      message: `No MCP server found at ${subdomain}.agenti.cash`
     }
   }
   
