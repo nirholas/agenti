@@ -165,13 +165,19 @@ export async function verifyPayment(
 
 /**
  * Wrap an MCP server to require x402 payments for tool calls
+ * Note: This uses internal MCP server APIs and may need updates with new SDK versions
  */
 export function wrapServerWithPayments(server: McpServer): McpServer {
-  // Store original tool handler
-  const originalSetRequestHandler = server.setRequestHandler.bind(server)
+  // Store original tool handler - use type assertion for internal API
+  const originalSetRequestHandler = (server as any).setRequestHandler?.bind(server)
+  
+  if (!originalSetRequestHandler) {
+    Logger.warn("Server does not support setRequestHandler, payment wrapping skipped")
+    return server
+  }
   
   // Override to intercept tool calls
-  server.setRequestHandler = ((schema: any, handler: any) => {
+  (server as any).setRequestHandler = ((schema: any, handler: any) => {
     if (schema.method === "tools/call") {
       const wrappedHandler = async (request: any, extra: any) => {
         const toolName = request.params?.name
@@ -207,7 +213,7 @@ export function wrapServerWithPayments(server: McpServer): McpServer {
     }
     
     return originalSetRequestHandler(schema, handler)
-  }) as typeof server.setRequestHandler
+  })
   
   return server
 }

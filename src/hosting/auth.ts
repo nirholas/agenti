@@ -67,7 +67,7 @@ function generateUserId(): string {
  * Generate a username from email
  */
 function generateUsername(email: string): string {
-  const base = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+  const base = (email.split('@')[0] || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
   const suffix = Math.random().toString(36).substr(2, 4);
   return `${base}${suffix}`;
 }

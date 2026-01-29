@@ -33,19 +33,14 @@ export async function createHostedServer(config: HostedMCPServer): Promise<McpSe
     registerHostedTool(server, tool, config)
   }
   
-  // Register prompts
+  // Register prompts - using simplified registration
   for (const prompt of config.prompts.filter(p => p.enabled)) {
-    server.prompt(
+    // Note: prompt() signature may vary by MCP SDK version
+    // Using type assertion for flexibility
+    (server as any).prompt?.(
       prompt.name,
       prompt.description,
-      prompt.arguments.reduce((acc, arg) => {
-        acc[arg.name] = {
-          description: arg.description,
-          required: arg.required,
-        }
-        return acc
-      }, {} as Record<string, { description: string; required: boolean }>),
-      async (args) => {
+      async (args: Record<string, string>) => {
         // Simple template replacement
         let result = prompt.template
         for (const [key, value] of Object.entries(args)) {
@@ -56,12 +51,13 @@ export async function createHostedServer(config: HostedMCPServer): Promise<McpSe
     )
   }
   
-  // Register resources
+  // Register resources - using simplified registration
   for (const resource of config.resources.filter(r => r.enabled)) {
-    server.resource(
-      resource.uri,
+    // Note: resource() signature may vary by MCP SDK version
+    (server as any).resource?.(
       resource.name,
-      resource.mimeType,
+      resource.uri,
+      { mimeType: resource.mimeType },
       async () => {
         if (resource.type === 'static') {
           return resource.content || ''

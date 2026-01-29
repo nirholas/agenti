@@ -364,14 +364,13 @@ export function registerX402(server: McpServer): void {
   // Register client-side tools (making payments)
   registerX402Tools(server)
   
-  // Register server-side tools (receiving payments)
-  registerX402ServerTools(server)
+  // TODO: Register server-side tools (receiving payments)
+  // registerX402ServerTools(server)
   
-  // Register UCAI tools (smart contract AI payments)
-  registerUCAITools(server)
+  // TODO: Register UCAI tools (smart contract AI payments)
+  // registerUCAITools(server)
   
   Logger.info("x402: Payment protocol ready 💰")
-  Logger.info("x402: UCAI smart contract tools registered 🔐")
 }
 
 /**

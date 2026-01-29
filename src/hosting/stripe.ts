@@ -10,7 +10,7 @@ import { TIER_PRICING, type MCPHostingUser } from './types.js';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 });
 
 // Stripe Product/Price IDs - create these in Stripe Dashboard
@@ -126,7 +126,7 @@ export async function handleWebhook(
         await onSubscriptionUpdate(userId, {
           active: subscription.status === 'active',
           tier: tier || 'free',
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+          currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
           cancelAtPeriodEnd: subscription.cancel_at_period_end,
           customerId: subscription.customer as string,
         });
@@ -191,12 +191,21 @@ export async function getSubscriptionStatus(
     }
 
     const subscription = subscriptions.data[0];
+    if (!subscription) {
+      return {
+        active: false,
+        tier: 'free',
+        currentPeriodEnd: null,
+        cancelAtPeriodEnd: false,
+        customerId,
+      };
+    }
     const tier = subscription.metadata?.tier as SubscriptionTier || 'pro';
 
     return {
       active: true,
       tier,
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
       cancelAtPeriodEnd: subscription.cancel_at_period_end,
       customerId,
     };

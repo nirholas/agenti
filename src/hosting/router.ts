@@ -432,7 +432,7 @@ export function createHostingRouter(): Router {
             code: -32603,
             message: "Failed to initialize hosted server"
           },
-          id: req.body?.id ?? null
+          id: (req.body as any)?.id ?? null
         })
         return
       }
@@ -575,15 +575,15 @@ export async function routeToHostedServer(
   const router = createHostingRouter()
   
   // Execute the router
-  router(req, res, (err?: Error) => {
+  router(req, res, ((err?: unknown) => {
     if (err) {
       Logger.error("Error routing to hosted server", { subdomain, error: err })
       res.status(500).json({
         error: "Internal server error",
-        message: err.message
+        message: err instanceof Error ? err.message : 'Unknown error'
       })
     }
-  })
+  }) as any)
 }
 
 export default {
