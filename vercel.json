@@ -1,8 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "rootDirectory": "site-legacy",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install"
+  "buildCommand": "cd site-legacy && npm install && npm run build",
+  "outputDirectory": "site-legacy/.next",
+  "installCommand": "echo 'skip root install'"
 }
