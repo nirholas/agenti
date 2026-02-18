@@ -45,7 +45,7 @@ jobs:
       ecosystem: ${{ steps.filter.outputs.ecosystem }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Detect file changes
         uses: dorny/paths-filter@v3
@@ -87,7 +87,7 @@ jobs:
         working-directory: x402/typescript/packages/contracts
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -140,7 +140,7 @@ jobs:
         working-directory: x402/typescript
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -179,7 +179,7 @@ jobs:
         working-directory: x402/python
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -205,7 +205,7 @@ jobs:
     if: needs.changes.outputs.mcp == 'true' || github.event_name == 'schedule'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -258,7 +258,7 @@ jobs:
             rpc: https://rpc.sepolia.org
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -291,7 +291,7 @@ jobs:
     needs: [test-sdk-typescript, test-mcp-x402]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -336,7 +336,7 @@ jobs:
     if: needs.changes.outputs.ecosystem == 'true' || github.event_name == 'schedule'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -373,10 +373,10 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Checkout base branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.base_ref }}
           path: base
@@ -432,7 +432,7 @@ jobs:
     needs: [test-contracts, test-sdk-typescript, test-mcp-x402, test-multichain]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
 
