@@ -2016,3 +2016,15 @@ curl -X POST https://modelcontextprotocol.name/mcp/agenti \
 - **All 27 MCP servers** — See the full catalog at [modelcontextprotocol.name](https://modelcontextprotocol.name)
 
 > Powered by [modelcontextprotocol.name](https://modelcontextprotocol.name) — the open MCP HTTP gateway
+
+---
+
+## ⭐ Star History
+
+<a href="https://star-history.com/#nirholas/agenti&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=nirholas/agenti&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=nirholas/agenti&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=nirholas/agenti&type=Date" width="100%" />
+ </picture>
+</a>
