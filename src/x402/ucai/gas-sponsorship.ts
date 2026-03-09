@@ -173,25 +173,23 @@ export class GasSponsorshipService {
 
       Logger.info(`Sponsoring gas for ${userAddress} on ${network}: ${gasCostNative} ETH ($${gasCostUsd})`)
 
-      // Execute the transaction on behalf of the user
-      // In a full implementation, this would use a smart contract wallet or bundler
-      const hash = await walletClient.sendTransaction({
-        to: contractAddress,
-        data: callData,
-        gas: gasEstimate + (gasEstimate / 10n), // Add 10% buffer
-        maxFeePerGas: gasPrice + (gasPrice / 5n), // Add 20% buffer
-        maxPriorityFeePerGas: gasPrice / 10n,
-      })
-
-      // Wait for confirmation
-      const receipt = await publicClient.waitForTransactionReceipt({ hash })
-
+      // SECURITY: Do NOT send the transaction from the sponsor wallet.
+      // The sponsor should only relay a user-signed transaction or use
+      // account abstraction (ERC-4337 UserOperation). Sending from the
+      // sponsor wallet means the sponsor is the msg.sender, which changes
+      // the semantics of the transaction and exposes the sponsor's funds.
+      //
+      // Instead, return the sponsorship details so the user can:
+      // 1. Sign their own transaction
+      // 2. Use sponsorUserOperation() for the ERC-4337 path
       return {
-        success: receipt.status === "success",
-        transactionHash: hash,
+        success: true,
         gasCostNative,
         gasCostUsd,
         paymentAmount,
+        sponsorAddress: account.address,
+        requiresUserSignature: true,
+        message: "Gas sponsorship approved. Use sponsorUserOperation() with a UserOperation signed by the user, or have the user sign a transaction and relay it through a bundler.",
       }
     } catch (error) {
       Logger.error("Gas sponsorship failed:", error)

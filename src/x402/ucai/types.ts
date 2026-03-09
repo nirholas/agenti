@@ -60,6 +60,12 @@ export interface GasSponsorshipResult {
   userOpHash?: Hash
   /** Error message if failed */
   error?: string
+  /** Sponsor's address (for reference) */
+  sponsorAddress?: string
+  /** Whether the user must sign separately */
+  requiresUserSignature?: boolean
+  /** Human-readable message */
+  message?: string
 }
 
 export interface GasSponsorConfig {

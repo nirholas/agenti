@@ -298,12 +298,30 @@ Data (${encoding}): ${formattedData}`
     },
     async ({ inputMint, outputMint, amount, slippageBps }: SwapParams) => {
       try {
-        // Validate input parameters
         inputMint = inputMint.trim()
         outputMint = outputMint.trim()
         amount = amount.toString().trim()
 
-        // Check for private key
+        const MAX_SLIPPAGE_BPS = 500
+        if (slippageBps !== undefined && slippageBps > MAX_SLIPPAGE_BPS) {
+          return {
+            content: [{
+              type: "text" as const,
+              text: `Slippage of ${slippageBps} bps (${(slippageBps / 100).toFixed(1)}%) exceeds max allowed ${MAX_SLIPPAGE_BPS} bps (${(MAX_SLIPPAGE_BPS / 100).toFixed(1)}%). Reduce slippage to proceed.`
+            }]
+          }
+        }
+
+        const numericAmount = parseFloat(amount)
+        if (isNaN(numericAmount) || numericAmount <= 0) {
+          return {
+            content: [{
+              type: "text" as const,
+              text: `Invalid swap amount: '${amount}'. Must be a positive number.`
+            }]
+          }
+        }
+
         if (!process.env.SOLANA_PRIVATE_KEY) {
           return {
             content: [

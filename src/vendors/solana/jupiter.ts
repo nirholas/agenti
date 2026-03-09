@@ -222,7 +222,7 @@ export async function executeJupiterSwap(
 
     // Send the transaction with optimized parameters
     const signature = await connection.sendRawTransaction(transaction.serialize(), {
-      skipPreflight: true,
+      skipPreflight: false,
       maxRetries: 2,
       preflightCommitment: "confirmed"
     })

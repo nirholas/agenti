@@ -314,20 +314,25 @@ const DEFAULT_APPROVED_SERVICES: ApprovedService[] = [
 
 /**
  * Allow unknown services by default?
- * Set to false for strict allowlist mode
+ * Defaults to strict (false) on mainnet, permissive (true) on testnet.
+ * Override with X402_STRICT_ALLOWLIST env var.
  */
 let allowUnknownServices = true
+
+function isMainnetChain(): boolean {
+  const chain = (process.env.X402_CHAIN || "").toLowerCase()
+  const testnets = ["sepolia", "goerli", "testnet", "devnet", "local"]
+  return chain.length > 0 && !testnets.some(t => chain.includes(t))
+}
 
 /**
  * Initialize service allowlist from environment
  */
 export function initializeAllowlist(): void {
-  // Load default services
   for (const service of DEFAULT_APPROVED_SERVICES) {
     approvedServices.set(service.domain, service)
   }
 
-  // Load from environment (comma-separated domains)
   const envServices = process.env.X402_APPROVED_SERVICES
   if (envServices) {
     const domains = envServices.split(",").map((d) => d.trim())
@@ -343,11 +348,14 @@ export function initializeAllowlist(): void {
     }
   }
 
-  // Check for strict mode
-  allowUnknownServices = process.env.X402_STRICT_ALLOWLIST !== "true"
+  if (process.env.X402_STRICT_ALLOWLIST !== undefined) {
+    allowUnknownServices = process.env.X402_STRICT_ALLOWLIST !== "true"
+  } else {
+    allowUnknownServices = !isMainnetChain()
+  }
 
   Logger.debug(
-    `x402 Allowlist: ${approvedServices.size} approved services, strict mode: ${!allowUnknownServices}`
+    `x402 Allowlist: ${approvedServices.size} approved services, strict mode: ${!allowUnknownServices} (mainnet: ${isMainnetChain()})`
   )
 }
 

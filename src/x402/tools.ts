@@ -12,6 +12,8 @@ import { fetchWith402Handling } from "./sdk/http/handler.js"
 import { loadX402Config, loadLegacyX402Config, isX402Configured, SUPPORTED_CHAINS, validateX402Config } from "./config.js"
 import type { X402Chain } from "./sdk/types.js"
 import Logger from "@/utils/logger.js"
+import { validatePaymentLimits, recordPayment, getDailySpending } from "./limits.js"
+import { validateAmount, validateAddress } from "./validation.js"
 
 // Singleton client instance
 let x402Client: X402Client | null = null
@@ -82,20 +84,36 @@ export function registerX402Tools(server: McpServer): void {
         const client = getClient()
         const maxPaymentFloat = parseFloat(maxPayment)
         
-        // Use the SDK's 402-aware fetch with payment callback
         const response = await fetchWith402Handling(url, {
           method,
           body,
           headers,
           onPaymentRequired: async (paymentRequest) => {
-            // Check if payment is within allowed limit
             const amount = parseFloat(paymentRequest.amount)
             if (amount > maxPaymentFloat) {
               throw new Error(`Payment of ${paymentRequest.amount} ${paymentRequest.token} exceeds maximum allowed (${maxPayment})`)
             }
-            
-            // Execute payment and return tx hash as proof
+
+            const amountCheck = validateAmount(paymentRequest.amount)
+            if (!amountCheck.valid) {
+              throw new Error(`Amount validation failed: ${amountCheck.errors.join(", ")}`)
+            }
+
+            const addrCheck = validateAddress(paymentRequest.recipient)
+            if (!addrCheck.valid) {
+              throw new Error(`Address validation failed: ${addrCheck.errors.join(", ")}`)
+            }
+
+            const limitsCheck = validatePaymentLimits(amount, paymentRequest.recipient, url)
+            if (!limitsCheck.allowed) {
+              throw new Error(`Payment blocked: ${limitsCheck.errors.join(", ")}`)
+            }
+            if (limitsCheck.requiresApproval) {
+              throw new Error(`Payment of $${amount.toFixed(2)} requires manual approval (above warning threshold). ${limitsCheck.warnings.join("; ")}`)
+            }
+
             const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token)
+            recordPayment(amount, paymentRequest.recipient, url)
             return result.transaction.hash
           },
         })
@@ -192,16 +210,29 @@ export function registerX402Tools(server: McpServer): void {
     async ({ to, amount, token, memo }) => {
       try {
         const client = getClient()
-        
-        // Validate amount against max
-        const maxPayment = parseFloat(config.maxPaymentPerRequest)
         const sendAmount = parseFloat(amount)
-        if (sendAmount > maxPayment) {
-          throw new Error(`Amount ${amount} exceeds maximum allowed payment of ${maxPayment}`)
+
+        const amountCheck = validateAmount(amount)
+        if (!amountCheck.valid) {
+          throw new Error(`Amount validation failed: ${amountCheck.errors.join(", ")}`)
         }
-        
+
+        const addrCheck = validateAddress(to)
+        if (!addrCheck.valid) {
+          throw new Error(`Address validation failed: ${addrCheck.errors.join(", ")}`)
+        }
+
+        const limitsCheck = validatePaymentLimits(sendAmount, to, "x402_send")
+        if (!limitsCheck.allowed) {
+          throw new Error(`Payment blocked: ${limitsCheck.errors.join(", ")}`)
+        }
+        if (limitsCheck.requiresApproval) {
+          throw new Error(`Payment of $${sendAmount.toFixed(2)} requires manual approval. ${limitsCheck.warnings.join("; ")}`)
+        }
+
         const result = await client.pay(to as `0x${string}`, amount, token as any)
-        
+        recordPayment(sendAmount, to, "x402_send")
+
         return {
           content: [{
             type: "text",
@@ -412,20 +443,40 @@ export function registerX402Tools(server: McpServer): void {
     async (params: { payments: Array<{ to: string; amount: string }>; token: string }) => {
       try {
         const client = getClient()
-        
-        // Calculate total and validate against max
-        const total = params.payments.reduce((sum: number, p: { amount: string }) => sum + parseFloat(p.amount), 0)
-        const maxPayment = parseFloat(config.maxPaymentPerRequest) * params.payments.length
-        if (total > maxPayment) {
-          throw new Error(`Total ${total} exceeds maximum allowed (${maxPayment})`)
+
+        for (const p of params.payments) {
+          const addrCheck = validateAddress(p.to)
+          if (!addrCheck.valid) {
+            throw new Error(`Invalid recipient ${p.to}: ${addrCheck.errors.join(", ")}`)
+          }
+          const singleAmountCheck = validateAmount(p.amount)
+          if (!singleAmountCheck.valid) {
+            throw new Error(`Invalid amount for ${p.to}: ${singleAmountCheck.errors.join(", ")}`)
+          }
         }
-        
+
+        const total = params.payments.reduce((sum: number, p: { amount: string }) => sum + parseFloat(p.amount), 0)
+
+        const totalAmountCheck = validateAmount(total.toString())
+        if (!totalAmountCheck.valid) {
+          throw new Error(`Batch total validation failed: ${totalAmountCheck.errors.join(", ")}`)
+        }
+
+        const limitsCheck = validatePaymentLimits(total, "batch", "x402_batch_send")
+        if (!limitsCheck.allowed) {
+          throw new Error(`Batch payment blocked: ${limitsCheck.errors.join(", ")}`)
+        }
+        if (limitsCheck.requiresApproval) {
+          throw new Error(`Batch total of $${total.toFixed(2)} requires manual approval. ${limitsCheck.warnings.join("; ")}`)
+        }
+
         const batchItems = params.payments.map((p: { to: string; amount: string }) => ({
           recipient: p.to as `0x${string}`,
           amount: p.amount,
         }))
-        
+
         const result = await client.payBatch(batchItems)
+        recordPayment(total, "batch", "x402_batch_send")
         
         return {
           content: [{
@@ -468,12 +519,30 @@ export function registerX402Tools(server: McpServer): void {
     async (params: { to: string; amount: string; token: string; validityPeriod: number }) => {
       try {
         const client = getClient()
-        
+
         if (!config.enableGasless) {
           throw new Error("Gasless payments disabled. Set X402_ENABLE_GASLESS=true")
         }
-        
-        // Create authorization
+
+        const amountCheck = validateAmount(params.amount)
+        if (!amountCheck.valid) {
+          throw new Error(`Amount validation failed: ${amountCheck.errors.join(", ")}`)
+        }
+
+        const addrCheck = validateAddress(params.to)
+        if (!addrCheck.valid) {
+          throw new Error(`Address validation failed: ${addrCheck.errors.join(", ")}`)
+        }
+
+        const sendAmount = parseFloat(params.amount)
+        const limitsCheck = validatePaymentLimits(sendAmount, params.to, "x402_gasless_send")
+        if (!limitsCheck.allowed) {
+          throw new Error(`Gasless payment blocked: ${limitsCheck.errors.join(", ")}`)
+        }
+        if (limitsCheck.requiresApproval) {
+          throw new Error(`Gasless payment of $${sendAmount.toFixed(2)} requires manual approval. ${limitsCheck.warnings.join("; ")}`)
+        }
+
         const auth = await client.createAuthorization(
           params.to as `0x${string}`,
           params.amount,
@@ -481,9 +550,9 @@ export function registerX402Tools(server: McpServer): void {
           { validityPeriod: params.validityPeriod }
         )
         
-        // Settle via facilitator (gasless)
         const result = await client.settleGasless(auth)
-        
+        recordPayment(sendAmount, params.to, "x402_gasless_send")
+
         return {
           content: [{
             type: "text",
@@ -921,28 +990,44 @@ export function registerX402Tools(server: McpServer): void {
         }
         
         let paymentMade: string | null = null
-        
-        // Use the SDK's 402-aware fetch with proper callback
+
         const response = await fetchWith402Handling(url, {
           method,
           body,
           headers,
           onPaymentRequired: async (paymentRequest) => {
-            // Check if payment is within allowed limit
             const amount = parseFloat(paymentRequest.amount)
             if (amount > maxPaymentFloat) {
               throw new Error(`Payment of ${paymentRequest.amount} ${paymentRequest.token} exceeds maximum allowed (${maxPayment})`)
             }
-            
-            // Execute payment and return tx hash as proof
+
+            const amountCheck = validateAmount(paymentRequest.amount)
+            if (!amountCheck.valid) {
+              throw new Error(`Amount validation failed: ${amountCheck.errors.join(", ")}`)
+            }
+
+            const addrCheck = validateAddress(paymentRequest.recipient)
+            if (!addrCheck.valid) {
+              throw new Error(`Address validation failed: ${addrCheck.errors.join(", ")}`)
+            }
+
+            const limitsCheck = validatePaymentLimits(amount, paymentRequest.recipient, url)
+            if (!limitsCheck.allowed) {
+              throw new Error(`Payment blocked: ${limitsCheck.errors.join(", ")}`)
+            }
+            if (limitsCheck.requiresApproval) {
+              throw new Error(`Payment of $${amount.toFixed(2)} requires manual approval. ${limitsCheck.warnings.join("; ")}`)
+            }
+
             const result = await client.pay(paymentRequest.recipient, paymentRequest.amount, paymentRequest.token)
+            recordPayment(amount, paymentRequest.recipient, url)
             paymentMade = result.transaction.hash
             return result.transaction.hash
           },
         })
 
         const data = await response.json().catch(() => response.text())
-        
+
         return {
           content: [{
             type: "text",
@@ -1185,16 +1270,29 @@ export function registerX402Tools(server: McpServer): void {
       try {
         const client = getClient()
         const targetChain = chain || config.chain
-        
-        // Validate amount against max
-        const maxPayment = parseFloat(config.maxPaymentPerRequest)
         const sendAmount = parseFloat(amount)
-        if (sendAmount > maxPayment) {
-          throw new Error(`Amount ${amount} exceeds maximum allowed payment of ${maxPayment}`)
+
+        const amountCheck = validateAmount(amount)
+        if (!amountCheck.valid) {
+          throw new Error(`Amount validation failed: ${amountCheck.errors.join(", ")}`)
         }
-        
+
+        const addrCheck = validateAddress(to)
+        if (!addrCheck.valid) {
+          throw new Error(`Address validation failed: ${addrCheck.errors.join(", ")}`)
+        }
+
+        const limitsCheck = validatePaymentLimits(sendAmount, to, "x402_send_payment")
+        if (!limitsCheck.allowed) {
+          throw new Error(`Payment blocked: ${limitsCheck.errors.join(", ")}`)
+        }
+        if (limitsCheck.requiresApproval) {
+          throw new Error(`Payment of $${sendAmount.toFixed(2)} requires manual approval. ${limitsCheck.warnings.join("; ")}`)
+        }
+
         const result = await client.pay(to as `0x${string}`, amount, token as any)
-        
+        recordPayment(sendAmount, to, "x402_send_payment")
+
         return {
           content: [{
             type: "text",

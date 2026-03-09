@@ -11,6 +11,13 @@ import * as services from "./services/index.js";
 import { type Address, type Hex, type Hash } from 'viem';
 import { normalize } from 'viem/ens';
 
+const MAX_TRANSFER_VALUE = parseFloat(process.env.EVM_MAX_TRANSFER_VALUE || "10");
+const BLOCKED_CONTRACT_FUNCTIONS = new Set([
+  "selfdestruct",
+  "delegatecall",
+  "suicide",
+]);
+
 /**
  * Register all EVM-related tools with the MCP server
  *
@@ -778,6 +785,29 @@ export function registerEVMTools(server: McpServer) {
     },
     async ({ contractAddress, functionName, args = [], value, abiJson, network = "ethereum" }) => {
       try {
+        if (BLOCKED_CONTRACT_FUNCTIONS.has(functionName.toLowerCase())) {
+          return {
+            content: [{ type: "text", text: `Error: function '${functionName}' is blocked for security reasons.` }],
+            isError: true
+          };
+        }
+
+        if (value) {
+          const numericValue = parseFloat(value);
+          if (isNaN(numericValue) || numericValue < 0) {
+            return {
+              content: [{ type: "text", text: `Error: value must be a non-negative number, got '${value}'.` }],
+              isError: true
+            };
+          }
+          if (numericValue > MAX_TRANSFER_VALUE) {
+            return {
+              content: [{ type: "text", text: `Error: value ${value} ETH exceeds MAX_TRANSFER_VALUE of ${MAX_TRANSFER_VALUE} ETH. Set EVM_MAX_TRANSFER_VALUE env var to adjust.` }],
+              isError: true
+            };
+          }
+        }
+
         const privateKey = getConfiguredPrivateKey();
         const senderAddress = getWalletAddressFromKey();
         const client = await services.getPublicClient(network);
@@ -785,7 +815,6 @@ export function registerEVMTools(server: McpServer) {
         let abi: any[] | undefined;
         let functionAbi: any;
 
-        // If ABI is provided, use it
         if (abiJson) {
           try {
             abi = services.parseABI(abiJson);
@@ -1016,8 +1045,34 @@ export function registerEVMTools(server: McpServer) {
     },
     async ({ to, amount, network = "ethereum" }) => {
       try {
+        const numericAmount = parseFloat(amount);
+        if (isNaN(numericAmount) || numericAmount <= 0) {
+          return {
+            content: [{ type: "text", text: `Error: amount must be a positive number, got '${amount}'.` }],
+            isError: true
+          };
+        }
+        if (numericAmount > MAX_TRANSFER_VALUE) {
+          return {
+            content: [{ type: "text", text: `Error: amount ${amount} exceeds MAX_TRANSFER_VALUE of ${MAX_TRANSFER_VALUE}. Set EVM_MAX_TRANSFER_VALUE env var to adjust.` }],
+            isError: true
+          };
+        }
+
         const privateKey = getConfiguredPrivateKey();
         const senderAddress = getWalletAddressFromKey();
+
+        const client = await services.getPublicClient(network);
+        const balance = await client.getBalance({ address: senderAddress as Address });
+        const { parseEther, formatEther } = await import('viem');
+        const requiredWei = parseEther(amount);
+        if (balance < requiredWei) {
+          return {
+            content: [{ type: "text", text: `Error: insufficient balance. Have ${formatEther(balance)}, need ${amount}.` }],
+            isError: true
+          };
+        }
+
         const txHash = await services.transferETH(privateKey, to as Address, amount, network);
         return {
           content: [{
@@ -1061,6 +1116,20 @@ export function registerEVMTools(server: McpServer) {
     },
     async ({ tokenAddress, to, amount, network = "ethereum" }) => {
       try {
+        const numericAmount = parseFloat(amount);
+        if (isNaN(numericAmount) || numericAmount <= 0) {
+          return {
+            content: [{ type: "text", text: `Error: amount must be a positive number, got '${amount}'.` }],
+            isError: true
+          };
+        }
+        if (numericAmount > MAX_TRANSFER_VALUE) {
+          return {
+            content: [{ type: "text", text: `Error: amount ${amount} exceeds MAX_TRANSFER_VALUE of ${MAX_TRANSFER_VALUE}. Set EVM_MAX_TRANSFER_VALUE env var to adjust.` }],
+            isError: true
+          };
+        }
+
         const privateKey = getConfiguredPrivateKey();
         const senderAddress = getWalletAddressFromKey();
         const result = await services.transferERC20(tokenAddress as Address, to as Address, amount, privateKey, network);
