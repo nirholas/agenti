@@ -1,6 +1,6 @@
 # Development Guide
 
-Set up local development for Universal Crypto MCP.
+Set up local development for Agenti.
 
 ---
 
@@ -15,8 +15,8 @@ Set up local development for Universal Crypto MCP.
 
 ```bash
 # Clone
-git clone https://github.com/nirholas/universal-crypto-mcp
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti
+cd @nirholas/agenti
 
 # Install dependencies
 bun install
@@ -50,7 +50,7 @@ cp .env.example .env
 ## Project Structure
 
 ```
-universal-crypto-mcp/
+@nirholas/agenti/
 ├── src/
 │   ├── index.ts           # Entry point
 │   ├── evm.ts             # EVM entry point

@@ -2,13 +2,13 @@
 
 ## General
 
-### What is Universal Crypto MCP?
+### What is Agenti?
 
-Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcontextprotocol.io) server that connects AI assistants (Claude, ChatGPT, Cursor) to blockchain networks. It provides 330+ tools for DeFi, trading, security analysis, and cross-chain operations.
+Agenti is an open-source [Model Context Protocol](https://modelcontextprotocol.io) server that connects AI assistants (Claude, ChatGPT, Cursor) to blockchain networks. It provides 330+ tools for DeFi, trading, security analysis, and cross-chain operations.
 
 ### Is it free?
 
-Yes! Universal Crypto MCP is open-source under the Apache 2.0 license. You can use, modify, and distribute it freely.
+Yes! Agenti is open-source under the Apache 2.0 license. You can use, modify, and distribute it freely.
 
 ### Which AI assistants are supported?
 
@@ -32,8 +32,8 @@ Yes! Universal Crypto MCP is open-source under the Apache 2.0 license. You can u
 ### How do I install it?
 
 ```bash
-git clone https://github.com/nirholas/universal-crypto-mcp.git
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti.git
+cd @nirholas/agenti
 npm install
 npm run build
 ```
@@ -88,7 +88,7 @@ However, you are ultimately responsible for reviewing transactions before approv
 
 ### Has the code been audited?
 
-Not yet formally audited. We encourage security researchers to review the code and report issues via our [security policy](https://github.com/nirholas/universal-crypto-mcp/security/policy).
+Not yet formally audited. We encourage security researchers to review the code and report issues via our [security policy](https://github.com/nirholas/agenti/security/policy).
 
 ---
 
@@ -186,7 +186,7 @@ Yes, it's Apache 2.0 licensed. You can:
 
 ### What's coming next?
 
-See the [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues) for the full roadmap. Highlights:
+See the [GitHub Issues](https://github.com/nirholas/agenti/issues) for the full roadmap. Highlights:
 
 - **Q1 2026**: NFT support, limit orders
 - **Q2 2026**: Hardware wallet integration
@@ -194,7 +194,7 @@ See the [GitHub Issues](https://github.com/nirholas/universal-crypto-mcp/issues)
 
 ### How can I request features?
 
-Open a [GitHub Issue](https://github.com/nirholas/universal-crypto-mcp/issues/new) with the "feature request" template.
+Open a [GitHub Issue](https://github.com/nirholas/agenti/issues/new) with the "feature request" template.
 
 ### How can I contribute?
 
@@ -222,4 +222,4 @@ Built by [Nich](https://x.com/nichxbt). See [GitHub](https://github.com/nirholas
 
 ## Still have questions?
 
-Open a [GitHub Discussion](https://github.com/nirholas/universal-crypto-mcp/discussions) or tweet [@nichxbt](https://x.com/nichxbt)!
+Open a [GitHub Discussion](https://github.com/nirholas/agenti/discussions) or tweet [@nichxbt](https://x.com/nichxbt)!

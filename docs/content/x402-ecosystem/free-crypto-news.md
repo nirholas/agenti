@@ -22,7 +22,7 @@ free-crypto-news provides RSS/Atom feeds and a JSON API. This guide adds premium
 
 ```bash
 cd free-crypto-news
-npm install @nirholas/universal-crypto-mcp @nirholas/x402-ecosystem
+npm install @nirholas/@nirholas/agenti @nirholas/x402-ecosystem
 ```
 
 ## Step 1: Define Premium Tiers
@@ -81,7 +81,7 @@ import {
   x402Paywall,
   x402DynamicPaywall,
   dynamicPrice,
-} from "@nirholas/universal-crypto-mcp";
+} from "@nirholas/@nirholas/agenti";
 import { FEATURE_PRICES } from "../tiers";
 
 const RECIPIENT = process.env.PAYMENT_ADDRESS as `0x${string}`;
@@ -238,7 +238,7 @@ Create `src/mcp/server.ts`:
 
 ```typescript
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerX402 } from "@nirholas/universal-crypto-mcp";
+import { registerX402 } from "@nirholas/@nirholas/agenti";
 import { z } from "zod";
 
 const server = new McpServer({
@@ -323,7 +323,7 @@ export { server };
 Create `src/analytics/revenue.ts`:
 
 ```typescript
-import { X402Analytics, createFileAnalytics } from "@nirholas/universal-crypto-mcp";
+import { X402Analytics, createFileAnalytics } from "@nirholas/@nirholas/agenti";
 
 const analytics = createFileAnalytics("./data/revenue.json");
 

@@ -2,9 +2,9 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| Version | Supported |
+|---------|-----------|
+| 0.1.x | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
@@ -14,9 +14,10 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 
 **DO NOT** create a public GitHub issue for security vulnerabilities.
 
-Instead, please report security vulnerabilities by emailing:
+Report security vulnerabilities through one of:
 
-**security@[project-domain]** or directly via [GitHub Security Advisories](https://github.com/nirholas/universal-crypto-mcp/security/advisories/new)
+- **GitHub Security Advisories:** [Create a private advisory](https://github.com/nirholas/agenti/security/advisories/new)
+- **Email:** Contact the maintainer directly via GitHub
 
 ### What to Include
 
@@ -28,82 +29,84 @@ Instead, please report security vulnerabilities by emailing:
 
 ### Response Timeline
 
-- **Initial Response**: Within 48 hours
-- **Status Update**: Within 7 days
-- **Resolution Target**: Within 30 days for critical issues
+| Stage | Timeframe |
+|-------|-----------|
+| Initial acknowledgment | Within 48 hours |
+| Status update | Within 7 days |
+| Critical fix target | Within 30 days |
 
-### What to Expect
+We will credit you in the release notes unless you prefer anonymity.
 
-1. We'll acknowledge receipt of your report
-2. We'll investigate and validate the issue
-3. We'll work on a fix and coordinate disclosure
-4. We'll credit you in the release notes (unless you prefer anonymity)
+---
 
-## Security Best Practices for Users
+## Security Best Practices
 
 ### Private Key Security
 
-⚠️ **NEVER** share your private key with anyone or commit it to version control.
+**NEVER** share your private key or commit it to version control.
 
 ```bash
 # Use environment variables
 export PRIVATE_KEY="your_key_here"
 
-# Or use a .env file (add to .gitignore!)
+# Or use a .env file (ensure it's in .gitignore)
 echo "PRIVATE_KEY=your_key_here" >> .env
 ```
 
-### Recommended Setup
+### Recommended Wallet Setup
 
-1. **Use a dedicated wallet** for AI agent operations
-2. **Set spending limits** where possible
-3. **Start with testnets** to verify behavior
-4. **Monitor transactions** regularly
-5. **Revoke approvals** you no longer need
+1. **Use a dedicated wallet** for AI agent operations with limited funds
+2. **Start with testnets** to verify behavior before using mainnet
+3. **Monitor transactions** regularly for unexpected activity
+4. **Revoke approvals** you no longer need using the built-in revoke tools
+5. **Set spending limits** where possible
 
 ### API Key Security
 
-- Store API keys in environment variables
-- Use separate API keys for development and production
+- Store API keys in environment variables, never in code
+- Use separate keys for development and production
 - Rotate keys periodically
 - Monitor API usage for anomalies
 
-## Known Security Considerations
+---
+
+## Security Considerations
 
 ### Transaction Signing
 
-This MCP server can sign and broadcast transactions when provided with a private key. Users should:
+Agenti can sign and broadcast transactions when provided with a private key. Users should understand:
 
-- Understand that AI agents can initiate real transactions
-- Use wallets with limited funds
-- Consider using hardware wallet integration for high-value operations
+- AI agents can initiate **real transactions** with real financial consequences
+- Use wallets with **limited funds** appropriate to your use case
+- Consider **hardware wallet integration** for high-value operations
+- Review the **x402 payment configuration** to set appropriate spending limits
 
-### Data Exposure
+### Data Privacy
 
-- Blockchain data is public; queries don't expose additional information
-- Be cautious about logging sensitive data
-- Review tool outputs before sharing
+- All blockchain data queried is **publicly available** on-chain
+- Be cautious about **logging sensitive data** in your application
+- Review tool outputs before sharing in public contexts
+
+### Supply Chain
+
+- Dependencies are monitored via **Dependabot** for known vulnerabilities
+- Lock files are committed to ensure **reproducible builds**
+- Critical dependencies are pinned to **specific versions**
+
+---
 
 ## Audit Status
 
-This project has not yet undergone a formal security audit. Use at your own risk.
+This project has not yet undergone a formal security audit. Use at your own risk. The x402 payment protocol dependencies (`@x402/core`, `@x402/evm`, `@x402/svm`) are maintained by their respective teams.
 
-## Security Updates
+---
 
-Security updates will be released as patch versions. We recommend:
+## Staying Updated
+
+Always use the latest version to receive security patches:
 
 ```bash
-# Always use the latest version
-npx @nirholas/universal-crypto-mcp@latest
+npx @nirholas/agenti@latest
 ```
 
-Subscribe to releases to be notified of security updates.
-
-## Reporting a Vulnerability
-
-If you discover a security issue, please report it responsibly:
-
-1. **Do NOT** open a public issue
-2. Email the maintainer or open a private security advisory on GitHub
-3. Include steps to reproduce the vulnerability
-4. Allow reasonable time for a fix before disclosure
+Subscribe to [GitHub releases](https://github.com/nirholas/agenti/releases) for security update notifications.

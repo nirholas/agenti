@@ -219,7 +219,7 @@ interface RepoAnalysis {
 ```typescript
 const revenueSplit = {
   developer: 0.65,      // Repo Intel maintainer
-  ecosystem: 0.25,      // Universal Crypto MCP
+  ecosystem: 0.25,      // Agenti
   infrastructure: 0.10  // x402 + security scan costs
 };
 ```

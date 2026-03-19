@@ -1,6 +1,6 @@
 # Tutorials
 
-Step-by-step guides to get the most out of Universal Crypto MCP.
+Step-by-step guides to get the most out of Agenti.
 
 ## Getting Started
 
@@ -46,4 +46,4 @@ Coming soon! Subscribe to get notified.
 
 ## Community Guides
 
-Have you written a tutorial? [Submit a PR](https://github.com/nirholas/universal-crypto-mcp/pulls) to add it here!
+Have you written a tutorial? [Submit a PR](https://github.com/nirholas/agenti/pulls) to add it here!

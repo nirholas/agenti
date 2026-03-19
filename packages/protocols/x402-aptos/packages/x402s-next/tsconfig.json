@@ -1,0 +1,18 @@
+{
+  "extends": "@x402a/config/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    /* Disable for tsup compatibility */
+    "incremental": false,
+    "composite": false,
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/middleware/*": ["./src/middleware/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

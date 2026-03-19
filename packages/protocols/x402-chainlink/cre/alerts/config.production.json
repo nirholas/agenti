@@ -1,0 +1,17 @@
+{
+  "schedule": "0 0 * * * *",
+  "ruleTTL": 1800,
+  "publicKey": "",
+  "evms": [
+    {
+      "ruleRegistryAddress": "",
+      "chainSelectorName": "ethereum-testnet-sepolia-base-1",
+      "gasLimit": "1000000",
+      "dataFeeds": {
+        "BTC": "",
+        "ETH": "",
+        "LINK": ""
+      }
+    }
+  ]
+}

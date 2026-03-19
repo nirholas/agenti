@@ -1,8 +1,8 @@
-<!-- universal-crypto-mcp | @nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
+<!-- @nirholas/agenti | @nichxbt | dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
 
 # Data & Analytics Modules
 
-<!-- Maintained by universal-crypto-mcp | ID: 14938 -->
+<!-- Maintained by @nirholas/agenti | ID: 14938 -->
 
 Market data, technical analysis, research tools, and analytics integrations.
 
@@ -678,4 +678,4 @@ Track portfolio value
 ```
 
 <!-- EOF: @nichxbt | ucm:dW5pdmVyc2FsLWNyeXB0by1tY3A= -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

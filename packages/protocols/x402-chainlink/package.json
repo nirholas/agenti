@@ -1,0 +1,22 @@
+{
+  "name": "@chainlink/x402-cre-price-alerts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Crypto price alert system using x402 payments, Chainlink CRE, and on-chain smart contracts",
+  "workspaces": [
+    "server",
+    "cre/alerts"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev:server": "npm run dev --workspace=server -- --chat",
+    "dev:cre": "npm run dev --workspace=cre/alerts",
+    "build:server": "npm run build --workspace=server",
+    "build:cre": "npm run build --workspace=cre/alerts",
+    "build": "npm run build:server && npm run build:cre"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

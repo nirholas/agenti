@@ -1,0 +1,17 @@
+# TruffleHog Ignore Configuration
+# Ignore test/example files that contain placeholder secrets
+
+paths:
+  - .env.example
+  - examples/**/.env.example
+  - "**/*test*"
+  - "**/*example*"
+  - "**/*mock*"
+  - "**/*fixture*"
+
+# Ignore specific patterns that are test data or examples
+patterns:
+  - "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+  - "test-private-key"
+  - "example-private-key"
+  - "mock-private-key"

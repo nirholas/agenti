@@ -1,0 +1,112 @@
+name: Documentation Issue
+description: Report an issue with documentation, guides, or examples
+title: "[Docs]: "
+labels: ["documentation", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation! Please provide details about what's missing or incorrect.
+
+  - type: dropdown
+    id: doc_type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation is this about?
+      options:
+        - README files
+        - API Reference
+        - Quick Start Guide
+        - Code Examples
+        - Tutorial/Guide
+        - JSDoc/Type definitions
+        - CHANGELOG
+        - Contributing guide
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Issue Type
+      description: What kind of documentation issue is this?
+      options:
+        - Incorrect information
+        - Missing information
+        - Unclear explanation
+        - Broken link
+        - Typo or grammar error
+        - Outdated content
+        - Code example doesn't work
+        - Missing example
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation issue located?
+      placeholder: |
+        File: packages/x402a/README.md
+        Section: "Quick Start"
+        Line: 45-50
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue Description
+      description: What's wrong with the current documentation?
+      placeholder: The example code shows... but this doesn't work because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Fix
+      description: How should the documentation be corrected or improved?
+      placeholder: |
+        The documentation should instead say...
+
+        Or add a new section explaining...
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Proposed Content
+      description: If applicable, provide the corrected or new documentation content.
+      render: markdown
+      placeholder: |
+        ```typescript
+        // Corrected example:
+        const result = await makePayment({
+          type: 'single',
+          payTo: address,
+          amount: '1000000',
+        });
+        ```
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information that might be helpful.
+      placeholder: This confused me because... / This would help new users...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm you've completed these steps.
+      options:
+        - label: I have searched existing issues to ensure this isn't a duplicate
+          required: true
+        - label: I have read the current documentation
+          required: true
+        - label: I would be willing to submit a PR with the fix
+          required: false

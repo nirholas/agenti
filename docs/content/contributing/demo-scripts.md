@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | nicholas | 0.14.9.3 -->
+<!-- @nirholas/agenti | nicholas | 0.14.9.3 -->
 
 # Demo & Video Scripts
 
@@ -39,7 +39,7 @@ Show GitHub URL
 "What if you could tell Claude to check your crypto portfolio, 
 execute swaps, and scan tokens for scams - all in natural language?
 
-That's exactly what Universal Crypto MCP does. Let me show you 
+That's exactly what Agenti does. Let me show you 
 how to set it up in under 5 minutes."
 ```
 
@@ -100,7 +100,7 @@ connect to external tools.
 
 Think of it like plugins for ChatGPT, but standardized and open.
 
-Universal Crypto MCP is a server that gives your AI access to 
+Agenti is a server that gives your AI access to 
 blockchain networks. 15+ chains, 330+ tools, completely open source."
 ```
 
@@ -134,7 +134,7 @@ blockchain networks. 15+ chains, 330+ tools, completely open source."
 
 ### Chapter 5: Conclusion (4:45-5:00)
 ```
-"Universal Crypto MCP turns your AI into a crypto power user.
+"Agenti turns your AI into a crypto power user.
 
 GitHub link in description.
 Follow me on X for updates.
@@ -217,7 +217,7 @@ Questions? Drop them in the comments."
 ### Twitter Header
 ```
 [Clean design with:]
-- Universal Crypto MCP logo
+- Agenti logo
 - "15+ Chains | 330+ Tools | Open Source"
 - GitHub URL
 ```
@@ -266,4 +266,4 @@ Questions? Drop them in the comments."
 
 
 <!-- EOF: nicholas | ucm:0.14.9.3 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

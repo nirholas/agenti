@@ -138,6 +138,6 @@ Is this token safe? Contract: 0x... Chain: [chain]
 
 <div align="center">
 
-**Universal Crypto MCP** • [GitHub](https://github.com/nirholas/universal-crypto-mcp) • [@nichxbt](https://x.com/nichxbt)
+**Agenti** • [GitHub](https://github.com/nirholas/agenti) • [@nichxbt](https://x.com/nichxbt)
 
 </div>

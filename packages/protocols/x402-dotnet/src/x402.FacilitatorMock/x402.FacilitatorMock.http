@@ -1,0 +1,41 @@
+@x402.FacilitatorMock_HostAddress = http://localhost:5097
+
+### Verify
+POST {{x402.FacilitatorMock_HostAddress}}/verify
+Accept: application/json
+Content-Type: application/json
+{
+  "x402Version": 1,
+  "PaymentHeader": "test",
+  "PaymentRequirements":
+    {
+      "Scheme": "Exact",
+      "MaxAmountRequired": "12345",
+      "Asset": "USDC",
+      "Resource": "/",
+      "MimeType": "application/json",
+      "PayTo": "0x"
+    }
+}
+
+### Settle
+POST {{x402.FacilitatorMock_HostAddress}}/settle
+Accept: application/json
+Content-Type: application/json
+{
+  "x402Version": 1,
+  "PaymentHeader": "test",
+  "PaymentRequirements":
+    {
+      "Scheme": "Exact",
+      "MaxAmountRequired": "12345",
+      "Asset": "USDC",
+      "Resource": "/",
+      "MimeType": "application/json",
+      "PayTo": "0x"
+    }
+}
+
+### Supported
+GET {{x402.FacilitatorMock_HostAddress}}/supported
+Accept: application/json

@@ -1,0 +1,39 @@
+[package]
+name = "x402-reqwest"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+rust-version.workspace = true
+categories.workspace = true
+keywords.workspace = true
+description = "Wrapper for reqwest for transparent x402 payments"
+documentation = "https://docs.rs/x402-reqwest"
+readme = "README.md"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+x402-types = { workspace = true }
+reqwest = { workspace = true }
+http = { workspace = true }
+async-trait = { workspace = true }
+serde_json = { workspace = true }
+
+reqwest-middleware = { version = "0.5" }
+
+# Telemetry
+tracing = { workspace = true, optional = true }
+
+[dev-dependencies]
+alloy-signer-local = { version = "1.4" }
+x402-chain-eip155 = { workspace = true, features = ["client"] }
+
+[features]
+default = []
+telemetry = ["dep:tracing", "x402-types/telemetry"]
+json = ["reqwest-middleware/json"]
+full = ["telemetry", "json"]

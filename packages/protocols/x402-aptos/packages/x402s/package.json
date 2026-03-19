@@ -1,0 +1,96 @@
+{
+  "name": "x402s",
+  "version": "0.1.0",
+  "description": "HTTP 402 payment protocol integration for Shelby Protocol on Aptos - Built on x402a infrastructure",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "require": "./dist/server.cjs"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/server.ts src/client.ts --format cjs,esm --dts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "node --loader tsx test-integration.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/",
+    "format": "biome format src/",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "x402",
+    "x402s",
+    "shelby",
+    "aptos",
+    "payments",
+    "micropayments",
+    "blockchain",
+    "storage",
+    "sessions",
+    "react",
+    "hooks"
+  ],
+  "author": "Raintree Technology <support@raintree.technology>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raintree-technology/x402a.git",
+    "directory": "packages/x402s"
+  },
+  "bugs": {
+    "url": "https://github.com/raintree-technology/x402a/issues"
+  },
+  "homepage": "https://github.com/raintree-technology/x402a/tree/main/packages/x402s#readme",
+  "dependencies": {
+    "x402a": "^0.2.1",
+    "@aptos-labs/ts-sdk": "^1.30.0",
+    "pino": "^10.1.0"
+  },
+  "peerDependencies": {
+    "@shelby-protocol/sdk": "*",
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@shelby-protocol/sdk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@vitest/coverage-v8": "^1.0.4",
+    "react": "^18.2.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  }
+}

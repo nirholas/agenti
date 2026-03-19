@@ -122,7 +122,7 @@ const discoveryService = {
 ```typescript
 const revenueSplit = {
   registry: 0.50,       // Crypto Tools Registry
-  ecosystem: 0.30,      // Universal Crypto MCP
+  ecosystem: 0.30,      // Agenti
   toolDevelopers: 0.20  // Referral rewards
 };
 ```

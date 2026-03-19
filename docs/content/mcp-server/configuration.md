@@ -1,6 +1,6 @@
 # Configuration Guide
 
-Complete configuration reference for Universal Crypto MCP.
+Complete configuration reference for Agenti.
 
 ---
 
@@ -93,9 +93,9 @@ Add to `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here"
       }
@@ -109,9 +109,9 @@ Add to `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_evm_private_key",
         "SOLANA_PRIVATE_KEY": "your_solana_key",
@@ -130,9 +130,9 @@ Add to `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "node",
-      "args": ["/path/to/universal-crypto-mcp/dist/index.js"],
+      "args": ["/path/to/@nirholas/agenti/dist/index.js"],
       "env": {
         "PRIVATE_KEY": "your_private_key",
         "LOG_LEVEL": "DEBUG"
@@ -151,9 +151,9 @@ Add to your MCP settings in Cursor:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key"
       }
@@ -171,13 +171,13 @@ Add to your MCP settings in Cursor:
 Start the server in HTTP mode:
 
 ```bash
-npx @nirholas/universal-crypto-mcp --http
+npx @nirholas/@nirholas/agenti --http
 ```
 
 Or with environment variables:
 
 ```bash
-PORT=3001 PRIVATE_KEY=your_key npx @nirholas/universal-crypto-mcp --http
+PORT=3001 PRIVATE_KEY=your_key npx @nirholas/@nirholas/agenti --http
 ```
 
 Configure in ChatGPT:
@@ -190,9 +190,9 @@ Configure in ChatGPT:
 ```dockerfile
 FROM node:20-alpine
 WORKDIR /app
-RUN npm install -g @nirholas/universal-crypto-mcp
+RUN npm install -g @nirholas/@nirholas/agenti
 EXPOSE 3001
-CMD ["universal-crypto-mcp", "--http"]
+CMD ["@nirholas/agenti", "--http"]
 ```
 
 ```yaml
@@ -200,7 +200,7 @@ CMD ["universal-crypto-mcp", "--http"]
 version: '3.8'
 services:
   mcp-server:
-    image: universal-crypto-mcp
+    image: @nirholas/agenti
     ports:
       - "3001:3001"
     environment:
@@ -217,7 +217,7 @@ services:
 Used by Claude Desktop and most MCP clients:
 
 ```bash
-npx @nirholas/universal-crypto-mcp
+npx @nirholas/@nirholas/agenti
 ```
 
 ### HTTP Mode
@@ -225,7 +225,7 @@ npx @nirholas/universal-crypto-mcp
 For ChatGPT and HTTP-based clients:
 
 ```bash
-npx @nirholas/universal-crypto-mcp --http
+npx @nirholas/@nirholas/agenti --http
 ```
 
 ### SSE Mode (Legacy)
@@ -233,7 +233,7 @@ npx @nirholas/universal-crypto-mcp --http
 Server-Sent Events mode:
 
 ```bash
-npx @nirholas/universal-crypto-mcp --sse
+npx @nirholas/@nirholas/agenti --sse
 ```
 
 ---
@@ -253,7 +253,7 @@ npx @nirholas/universal-crypto-mcp --sse
 
 ```typescript
 // In your custom deployment
-import { RateLimiter } from '@nirholas/universal-crypto-mcp'
+import { RateLimiter } from '@nirholas/@nirholas/agenti'
 
 const customLimiter = new RateLimiter({
   maxTokens: 100,
@@ -277,7 +277,7 @@ const customLimiter = new RateLimiter({
 ### Disabling Cache
 
 ```bash
-DISABLE_CACHE=true npx @nirholas/universal-crypto-mcp
+DISABLE_CACHE=true npx @nirholas/@nirholas/agenti
 ```
 
 ---
@@ -388,7 +388,7 @@ kubectl create secret generic crypto-mcp-secrets \
 Enable debug logging:
 
 ```bash
-LOG_LEVEL=DEBUG npx @nirholas/universal-crypto-mcp
+LOG_LEVEL=DEBUG npx @nirholas/@nirholas/agenti
 ```
 
 ### Health Check

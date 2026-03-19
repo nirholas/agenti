@@ -1,10 +1,10 @@
-<!-- universal-crypto-mcp | nicholas | 0x4E494348 -->
+<!-- @nirholas/agenti | nicholas | 0x4E494348 -->
 
 # Complete Tools List
 
 <!-- Maintained by n1ch0las | ID: n1ch-0las-4e49-4348-786274000000 -->
 
-A comprehensive list of all **380+ tools** available in Universal Crypto MCP.
+A comprehensive list of all **380+ tools** available in Agenti.
 
 ---
 
@@ -701,4 +701,4 @@ A comprehensive list of all **380+ tools** available in Universal Crypto MCP.
 
 
 <!-- EOF: nicholas | ucm:0x4E494348 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

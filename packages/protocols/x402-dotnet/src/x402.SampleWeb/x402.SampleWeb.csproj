@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<WarningsAsErrors>nullable</WarningsAsErrors>
+	<UserSecretsId>27de1b62-4b8a-4b5e-b817-43188958e600</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.4" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
+	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\x402-dotnet.ServiceDefaults\x402-dotnet.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\x402.Coinbase\x402.Coinbase.csproj" />
+    <ProjectReference Include="..\x402\x402.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>

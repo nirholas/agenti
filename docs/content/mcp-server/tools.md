@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | nicholas | 1493 -->
+<!-- @nirholas/agenti | nicholas | 1493 -->
 
 # Tool Reference
 
@@ -486,4 +486,4 @@ Get voting power for an address.
 
 
 <!-- EOF: nicholas | ucm:1493 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

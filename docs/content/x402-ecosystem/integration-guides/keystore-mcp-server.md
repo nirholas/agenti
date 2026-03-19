@@ -191,7 +191,7 @@ async function rotateKeystore(
 ```typescript
 const revenueSplit = {
   developer: 0.70,      // Keystore MCP maintainer
-  ecosystem: 0.20,      // Universal Crypto MCP
+  ecosystem: 0.20,      // Agenti
   infrastructure: 0.10  // x402 + secure compute
 };
 ```

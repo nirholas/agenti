@@ -1,6 +1,6 @@
 # MCP Server Overview
 
-The Universal Crypto MCP Server provides AI agents with tools to interact with EVM-compatible blockchains.
+The Agenti Server provides AI agents with tools to interact with EVM-compatible blockchains.
 
 ---
 
@@ -11,9 +11,9 @@ The Universal Crypto MCP Server provides AI agents with tools to interact with E
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -27,9 +27,9 @@ The Universal Crypto MCP Server provides AI agents with tools to interact with E
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -43,9 +43,9 @@ The Universal Crypto MCP Server provides AI agents with tools to interact with E
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest", "--sse"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest", "--sse"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -130,8 +130,8 @@ The Universal Crypto MCP Server provides AI agents with tools to interact with E
 ## Local Development
 
 ```bash
-git clone https://github.com/nirholas/universal-crypto-mcp
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti
+cd @nirholas/agenti
 bun install
 bun dev:sse
 ```

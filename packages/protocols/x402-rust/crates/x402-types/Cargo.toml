@@ -1,0 +1,41 @@
+[package]
+name = "x402-types"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+rust-version.workspace = true
+categories.workspace = true
+keywords.workspace = true
+documentation = "https://docs.rs/x402-types"
+description = "Core types for x402 payments: chain identifiers, protocol messages, and facilitator traits"
+readme = "README.md"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+alloy-primitives = { workspace = true }
+
+base64 = { version = "0.22.1" }
+rust_decimal = { version = "1.39.0" }
+regex = { version = "1.12.2" }
+serde_with = { version = "3.16.1" }
+
+# CLI
+clap = { workspace = true, optional = true }
+
+# Tracing
+tracing = { workspace = true, optional = true }
+
+[features]
+default = []
+telemetry = ["dep:tracing"]
+cli = ["dep:clap"]
+full = ["cli", "telemetry"]

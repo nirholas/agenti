@@ -16,7 +16,7 @@ Get up and running in under 2 minutes.
   "mcpServers": {
     "crypto": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"]
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"]
     }
   }
 }
@@ -40,7 +40,7 @@ To execute transactions (swaps, transfers, etc.), add your private key:
   "mcpServers": {
     "crypto": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "0xYourPrivateKeyHere"
       }
@@ -57,7 +57,7 @@ To execute transactions (swaps, transfers, etc.), add your private key:
 
 1. Start the server:
 ```bash
-npx @nirholas/universal-crypto-mcp@latest --http
+npx @nirholas/@nirholas/agenti@latest --http
 ```
 
 2. In ChatGPT → Settings → Apps → Create app

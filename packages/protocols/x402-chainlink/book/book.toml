@@ -1,0 +1,23 @@
+[book]
+title = "LinkLab Masterclass: Intro to Chainlink Runtime Environment (CRE) with x402"
+language = "en"
+
+[build]
+build-dir = "book"
+
+[output.html]
+default-theme = "navy"
+additional-css = ["theme/css/chainlink.css"]
+base-url = "/x402-cre-price-alerts/"
+
+[output.html.search]
+enable = true
+limit-results = 30
+teaser-word-count = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3
+

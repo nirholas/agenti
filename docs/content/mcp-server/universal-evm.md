@@ -55,9 +55,9 @@ Universal EVM MCP enables seamless interaction with blockchain networks through 
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -73,9 +73,9 @@ Universal EVM MCP enables seamless interaction with blockchain networks through 
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "npx",
-      "args": ["-y", "@nirholas/universal-crypto-mcp@latest"],
+      "args": ["-y", "@nirholas/@nirholas/agenti@latest"],
       "env": {
         "PRIVATE_KEY": "your_private_key_here (optional)"
       }
@@ -89,8 +89,8 @@ Universal EVM MCP enables seamless interaction with blockchain networks through 
 ## Local Development
 
 ```bash
-git clone https://github.com/nirholas/universal-crypto-mcp
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti
+cd @nirholas/agenti
 bun install
 bun dev:sse
 ```

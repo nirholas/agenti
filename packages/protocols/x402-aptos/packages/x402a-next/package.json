@@ -1,0 +1,78 @@
+{
+  "name": "x402a-next",
+  "version": "0.2.1",
+  "description": "Next.js middleware and utilities for x402a payment protocol - Supports APT Coin and Fungible Assets",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./middleware": {
+      "types": "./dist/middleware/index.d.ts",
+      "import": "./dist/middleware/index.js",
+      "require": "./dist/middleware/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/middleware/index.ts --format cjs,esm --dts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/",
+    "format": "biome format src/",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "x402",
+    "x402a",
+    "aptos",
+    "nextjs",
+    "next.js",
+    "middleware",
+    "payments",
+    "micropayments"
+  ],
+  "author": "Raintree Technology <support@raintree.technology>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raintree-technology/x402a.git",
+    "directory": "packages/x402a-next"
+  },
+  "bugs": {
+    "url": "https://github.com/raintree-technology/x402a/issues"
+  },
+  "homepage": "https://github.com/raintree-technology/x402a#readme",
+  "dependencies": {
+    "pino": "^10.1.0",
+    "pino-pretty": "^13.1.2",
+    "x402a": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "next": "^14.0.4",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "peerDependencies": {
+    "next": ">=13.0.0"
+  }
+}

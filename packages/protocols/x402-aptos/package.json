@@ -1,0 +1,70 @@
+{
+  "name": "x402a-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "bun@1.2.23",
+  "description": "HTTP-based micropayments for Aptos blockchain",
+  "workspaces": [
+    "packages/config",
+    "packages/x402a",
+    "packages/x402a-next",
+    "packages/x402a-contract",
+    "packages/x402a-tools",
+    "packages/x402s",
+    "packages/x402s-next",
+    "examples/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raintree-technology/x402a.git"
+  },
+  "author": "Raintree Technology <support@raintree.technology>",
+  "license": "MIT",
+  "scripts": {
+    "build": "turbo run build",
+    "build:clean": "bun run clean && bun run build",
+    "test": "turbo run test",
+    "test:ci": "turbo run test --concurrency=4",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:ci": "playwright test --reporter=github",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format .",
+    "format:write": "biome format --write .",
+    "check": "biome check .",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev --parallel --force",
+    "typecheck": "turbo run typecheck",
+    "deploy:testnet": "cd packages/x402a-contract && aptos move publish --profile testnet",
+    "deploy:mainnet": "cd packages/x402a-contract && aptos move publish --profile mainnet",
+    "compile:contract": "cd packages/x402a-contract && aptos move compile",
+    "x402a": "cd packages/x402a-tools && bun run bin/x402a",
+    "tools:build": "cd packages/x402a-tools && bun run build",
+    "changeset": "changeset",
+    "changeset:add": "changeset add",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "publish:x402a": "cd packages/x402a && npm publish --access public",
+    "publish:x402a-next": "cd packages/x402a-next && npm publish --access public",
+    "publish:x402s": "cd packages/x402s && npm publish --access public",
+    "publish:x402s-next": "cd packages/x402s-next && npm publish --access public",
+    "publish:all": "bun run publish:x402a && bun run publish:x402a-next && bun run publish:x402s && bun run publish:x402s-next",
+    "prepare": "turbo run build --filter=!./examples/*",
+    "postinstall": "bun run prepare"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.5",
+    "@changesets/cli": "^2.29.7",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^20.10.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "dependencies": {
+    "@shelby-protocol/sdk": "^0.0.5"
+  }
+}

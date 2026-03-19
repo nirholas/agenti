@@ -1,0 +1,104 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for x402a
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the sections below to help us understand your request.
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package would this feature apply to?
+      options:
+        - x402a (core package)
+        - x402a-next (Next.js middleware)
+        - Both packages
+        - Documentation
+        - New package suggestion
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm frustrated when... / It's difficult to... / I need to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see.
+      placeholder: I would like x402a to support... / Add a new API method... / Provide a utility for...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: I tried... but it didn't work because... / Another approach could be...
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example API or Usage
+      description: Show what the ideal API or usage would look like.
+      render: typescript
+      placeholder: |
+        // Example of how I'd like to use this feature:
+        const result = await makeRecurringPayment({
+          schedule: 'monthly',
+          amount: '5000000',
+          startDate: '2025-01-01',
+        });
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical - Blocking my project
+        - High - Would significantly improve my workflow
+        - Medium - Nice to have
+        - Low - Minor convenience
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: Describe your specific use case for this feature.
+      placeholder: I'm building a platform where users need to... and this feature would enable...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, or examples about the feature request.
+      placeholder: Links to similar features in other libraries, design mockups, etc.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm you've completed these steps.
+      options:
+        - label: I have searched existing issues to ensure this isn't a duplicate
+          required: true
+        - label: I have checked the documentation and this feature doesn't already exist
+          required: true
+        - label: I would be willing to contribute this feature via a pull request
+          required: false

@@ -49,10 +49,8 @@ import { registerResearch } from "@/modules/research/index.js"
 
 // Import non-EVM chain vendors (from web3-mcp integration)
 import { registerSolana } from "@/vendors/solana/index.js"
-import { registerUTXOChains } from "@/vendors/utxo/index.js"
 import { registerRipple } from "@/vendors/ripple/index.js"
 import { registerTon } from "@/vendors/ton/index.js"
-import { registerThorchain } from "@/vendors/thorchain/index.js"
 
 // Import new chain vendors (Cosmos, Near, Sui, Aptos)
 import { registerCosmos } from "@/vendors/cosmos/index.js"
@@ -132,10 +130,8 @@ export function registerEVM(server: McpServer) {
 
   // Non-EVM chain modules from web3-mcp integration
   registerSolana(server)
-  registerUTXOChains(server) // Bitcoin, Litecoin, Dogecoin
   registerRipple(server)
   registerTon(server)
-  registerThorchain(server)
 
   // New chain modules
   registerCosmos(server)

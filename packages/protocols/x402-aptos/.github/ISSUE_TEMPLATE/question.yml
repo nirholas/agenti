@@ -1,0 +1,101 @@
+name: Question / Support
+description: Ask a question or get help using x402a
+title: "[Question]: "
+labels: ["question", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about using x402a? We're here to help!
+
+        **Note:** For quick questions, you might also check:
+        - [Documentation](https://github.com/raintree-technology/x402a/tree/main/docs)
+        - [Examples](https://github.com/raintree-technology/x402a/tree/main/examples)
+        - [Quick Start Guide](https://github.com/raintree-technology/x402a/blob/main/docs/QUICK_START.md)
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Getting Started
+        - Payment Integration
+        - Wallet Integration
+        - Next.js Middleware
+        - API Routes
+        - Smart Contract
+        - Rate Limiting
+        - Health Checks
+        - Error Handling
+        - Deployment
+        - Best Practices
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: How do I... / What's the best way to... / Why does...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide context about what you're trying to achieve.
+      placeholder: |
+        I'm building a platform that...
+        I want to implement payments for...
+        My use case requires...
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What Have You Tried?
+      description: What approaches have you already attempted?
+      placeholder: |
+        I tried using... but...
+        I followed the Quick Start guide, but I'm stuck at...
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Relevant Code
+      description: Share any relevant code snippets (optional).
+      render: typescript
+      placeholder: |
+        const { makePayment } = useX402Payment({
+          wallet: { signMessage },
+          network: 'testnet',
+        });
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: Provide environment details if they might be relevant.
+      value: |
+        - Package version: [e.g., x402a@1.0.0]
+        - Framework: [e.g., Next.js 14, React 18]
+        - Wallet: [e.g., Petra]
+        - Network: [e.g., testnet]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm you've completed these steps.
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: I have checked the documentation
+          required: true
+        - label: This is not a bug report (use the Bug Report template instead)
+          required: true

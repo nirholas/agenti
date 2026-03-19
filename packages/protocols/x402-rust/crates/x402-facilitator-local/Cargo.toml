@@ -1,0 +1,52 @@
+[package]
+name = "x402-facilitator-local"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+rust-version.workspace = true
+categories.workspace = true
+keywords.workspace = true
+description = "Local facilitator implementation for the x402 payment protocol"
+documentation = "https://docs.rs/x402-facilitator-local"
+readme = "README.md"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = []
+telemetry = [
+    "dep:tracing",
+    "dep:tracing-subscriber",
+    "dep:opentelemetry",
+    "dep:opentelemetry_sdk",
+    "dep:opentelemetry-semantic-conventions",
+    "dep:tracing-opentelemetry",
+    "dep:opentelemetry-otlp",
+    "dep:opentelemetry-stdout",
+    "x402-types/telemetry",
+]
+full = ["telemetry"]
+
+[dependencies]
+x402-types = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["signal"] }
+tokio-util = { workspace = true }
+axum = { workspace = true }
+tower-http = { workspace = true }
+
+# Tracing and OpenTelemetry (optional, enabled via `telemetry` feature)
+tracing = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+opentelemetry = { version = "0.31", optional = true }
+opentelemetry_sdk = { version = "0.31", optional = true }
+opentelemetry-semantic-conventions = { version = "0.31", features = ["semconv_experimental"], optional = true }
+tracing-opentelemetry = { version = "0.32", optional = true }
+opentelemetry-otlp = { version = "0.31", features = ["metrics", "grpc-tonic"], optional = true }
+opentelemetry-stdout = { version = "0.31", features = ["trace", "metrics"], optional = true }

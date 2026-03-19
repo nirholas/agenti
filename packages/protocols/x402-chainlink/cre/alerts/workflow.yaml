@@ -1,0 +1,42 @@
+# ==========================================================================
+# CRE WORKFLOW SETTINGS FILE
+# ==========================================================================
+# Workflow-specific settings for CRE CLI targets.
+# Each target defines user-workflow and workflow-artifacts groups.
+# Settings here override CRE Project Settings File values.
+#
+# Example custom target:
+# my-target:
+#   user-workflow:
+#     workflow-name: "MyExampleWorkflow"    # Required: Workflow Registry name
+#   workflow-artifacts:
+#     workflow-path: "./main.ts"            # Path to workflow entry point
+#     config-path: "./config.yaml"          # Path to config file
+#     secrets-path: "../secrets.yaml"       # Path to secrets file (project root by default)
+
+# ==========================================================================
+local-simulation:
+  user-workflow:
+    workflow-name: "alerts"
+  workflow-artifacts:
+    workflow-path: "./main.ts"
+    config-path: "./config.staging.json"
+    secrets-path: "../secrets.yaml"
+
+# ==========================================================================
+staging-settings:
+  user-workflow:
+    workflow-name: "alerts-staging"
+  workflow-artifacts:
+    workflow-path: "./main.ts"
+    config-path: "./config.staging.json"
+    secrets-path: "../secrets.yaml"
+
+# ==========================================================================
+production-settings:
+  user-workflow:
+    workflow-name: "alerts-production"
+  workflow-artifacts:
+    workflow-path: "./main.ts"
+    config-path: "./config.production.json"
+    secrets-path: "../secrets.yaml"

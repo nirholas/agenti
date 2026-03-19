@@ -46,7 +46,7 @@ describe('X402 Configuration', () => {
     it('should load default configuration', () => {
       const config = loadX402Config();
 
-      expect(config.chain).toBe('arbitrum');
+      expect(config.defaultChain).toBe('base-sepolia');
       expect(config.enableGasless).toBe(true);
       expect(config.maxPaymentPerRequest).toBe('1.00');
       expect(config.debug).toBe(false);
@@ -56,21 +56,23 @@ describe('X402 Configuration', () => {
       process.env.X402_PRIVATE_KEY = TEST_PRIVATE_KEY;
       const config = loadX402Config();
 
-      expect(config.privateKey).toBe(TEST_PRIVATE_KEY);
+      expect(config.evmPrivateKey).toBe(TEST_PRIVATE_KEY);
     });
 
     it('should load chain from environment', () => {
       process.env.X402_CHAIN = 'polygon';
+      process.env.X402_MAINNET_ENABLED = 'true';
       const config = loadX402Config();
 
-      expect(config.chain).toBe('polygon');
+      expect(config.defaultChain).toBe('polygon');
     });
 
     it('should load RPC URL from environment', () => {
+      process.env.X402_CHAIN = 'base-sepolia';
       process.env.X402_RPC_URL = 'https://custom-rpc.example.com';
       const config = loadX402Config();
 
-      expect(config.rpcUrl).toBe('https://custom-rpc.example.com');
+      expect(config.rpcUrls['base-sepolia']).toBe('https://custom-rpc.example.com');
     });
 
     it('should load gasless setting from environment', () => {
@@ -107,12 +109,13 @@ describe('X402 Configuration', () => {
     });
 
     it('should handle all supported chains', () => {
-      const chains = ['arbitrum', 'arbitrum-sepolia', 'base', 'ethereum', 'polygon', 'optimism', 'bsc'];
+      const chains = ['arbitrum', 'arbitrum-sepolia', 'base', 'base-sepolia', 'ethereum', 'polygon', 'optimism', 'bsc'];
 
       for (const chain of chains) {
         process.env.X402_CHAIN = chain;
+        process.env.X402_MAINNET_ENABLED = 'true';
         const config = loadX402Config();
-        expect(config.chain).toBe(chain);
+        expect(config.defaultChain).toBe(chain);
       }
     });
 
@@ -121,8 +124,8 @@ describe('X402 Configuration', () => {
       process.env.X402_PRIVATE_KEY = privateKey;
       const config = loadX402Config();
 
-      expect(config.privateKey).toBe(privateKey);
-      expect(config.privateKey?.startsWith('0x')).toBe(true);
+      expect(config.evmPrivateKey).toBe(privateKey);
+      expect(config.evmPrivateKey?.startsWith('0x')).toBe(true);
     });
   });
 

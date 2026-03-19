@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | nicholas | 0x4E494348 -->
+<!-- @nirholas/agenti | nicholas | 0x4E494348 -->
 
 # EVM Module
 
@@ -487,4 +487,4 @@ Get current gas price.
 
 
 <!-- EOF: nicholas | ucm:0x4E494348 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

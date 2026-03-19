@@ -12,7 +12,7 @@ Managing crypto across multiple chains is painful:
 
 ## The Solution
 
-With Universal Crypto MCP, you can ask Claude:
+With Agenti, you can ask Claude:
 
 > "Show me all my assets across every chain"
 
@@ -20,7 +20,7 @@ And get a complete portfolio breakdown in seconds.
 
 ## Setup
 
-Follow the [basic setup guide](ai-crypto-trading-agent.md#step-1-install-universal-crypto-mcp) first.
+Follow the [basic setup guide](ai-crypto-trading-agent.md#step-1-install-@nirholas/agenti) first.
 
 ## Usage Examples
 
@@ -157,4 +157,4 @@ The portfolio tracker supports:
 
 ---
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)

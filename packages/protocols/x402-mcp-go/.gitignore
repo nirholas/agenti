@@ -1,0 +1,44 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Test coverage
+*.coverprofile
+coverage.html
+
+# Example binaries
+examples/client/client
+examples/server/server
+examples/client/basic-x402
+svm-server
+svm-client
+examples/multi-chain/multi-chain

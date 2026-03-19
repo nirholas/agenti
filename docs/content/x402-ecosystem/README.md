@@ -7,7 +7,7 @@
 The fastest way to add x402 payments to any repo:
 
 ```typescript
-import { registerX402 } from "@nirholas/universal-crypto-mcp";
+import { registerX402 } from "@nirholas/@nirholas/agenti";
 
 // In your MCP server setup
 registerX402(server);
@@ -47,11 +47,11 @@ Every repo follows this pattern:
 
 ```typescript
 // 1. Install dependencies
-// npm install @nirholas/universal-crypto-mcp
+// npm install @nirholas/@nirholas/agenti
 
 // 2. Import and register
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerX402 } from "@nirholas/universal-crypto-mcp";
+import { registerX402 } from "@nirholas/@nirholas/agenti";
 
 const server = new McpServer({
   name: "your-server",
@@ -76,7 +76,7 @@ import {
   registerX402,
   x402Paywall,
   fixedPrice,
-} from "@nirholas/universal-crypto-mcp";
+} from "@nirholas/@nirholas/agenti";
 
 // Register x402 first
 registerX402(server);
@@ -120,7 +120,7 @@ X402_FACILITATOR_URL=https://...
 Use the RevenueSplitter for multi-party payments:
 
 ```typescript
-import { createDynamicPaymentGate } from "@nirholas/universal-crypto-mcp";
+import { createDynamicPaymentGate } from "@nirholas/@nirholas/agenti";
 
 const paymentGate = createDynamicPaymentGate({
   revenueSplit: [
@@ -140,4 +140,4 @@ const paymentGate = createDynamicPaymentGate({
 
 ---
 
-**Questions?** Open an issue at [universal-crypto-mcp](https://github.com/nirholas/universal-crypto-mcp/issues)
+**Questions?** Open an issue at [@nirholas/agenti](https://github.com/nirholas/agenti/issues)

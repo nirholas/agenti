@@ -11,7 +11,7 @@ In crypto, security risks include:
 - 🚨 Malicious transfer taxes
 - 🚨 Proxy contracts with dangerous upgrades
 
-Universal Crypto MCP gives Claude the tools to detect these risks.
+Agenti gives Claude the tools to detect these risks.
 
 ## Basic Token Scan
 
@@ -293,4 +293,4 @@ For each upgradeable contract, show:
 
 ---
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)

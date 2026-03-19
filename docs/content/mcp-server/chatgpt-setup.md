@@ -1,6 +1,6 @@
 # ChatGPT Developer Mode Setup
 
-Connect Universal Crypto MCP to ChatGPT using Developer Mode.
+Connect Agenti to ChatGPT using Developer Mode.
 
 ---
 
@@ -8,7 +8,7 @@ Connect Universal Crypto MCP to ChatGPT using Developer Mode.
 
 - ChatGPT Pro, Plus, Business, Enterprise, or Education account
 - [Developer Mode enabled](https://chatgpt.com/#settings/Connectors/Advanced)
-- Universal Crypto MCP server running (local or deployed)
+- Agenti server running (local or deployed)
 
 ---
 
@@ -49,7 +49,7 @@ The server will start on `http://localhost:3001` by default.
 1. Start a new conversation
 2. Click the **Plus menu** in the composer
 3. Select **Developer mode**
-4. Choose your Universal Crypto MCP app
+4. Choose your Agenti app
 5. Start chatting!
 
 ---
@@ -71,35 +71,35 @@ The server will start on `http://localhost:3001` by default.
 ### Get Crypto News
 
 ```
-Use the Universal Crypto MCP to get the latest Bitcoin news.
+Use the Agenti to get the latest Bitcoin news.
 Do not use other tools.
 ```
 
 ### Check Token Balance
 
 ```
-Using Universal Crypto MCP's "get_token_balance" tool, check the USDT 
+Using Agenti's "get_token_balance" tool, check the USDT 
 balance for 0x... on Ethereum mainnet.
 ```
 
 ### Analyze Token Security
 
 ```
-Use the "detect_rug_pull_risk" tool from Universal Crypto MCP to analyze 
+Use the "detect_rug_pull_risk" tool from Agenti to analyze 
 the token at 0x... on BSC.
 ```
 
 ### Get Gas Prices
 
 ```
-Get current gas prices on Ethereum using Universal Crypto MCP.
+Get current gas prices on Ethereum using Agenti.
 Compare with Arbitrum and Base.
 ```
 
 ### Swap Quote
 
 ```
-Use Universal Crypto MCP to get a quote for swapping 1 ETH to USDC 
+Use Agenti to get a quote for swapping 1 ETH to USDC 
 on Uniswap (Ethereum mainnet).
 ```
 

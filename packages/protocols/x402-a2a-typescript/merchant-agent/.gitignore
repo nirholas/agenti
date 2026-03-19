@@ -1,0 +1,9 @@
+.env
+.env.production
+node_modules
+dist
+# Compiled JavaScript files (TypeScript outputs to root)
+/*.js
+/*.js.map
+/src/**/*.js
+/src/**/*.js.map
