@@ -20,7 +20,7 @@ describe('Chains Configuration', () => {
 
   describe('CAIP-2 identifiers', () => {
     it('should have valid CAIP-2 format for all chains', () => {
-      const caip2Regex = /^eip155:\d+$/;
+      const caip2Regex = /^(eip155:\d+|solana:\w+)$/;
 
       for (const [chain, info] of Object.entries(SUPPORTED_CHAINS)) {
         expect(info.caip2).toMatch(caip2Regex);
@@ -85,8 +85,9 @@ describe('Chains Configuration', () => {
       expect(parseCAIP2('')).toBeNull();
     });
 
-    it('should parse all supported chain CAIP-2 identifiers', () => {
+    it('should parse all EVM supported chain CAIP-2 identifiers', () => {
       for (const [chain, info] of Object.entries(SUPPORTED_CHAINS)) {
+        if (info.chainType === 'svm') continue; // Skip Solana chains for EVM CAIP-2 parsing
         const parsed = parseCAIP2(info.caip2);
         expect(parsed).not.toBeNull();
         expect(parsed?.namespace).toBe('eip155');
@@ -421,11 +422,14 @@ describe('Chains Configuration', () => {
   // ============================================================================
 
   describe('chain compatibility', () => {
-    it('should have same chains in SUPPORTED_CHAINS and NETWORKS', () => {
+    it('should have all NETWORKS chains in SUPPORTED_CHAINS', () => {
       const supportedChains = Object.keys(SUPPORTED_CHAINS);
       const networkChains = Object.keys(NETWORKS);
 
-      expect(supportedChains.sort()).toEqual(networkChains.sort());
+      // NETWORKS contains EVM chains; SUPPORTED_CHAINS also includes SVM chains
+      for (const chain of networkChains) {
+        expect(supportedChains).toContain(chain);
+      }
     });
 
     it('should have bidirectional chain ID mapping', () => {

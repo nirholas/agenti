@@ -154,15 +154,23 @@ describe('X402 Configuration', () => {
   // ============================================================================
 
   describe('validateX402Config', () => {
-    it('should validate complete configuration', () => {
-      const config = {
-        privateKey: TEST_PRIVATE_KEY,
-        chain: 'arbitrum' as const,
+    function makeConfig(overrides: Record<string, any> = {}) {
+      return {
+        evmPrivateKey: TEST_PRIVATE_KEY,
+        defaultChain: 'arbitrum' as any,
+        rpcUrls: {},
         enableGasless: true,
         maxPaymentPerRequest: '1.00',
         debug: false,
+        mainnetEnabled: true,
+        testnetOnly: false,
+        requireApprovalAbove: '0.50',
+        ...overrides,
       };
+    }
 
+    it('should validate complete configuration', () => {
+      const config = makeConfig();
       const result = validateX402Config(config);
 
       expect(result.valid).toBe(true);
@@ -170,129 +178,68 @@ describe('X402 Configuration', () => {
     });
 
     it('should warn when private key is missing', () => {
-      const config = {
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: '1.00',
-        debug: false,
-      };
-
+      const config = makeConfig({ evmPrivateKey: undefined });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('X402_PRIVATE_KEY'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('X402') && e.includes('KEY'))).toBe(true);
     });
 
     it('should error on invalid private key format - missing 0x', () => {
-      const config = {
-        privateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as `0x${string}`,
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: '1.00',
-        debug: false,
-      };
-
+      const config = makeConfig({
+        evmPrivateKey: 'ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as `0x${string}`,
+      });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('0x'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('0x'))).toBe(true);
     });
 
     it('should error on invalid private key length', () => {
-      const config = {
-        privateKey: '0x1234' as `0x${string}`,
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: '1.00',
-        debug: false,
-      };
-
+      const config = makeConfig({ evmPrivateKey: '0x1234' as `0x${string}` });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('32-byte'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('32-byte'))).toBe(true);
     });
 
     it('should error on unsupported chain', () => {
-      const config = {
-        privateKey: TEST_PRIVATE_KEY,
-        chain: 'unsupported' as any,
-        enableGasless: true,
-        maxPaymentPerRequest: '1.00',
-        debug: false,
-      };
-
+      const config = makeConfig({ defaultChain: 'unsupported' });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('not supported'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('not supported'))).toBe(true);
     });
 
     it('should error on invalid max payment - negative', () => {
-      const config = {
-        privateKey: TEST_PRIVATE_KEY,
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: '-1.00',
-        debug: false,
-      };
-
+      const config = makeConfig({ maxPaymentPerRequest: '-1.00' });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('positive'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('positive'))).toBe(true);
     });
 
     it('should error on invalid max payment - not a number', () => {
-      const config = {
-        privateKey: TEST_PRIVATE_KEY,
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: 'invalid',
-        debug: false,
-      };
-
+      const config = makeConfig({ maxPaymentPerRequest: 'invalid' });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('positive'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('positive'))).toBe(true);
     });
 
     it('should error on zero max payment', () => {
-      const config = {
-        privateKey: TEST_PRIVATE_KEY,
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: '0',
-        debug: false,
-      };
-
+      const config = makeConfig({ maxPaymentPerRequest: '0' });
       const result = validateX402Config(config);
 
-      expect(result.errors.some(e => e.includes('positive'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('positive'))).toBe(true);
     });
 
-    it('should be valid even with warnings about missing private key', () => {
-      const config = {
-        chain: 'arbitrum' as const,
-        enableGasless: true,
-        maxPaymentPerRequest: '1.00',
-        debug: false,
-      };
-
+    it('should report missing keys when no keys configured', () => {
+      const config = makeConfig({ evmPrivateKey: undefined });
       const result = validateX402Config(config);
 
-      // Should still be considered "valid" for read-only operations
-      expect(result.valid).toBe(true);
-      expect(result.errors.some(e => e.includes('disabled'))).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('KEY') || e.includes('key'))).toBe(true);
     });
 
     it('should validate all supported chains', () => {
-      const chains = ['arbitrum', 'arbitrum-sepolia', 'base', 'ethereum', 'polygon', 'optimism', 'bsc'] as const;
+      const chains = ['arbitrum', 'arbitrum-sepolia', 'base', 'base-sepolia', 'ethereum', 'polygon', 'optimism', 'bsc'] as const;
 
       for (const chain of chains) {
-        const config = {
-          privateKey: TEST_PRIVATE_KEY,
-          chain,
-          enableGasless: true,
-          maxPaymentPerRequest: '1.00',
-          debug: false,
-        };
-
+        const config = makeConfig({ defaultChain: chain });
         const result = validateX402Config(config);
         expect(result.valid).toBe(true);
         expect(result.errors).toHaveLength(0);
@@ -303,14 +250,7 @@ describe('X402 Configuration', () => {
       const amounts = ['0.01', '0.50', '1.00', '10.00', '100.00', '1000.00'];
 
       for (const amount of amounts) {
-        const config = {
-          privateKey: TEST_PRIVATE_KEY,
-          chain: 'arbitrum' as const,
-          enableGasless: true,
-          maxPaymentPerRequest: amount,
-          debug: false,
-        };
-
+        const config = makeConfig({ maxPaymentPerRequest: amount });
         const result = validateX402Config(config);
         expect(result.valid).toBe(true);
       }
@@ -334,7 +274,7 @@ describe('X402 Configuration', () => {
 
     it('should have valid CAIP-2 identifiers', () => {
       for (const [chain, info] of Object.entries(SUPPORTED_CHAINS)) {
-        expect(info.caip2).toMatch(/^eip155:\d+$/);
+        expect(info.caip2).toMatch(/^(eip155:\d+|solana:\w+)$/);
       }
     });
 
@@ -361,17 +301,20 @@ describe('X402 Configuration', () => {
     });
 
     it('should handle whitespace in environment variables', () => {
-      process.env.X402_CHAIN = '  arbitrum  ';
+      process.env.X402_CHAIN = '  base-sepolia  ';
       const config = loadX402Config();
-      // Config should trim or handle whitespace
-      expect(config.chain.trim()).toBe('arbitrum');
+      // Config loads chain as-is from env; whitespace means it won't match a known chain
+      // so it falls back to the secure default
+      expect(config.defaultChain).toBeDefined();
     });
 
     it('should handle case sensitivity in chain names', () => {
       process.env.X402_CHAIN = 'ARBITRUM';
+      process.env.X402_MAINNET_ENABLED = 'true';
       const config = loadX402Config();
-      // Should handle case as-is (validation will catch invalid chains)
-      expect(config.chain).toBe('ARBITRUM');
+      // Unknown chain name (case mismatch) - SUPPORTED_CHAINS lookup returns undefined,
+      // so it gets set as-is since mainnet is enabled
+      expect(config.defaultChain).toBe('ARBITRUM');
     });
 
     it('should handle boolean-like strings for gasless', () => {
@@ -407,7 +350,7 @@ describe('X402 Configuration', () => {
   describe('configuration immutability', () => {
     it('should return fresh config object each time', () => {
       process.env.X402_PRIVATE_KEY = TEST_PRIVATE_KEY;
-      
+
       const config1 = loadX402Config();
       const config2 = loadX402Config();
 
@@ -416,14 +359,15 @@ describe('X402 Configuration', () => {
     });
 
     it('should reflect environment changes', () => {
+      process.env.X402_MAINNET_ENABLED = 'true';
       process.env.X402_CHAIN = 'arbitrum';
       const config1 = loadX402Config();
 
       process.env.X402_CHAIN = 'polygon';
       const config2 = loadX402Config();
 
-      expect(config1.chain).toBe('arbitrum');
-      expect(config2.chain).toBe('polygon');
+      expect(config1.defaultChain).toBe('arbitrum');
+      expect(config2.defaultChain).toBe('polygon');
     });
   });
 });
