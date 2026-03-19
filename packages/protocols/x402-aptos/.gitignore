@@ -1,0 +1,100 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+.tsbuildcache/
+.turbo/
+.next/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+*.log
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+test-results/
+playwright-report/
+playwright/.cache/
+.playwright/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.eslintcache
+
+# OS
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Package manager
+.npm
+.yarn
+.pnpm-store/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Aptos
+.aptos/
+
+# Move/Aptos Build Artifacts
+**/contract/build/
+**/contract/.aptos/
+Move.lock
+*.mv
+*.mv.txt
+move-coverage/
+target/
+
+# Private keys (IMPORTANT!)
+*.key
+*-key.json
+private-key.txt
+*private*.key
+*private*.json
+*secret*.json
+*.privatekey
+*.privkey
+
+# Build logs
+build.log
+compile.log
+error.log
+
+# Examples and reference builds
+examples/*/node_modules/
+examples/*/dist/
+examples/*/build/
+examples/*/.next/
+
+# Claude Code local settings
+.claude/settings.local.json

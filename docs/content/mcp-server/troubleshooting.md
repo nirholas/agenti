@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Common issues and solutions when using Universal Crypto MCP.
+Common issues and solutions when using Agenti.
 
 ---
 
@@ -53,7 +53,7 @@ Common issues and solutions when using Universal Crypto MCP.
 3. **Verify server is running**:
    ```bash
    # Test with MCP Inspector
-   npx @modelcontextprotocol/inspector npx @nirholas/universal-crypto-mcp
+   npx @modelcontextprotocol/inspector npx @nirholas/@nirholas/agenti
    ```
 
 ---
@@ -66,7 +66,7 @@ Common issues and solutions when using Universal Crypto MCP.
 
 1. **Ensure server is running**:
    ```bash
-   npx @nirholas/universal-crypto-mcp --http
+   npx @nirholas/@nirholas/agenti --http
    # Should see: "HTTP server listening on port 3001"
    ```
 
@@ -78,7 +78,7 @@ Common issues and solutions when using Universal Crypto MCP.
 
 4. **Try with explicit host**:
    ```bash
-   HOST=0.0.0.0 npx @nirholas/universal-crypto-mcp --http
+   HOST=0.0.0.0 npx @nirholas/@nirholas/agenti --http
    ```
 
 ---
@@ -191,7 +191,7 @@ Or in Claude config:
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "env": {
         "COINGECKO_API_KEY": "your_key_here"
       }
@@ -349,13 +349,13 @@ Revoke approval for 0xSuspiciousContract on my USDC
 ### Enable Verbose Logging
 
 ```bash
-LOG_LEVEL=DEBUG npx @nirholas/universal-crypto-mcp
+LOG_LEVEL=DEBUG npx @nirholas/@nirholas/agenti
 ```
 
 ### Use MCP Inspector
 
 ```bash
-npx @modelcontextprotocol/inspector npx @nirholas/universal-crypto-mcp
+npx @modelcontextprotocol/inspector npx @nirholas/@nirholas/agenti
 ```
 
 This opens a web UI where you can:
@@ -370,10 +370,10 @@ This opens a web UI where you can:
 ### Before Asking for Help
 
 1. ✅ Check this troubleshooting guide
-2. ✅ Search [existing issues](https://github.com/nirholas/universal-crypto-mcp/issues)
+2. ✅ Search [existing issues](https://github.com/nirholas/agenti/issues)
 3. ✅ Try with latest version:
    ```bash
-   npx @nirholas/universal-crypto-mcp@latest
+   npx @nirholas/@nirholas/agenti@latest
    ```
 
 ### How to Report a Bug
@@ -393,7 +393,7 @@ Include:
 
 5. **Relevant logs** (with `LOG_LEVEL=DEBUG`)
 
-[Open an Issue →](https://github.com/nirholas/universal-crypto-mcp/issues/new?template=bug_report.yml)
+[Open an Issue →](https://github.com/nirholas/agenti/issues/new?template=bug_report.yml)
 
 ---
 

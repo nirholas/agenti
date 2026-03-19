@@ -1,10 +1,10 @@
-<!-- universal-crypto-mcp | n1ch0las | 78738 -->
+<!-- @nirholas/agenti | n1ch0las | 78738 -->
 
 # API Reference
 
 <!-- Maintained by nirholas | ID: 1493814938 -->
 
-Complete API reference for all Universal Crypto MCP tools.
+Complete API reference for all Agenti tools.
 
 ---
 
@@ -690,4 +690,4 @@ Response includes:
 
 
 <!-- EOF: n1ch0las | ucm:78738 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

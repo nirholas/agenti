@@ -1,0 +1,142 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{yao2023react,schick2023toolformer}
+\citation{defillama2024}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:introduction}{{1}{1}{Introduction}{section.1}{}}
+\citation{anthropic2024mcp}
+\citation{caip2}
+\citation{coinbase2024x402}
+\citation{eip3009}
+\citation{anthropic2024mcp}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background and Motivation}{2}{section.2}\protected@file@percent }
+\newlabel{sec:background}{{2}{2}{Background and Motivation}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Model Context Protocol (MCP)}{2}{subsection.2.1}\protected@file@percent }
+\citation{rfc7231}
+\citation{coinbase2024x402}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Blockchain Network Heterogeneity}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}The HTTP 402 Payment Required Status Code}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Motivating Scenario}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}System Architecture}{3}{section.3}\protected@file@percent }
+\newlabel{sec:architecture}{{3}{3}{System Architecture}{section.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Agenti system architecture. AI agents connect via one of three MCP transport modes. The tool registry dispatches requests to chain-specific modules or the x402 payment engine. All chain interactions flow through the multi-chain abstraction layer.}}{4}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:architecture}{{1}{4}{Agenti system architecture. AI agents connect via one of three MCP transport modes. The tool registry dispatches requests to chain-specific modules or the x402 payment engine. All chain interactions flow through the multi-chain abstraction layer}{figure.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Transport Layer}{4}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Standard I/O (stdio).}{4}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Streamable HTTP.}{4}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Server-Sent Events (SSE).}{4}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Tool Registry}{4}{subsection.3.2}\protected@file@percent }
+\citation{caip2}
+\citation{viem}
+\newlabel{lst:toolreg}{{1}{5}{Tool registration pattern in Agenti}{lstlisting.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}{\ignorespaces Tool registration pattern in Agenti.}}{5}{lstlisting.1}\protected@file@percent }
+\newlabel{lst:compose}{{2}{5}{Module composition at server initialization}{lstlisting.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}{\ignorespaces Module composition at server initialization.}}{5}{lstlisting.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Multi-Chain Abstraction Layer}{5}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:multichain}{{3.3}{5}{Multi-Chain Abstraction Layer}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{CAIP-2 Chain Identification.}{5}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Client Factory Pattern.}{5}{section*.7}\protected@file@percent }
+\newlabel{lst:client}{{3}{5}{Chain-specific client instantiation}{lstlisting.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}{\ignorespaces Chain-specific client instantiation.}}{5}{lstlisting.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Tool categories and representative capabilities in Agenti.}}{6}{table.caption.5}\protected@file@percent }
+\newlabel{tab:tools}{{1}{6}{Tool categories and representative capabilities in Agenti}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Adaptive Transaction Construction.}{6}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{DEX Aggregation with Fallback.}{6}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Autonomous Agent Payments via x402}{7}{section.4}\protected@file@percent }
+\newlabel{sec:payment}{{4}{7}{Autonomous Agent Payments via x402}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Protocol Overview}{7}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Supported Chains and Tokens}{7}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Replay Protection via Nonce Tracking}{7}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:nonce}{{4.3}{7}{Replay Protection via Nonce Tracking}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Deterministic Payment ID.}{7}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{In-Memory Nonce Store.}{7}{section*.11}\protected@file@percent }
+\citation{eip3009}
+\@writefile{toc}{\contentsline {paragraph}{Security Event Logging.}{8}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Gasless Transfers via EIP-3009}{8}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:gasless}{{4.4}{8}{Gasless Transfers via EIP-3009}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Facilitator Verification}{8}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Payment Proof Structure}{8}{subsection.4.6}\protected@file@percent }
+\newlabel{lst:proof}{{4}{8}{Payment proof data structure}{lstlisting.4}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4}{\ignorespaces Payment proof data structure.}}{8}{lstlisting.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Decentralized Tool Marketplace}{9}{section.5}\protected@file@percent }
+\newlabel{sec:marketplace}{{5}{9}{Decentralized Tool Marketplace}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Smart Contract Architecture}{9}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Pricing Models}{9}{subsection.5.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Marketplace pricing models.}}{9}{table.caption.13}\protected@file@percent }
+\newlabel{tab:pricing}{{2}{9}{Marketplace pricing models}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Reputation System}{9}{subsection.5.3}\protected@file@percent }
+\newlabel{eq:reputation}{{1}{9}{Reputation System}{equation.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Revenue Distribution}{9}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Implementation}{10}{section.6}\protected@file@percent }
+\newlabel{sec:implementation}{{6}{10}{Implementation}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Technology Stack}{10}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Key dependencies and their roles.}}{10}{table.caption.14}\protected@file@percent }
+\newlabel{tab:deps}{{3}{10}{Key dependencies and their roles}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Build and Deployment}{10}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Testing Infrastructure}{10}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Security Considerations}{11}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Private Key Management.}{11}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mainnet Protection.}{11}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Input Validation.}{11}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Security Scanning.}{11}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Evaluation}{11}{section.7}\protected@file@percent }
+\newlabel{sec:evaluation}{{7}{11}{Evaluation}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Tool Coverage Comparison}{11}{subsection.7.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Comparison with existing blockchain tooling for AI agents.}}{11}{table.caption.19}\protected@file@percent }
+\newlabel{tab:comparison}{{4}{11}{Comparison with existing blockchain tooling for AI agents}{table.caption.19}{}}
+\citation{yao2023react}
+\citation{schick2023toolformer}
+\citation{langchain}
+\citation{autogpt}
+\citation{ethersjs}
+\citation{web3js}
+\citation{viem}
+\citation{hardhat}
+\citation{foundry}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Multi-Chain Abstraction}{12}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Payment Protocol Characteristics}{12}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Developer Experience}{12}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Related Work}{12}{section.8}\protected@file@percent }
+\newlabel{sec:related}{{8}{12}{Related Work}{section.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{AI Agent Frameworks.}{12}{section*.20}\protected@file@percent }
+\citation{poon2016lightning}
+\citation{raiden}
+\citation{coinbase2024x402}
+\citation{ocean}
+\citation{singularitynet}
+\@writefile{toc}{\contentsline {paragraph}{Blockchain Developer Tools.}{13}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{MCP Servers for Web3.}{13}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Machine-to-Machine Payments.}{13}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Decentralized Marketplaces.}{13}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Discussion}{13}{section.9}\protected@file@percent }
+\newlabel{sec:discussion}{{9}{13}{Discussion}{section.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Limitations.}{13}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Trust Model.}{13}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Scalability.}{13}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Ethical Considerations.}{13}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Conclusion}{13}{section.10}\protected@file@percent }
+\newlabel{sec:conclusion}{{10}{13}{Conclusion}{section.10}{}}
+\bibstyle{plainnat}
+\bibcite{yao2023react}{{1}{2023}{{Yao et~al.}}{{}}}
+\bibcite{schick2023toolformer}{{2}{2023}{{Schick et~al.}}{{}}}
+\bibcite{defillama2024}{{3}{2024}{{DeFi Llama}}{{}}}
+\bibcite{anthropic2024mcp}{{4}{2024}{{Anthropic}}{{}}}
+\bibcite{caip2}{{5}{2019}{{CAIP-2}}{{}}}
+\bibcite{coinbase2024x402}{{6}{2024}{{Coinbase}}{{}}}
+\bibcite{eip3009}{{7}{2020}{{EIP-3009}}{{}}}
+\bibcite{rfc7231}{{8}{2014}{{RFC 7231}}{{}}}
+\bibcite{langchain}{{9}{2023}{{LangChain}}{{}}}
+\bibcite{autogpt}{{10}{2023}{{AutoGPT}}{{}}}
+\bibcite{ethersjs}{{11}{2023}{{Ethers.js}}{{}}}
+\bibcite{web3js}{{12}{2023}{{web3.js}}{{}}}
+\bibcite{viem}{{13}{2024}{{viem}}{{}}}
+\bibcite{hardhat}{{14}{2023}{{Hardhat}}{{}}}
+\bibcite{foundry}{{15}{2023}{{Foundry}}{{}}}
+\bibcite{poon2016lightning}{{16}{2016}{{Poon and Dryja}}{{}}}
+\bibcite{raiden}{{17}{2023}{{Raiden}}{{}}}
+\bibcite{ocean}{{18}{2023}{{Ocean Protocol}}{{}}}
+\bibcite{singularitynet}{{19}{2023}{{SingularityNET}}{{}}}
+\gdef \@abspage@last{15}

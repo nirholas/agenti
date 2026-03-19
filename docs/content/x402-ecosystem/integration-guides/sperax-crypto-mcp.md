@@ -227,7 +227,7 @@ async function enableAutoCompound(config: AutoCompoundConfig) {
 const revenueSplit = {
   speraxTreasury: 0.40,  // Sperax Protocol
   developer: 0.35,       // Sperax MCP maintainer
-  ecosystem: 0.15,       // Universal Crypto MCP
+  ecosystem: 0.15,       // Agenti
   infrastructure: 0.10   // x402 protocol
 };
 ```

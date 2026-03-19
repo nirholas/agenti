@@ -1,25 +1,25 @@
-# Universal Crypto MCP
+# Agenti
 
 <p align="center">
-  <strong>🚀 380+ blockchain tools for AI agents</strong><br>
+  <strong>380+ blockchain tools for AI agents</strong><br>
   Connect Claude, ChatGPT, and Cursor to 20+ chains
 </p>
 
 <p align="center">
-  <a href="https://github.com/nirholas/universal-crypto-mcp">GitHub</a> •
-  <a href="mcp-server/quickstart.md">Quick Start</a> •
-  <a href="tutorials/index.md">Tutorials</a> •
+  <a href="https://github.com/nirholas/agenti">GitHub</a> &middot;
+  <a href="mcp-server/quickstart.md">Quick Start</a> &middot;
+  <a href="tutorials/index.md">Tutorials</a> &middot;
   <a href="prompts/index.md">Prompts</a>
 </p>
 
 ---
 
-## What is Universal Crypto MCP?
+## What is Agenti?
 
-Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants interact with blockchain networks through natural language.
+Agenti is an open-source [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants interact with blockchain networks through natural language.
 
 **Instead of:**
-- Switching between 10 block explorers
+- Switching between block explorers
 - Connecting to multiple dApps
 - Manual copy-pasting addresses
 
@@ -34,14 +34,14 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 
 <div class="grid" markdown>
 
-| Layer 1 | Layer 2 | Alt Chains |
-|---------|---------|------------|
+| Layer 1 | Layer 2 | Multi-Chain |
+|---------|---------|-------------|
 | Ethereum | Arbitrum One | Solana |
 | BNB Chain | Base | TON |
 | Avalanche | Optimism | XRP Ledger |
-| Fantom | Polygon | **Cosmos (NEW)** |
-| **Near (NEW)** | zkSync Era | **Sui (NEW)** |
-| **Aptos (NEW)** | Linea | |
+| Fantom | Polygon | Cosmos/IBC |
+| Near | zkSync Era | Sui |
+| Aptos | Linea | |
 | | Scroll | |
 | | Blast | |
 | | Mode | |
@@ -60,7 +60,7 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 
     ---
 
-    Swaps via 1inch, ParaSwap • Lending on Aave, Compound • Staking • Yield farming
+    Swaps via 1inch, ParaSwap &middot; Lending on Aave, Compound &middot; Staking &middot; Yield farming
 
     [:octicons-arrow-right-24: DeFi Tools](mcp-server/tools.md)
 
@@ -68,7 +68,7 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 
     ---
 
-    Bridge quotes • Multi-hop routing • 15+ chain support
+    Bridge quotes &middot; Multi-hop routing &middot; 15+ chain support
 
     [:octicons-arrow-right-24: Bridge Tools](mcp-server/tools.md)
 
@@ -76,7 +76,7 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 
     ---
 
-    Honeypot detection • Rug pull scanning • Contract analysis
+    Honeypot detection &middot; Rug pull scanning &middot; Contract analysis
 
     [:octicons-arrow-right-24: Security Tools](mcp-server/tools.md)
 
@@ -84,9 +84,25 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 
     ---
 
-    Prices • Technical indicators • Fear & Greed • Sentiment
+    Prices &middot; Technical indicators &middot; Fear & Greed &middot; Sentiment
 
     [:octicons-arrow-right-24: Market Tools](mcp-server/tools.md)
+
+-   :material-cash:{ .lg .middle } **x402 Payments**
+
+    ---
+
+    AI agent micropayments &middot; Autonomous API payments &middot; USDs yield
+
+    [:octicons-arrow-right-24: x402 Guide](../x402-ecosystem/README.md)
+
+-   :material-monitor-multiple:{ .lg .middle } **Real-time Data**
+
+    ---
+
+    WebSocket streams &middot; Trade feeds &middot; Whale tracking &middot; Alerts
+
+    [:octicons-arrow-right-24: Tools Reference](mcp-server/tools.md)
 
 </div>
 
@@ -94,33 +110,39 @@ Universal Crypto MCP is an open-source [Model Context Protocol](https://modelcon
 
 ## Quick Start
 
-### 1. Clone & Build
+### Option 1: npx (Recommended)
 
 ```bash
-git clone https://github.com/nirholas/universal-crypto-mcp.git
-cd universal-crypto-mcp
+npx @nirholas/agenti
+```
+
+### Option 2: Clone & Build
+
+```bash
+git clone https://github.com/nirholas/agenti.git
+cd agenti
 npm install && npm run build
 ```
 
-### 2. Configure Claude Desktop
+### Configure Claude Desktop
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
-      "command": "node",
-      "args": ["/path/to/universal-crypto-mcp/dist/index.js"],
+    "agenti": {
+      "command": "npx",
+      "args": ["-y", "@nirholas/agenti@latest"],
       "env": {
-        "ALCHEMY_API_KEY": "your_key"
+        "PRIVATE_KEY": "your_key_here"
       }
     }
   }
 }
 ```
 
-### 3. Start Chatting!
+### Start Using
 
 ```
 "What's my ETH balance on Arbitrum?"
@@ -142,6 +164,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 | **Security** | "Is this token a honeypot? 0x1234..." |
 | **Research** | "Compare USDC lending rates across Aave and Compound" |
 | **Bridges** | "Best route to bridge 100 USDC from Ethereum to Base" |
+| **Payments** | "Check my x402 balance and yield earnings" |
 
 [:octicons-arrow-right-24: 100+ Example Prompts](prompts/index.md)
 
@@ -187,15 +210,17 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ---
 
-## Why Universal Crypto MCP?
+## Why Agenti?
 
-| Feature | Universal Crypto MCP | Others |
-|---------|---------------------|--------|
-| Chains | **15+** | 3-5 |
-| Tools | **330+** | 20-50 |
-| DeFi | ✅ Full stack | Limited |
-| Security | ✅ Built-in | ❌ |
-| Open Source | ✅ Apache 2.0 | Varies |
+| Feature | Agenti | Others |
+|---------|--------|--------|
+| Chains | **20+** | 1-3 |
+| Tools | **380+** | 10-50 |
+| DeFi | Full stack | Limited |
+| Security | Built-in | None |
+| AI Payments | x402 protocol | None |
+| Transport | stdio, HTTP, SSE | stdio only |
+| Open Source | Apache 2.0 | Varies |
 
 [:octicons-arrow-right-24: Full Comparison](comparison.md)
 
@@ -203,14 +228,13 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ## Community
 
-- 🐦 **Twitter:** [@nichxbt](https://x.com/nichxbt)
-- 💻 **GitHub:** [nirholas/universal-crypto-mcp](https://github.com/nirholas/universal-crypto-mcp)
-- ⭐ **Star the repo** if you find it useful!
+- **Twitter:** [@nichxbt](https://x.com/nichxbt)
+- **GitHub:** [nirholas/agenti](https://github.com/nirholas/agenti)
 
 ---
 
 ## License
 
-Apache 2.0 - Free for personal and commercial use.
+Apache 2.0 &mdash; Free for personal and commercial use.
 
-Built by **[Nich](https://x.com/nichxbt)** • [:material-github: nirholas](https://github.com/nirholas)
+Built by **[Nich](https://x.com/nichxbt)** &middot; [:material-github: nirholas](https://github.com/nirholas)

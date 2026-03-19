@@ -1,0 +1,26 @@
+{
+  "name": "@x402a/config",
+  "version": "0.1.0",
+  "description": "Shared configuration files for x402a monorepo",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./vitest.config.base.ts": "./vitest.config.base.ts",
+    "./vitest.config.base": "./vitest.config.base.ts",
+    "./playwright.config.base.ts": "./playwright.config.base.ts",
+    "./playwright.config.base": "./playwright.config.base.ts"
+  },
+  "files": [
+    "tsconfig.base.json",
+    "vitest.config.base.ts",
+    "playwright.config.base.ts"
+  ],
+  "keywords": [
+    "x402a",
+    "config",
+    "shared"
+  ],
+  "author": "",
+  "license": "MIT"
+}

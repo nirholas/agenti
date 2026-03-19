@@ -1,0 +1,22 @@
+{
+  "name": "x402a-contract",
+  "version": "0.2.0",
+  "description": "Aptos Move smart contract for x402 payment protocol - Supports APT Coin and Fungible Assets",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "aptos move compile",
+    "test": "aptos move test",
+    "publish": "aptos move publish"
+  },
+  "keywords": [
+    "x402",
+    "aptos",
+    "move",
+    "smart-contract",
+    "blockchain",
+    "payments"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -192,7 +192,7 @@ async function signMultisig(txHash: string, safeAddress: string, privateKey: str
 ```typescript
 const revenueSplit = {
   developer: 0.70,      // Signing MCP maintainer
-  ecosystem: 0.20,      // Universal Crypto MCP
+  ecosystem: 0.20,      // Agenti
   infrastructure: 0.10  // x402 + HSM costs
 };
 ```

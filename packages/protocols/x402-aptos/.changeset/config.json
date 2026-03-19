@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [["x402a", "x402a-next"]],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "nextjs-app-router-example",
+    "@x402a/config",
+    "@x402a/tools",
+    "x402a-contract"
+  ]
+}

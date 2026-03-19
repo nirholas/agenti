@@ -1,10 +1,10 @@
 # Comparison with Alternatives
 
-See how Universal Crypto MCP compares to other blockchain AI tools.
+See how Agenti compares to other blockchain AI tools.
 
 ## Feature Comparison
 
-| Feature | Universal Crypto MCP | Web3 MCP | Blockchain Assistant | Manual (Etherscan + DEX) |
+| Feature | Agenti | Web3 MCP | Blockchain Assistant | Manual (Etherscan + DEX) |
 |---------|---------------------|----------|---------------------|--------------------------|
 | **Chains Supported** | 15+ | 5 | 3 | 1 at a time |
 | **Total Tools** | 330+ | ~50 | ~30 | N/A |
@@ -19,11 +19,11 @@ See how Universal Crypto MCP compares to other blockchain AI tools.
 | **ChatGPT Support** | ✅ HTTP mode | ❌ | ❌ | N/A |
 | **Cursor Support** | ✅ | ✅ | ❌ | N/A |
 
-## Why Universal Crypto MCP?
+## Why Agenti?
 
 ### 1. Comprehensive Coverage
 
-Most blockchain MCP servers focus on a single chain or limited functionality. Universal Crypto MCP provides:
+Most blockchain MCP servers focus on a single chain or limited functionality. Agenti provides:
 
 - **15+ EVM chains** with consistent API
 - **Multi-chain protocols** (Aave, Uniswap, etc.)
@@ -45,10 +45,10 @@ Use only what you need:
 
 ```typescript
 // Import just the EVM module
-import { evmModule } from '@nirholas/universal-crypto-mcp/evm';
+import { evmModule } from '@nirholas/@nirholas/agenti/evm';
 
 // Or the full server
-import { createServer } from '@nirholas/universal-crypto-mcp';
+import { createServer } from '@nirholas/@nirholas/agenti';
 ```
 
 ### 4. Active Development
@@ -62,11 +62,11 @@ import { createServer } from '@nirholas/universal-crypto-mcp';
 
 | Use Case | Best Tool |
 |----------|-----------|
-| Multi-chain portfolio tracking | **Universal Crypto MCP** ✅ |
+| Multi-chain portfolio tracking | **Agenti** ✅ |
 | Single-chain development | Web3 MCP |
 | Simple price checks | Any |
-| DeFi operations | **Universal Crypto MCP** ✅ |
-| Security analysis | **Universal Crypto MCP** ✅ |
+| DeFi operations | **Agenti** ✅ |
+| Security analysis | **Agenti** ✅ |
 | NFT focus | Specialized NFT MCP |
 | Enterprise/compliance | Custom solution |
 
@@ -77,7 +77,7 @@ import { createServer } from '@nirholas/universal-crypto-mcp';
 Most Web3 MCP tools have equivalents:
 
 ```
-Web3 MCP              →  Universal Crypto MCP
+Web3 MCP              →  Agenti
 -------------------------------------------------
 get_balance           →  evm_getBalance
 get_token_balance     →  evm_getTokenBalance
@@ -89,7 +89,7 @@ call_contract         →  evm_contractCall
 
 Replace your manual steps:
 
-| Manual Step | Universal Crypto MCP |
+| Manual Step | Agenti |
 |-------------|---------------------|
 | Open Etherscan, find address | "Check balance for 0x..." |
 | Go to Uniswap, connect wallet | "Swap quote for 1 ETH to USDC" |
@@ -101,7 +101,7 @@ Replace your manual steps:
 
 Typical response times:
 
-| Operation | Universal Crypto MCP | Manual |
+| Operation | Agenti | Manual |
 |-----------|---------------------|--------|
 | Multi-chain balance check | ~3 seconds | ~5 minutes |
 | Swap quote comparison | ~2 seconds | ~2 minutes |
@@ -112,7 +112,7 @@ Typical response times:
 
 | Solution | Cost |
 |----------|------|
-| Universal Crypto MCP | Free (open source) |
+| Agenti | Free (open source) |
 | RPC providers (Alchemy) | Free tier sufficient |
 | API keys (optional) | Free tiers available |
 | **Total** | **$0** for basic use |
@@ -124,8 +124,8 @@ Typical response times:
 Try it yourself - setup takes 5 minutes:
 
 ```bash
-git clone https://github.com/nirholas/universal-crypto-mcp.git
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti.git
+cd @nirholas/agenti
 npm install && npm run build
 ```
 
@@ -133,4 +133,4 @@ No commitment. No signup. Just clone and go.
 
 ---
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)

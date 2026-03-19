@@ -6,7 +6,7 @@ Copy-paste ready submissions for MCP directories and awesome lists.
 
 ## mcp.so
 
-**Server Name:** Universal Crypto MCP
+**Server Name:** Agenti
 
 **Short Description (100 chars):**
 ```
@@ -15,7 +15,7 @@ Copy-paste ready submissions for MCP directories and awesome lists.
 
 **Full Description:**
 ```
-Universal Crypto MCP connects AI assistants (Claude, ChatGPT, Cursor) to blockchain networks with 330+ tools for:
+Agenti connects AI assistants (Claude, ChatGPT, Cursor) to blockchain networks with 330+ tools for:
 
 • DeFi: Swaps, lending, staking, yield farming
 • Cross-Chain: Bridge quotes and execution across 15+ chains
@@ -32,7 +32,7 @@ Open source (Apache 2.0) with active development.
 
 **Tags:** blockchain, crypto, defi, ethereum, arbitrum, trading, security, bridges, swaps
 
-**GitHub:** https://github.com/nirholas/universal-crypto-mcp
+**GitHub:** https://github.com/nirholas/agenti
 
 **Author:** nich (@nichxbt)
 
@@ -40,7 +40,7 @@ Open source (Apache 2.0) with active development.
 
 ## glama.ai/mcp/servers
 
-**Name:** Universal Crypto MCP
+**Name:** Agenti
 
 **Tagline:** 330+ blockchain tools for AI agents
 
@@ -60,11 +60,11 @@ Chains: Ethereum, Arbitrum, Base, Polygon, Optimism, BNB Chain, zkSync, and more
 
 **Install:**
 ```bash
-git clone https://github.com/nirholas/universal-crypto-mcp.git
-cd universal-crypto-mcp && npm install && npm run build
+git clone https://github.com/nirholas/agenti.git
+cd @nirholas/agenti && npm install && npm run build
 ```
 
-**Repository:** https://github.com/nirholas/universal-crypto-mcp
+**Repository:** https://github.com/nirholas/agenti
 
 **License:** Apache-2.0
 
@@ -72,13 +72,13 @@ cd universal-crypto-mcp && npm install && npm run build
 
 ## smithery.ai
 
-**Title:** Universal Crypto MCP
+**Title:** Agenti
 
 **Summary:** Connect AI to 15+ blockchains with 330+ DeFi, trading, and security tools
 
 **Description:**
 ```
-The most comprehensive blockchain MCP server available. Universal Crypto MCP gives AI assistants like Claude and ChatGPT the ability to:
+The most comprehensive blockchain MCP server available. Agenti gives AI assistants like Claude and ChatGPT the ability to:
 
 ✅ Check balances across 15+ chains
 ✅ Execute swaps on major DEXs
@@ -94,7 +94,7 @@ Free and open source under Apache 2.0.
 
 **Quick Start:**
 ```bash
-npx @nirholas/universal-crypto-mcp
+npx @nirholas/@nirholas/agenti
 ```
 
 ---
@@ -103,13 +103,13 @@ npx @nirholas/universal-crypto-mcp
 
 For submitting to awesome-mcp lists:
 
-**PR Title:** Add Universal Crypto MCP
+**PR Title:** Add Agenti
 
 **PR Body:**
 ```markdown
-## Universal Crypto MCP
+## Agenti
 
-Adds [Universal Crypto MCP](https://github.com/nirholas/universal-crypto-mcp) to the list.
+Adds [Agenti](https://github.com/nirholas/agenti) to the list.
 
 ### Description
 Production-ready MCP server with 330+ tools for blockchain/DeFi operations across 15+ chains including Ethereum, Arbitrum, Base, Polygon, and Solana.
@@ -130,7 +130,7 @@ Production-ready MCP server with 330+ tools for blockchain/DeFi operations acros
 
 **List Entry:**
 ```markdown
-- [Universal Crypto MCP](https://github.com/nirholas/universal-crypto-mcp) - 330+ blockchain tools for DeFi, trading, and security across 15+ chains.
+- [Agenti](https://github.com/nirholas/agenti) - 330+ blockchain tools for DeFi, trading, and security across 15+ chains.
 ```
 
 ---
@@ -169,9 +169,9 @@ Production-ready MCP server with 330+ tools for blockchain/DeFi operations acros
 
 ## Hacker News Submission
 
-**Title:** Show HN: Universal Crypto MCP – 330+ blockchain tools for AI agents
+**Title:** Show HN: Agenti – 330+ blockchain tools for AI agents
 
-**URL:** https://github.com/nirholas/universal-crypto-mcp
+**URL:** https://github.com/nirholas/agenti
 
 **Text (for self-post if needed):**
 ```
@@ -237,5 +237,5 @@ Talk to your AI assistant about crypto - check balances, make trades, scan for s
 
 **Elevator pitch:**
 ```
-Universal Crypto MCP lets AI assistants like Claude interact with blockchains. Instead of switching between 10 different apps, you just tell the AI what you want and it handles the rest. 330+ tools, 15+ chains, completely free and open source.
+Agenti lets AI assistants like Claude interact with blockchains. Instead of switching between 10 different apps, you just tell the AI what you want and it handles the rest. 330+ tools, 15+ chains, completely free and open source.
 ```

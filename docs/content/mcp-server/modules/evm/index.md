@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | nich.xbt | n1ch-0las-4e49-4348-786274000000 -->
+<!-- @nirholas/agenti | nich.xbt | n1ch-0las-4e49-4348-786274000000 -->
 
 # EVM Modules
 
@@ -491,4 +491,4 @@ Transfer 0.1 ETH to address
 
 
 <!-- EOF: nich.xbt | ucm:n1ch-0las-4e49-4348-786274000000 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

@@ -1,0 +1,132 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in x402a
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below to help us fix the issue.
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package is affected?
+      options:
+        - x402a (core package)
+        - x402a-next (Next.js middleware)
+        - Both packages
+        - Documentation
+        - Examples
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: When I try to..., I expect... but instead...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the issue.
+      placeholder: |
+        1. Install x402a with `npm install x402a`
+        2. Create a payment handler with...
+        3. Call makePayment() with...
+        4. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Payment should be submitted successfully and return a proof.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Error thrown - "Nonce already used" even with fresh nonce.
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Minimal Reproduction Code
+      description: Provide a minimal code snippet that reproduces the issue.
+      render: typescript
+      placeholder: |
+        import { useX402Payment } from 'x402a';
+
+        const { makePayment } = useX402Payment({
+          wallet: { signMessage },
+          network: 'testnet',
+        });
+
+        const result = await makePayment({
+          type: 'single',
+          payTo: '0x123...',
+          amount: '1000000',
+        });
+        // Error occurs here
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide your environment details.
+      value: |
+        - OS: [e.g., macOS 14.0, Windows 11, Ubuntu 22.04]
+        - Node.js version: [e.g., 18.17.0]
+        - Package version: [e.g., x402a@1.0.0]
+        - Framework: [e.g., Next.js 14.0.4, React 18.2.0, Vanilla JS]
+        - Wallet: [e.g., Petra, Martian]
+        - Network: [e.g., testnet, mainnet]
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: If applicable, paste any error messages or stack traces.
+      render: shell
+      placeholder: |
+        Error: Payment verification failed
+            at verifyPayment (/node_modules/x402a/dist/index.js:123:45)
+            at makePayment (/node_modules/x402a/dist/index.js:67:89)
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+      placeholder: This started happening after upgrading from v0.9.0 to v1.0.0
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm you've completed these steps.
+      options:
+        - label: I have searched existing issues to ensure this isn't a duplicate
+          required: true
+        - label: I have provided all required information above
+          required: true
+        - label: I have tested with the latest version of the package
+          required: true

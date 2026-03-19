@@ -1,0 +1,43 @@
+[package]
+name = "x402-axum"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+rust-version.workspace = true
+categories.workspace = true
+keywords.workspace = true
+description = "Axum middleware for enforcing x402 protocol payments on protected routes"
+documentation = "https://docs.rs/x402-axum"
+readme = "README.md"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+x402-types = { workspace = true }
+url = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+tower = { workspace = true }
+http = { workspace = true }
+tokio = { workspace = true }
+axum-core = { version = "0.5" }
+
+# Telemetry
+tracing = { workspace = true, optional = true }
+
+[dev-dependencies]
+wiremock = "0.6"
+axum = { workspace = true }
+alloy-primitives = { workspace = true }
+x402-chain-eip155 = { workspace = true, features = ["server"] }
+
+[features]
+default = []
+telemetry = ["dep:tracing", "x402-types/telemetry"]
+full = ["telemetry"]

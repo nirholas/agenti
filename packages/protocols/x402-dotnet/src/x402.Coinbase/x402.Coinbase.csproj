@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<WarningsAsErrors>nullable</WarningsAsErrors>
+		<Version>2.0.0</Version>
+		<Authors>Michiel Post</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>x402 Payment Required Coinbase facilitator client for .net</Description>
+		<PackageProjectUrl>https://github.com/michielpost/x402-dotnet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/michielpost/x402-dotnet</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>x402-icon-blue.png</PackageIcon>
+		<RepositoryType>GitHub</RepositoryType>
+		<PackageTags>x402 crypto blockchain coinbase ai agents mcp</PackageTags>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../../images/x402-icon-blue.png" Pack="true" PackagePath="\" />
+		<None Include="../../README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BouncyCastle.NetCore" Version="2.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\x402\x402.csproj" />
+	</ItemGroup>
+
+</Project>

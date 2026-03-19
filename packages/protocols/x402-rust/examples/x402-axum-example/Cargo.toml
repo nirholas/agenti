@@ -1,0 +1,25 @@
+[package]
+name = "x402-axum-example"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[features]
+full = []
+
+[dependencies]
+x402-types = { workspace = true }
+x402-chain-eip155 = { workspace = true, features = ["server", "telemetry"] }
+x402-chain-solana = { workspace = true, features = ["server", "telemetry"] }
+x402-axum = { workspace = true, features = ["telemetry"] }
+http = { workspace = true }
+axum = { workspace = true }
+tokio = { workspace = true }
+dotenvy = { workspace = true }
+alloy-primitives = { workspace = true }
+
+solana-pubkey = { version = "4.0.0" }
+
+# Tracing and OpenTelemetry
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

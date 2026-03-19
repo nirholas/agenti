@@ -37,7 +37,7 @@ This directory contains integration guides for connecting x402 payments to vario
 ## 🎯 Integration Priority
 
 1. **Tier 1: Core Infrastructure** (Week 1)
-   - universal-crypto-mcp ✅ (this repo)
+   - @nirholas/agenti ✅ (this repo)
    - x402-stablecoin (already built)
    - x402-ecosystem package ✅
 
@@ -79,7 +79,7 @@ const result = await agent.payForService(endpoint);
 ## 📦 Required Dependencies
 
 ```bash
-npm install @nirholas/x402-ecosystem @nirholas/universal-crypto-mcp
+npm install @nirholas/x402-ecosystem @nirholas/@nirholas/agenti
 ```
 
 ## 🔗 Links

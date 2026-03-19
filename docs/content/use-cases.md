@@ -1,6 +1,6 @@
 # Use Cases
 
-> Real-world applications and success stories with Universal Crypto MCP.
+> Real-world applications and success stories with Agenti.
 
 ## For Traders
 
@@ -211,7 +211,7 @@ Quick market recaps:
 
 ## Share Your Use Case
 
-Built something cool with Universal Crypto MCP? 
+Built something cool with Agenti? 
 
 - Tweet it [@nichxbt](https://x.com/nichxbt)
 - Open a PR to add it to this page
@@ -219,4 +219,4 @@ Built something cool with Universal Crypto MCP?
 
 ---
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)

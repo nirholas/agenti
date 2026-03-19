@@ -1,6 +1,6 @@
 # Prompt Examples Library
 
-> A curated collection of prompts for getting the most out of Universal Crypto MCP.
+> A curated collection of prompts for getting the most out of Agenti.
 
 ## Table of Contents
 
@@ -477,4 +477,4 @@ Create a file with your most-used prompts. Examples:
 
 ---
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)

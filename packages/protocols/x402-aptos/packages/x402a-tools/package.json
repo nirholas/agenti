@@ -1,0 +1,48 @@
+{
+  "name": "@x402a/tools",
+  "version": "0.1.0",
+  "description": "CLI tools for x402a infrastructure management",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "x402a": "./bin/x402a"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/cli.ts --format esm --dts",
+    "dev": "tsup src/index.ts src/cli.ts --format esm --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "x402a",
+    "aptos",
+    "cli",
+    "tools",
+    "facilitator",
+    "blockchain"
+  ],
+  "author": "Raintree Technology <support@raintree.technology>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raintree-technology/x402a.git",
+    "directory": "packages/x402a-tools"
+  },
+  "dependencies": {
+    "@aptos-labs/ts-sdk": "^1.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

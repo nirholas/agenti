@@ -17,7 +17,7 @@ defi-agents defines agent specifications for DeFi operations. This guide adds pa
 
 ```bash
 cd defi-agents
-npm install @nirholas/universal-crypto-mcp
+npm install @nirholas/@nirholas/agenti
 ```
 
 ## Step 1: Create PayableAgent Interface
@@ -92,7 +92,7 @@ import {
   registerX402,
   createX402Client,
   type X402ClientWrapper,
-} from "@nirholas/universal-crypto-mcp";
+} from "@nirholas/@nirholas/agenti";
 import type { PayableAgent, AgentPaymentConfig } from "../interfaces/PayableAgent";
 
 export abstract class BaseAgent implements PayableAgent {
@@ -140,7 +140,7 @@ export abstract class BaseAgent implements PayableAgent {
       throw new Error("Payment not configured");
     }
     
-    const { wrapFetch } = await import("@nirholas/universal-crypto-mcp");
+    const { wrapFetch } = await import("@nirholas/@nirholas/agenti");
     const payingFetch = wrapFetch(fetch, this.x402Client);
     
     return payingFetch(url);
@@ -188,7 +188,7 @@ export class ArbitrageAgent extends BaseAgent {
 ```typescript
 // src/server.ts
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerX402 } from "@nirholas/universal-crypto-mcp";
+import { registerX402 } from "@nirholas/@nirholas/agenti";
 import { ArbitrageAgent } from "./agents/ArbitrageAgent";
 
 const server = new McpServer({
@@ -313,7 +313,7 @@ export class PremiumDataAgent extends BaseAgent {
 
 ## Next Steps
 
-1. ✅ Install @nirholas/universal-crypto-mcp
+1. ✅ Install @nirholas/@nirholas/agenti
 2. ✅ Create PayableAgent interface
 3. ✅ Update BaseAgent with payment support
 4. ✅ Add payment config to agent specs

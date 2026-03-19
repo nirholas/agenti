@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | nichxbt | 0.4.14.3 -->
+<!-- @nirholas/agenti | nichxbt | 0.4.14.3 -->
 
 # 💰 Sperax USDs - The Superior AI Payment Token
 
@@ -248,4 +248,4 @@ Use these messages when promoting x402 with USDs:
 
 
 <!-- EOF: nichxbt | ucm:0.4.14.3 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

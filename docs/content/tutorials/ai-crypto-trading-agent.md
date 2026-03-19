@@ -20,12 +20,12 @@ By the end of this tutorial, you'll have an AI assistant that can:
 - A wallet address (for read operations) or private key (for transactions)
 - 10 minutes of your time
 
-## Step 1: Install Universal Crypto MCP
+## Step 1: Install Agenti
 
 ```bash
 # Clone the repository
-git clone https://github.com/nirholas/universal-crypto-mcp.git
-cd universal-crypto-mcp
+git clone https://github.com/nirholas/agenti.git
+cd @nirholas/agenti
 
 # Install dependencies
 npm install
@@ -65,9 +65,9 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 ```json
 {
   "mcpServers": {
-    "universal-crypto-mcp": {
+    "@nirholas/agenti": {
       "command": "node",
-      "args": ["/path/to/universal-crypto-mcp/dist/index.js"],
+      "args": ["/path/to/@nirholas/agenti/dist/index.js"],
       "env": {
         "ALCHEMY_API_KEY": "your_key_here"
       }
@@ -215,6 +215,6 @@ Restart Claude Desktop after editing the config file
 
 ## About
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)
 
 Licensed under Apache-2.0

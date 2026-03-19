@@ -1,0 +1,38 @@
+name: Push NuGet packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v5
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+    - name: Build with dotnet
+      run: dotnet build src --configuration Release
+
+    - name: Run tests
+      run: dotnet test src --configuration Release
+
+    - name: Publish x402.Core
+      run: dotnet nuget push src/x402.Core/bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Publish x402
+      run: dotnet nuget push src/x402/bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Publish x402.Client
+      run: dotnet nuget push src/x402.Client/bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Publish x402.Coinbase
+      run: dotnet nuget push src/x402.Coinbase/bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Publish x402.Client.EVM
+      run: dotnet nuget push src/x402.Client.EVM/bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

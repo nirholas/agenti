@@ -1,0 +1,28 @@
+{
+  "name": "@x402-cre/server",
+  "version": "1.0.0",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn src/server.ts",
+    "dev:chat": "ts-node-dev --respawn src/server.ts -- --chat",
+    "build": "tsc",
+    "chat": "ts-node src/server.ts -- --chat",
+    "chat:prod": "node dist/server.js -- --chat"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "x402-express": "^0.7.3",
+    "openai": "^4.56.0",
+    "viem": "^2.9.0",
+    "x402-fetch": "^0.7.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3"
+  }
+}

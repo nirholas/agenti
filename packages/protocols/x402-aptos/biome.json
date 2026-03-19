@@ -1,0 +1,127 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.5/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "packages/**",
+      "examples/**",
+      "scripts/**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/build",
+      "!**/.next",
+      "!**/.turbo",
+      "!**/.aptos",
+      "!**/coverage",
+      "!**/test-results",
+      "!**/playwright-report",
+      "!**/*.min.js",
+      "!**/bun.lockb",
+      "!**/*.test.ts",
+      "!**/*.test.tsx",
+      "!**/*.spec.ts",
+      "!**/*.spec.tsx",
+      "!**/e2e"
+    ]
+  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "off"
+      },
+      "style": {
+        "useConst": "error",
+        "useTemplate": "warn",
+        "useImportType": "error"
+      },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "error"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "warn",
+        "useButtonType": "error"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "quoteStyle": "double"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["examples/**/*", "scripts/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          },
+          "a11y": {
+            "noSvgWithoutTitle": "off",
+            "useButtonType": "off",
+            "useAnchorContent": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.config.ts", "**/*.config.js"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useTemplate": "off"
+          }
+        }
+      }
+    }
+  ]
+}

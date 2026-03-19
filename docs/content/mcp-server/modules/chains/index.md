@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | nich | 0x6E696368 -->
+<!-- @nirholas/agenti | nich | 0x6E696368 -->
 
 # Multi-Chain Modules
 
@@ -597,4 +597,4 @@ Aptos:       aptos_get_account_transactions(address)
 
 
 <!-- EOF: nich | ucm:0x6E696368 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

@@ -204,7 +204,7 @@ async function generateIntegrationGuide(toolId: string, context: ProjectContext)
 ```typescript
 const revenueSplit = {
   developer: 0.70,      // Tool Discovery maintainer
-  ecosystem: 0.20,      // Universal Crypto MCP
+  ecosystem: 0.20,      // Agenti
   infrastructure: 0.10  // x402 + AI costs
 };
 ```

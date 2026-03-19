@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | n1ch0las | 0xN1CH -->
+<!-- @nirholas/agenti | n1ch0las | 0xN1CH -->
 
 # Binance MCP Servers
 
@@ -208,4 +208,4 @@ export BINANCE_API_SECRET=your_secret
 
 
 <!-- EOF: n1ch0las | ucm:0xN1CH -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

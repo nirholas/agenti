@@ -1,10 +1,8 @@
-<!-- universal-crypto-mcp | @nichxbt | 0.14.9.3 -->
+<!-- agenti | @nichxbt -->
 
 # Architecture
 
-<!-- Maintained by universal-crypto-mcp | ID: n1ch-0las-4e49-4348-786274000000 -->
-
-Understanding how Universal Crypto MCP is structured and how components interact.
+Understanding how Agenti is structured and how components interact.
 
 ---
 
@@ -379,4 +377,4 @@ export const CHAINS = {
 
 
 <!-- EOF: @nichxbt | ucm:0.14.9.3 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

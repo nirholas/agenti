@@ -1,0 +1,27 @@
+# Security - Never commit private keys!
+.env
+.aptos/
+*.key
+*.json.pub
+*_key.json
+
+# Build artifacts
+build/
+.movement/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+FUND_WALLETS.txt

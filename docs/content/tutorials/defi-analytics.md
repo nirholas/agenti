@@ -214,4 +214,4 @@ Daily DeFi Dashboard for 0x742d35Cc6634C0532925a3b844Bc9e7595f12345
 
 ---
 
-Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/universal-crypto-mcp)
+Built by [Nich](https://x.com/nichxbt) • [GitHub](https://github.com/nirholas/agenti)

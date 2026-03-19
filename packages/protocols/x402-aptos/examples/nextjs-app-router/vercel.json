@@ -1,0 +1,31 @@
+{
+  "buildCommand": "cd ../.. && bun run build --filter=nextjs-app-router-example",
+  "installCommand": "cd ../.. && bun install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_CONTRACT_ADDRESS": "@next_public_contract_address",
+    "NEXT_PUBLIC_FACILITATOR_ADDRESS": "@next_public_facilitator_address",
+    "NEXT_PUBLIC_APTOS_NETWORK": "@next_public_aptos_network",
+    "FACILITATOR_PRIVATE_KEY": "@facilitator_private_key"
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}

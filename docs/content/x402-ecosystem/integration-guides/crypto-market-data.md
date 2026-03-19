@@ -110,7 +110,7 @@ async function getBatchPrices(symbols: string[]) {
 ```typescript
 const revenueSplit = {
   dataProvider: 0.60,   // Crypto Market Data
-  ecosystem: 0.25,      // Universal Crypto MCP
+  ecosystem: 0.25,      // Agenti
   infrastructure: 0.15  // x402 + data sources
 };
 ```

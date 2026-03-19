@@ -1,4 +1,4 @@
-<!-- universal-crypto-mcp | n1ch0las | 78738 -->
+<!-- @nirholas/agenti | n1ch0las | 78738 -->
 
 # Real Examples
 
@@ -746,4 +746,4 @@ The MCP server has 500+ tools covering virtually every crypto operation!
 
 
 <!-- EOF: n1ch0las | ucm:78738 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

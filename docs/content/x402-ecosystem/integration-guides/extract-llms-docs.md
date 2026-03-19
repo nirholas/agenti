@@ -157,7 +157,7 @@ const outputOptions = {
 ```typescript
 const revenueSplit = {
   developer: 0.65,      // Extract LLMs maintainer
-  ecosystem: 0.25,      // Universal Crypto MCP
+  ecosystem: 0.25,      // Agenti
   infrastructure: 0.10  // x402 + compute costs
 };
 ```

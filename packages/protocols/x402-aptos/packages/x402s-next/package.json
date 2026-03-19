@@ -1,0 +1,85 @@
+{
+  "name": "x402s-next",
+  "version": "0.1.0",
+  "description": "Next.js middleware for x402s Shelby Protocol integration",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./middleware": {
+      "types": "./dist/middleware.d.ts",
+      "import": "./dist/middleware.js",
+      "require": "./dist/middleware.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/middleware.ts --format cjs,esm --dts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/",
+    "format": "biome format src/",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "x402",
+    "x402s",
+    "shelby",
+    "nextjs",
+    "middleware",
+    "aptos",
+    "payments",
+    "http402"
+  ],
+  "author": "Raintree Technology <support@raintree.technology>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raintree-technology/x402a.git",
+    "directory": "packages/x402s-next"
+  },
+  "bugs": {
+    "url": "https://github.com/raintree-technology/x402a/issues"
+  },
+  "homepage": "https://github.com/raintree-technology/x402a/tree/main/packages/x402s-next#readme",
+  "dependencies": {
+    "x402s": "^0.1.0",
+    "x402a": "^0.2.1",
+    "x402a-next": "^0.2.1",
+    "pino": "^10.1.0",
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "@shelby-protocol/sdk": "*",
+    "next": ">=14.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@shelby-protocol/sdk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "next": "^14.0.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  }
+}

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.0.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>15cdbcc6-92a8-43cc-ad44-2f7b32731938</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\X402.Client.ConsoleSample\X402.Client.ConsoleSample.csproj" />
+    <ProjectReference Include="..\x402.FacilitatorMock\x402.FacilitatorMock.csproj" />
+    <ProjectReference Include="..\x402.FacilitatorWeb\x402.FacilitatorWeb.csproj" />
+    <ProjectReference Include="..\x402.SampleWeb\x402.SampleWeb.csproj" />
+  </ItemGroup>
+
+</Project>

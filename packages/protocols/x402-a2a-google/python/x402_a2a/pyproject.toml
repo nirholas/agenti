@@ -1,0 +1,69 @@
+[project]
+name = "x402-a2a"
+version = "1.0.0"
+description = "Official x402 payment protocol extension for A2A"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Coinbase Developer Platform", email = "x402@coinbase.com" },
+    { name = "Google A2A", email = "a2a@google.com" }
+]
+requires-python = ">=3.10"
+keywords = ["a2a", "x402", "payments", "ethereum", "coinbase", "google"]
+dependencies = [
+    "a2a-sdk>=0.1.0",  # For A2A protocol integration
+    "x402>=0.2.0",  # For x402 payment protocol
+    "eth-account>=0.13.7",  # For Ethereum account management
+    "httpx>=0.28.1",  # For async HTTP client
+    "pydantic>=2.0.0",  # For data validation
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+    "trio>=0.22.0",
+]
+lint = [
+    "ruff>=0.13.1",
+    "mypy>=1.18.0",
+]
+
+[project.scripts]
+test = "pytest:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/x402_a2a"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "async: Async tests"
+]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+# Ignore F401 (unused import) in all `__init__.py` files
+per-file-ignores = { "__init__.py" = ["F401"] }
+
+[tool.mypy]
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true

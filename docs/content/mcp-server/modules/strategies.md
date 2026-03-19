@@ -1,8 +1,8 @@
-<!-- universal-crypto-mcp | n1ch0las | 1493 -->
+<!-- @nirholas/agenti | n1ch0las | 1493 -->
 
 # Trading Strategies
 
-<!-- Maintained by nirholas/universal-crypto-mcp | ID: 0.4.14.3 -->
+<!-- Maintained by nirholas/@nirholas/agenti | ID: 0.4.14.3 -->
 
 Pre-built trading strategies powered by the `indicatorts` library.
 
@@ -401,4 +401,4 @@ For better accuracy, combine multiple strategies:
 
 
 <!-- EOF: n1ch0las | ucm:1493 -->
-<!-- https://github.com/nirholas/universal-crypto-mcp -->
+<!-- https://github.com/nirholas/agenti -->

@@ -1,6 +1,6 @@
 # Resources & Learning
 
-Curated resources to help you get the most out of Universal Crypto MCP.
+Curated resources to help you get the most out of Agenti.
 
 ---
 
@@ -26,12 +26,12 @@ Subscribe to be notified:
 
 ### Official
 
-- [Introducing Universal Crypto MCP](https://github.com/nirholas/universal-crypto-mcp) - GitHub README
+- [Introducing Agenti](https://github.com/nirholas/agenti) - GitHub README
 - [MCP Server Documentation](https://crypto-mcp.vercel.app) - Full docs
 
 ### Community
 
-> Share your article! [Open an issue](https://github.com/nirholas/universal-crypto-mcp/issues/new?title=Add%20my%20article) to be featured.
+> Share your article! [Open an issue](https://github.com/nirholas/agenti/issues/new?title=Add%20my%20article) to be featured.
 
 ---
 
@@ -138,7 +138,7 @@ Join the discussion:
 
 - **Discord**: Coming soon
 - **Twitter/X**: [@nichxbt](https://x.com/nichxbt)
-- **GitHub Discussions**: [Join](https://github.com/nirholas/universal-crypto-mcp/discussions)
+- **GitHub Discussions**: [Join](https://github.com/nirholas/agenti/discussions)
 
 ---
 
@@ -152,5 +152,5 @@ Stay updated with new features and tutorials:
 
 <p align="center">
   <b>Something missing?</b><br>
-  <a href="https://github.com/nirholas/universal-crypto-mcp/issues/new">Suggest a resource</a>
+  <a href="https://github.com/nirholas/agenti/issues/new">Suggest a resource</a>
 </p>

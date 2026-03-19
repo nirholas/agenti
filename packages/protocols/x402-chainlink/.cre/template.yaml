@@ -1,0 +1,30 @@
+kind: starter-template
+id: x402-cre-price-alerts
+title: "x402 CRE Price Alerts (TypeScript)"
+description: "Crypto price alert system with x402 micropayments, Chainlink CRE workflows, and Gemini AI for natural language alerts. Create alerts via chat, pay with USDC, store on-chain, get push notifications."
+language: typescript
+category: price-alerts
+tags: [x402, chainlink-cre, gemini-ai, price-alerts, base-sepolia, evm-settlement]
+networks:
+  - ethereum-testnet-sepolia-base-1
+projectDir: cre
+workflows:
+  - dir: alerts
+    description: "HTTP trigger (write alerts on-chain) and Cron trigger (check prices, send Pushover notifications)"
+postInit: |
+  This template requires more steps to complete setup; see README.md for full instructions.
+  1. Deploy RuleRegistry contract to Base Sepolia (see README.md Setup step 0)
+  2. Copy .env.example to .env and populate (Gemini API key, wallet keys, Pushover, CRE_ETH_PRIVATE_KEY, etc.)
+  3. Update cre/alerts/config.staging.json with your ruleRegistryAddress and chain config
+  4. Start server: npm run dev:server
+  5. Create an alert via chat, then simulate CRE HTTP trigger: cd cre && cre workflow simulate alerts --env ../.env --broadcast
+  6. Simulate Cron trigger to check prices and send notifications: cre workflow simulate alerts --env ../.env
+exclude:
+  - ".env"
+  - ".env.local"
+  - "node_modules/"
+  - "cache/"
+  - "out/"
+  - ".DS_Store"
+  - "tmp.js"
+  - "tmp.wasm"

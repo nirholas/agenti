@@ -1,0 +1,275 @@
+/* Chainlink Brand Colors - Dark Mode Theme */
+:root {
+    /* Primary Colors */
+    --chainlink-blue: #0847F7 !important;
+    --chainlink-dark: #0B101C !important;
+    --chainlink-light-blue: #8AA6F9 !important;
+    --chainlink-light: #F8FAFF !important;
+    
+    /* Override mdbook theme variables for dark mode */
+    --theme-hover: #8AA6F9 !important;
+    --theme-bg: #0B101C !important;
+    --theme-text: #F8FAFF !important;
+    --theme-text-dark: #F8FAFF !important;
+    --theme-border: #8AA6F9 !important;
+    --sidebar-bg: #0B101C !important;
+    --sidebar-fg: #F8FAFF !important;
+    --sidebar-active: #8AA6F9 !important;
+}
+
+/* Body and main content - Dark Mode */
+body {
+    background-color: #0B101C !important;
+    color: #F8FAFF !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Headings - Light text on dark */
+h1, h2, h3, h4, h5, h6 {
+    color: #F8FAFF !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+h1 {
+    border-bottom: 3px solid #0847F7 !important;
+    padding-bottom: 0.3em !important;
+}
+
+h2 {
+    border-bottom: 2px solid #8AA6F9 !important;
+    padding-bottom: 0.3em !important;
+}
+
+/* Links - Chainlink Blue */
+a {
+    color: #8AA6F9 !important;
+}
+
+a:hover {
+    color: #0847F7 !important;
+    text-decoration: underline !important;
+}
+
+/* Sidebar - Chainlink Dark background */
+.sidebar {
+    background-color: #0B101C !important;
+    color: #F8FAFF !important;
+}
+
+.sidebar .sidebar-scrollbox {
+    background-color: #0B101C !important;
+}
+
+.sidebar .chapter-item a {
+    color: #F8FAFF !important;
+}
+
+.sidebar .chapter-item a:hover {
+    color: #8AA6F9 !important;
+    background-color: rgba(138, 166, 249, 0.1) !important;
+}
+
+.sidebar .chapter-item.active > a {
+    color: #8AA6F9 !important;
+    background-color: rgba(138, 166, 249, 0.15) !important;
+}
+
+.sidebar .spacer {
+    background-color: #0B101C !important;
+}
+
+/* Code blocks - Dark background */
+pre {
+    background-color: #0B101C !important;
+    color: #F8FAFF !important;
+    border: 1px solid #8AA6F9 !important;
+}
+
+code {
+    background-color: rgba(138, 166, 249, 0.15) !important;
+    color: #8AA6F9 !important;
+    border: 1px solid rgba(138, 166, 249, 0.3) !important;
+}
+
+pre code {
+    background-color: transparent !important;
+    border: none !important;
+    color: #F8FAFF !important;
+}
+
+/* Buttons */
+button, .button {
+    background-color: #0847F7 !important;
+    color: #F8FAFF !important;
+    border: none !important;
+}
+
+button:hover, .button:hover {
+    background-color: #8AA6F9 !important;
+}
+
+/* Search input - Dark mode */
+.search-input {
+    background-color: #0B101C !important;
+    border: 1px solid #8AA6F9 !important;
+    color: #F8FAFF !important;
+}
+
+.search-input:focus {
+    border-color: #0847F7 !important;
+    outline: 2px solid #8AA6F9 !important;
+}
+
+/* Search results */
+#searchresults {
+    background-color: #0B101C !important;
+    color: #F8FAFF !important;
+}
+
+#searchresults a {
+    color: #8AA6F9 !important;
+}
+
+/* Theme toggle popup */
+.theme-picker, .theme-popup {
+    background-color: #0B101C !important;
+    border: 1px solid #8AA6F9 !important;
+}
+
+.theme-popup button {
+    background-color: transparent !important;
+    color: #F8FAFF !important;
+}
+
+.theme-popup button:hover {
+    background-color: rgba(138, 166, 249, 0.1) !important;
+}
+
+/* Blockquotes - Dark mode */
+blockquote {
+    border-left: 4px solid #0847F7 !important;
+    background-color: rgba(8, 71, 247, 0.1) !important;
+    color: #F8FAFF !important;
+}
+
+/* Tables - Dark mode */
+table {
+    border: 1px solid #8AA6F9 !important;
+}
+
+th {
+    background-color: #0847F7 !important;
+    color: #F8FAFF !important;
+}
+
+td {
+    border: 1px solid #8AA6F9 !important;
+    color: #F8FAFF !important;
+}
+
+/* Scrollbar - Dark mode */
+::-webkit-scrollbar {
+    width: 10px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #0B101C !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0847F7 !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8AA6F9 !important;
+}
+
+/* Content area - Dark mode */
+.content {
+    background-color: #0B101C !important;
+    color: #F8FAFF !important;
+}
+
+.page {
+    background-color: #0B101C !important;
+}
+
+/* Menu bar - Dark mode with matching icon buttons */
+#menu-bar {
+    background-color: #0B101C !important;
+    border-bottom: 1px solid rgba(138, 166, 249, 0.2) !important;
+}
+
+.menu-bar {
+    background-color: #0B101C !important;
+}
+
+.menu-title {
+    color: #F8FAFF !important;
+}
+
+/* Icon buttons in menu bar - Match background */
+.left-buttons .icon-button,
+#menu-bar .icon-button,
+#menu-bar i {
+    background-color: transparent !important;
+    color: #F8FAFF !important;
+}
+
+.left-buttons .icon-button:hover,
+#menu-bar .icon-button:hover,
+#menu-bar i:hover {
+    background-color: rgba(138, 166, 249, 0.1) !important;
+    color: #8AA6F9 !important;
+}
+
+/* Ensure icon buttons have no background mismatch */
+.icon-button {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Search bar */
+#searchbar {
+    background-color: #0B101C !important;
+    border-top: 1px solid rgba(138, 166, 249, 0.2) !important;
+}
+
+#searchbar input {
+    background-color: #0B101C !important;
+    color: #F8FAFF !important;
+    border: 1px solid rgba(138, 166, 249, 0.3) !important;
+}
+
+#searchbar input:focus {
+    border-color: #0847F7 !important;
+    outline: 2px solid rgba(138, 166, 249, 0.2) !important;
+}
+
+/* Page wrapper */
+.page-wrapper {
+    background-color: #0B101C !important;
+}
+
+/* Lists */
+ul, ol {
+    color: #F8FAFF !important;
+}
+
+li {
+    color: #F8FAFF !important;
+}
+
+/* Paragraphs */
+p {
+    color: #F8FAFF !important;
+}
+
+/* Strong/emphasis */
+strong, b {
+    color: #F8FAFF !important;
+}
+
+em, i {
+    color: #F8FAFF !important;
+}

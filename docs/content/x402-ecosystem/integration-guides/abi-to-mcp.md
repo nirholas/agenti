@@ -65,7 +65,7 @@ async function convertABI(address: string, chain: string, options: ConvertOption
 ```typescript
 const revenueSplit = {
   developer: 0.70,      // ABI-to-MCP maintainer
-  ecosystem: 0.20,      // Universal Crypto MCP
+  ecosystem: 0.20,      // Agenti
   infrastructure: 0.10  // x402 protocol
 };
 ```

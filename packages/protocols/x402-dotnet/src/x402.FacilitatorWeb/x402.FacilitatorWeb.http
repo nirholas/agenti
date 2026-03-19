@@ -1,0 +1,43 @@
+@x402.FacilitatorWeb_HostAddress = https://localhost:7114
+
+
+### Verify
+POST {{x402.FacilitatorWeb_HostAddress}}/verify
+Accept: application/json
+Content-Type: application/json
+{
+  "x402Version": 1,
+  "PaymentHeader": "test",
+  "PaymentRequirements":
+    {
+      "Scheme": "Exact",
+      "MaxAmountRequired": "12345",
+      "Asset": "USDC",
+      "Resource": "/",
+      "MimeType": "application/json",
+      "PayTo": "0x"
+    }
+}
+
+### Settle
+POST {{x402.FacilitatorWeb_HostAddress}}/settle
+Accept: application/json
+Content-Type: application/json
+{
+  "x402Version": 1,
+  "PaymentHeader": "test",
+  "PaymentRequirements":
+    {
+      "Scheme": "Exact",
+      "MaxAmountRequired": "12345",
+      "Asset": "USDC",
+      "Resource": "/",
+      "MimeType": "application/json",
+      "PayTo": "0x"
+    }
+}
+
+### Supported
+GET {{x402.FacilitatorWeb_HostAddress}}/supported
+Accept: application/json
+

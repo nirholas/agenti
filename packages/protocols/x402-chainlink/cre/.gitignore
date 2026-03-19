@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+alerts/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+alerts/tmp.js
+alerts/tmp.wasm
+alerts/*.js
+alerts/*.wasm
+!alerts/main.ts
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
