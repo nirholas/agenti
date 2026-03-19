@@ -1,0 +1,62 @@
+name: Publish Packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/sdk/package.json'
+      - 'packages/core/package.json'
+      - 'packages/server/package.json'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run SDK unit tests
+        run: pnpm --filter=@openfacilitator/sdk test run
+
+      - name: Publish packages
+        run: |
+          for pkg in packages/core packages/sdk packages/server; do
+            if [ -f "$pkg/package.json" ]; then
+              name=$(node -p "require('./$pkg/package.json').name")
+              local_version=$(node -p "require('./$pkg/package.json').version")
+              is_private=$(node -p "require('./$pkg/package.json').private || false")
+
+              if [ "$is_private" = "true" ]; then
+                echo "Skipping $name (private)"
+                continue
+              fi
+
+              published_version=$(npm view "$name" version 2>/dev/null || echo "0.0.0")
+
+              if [ "$local_version" != "$published_version" ]; then
+                echo "Publishing $name@$local_version (was $published_version)"
+                pnpm --filter="$name" publish --no-git-checks --access public
+              else
+                echo "Skipping $name@$local_version (already published)"
+              fi
+            fi
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

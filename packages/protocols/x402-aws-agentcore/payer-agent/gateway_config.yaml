@@ -1,0 +1,1077 @@
+# Bedrock AgentCore Gateway Configuration
+# This file defines the configuration for the x402 payer agent Gateway
+# The Gateway provides secure API access to the AgentCore Runtime and MCP tool server
+#
+# Architecture:
+# - Gateway exposes the agent runtime for invocation
+# - Gateway also serves as MCP tool server for content tools
+# - Agent discovers tools via MCP protocol from Gateway
+# - Content tools are backed by CloudFront distribution (seller infrastructure)
+
+gateway:
+  name: x402-payer-agent-gateway
+  description: "API Gateway for x402 Payer Agent - provides secure access to the agent runtime and MCP tool server for content tools"
+  
+  # Runtime connection
+  runtime:
+    name: x402-payer-agent-runtime
+    # Runtime ARN will be set after runtime deployment
+    runtime_arn: "${X402_PAYER_AGENT_RUNTIME_ARN}"
+
+  # =========================================================================
+  # MCP Tool Server Configuration (Gateway Targets)
+  # =========================================================================
+  # Gateway targets define external APIs that are exposed as MCP tools.
+  # The agent discovers these tools via MCP protocol and calls them through
+  # the Gateway, which handles authentication and request transformation.
+  
+  targets:
+    # Content Tools Target - OpenAPI-based MCP tools for x402 premium content
+    content_tools:
+      name: x402-content-tools
+      description: "Premium content endpoints protected by x402 payment protocol"
+      type: OPENAPI
+      
+      # OpenAPI specification for the content tools
+      # This spec defines the tools that will be exposed via MCP
+      openapi:
+        # Path to the OpenAPI spec file (relative to payer-agent directory)
+        spec_file: "openapi/content-tools.yaml"
+        # Alternatively, use inline spec or S3 URI:
+        # spec_s3_uri: "s3://bucket/path/to/content-tools.yaml"
+        
+        # OpenAPI spec version
+        version: "3.0.3"
+        
+        # =====================================================================
+        # MCP Tool Definitions
+        # =====================================================================
+        # Each operation from the OpenAPI spec is exposed as an MCP tool.
+        # The agent discovers these tools via the MCP protocol and can invoke
+        # them through the Gateway.
+        #
+        # Tool Naming Convention:
+        # - Use snake_case for tool names (MCP standard)
+        # - Names should be descriptive and action-oriented
+        # - Include the resource type in the name (e.g., get_*, fetch_*, retrieve_*)
+        #
+        # Tool Description Guidelines:
+        # - First sentence: What the tool does (action + resource)
+        # - Second sentence: What data is returned
+        # - Third sentence: Payment requirements (x402 specific)
+        # - Include pricing in human-readable format
+        #
+        operations:
+          # -----------------------------------------------------------------
+          # Premium Article Tool
+          # -----------------------------------------------------------------
+          - operation_id: get_premium_article
+            tool_name: get_premium_article
+            tool_description: |
+              Retrieve a premium article about AI and blockchain integration.
+              Returns article title, author, publication date, full content, and tags.
+              Requires x402 payment: 1000 USDC units (0.001 USDC) on Base Sepolia testnet.
+            
+            # MCP tool metadata
+            mcp_metadata:
+              # Tool category for organization in MCP discovery
+              category: "content"
+              # Tags for filtering and search
+              tags:
+                - "premium-content"
+                - "article"
+                - "ai"
+                - "blockchain"
+                - "x402-payment"
+              # Priority hint for tool selection (higher = more likely to be suggested)
+              priority: 1
+              # Whether this tool requires payment (x402 specific)
+              requires_payment: true
+              # Estimated response time
+              estimated_latency_ms: 2000
+            
+            # x402 payment metadata (for agent decision-making)
+            x402_metadata:
+              price_usdc_units: "1000"
+              price_usdc_display: "0.001 USDC"
+              network: "eip155:84532"
+              network_name: "Base Sepolia"
+              scheme: "exact"
+              asset_address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+              asset_name: "USDC"
+              timeout_seconds: 60
+            
+            # Input schema reference (from OpenAPI)
+            input_schema:
+              type: "object"
+              properties: {}
+              required: []
+              description: "No input parameters required. Payment is handled via x402 headers."
+            
+            # Output schema reference (from OpenAPI)
+            output_schema:
+              ref: "#/components/schemas/PremiumArticle"
+              description: "Premium article with title, author, date, content, and tags"
+            
+            # Usage examples for agent context
+            examples:
+              - description: "Retrieve the premium AI/blockchain article"
+                input: {}
+                expected_output_summary: "Article about AI and blockchain integration with full text content"
+          
+          # -----------------------------------------------------------------
+          # Weather Data Tool
+          # -----------------------------------------------------------------
+          - operation_id: get_weather_data
+            tool_name: get_weather_data
+            tool_description: |
+              Get real-time weather data and 5-day forecast for San Francisco.
+              Returns current conditions (temperature, humidity, wind) and daily forecasts.
+              Requires x402 payment: 500 USDC units (0.0005 USDC) on Base Sepolia testnet.
+            
+            # MCP tool metadata
+            mcp_metadata:
+              category: "market-data"
+              tags:
+                - "weather"
+                - "forecast"
+                - "real-time"
+                - "x402-payment"
+              priority: 2
+              requires_payment: true
+              estimated_latency_ms: 1500
+            
+            # x402 payment metadata
+            x402_metadata:
+              price_usdc_units: "500"
+              price_usdc_display: "0.0005 USDC"
+              network: "eip155:84532"
+              network_name: "Base Sepolia"
+              scheme: "exact"
+              asset_address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+              asset_name: "USDC"
+              timeout_seconds: 60
+            
+            # Input schema
+            input_schema:
+              type: "object"
+              properties: {}
+              required: []
+              description: "No input parameters required. Location is fixed to San Francisco."
+            
+            # Output schema
+            output_schema:
+              ref: "#/components/schemas/WeatherData"
+              description: "Weather data with current conditions and 5-day forecast"
+            
+            # Usage examples
+            examples:
+              - description: "Get current weather and forecast"
+                input: {}
+                expected_output_summary: "Current weather conditions and 5-day forecast for San Francisco"
+          
+          # -----------------------------------------------------------------
+          # Market Analysis Tool
+          # -----------------------------------------------------------------
+          - operation_id: get_market_analysis
+            tool_name: get_market_analysis
+            tool_description: |
+              Get cryptocurrency market analysis with real-time prices and sentiment.
+              Returns prices for BTC/ETH/SOL, 24h changes, volume, sentiment analysis, and key events.
+              Requires x402 payment: 2000 USDC units (0.002 USDC) on Base Sepolia testnet.
+            
+            # MCP tool metadata
+            mcp_metadata:
+              category: "market-data"
+              tags:
+                - "cryptocurrency"
+                - "market-analysis"
+                - "prices"
+                - "sentiment"
+                - "real-time"
+                - "x402-payment"
+              priority: 3
+              requires_payment: true
+              estimated_latency_ms: 2500
+            
+            # x402 payment metadata
+            x402_metadata:
+              price_usdc_units: "2000"
+              price_usdc_display: "0.002 USDC"
+              network: "eip155:84532"
+              network_name: "Base Sepolia"
+              scheme: "exact"
+              asset_address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+              asset_name: "USDC"
+              timeout_seconds: 60
+            
+            # Input schema
+            input_schema:
+              type: "object"
+              properties: {}
+              required: []
+              description: "No input parameters required. Returns analysis for major cryptocurrencies."
+            
+            # Output schema
+            output_schema:
+              ref: "#/components/schemas/MarketAnalysis"
+              description: "Market analysis with prices, sentiment, and key events"
+            
+            # Usage examples
+            examples:
+              - description: "Get current crypto market analysis"
+                input: {}
+                expected_output_summary: "Market data for BTC, ETH, SOL with sentiment analysis and upcoming events"
+          
+          # -----------------------------------------------------------------
+          # Research Report Tool
+          # -----------------------------------------------------------------
+          - operation_id: get_research_report
+            tool_name: get_research_report
+            tool_description: |
+              Get in-depth blockchain technology research report for 2026.
+              Returns executive summary, market overview, technology trends, and strategic recommendations.
+              Requires x402 payment: 5000 USDC units (0.005 USDC) on Base Sepolia testnet.
+            
+            # MCP tool metadata
+            mcp_metadata:
+              category: "research"
+              tags:
+                - "research"
+                - "blockchain"
+                - "technology-trends"
+                - "enterprise"
+                - "premium-content"
+                - "x402-payment"
+              priority: 4
+              requires_payment: true
+              estimated_latency_ms: 3000
+            
+            # x402 payment metadata
+            x402_metadata:
+              price_usdc_units: "5000"
+              price_usdc_display: "0.005 USDC"
+              network: "eip155:84532"
+              network_name: "Base Sepolia"
+              scheme: "exact"
+              asset_address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+              asset_name: "USDC"
+              timeout_seconds: 60
+            
+            # Input schema
+            input_schema:
+              type: "object"
+              properties: {}
+              required: []
+              description: "No input parameters required. Returns the full 2026 research report."
+            
+            # Output schema
+            output_schema:
+              ref: "#/components/schemas/ResearchReport"
+              description: "Comprehensive research report with sections on market, technology, and recommendations"
+            
+            # Usage examples
+            examples:
+              - description: "Get the blockchain research report"
+                input: {}
+                expected_output_summary: "Full research report on blockchain technology trends for 2026"
+      
+      # Target URL - CloudFront distribution serving protected content
+      # This is the seller infrastructure endpoint deployed via seller-infrastructure CDK stack
+      #
+      # Configuration Options:
+      # 1. Environment Variable (recommended for deployment):
+      #    target_url: "${X402_SELLER_CLOUDFRONT_URL}"
+      #    Set X402_SELLER_CLOUDFRONT_URL to the CloudFront distribution URL from CDK output
+      #
+      # 2. Direct URL (for local development/testing):
+      #    target_url: "https://d1234567890abc.cloudfront.net"
+      #
+      # To get the CloudFront URL after deploying seller-infrastructure:
+      #   cd seller-infrastructure && cdk deploy
+      #   # Look for output: X402DistributionUrl = https://dXXXXXXXXXXXXX.cloudfront.net
+      #
+      # Or query the CloudFormation stack:
+      #   aws cloudformation describe-stacks --stack-name X402SellerStack \
+      #     --query "Stacks[0].Outputs[?ExportName=='X402DistributionUrl'].OutputValue" \
+      #     --output text
+      #
+      target_url: "${X402_SELLER_CLOUDFRONT_URL}"
+      
+      # URL Format: https://<distribution-id>.cloudfront.net
+      # Example: https://d1234567890abc.cloudfront.net
+      #
+      # API Paths (relative to target_url):
+      #   /api/premium-article  - Premium article content (1000 USDC units)
+      #   /api/weather-data     - Weather data (500 USDC units)
+      #   /api/market-analysis  - Market analysis (2000 USDC units)
+      #   /api/research-report  - Research report (5000 USDC units)
+      
+      # =========================================================================
+      # Authentication Passthrough Configuration for x402 Headers
+      # =========================================================================
+      # x402 protocol uses custom HTTP headers for payment negotiation instead
+      # of traditional authentication. The Gateway must pass these headers
+      # through to the target (CloudFront) without modification.
+      #
+      # x402 HTTP Transport Headers (per x402-specification-v2.md):
+      # - PAYMENT-REQUIRED: Server → Client (402 response)
+      # - PAYMENT-SIGNATURE: Client → Server (payment payload)
+      # - PAYMENT-RESPONSE: Server → Client (settlement confirmation)
+      #
+      # This implementation uses X- prefixed headers (X-PAYMENT-*) which is
+      # a common convention for custom HTTP headers.
+      #
+      authentication:
+        type: PASSTHROUGH
+        
+        # =====================================================================
+        # Request Header Passthrough (Client → Target)
+        # =====================================================================
+        # Headers that the agent sends with payment data must be forwarded
+        # to the CloudFront target for payment verification.
+        #
+        passthrough_request_headers:
+          # Primary x402 payment header - contains Base64-encoded PaymentPayload
+          # This header carries the signed EIP-3009 authorization for payment
+          - name: "X-PAYMENT-SIGNATURE"
+            required: false  # Not required on initial request (triggers 402)
+            description: "Base64-encoded x402 PaymentPayload with signed payment authorization"
+          
+          # Alternative header name (some implementations use non-prefixed)
+          - name: "PAYMENT-SIGNATURE"
+            required: false
+            description: "Alternative x402 payment header (non-prefixed)"
+          
+          # Request tracing header for debugging
+          - name: "X-Request-Id"
+            required: false
+            description: "Request correlation ID for tracing"
+        
+        # =====================================================================
+        # Response Header Passthrough (Target → Client)
+        # =====================================================================
+        # Headers from the CloudFront target that must be forwarded back to
+        # the agent for payment negotiation and settlement confirmation.
+        #
+        passthrough_response_headers:
+          # Payment requirements header - returned with 402 responses
+          # Contains Base64-encoded PaymentRequired schema with pricing info
+          - name: "X-PAYMENT-REQUIRED"
+            description: "Base64-encoded x402 PaymentRequired with payment requirements"
+            expose_to_client: true
+          
+          # Settlement confirmation header - returned with 200 responses
+          # Contains Base64-encoded SettlementResponse with transaction hash
+          - name: "X-PAYMENT-RESPONSE"
+            description: "Base64-encoded x402 SettlementResponse with settlement confirmation"
+            expose_to_client: true
+          
+          # Alternative header names (non-prefixed per x402 spec)
+          - name: "PAYMENT-REQUIRED"
+            description: "Alternative x402 payment required header (non-prefixed)"
+            expose_to_client: true
+          
+          - name: "PAYMENT-RESPONSE"
+            description: "Alternative x402 settlement response header (non-prefixed)"
+            expose_to_client: true
+          
+          # Request tracing header
+          - name: "X-Request-Id"
+            description: "Request correlation ID for tracing"
+            expose_to_client: true
+        
+        # =====================================================================
+        # Header Transformation Rules
+        # =====================================================================
+        # Rules for transforming headers during passthrough
+        #
+        header_transformations:
+          # Preserve original header case for x402 compatibility
+          preserve_case: true
+          
+          # Don't strip any headers - x402 requires all payment headers
+          strip_headers: []
+          
+          # Add Gateway identification header
+          add_headers:
+            - name: "X-Gateway-Source"
+              value: "x402-payer-agent-gateway"
+        
+        # =====================================================================
+        # CORS Headers for x402
+        # =====================================================================
+        # CORS configuration to expose x402 headers to browser clients
+        #
+        cors_expose_headers:
+          - "X-PAYMENT-REQUIRED"
+          - "X-PAYMENT-RESPONSE"
+          - "X-Request-Id"
+          - "PAYMENT-REQUIRED"
+          - "PAYMENT-RESPONSE"
+      
+      # Request transformation
+      request:
+        # Add headers to all requests
+        headers:
+          Accept: "application/json"
+          Content-Type: "application/json"
+        # Timeout for target requests (seconds)
+        timeout_seconds: 30
+        
+        # =====================================================================
+        # x402 Request Header Handling
+        # =====================================================================
+        # Ensure x402 payment headers are properly forwarded to the target
+        #
+        forward_headers:
+          # Always forward these headers if present
+          - "X-PAYMENT-SIGNATURE"
+          - "PAYMENT-SIGNATURE"
+          - "X-Request-Id"
+          - "Authorization"  # For any additional auth if needed
+        
+        # Headers to never forward (security)
+        exclude_headers:
+          - "X-Forwarded-For"  # Let Gateway set this
+          - "Host"             # Let Gateway set this
+      
+      # Response transformation
+      response:
+        # =====================================================================
+        # x402 Response Header Handling
+        # =====================================================================
+        # Headers to expose back to the agent for payment negotiation
+        #
+        expose_headers:
+          # x402 payment headers (X- prefixed)
+          - "X-PAYMENT-REQUIRED"
+          - "X-PAYMENT-RESPONSE"
+          # x402 payment headers (non-prefixed per spec)
+          - "PAYMENT-REQUIRED"
+          - "PAYMENT-RESPONSE"
+          # Tracing headers
+          - "X-Request-Id"
+          # CORS headers
+          - "Access-Control-Allow-Origin"
+          - "Access-Control-Expose-Headers"
+        
+        # =====================================================================
+        # x402 Status Code Handling
+        # =====================================================================
+        # Handle 402 responses specially - pass through to agent
+        # Agent handles payment negotiation, not the Gateway
+        #
+        passthrough_status_codes:
+          - 402  # Payment Required - agent must handle payment flow
+          - 400  # Bad Request - invalid payment payload
+          - 401  # Unauthorized - payment authorization failed
+        
+        # Don't retry these status codes (they require agent action)
+        no_retry_status_codes:
+          - 402  # Agent must sign payment
+          - 400  # Agent must fix payload
+          - 401  # Agent must re-authorize
+      
+      # Health check configuration
+      health_check:
+        enabled: true
+        # Use OPTIONS request for health check (doesn't require payment)
+        method: OPTIONS
+        path: "/api/premium-article"
+        interval_seconds: 60
+        timeout_seconds: 5
+        healthy_threshold: 2
+        unhealthy_threshold: 3
+      
+      # Rate limiting for target (separate from gateway rate limiting)
+      rate_limiting:
+        enabled: true
+        requests_per_second: 5
+        burst_capacity: 10
+      
+      # Retry configuration
+      retry:
+        enabled: true
+        max_retries: 2
+        # =====================================================================
+        # x402-Aware Retry Configuration
+        # =====================================================================
+        # IMPORTANT: Do NOT retry 402 responses - that's expected behavior
+        # for x402 protocol. The agent must handle payment negotiation.
+        #
+        # Status codes that SHOULD be retried (transient errors):
+        retry_on_status_codes:
+          - 500  # Internal Server Error
+          - 502  # Bad Gateway
+          - 503  # Service Unavailable
+          - 504  # Gateway Timeout
+        
+        # Status codes that should NEVER be retried (require agent action):
+        # - 402: Payment Required - agent must sign and submit payment
+        # - 400: Bad Request - agent must fix the payment payload
+        # - 401: Unauthorized - agent must re-authorize payment
+        # These are NOT included in retry_on_status_codes
+        
+        backoff:
+          initial_delay_ms: 100
+          max_delay_ms: 1000
+          multiplier: 2
+        
+        # Retry conditions
+        retry_conditions:
+          # Only retry on network errors and server errors
+          on_connection_error: true
+          on_timeout: true
+          # Don't retry on client errors (4xx) - these require agent action
+          on_client_error: false
+      
+      # Logging configuration
+      logging:
+        enabled: true
+        log_level: INFO
+        # =====================================================================
+        # x402 Header Logging Configuration
+        # =====================================================================
+        # Log request/response headers for debugging x402 payment flow
+        # This is essential for troubleshooting payment negotiation issues
+        #
+        log_request_headers: true
+        log_response_headers: true
+        
+        # Don't log bodies in production (may contain sensitive content)
+        # Enable for debugging only
+        log_request_body: false
+        log_response_body: false
+        
+        # x402-specific logging
+        x402_logging:
+          # Log when 402 Payment Required is received
+          log_payment_required: true
+          # Log when payment signature is sent
+          log_payment_signature: true
+          # Log when payment response is received
+          log_payment_response: true
+          # Log payment amounts (useful for auditing)
+          log_payment_amounts: true
+          # Mask sensitive data in logs
+          mask_signatures: true  # Only log first/last 8 chars of signatures
+        
+        # Headers to always log (for debugging)
+        always_log_headers:
+          - "X-PAYMENT-REQUIRED"
+          - "X-PAYMENT-RESPONSE"
+          - "X-Request-Id"
+          - "Content-Type"
+        
+        # Headers to never log (security)
+        never_log_headers:
+          - "Authorization"
+          - "X-Api-Key"
+      
+      # Metrics configuration
+      metrics:
+        enabled: true
+        namespace: "X402PayerAgent/ContentTools"
+        dimensions:
+          - "ToolName"
+          - "StatusCode"
+          - "PaymentStatus"  # Added for x402 tracking
+        
+        # =====================================================================
+        # x402 Payment Metrics
+        # =====================================================================
+        # Track x402-specific metrics for monitoring payment flow health
+        #
+        custom_metrics:
+          # Payment Required metrics
+          - name: "PaymentRequired"
+            description: "Count of 402 Payment Required responses received"
+            filter_status_code: 402
+            unit: "Count"
+          
+          # Payment Success metrics
+          - name: "PaymentSuccess"
+            description: "Count of successful payments (200 with X-PAYMENT-RESPONSE header)"
+            filter_header: "X-PAYMENT-RESPONSE"
+            filter_status_code: 200
+            unit: "Count"
+          
+          # Payment Failure metrics
+          - name: "PaymentFailed"
+            description: "Count of failed payment attempts (400/401 after payment submission)"
+            filter_header: "X-PAYMENT-SIGNATURE"  # Request had payment
+            filter_status_codes: [400, 401]
+            unit: "Count"
+          
+          # Payment Latency metrics
+          - name: "PaymentLatency"
+            description: "Time from payment submission to response"
+            filter_header: "X-PAYMENT-SIGNATURE"
+            unit: "Milliseconds"
+          
+          # Payment Amount metrics (for auditing)
+          - name: "PaymentAmountTotal"
+            description: "Total payment amounts processed"
+            extract_from_header: "X-PAYMENT-RESPONSE"
+            extract_field: "amount"
+            unit: "None"  # USDC atomic units
+        
+        # Metric alarms
+        alarms:
+          - name: "HighPaymentFailureRate"
+            metric: "PaymentFailed"
+            threshold: 10
+            period_seconds: 300
+            evaluation_periods: 2
+            comparison: "GreaterThanThreshold"
+            description: "Alert when payment failures exceed threshold"
+          
+          - name: "High402Rate"
+            metric: "PaymentRequired"
+            threshold: 100
+            period_seconds: 300
+            evaluation_periods: 2
+            comparison: "GreaterThanThreshold"
+            description: "Alert when 402 responses are unusually high (may indicate agent issues)"
+      
+      # Tags for resource management
+      tags:
+        project: "x402-demo"
+        component: "content-tools-target"
+        protocol: "x402-v2"
+        network: "base-sepolia"
+  
+  # Authentication configuration
+  # IAM SigV4 is the recommended authentication method for enterprise deployments
+  authentication:
+    # IAM SigV4 authentication (recommended for enterprise)
+    type: IAM_SIGV4
+    
+    # How SigV4 authentication works:
+    # 1. Client creates a canonical request with method, path, headers, and body
+    # 2. Client signs the request using AWS credentials (access key + secret key)
+    # 3. Client includes the signature in the Authorization header
+    # 4. Gateway verifies the signature using IAM
+    # 5. Gateway checks if the IAM principal has required permissions
+    
+    # Required IAM permissions for clients:
+    # - bedrock:InvokeAgent
+    # - bedrock:InvokeAgentWithResponseStream
+    
+    # Allowed principals (IAM users/roles that can invoke the gateway)
+    allowed_principals:
+      - "arn:aws:iam::${AWS_ACCOUNT_ID}:root"
+      # Add specific roles/users as needed:
+      # - "arn:aws:iam::${AWS_ACCOUNT_ID}:role/x402-client-role"
+      # - "arn:aws:iam::${AWS_ACCOUNT_ID}:user/developer"
+    
+    # Credential sources (in order of precedence):
+    # 1. Environment variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
+    # 2. Shared credentials file: ~/.aws/credentials
+    # 3. AWS config file: ~/.aws/config
+    # 4. IAM role for EC2/Lambda/ECS (instance metadata)
+    # 5. Web identity token (for EKS/OIDC)
+  
+  # Rate limiting configuration
+  rate_limiting:
+    enabled: true
+    # Requests per second per client
+    requests_per_second: 10
+    # Burst capacity
+    burst_capacity: 20
+    # Rate limit by IP or IAM principal
+    limit_by: IAM_PRINCIPAL
+  
+  # CORS configuration (for web clients)
+  cors:
+    enabled: true
+    allowed_origins:
+      - "http://localhost:3000"
+      - "http://localhost:5173"
+      # Add production domains as needed
+    allowed_methods:
+      - "POST"
+      - "OPTIONS"
+    allowed_headers:
+      - "Content-Type"
+      - "Authorization"
+      - "X-Amz-Date"
+      - "X-Amz-Security-Token"
+    max_age_seconds: 3600
+  
+  # Request/Response configuration
+  request:
+    max_body_size_kb: 1024
+    timeout_seconds: 300
+  
+  response:
+    # Include agent reasoning in response (for debugging)
+    include_reasoning: true
+    # Include token usage metrics
+    include_usage_metrics: true
+
+  # =========================================================================
+  # MCP Protocol Configuration
+  # =========================================================================
+  # Model Context Protocol (MCP) settings for tool discovery and invocation
+  
+  mcp:
+    enabled: true
+    version: "1.0"
+    
+    # MCP endpoint configuration
+    endpoint:
+      # MCP discovery endpoint
+      discovery_path: "/mcp/tools"
+      # MCP invocation endpoint
+      invoke_path: "/mcp/invoke"
+    
+    # Tool discovery settings
+    discovery:
+      # Include tool schemas in discovery response
+      include_schemas: true
+      # Include examples in tool descriptions
+      include_examples: true
+      # Include x402 payment metadata in discovery
+      include_payment_metadata: true
+      # Cache discovery response (seconds)
+      cache_ttl_seconds: 300
+      
+      # Tool categories for organized discovery
+      categories:
+        - id: "content"
+          name: "Premium Content"
+          description: "Premium articles and written content requiring x402 payment"
+        - id: "market-data"
+          name: "Market Data"
+          description: "Real-time market and financial data feeds"
+        - id: "research"
+          name: "Research Reports"
+          description: "In-depth research and analysis reports"
+      
+      # Discovery response format
+      response_format:
+        # Include tool count in response
+        include_count: true
+        # Group tools by category
+        group_by_category: true
+        # Sort tools by priority
+        sort_by_priority: true
+        # Include payment summary
+        include_payment_summary: true
+    
+    # Tool invocation settings
+    invocation:
+      # Timeout for tool invocation (seconds)
+      timeout_seconds: 60
+      # Maximum concurrent tool invocations
+      max_concurrent: 5
+      # Enable streaming responses
+      streaming_enabled: false
+      
+      # x402 payment handling during invocation
+      x402_handling:
+        # Pass through 402 responses to agent (agent handles payment)
+        passthrough_402: true
+        # Include payment metadata in 402 response
+        include_payment_metadata: true
+        # Log payment flow for debugging
+        log_payment_flow: true
+    
+    # Tool metadata (appears in MCP discovery response)
+    metadata:
+      provider: "x402-demo"
+      version: "1.0.0"
+      description: "x402 Premium Content Tools - AI agent tools for accessing payment-protected content"
+      
+      # Provider information
+      provider_info:
+        name: "x402 Demo"
+        website: "https://github.com/coinbase/x402"
+        support_email: "support@example.com"
+      
+      # Payment information summary
+      payment_info:
+        protocol: "x402 v2"
+        network: "Base Sepolia (eip155:84532)"
+        asset: "USDC"
+        asset_address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+        scheme: "exact (EIP-3009)"
+        note: "All tools require x402 payment. Agent must handle 402 responses and sign payments."
+      
+      # Available tools summary (for quick reference)
+      tools_summary:
+        total_count: 4
+        categories:
+          - name: "Premium Content"
+            count: 1
+          - name: "Market Data"
+            count: 2
+          - name: "Research"
+            count: 1
+        price_range:
+          min: "500 USDC units (0.0005 USDC)"
+          max: "5000 USDC units (0.005 USDC)"
+
+  # Endpoint configuration
+  endpoint:
+    # Custom domain (optional)
+    # custom_domain: "agent.example.com"
+    # API stage
+    stage: "v1"
+    # Base path for agent invocation
+    base_path: "/agent"
+    # Base path for MCP tool server
+    mcp_base_path: "/mcp"
+
+  # Logging configuration
+  logging:
+    enabled: true
+    log_level: INFO
+    log_group: "/aws/bedrock-agentcore/gateway/x402-payer-agent"
+    # Log request/response bodies (disable in production for privacy)
+    log_request_body: true
+    log_response_body: true
+
+  # Monitoring configuration
+  monitoring:
+    # CloudWatch metrics
+    metrics:
+      enabled: true
+      namespace: "X402PayerAgent/Gateway"
+      dimensions:
+        - "GatewayName"
+        - "Stage"
+    # CloudWatch alarms
+    alarms:
+      - name: "HighErrorRate"
+        metric: "5XXError"
+        threshold: 5
+        period_seconds: 300
+        evaluation_periods: 2
+        comparison: "GreaterThanThreshold"
+      - name: "HighLatency"
+        metric: "Latency"
+        threshold: 5000
+        period_seconds: 300
+        evaluation_periods: 2
+        comparison: "GreaterThanThreshold"
+
+# Gateway metadata
+metadata:
+  version: "0.2.0"
+  author: "x402 Demo"
+  tags:
+    project: "x402-demo"
+    component: "gateway"
+    environment: "development"
+    features: "mcp-tool-server,x402-payment"
+
+# Usage instructions
+# -----------------
+# 1. Deploy the seller infrastructure first:
+#    cd seller-infrastructure && npm install && cdk deploy
+#
+# 2. Get the CloudFront URL from the deployment output:
+#    - Option A: Use the helper script:
+#      ./scripts/get_cloudfront_url.sh
+#    - Option B: Query CloudFormation directly:
+#      aws cloudformation describe-stacks --stack-name X402SellerStack \
+#        --query "Stacks[0].Outputs[?ExportName=='X402DistributionUrl'].OutputValue" \
+#        --output text
+#
+# 3. Set the environment variable:
+#    export X402_SELLER_CLOUDFRONT_URL=https://dXXXXXXXXXXXXX.cloudfront.net
+#    Or add to your .env file
+#
+# 4. Deploy the AgentCore Runtime (see agentcore_config.yaml)
+#
+# 5. Update runtime_arn with the deployed runtime ARN
+#
+# 6. Deploy the Gateway using CDK or AWS Console
+#
+# 7. Use the Gateway endpoint URL to invoke the agent
+#
+# Environment Variables Required:
+# - X402_PAYER_AGENT_RUNTIME_ARN: ARN of the deployed AgentCore Runtime
+# - X402_SELLER_CLOUDFRONT_URL: URL of the seller CloudFront distribution
+#   Format: https://dXXXXXXXXXXXXX.cloudfront.net
+#   Get this from: ./scripts/get_cloudfront_url.sh
+# - AWS_ACCOUNT_ID: AWS account ID for IAM principal configuration
+#
+# Gateway Endpoints:
+# - Agent Invocation: POST /v1/agent/invoke
+# - MCP Tool Discovery: GET /v1/mcp/tools
+# - MCP Tool Invocation: POST /v1/mcp/invoke
+#
+# Example: Discover available MCP tools
+# curl -X GET "https://<gateway-url>/v1/mcp/tools" \
+#   -H "Authorization: AWS4-HMAC-SHA256 ..."
+#
+# Example: Invoke MCP tool directly
+# curl -X POST "https://<gateway-url>/v1/mcp/invoke" \
+#   -H "Authorization: AWS4-HMAC-SHA256 ..." \
+#   -H "Content-Type: application/json" \
+#   -d '{"tool": "get_premium_article", "arguments": {}}'
+#
+# Example invocation with AWS CLI:
+# aws bedrock-agent-runtime invoke-agent \
+#   --agent-alias-id <ALIAS_ID> \
+#   --agent-id <AGENT_ID> \
+#   --session-id "test-session" \
+#   --input-text "Check my wallet balance"
+#
+# Example invocation with Python (boto3):
+# import boto3
+# client = boto3.client('bedrock-agent-runtime')
+# response = client.invoke_agent(
+#     agentAliasId='<ALIAS_ID>',
+#     agentId='<AGENT_ID>',
+#     sessionId='test-session',
+#     inputText='Check my wallet balance'
+# )
+#
+# x402 Payment Flow via MCP:
+# 1. Agent discovers tools via GET /v1/mcp/tools
+# 2. Agent calls tool (e.g., get_premium_article) via POST /v1/mcp/invoke
+# 3. Gateway forwards request to CloudFront target
+# 4. CloudFront returns 402 Payment Required with payment details
+# 5. Gateway passes 402 response back to agent
+# 6. Agent analyzes payment, signs with AgentKit wallet
+# 7. Agent retries tool call with X-PAYMENT-SIGNATURE header
+# 8. Gateway forwards payment to CloudFront
+# 9. CloudFront verifies payment, returns content
+# 10. Gateway returns content to agent
+
+# =============================================================================
+# x402 Header Passthrough Configuration Reference
+# =============================================================================
+#
+# This section documents the x402 header passthrough configuration for the
+# AgentCore Gateway. The Gateway acts as a proxy between the AI agent and
+# the CloudFront distribution (seller infrastructure), passing through
+# x402 payment headers without modification.
+#
+# ## x402 Protocol Headers
+#
+# The x402 HTTP transport uses three custom headers for payment negotiation:
+#
+# | Header              | Direction        | Description                           |
+# |---------------------|------------------|---------------------------------------|
+# | X-PAYMENT-REQUIRED  | Server → Client  | Payment requirements (402 response)   |
+# | X-PAYMENT-SIGNATURE | Client → Server  | Signed payment payload                |
+# | X-PAYMENT-RESPONSE  | Server → Client  | Settlement confirmation (200 response)|
+#
+# Note: The x402 spec also supports non-prefixed headers (PAYMENT-REQUIRED,
+# PAYMENT-SIGNATURE, PAYMENT-RESPONSE). This configuration supports both.
+#
+# ## Header Flow Diagram
+#
+# ```
+# ┌─────────┐     ┌─────────┐     ┌────────────┐     ┌───────────┐
+# │  Agent  │     │ Gateway │     │ CloudFront │     │ Lambda@   │
+# │         │     │         │     │            │     │   Edge    │
+# └────┬────┘     └────┬────┘     └─────┬──────┘     └─────┬─────┘
+#      │               │               │                   │
+#      │ 1. GET /api/x │               │                   │
+#      ├──────────────>│               │                   │
+#      │               │ 2. Forward    │                   │
+#      │               ├──────────────>│                   │
+#      │               │               │ 3. Check payment  │
+#      │               │               ├──────────────────>│
+#      │               │               │                   │
+#      │               │               │ 4. No payment     │
+#      │               │               │<──────────────────┤
+#      │               │ 5. 402 +      │                   │
+#      │               │ X-PAYMENT-    │                   │
+#      │               │ REQUIRED      │                   │
+#      │               │<──────────────┤                   │
+#      │ 6. 402 +      │               │                   │
+#      │ X-PAYMENT-    │               │                   │
+#      │ REQUIRED      │               │                   │
+#      │<──────────────┤               │                   │
+#      │               │               │                   │
+#      │ [Agent signs payment with AgentKit]               │
+#      │               │               │                   │
+#      │ 7. GET /api/x │               │                   │
+#      │ + X-PAYMENT-  │               │                   │
+#      │   SIGNATURE   │               │                   │
+#      ├──────────────>│               │                   │
+#      │               │ 8. Forward +  │                   │
+#      │               │ X-PAYMENT-    │                   │
+#      │               │ SIGNATURE     │                   │
+#      │               ├──────────────>│                   │
+#      │               │               │ 9. Verify payment │
+#      │               │               ├──────────────────>│
+#      │               │               │                   │
+#      │               │               │ 10. Valid + settle│
+#      │               │               │<──────────────────┤
+#      │               │ 11. 200 +     │                   │
+#      │               │ X-PAYMENT-    │                   │
+#      │               │ RESPONSE +    │                   │
+#      │               │ Content       │                   │
+#      │               │<──────────────┤                   │
+#      │ 12. 200 +     │               │                   │
+#      │ X-PAYMENT-    │               │                   │
+#      │ RESPONSE +    │               │                   │
+#      │ Content       │               │                   │
+#      │<──────────────┤               │                   │
+# ```
+#
+# ## Configuration Sections
+#
+# ### 1. Request Header Passthrough (passthrough_request_headers)
+#
+# Headers that the agent sends must be forwarded to the target:
+# - X-PAYMENT-SIGNATURE: Contains the signed payment payload
+# - PAYMENT-SIGNATURE: Alternative non-prefixed header
+# - X-Request-Id: For request tracing
+#
+# ### 2. Response Header Passthrough (passthrough_response_headers)
+#
+# Headers from the target must be forwarded back to the agent:
+# - X-PAYMENT-REQUIRED: Payment requirements (with 402 responses)
+# - X-PAYMENT-RESPONSE: Settlement confirmation (with 200 responses)
+# - PAYMENT-REQUIRED/PAYMENT-RESPONSE: Non-prefixed alternatives
+# - X-Request-Id: For request tracing
+#
+# ### 3. Status Code Handling (passthrough_status_codes)
+#
+# The Gateway must NOT retry or transform these status codes:
+# - 402: Payment Required - agent must handle payment flow
+# - 400: Bad Request - agent must fix the payment payload
+# - 401: Unauthorized - agent must re-authorize payment
+#
+# ### 4. CORS Configuration (cors_expose_headers)
+#
+# For browser-based clients, x402 headers must be exposed via CORS:
+# - Access-Control-Expose-Headers must include all x402 headers
+#
+# ## Troubleshooting
+#
+# ### Headers Not Being Passed Through
+#
+# 1. Check that headers are listed in passthrough_request_headers
+# 2. Verify CORS expose_headers includes the x402 headers
+# 3. Check Gateway logs for header transformation issues
+#
+# ### 402 Responses Being Retried
+#
+# 1. Ensure 402 is in passthrough_status_codes
+# 2. Verify 402 is NOT in retry_on_status_codes
+# 3. Check no_retry_status_codes includes 402
+#
+# ### Payment Signature Not Reaching Target
+#
+# 1. Verify X-PAYMENT-SIGNATURE is in forward_headers
+# 2. Check that header is not in exclude_headers
+# 3. Verify header case is preserved (preserve_case: true)
+#
+# ## Security Considerations
+#
+# 1. Payment signatures contain sensitive cryptographic data
+# 2. Never log full payment signatures (use mask_signatures: true)
+# 3. Payment headers should not be cached
+# 4. Ensure HTTPS is used for all x402 traffic
+#

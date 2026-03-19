@@ -1,0 +1,119 @@
+name: Build, test and publish machinepal
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ develop ]
+    paths-ignore: &ignored-paths
+      - 'README.md'
+      - 'LICENSE'
+      - 'ui/**'
+      - 'docker/**'
+      - 'docs/**'
+      - 'wallet/**'
+      - '.github/workflows/docker**'
+      - '.github/workflows/deploy-docs.yml'
+  pull_request:
+    paths-ignore: *ignored-paths
+
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Install build packages
+        run: |
+          cd docker && sudo ./install_packages.sh
+
+      - name: Bootstrap vcpkg
+        run: |
+          external/vcpkg/bootstrap-vcpkg.sh        
+
+      # Restore vcpkg cache (keyed to manifests so it updates when deps change)
+      - name: Restore vcpkg cache
+        id: vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cache/vcpkg
+            external/vcpkg/installed
+            external/vcpkg/downloads
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('**/vcpkg.json', '**/vcpkg-configuration.json', '**/vcpkg-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-
+
+      - name: Install vcpkg packages
+        env:
+            VCPKG_ROOT: external/vcpkg
+        run: |
+          docker/vcpkg_packages_install.sh
+
+      - name: Configure (CMake)
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake \
+            -DVCPKG_TARGET_TRIPLET=x64-linux          
+
+      - name: Build
+        run: cmake --build build -j 2
+
+      - name: Run tests
+        run: build/mptest
+
+      # Save cache only if we didn't hit it (prevents save conflicts)
+      - name: Save vcpkg cache
+        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cache/vcpkg
+            external/vcpkg/installed
+            external/vcpkg/downloads
+          key: ${{ steps.vcpkg-cache.outputs.cache-primary-key }}
+
+      - name: Upload executables as artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: machinepal-executables
+          path: |
+            build/machinepal
+            build/mptest
+
+      - name: Build Debian package
+        run: |
+          mkdir -p build/deb
+          cpack -G DEB --config build/CPackConfig.cmake
+          mv *.deb build/deb/
+
+      - name: Upload Debian package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: machinepal-deb
+          path: build/deb/*.deb
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/deb/*.deb
+          tag_name: v1.0
+          name: MachinePal v1.0 Debian Package
+          body: Release of MachinePal v1.0 as a Debian package.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

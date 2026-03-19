@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.3/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    [
+      "@lucid-agents/core",
+      "@lucid-agents/identity",
+      "@lucid-agents/payments",
+      "@lucid-agents/cli",
+      "@lucid-agents/api-sdk"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "master",
+  "updateInternalDependencies": "patch"
+}

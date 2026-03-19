@@ -1,0 +1,14 @@
+#!/usr/bin/env opsh
+# shellcheck shell=bash
+
+source "$SCRIPTDIR/lib.opsh"
+
+step::000::checkout-staging() {
+	STAGING_DIR=$(checkout-staging pre-commit)
+}
+
+step::010::lint-source() {
+	(cd "$STAGING_DIR" && make lint INSIDE_STAGING_DIR=true)
+}
+
+steps::run step

@@ -1,0 +1,1759 @@
+/**
+ * Solana DEX Handlers
+ *
+ * Platform handlers for Solana DEX protocols:
+ * - Jupiter (aggregator)
+ * - Raydium (AMM)
+ * - Orca (Whirlpools)
+ * - Meteora (DLMM)
+ * - Pump.fun (token launchpad)
+ * - Drift (perps + prediction markets)
+ */
+
+import type { ToolInput, HandlerResult, HandlersMap } from './types';
+import { safeHandler } from './types';
+
+// Lazy imports to avoid loading heavy SDKs unless needed
+const getSolanaModules = async () => {
+  const [wallet, jupiter, raydium, orca, meteora, pumpapi, drift, pools, tokenlist] = await Promise.all([
+    import('../../solana/wallet'),
+    import('../../solana/jupiter'),
+    import('../../solana/raydium'),
+    import('../../solana/orca'),
+    import('../../solana/meteora'),
+    import('../../solana/pumpapi'),
+    import('../../solana/drift'),
+    import('../../solana/pools'),
+    import('../../solana/tokenlist'),
+  ]);
+  return { wallet, jupiter, raydium, orca, meteora, pumpapi, drift, pools, tokenlist };
+};
+
+// ============================================================================
+// Wallet / Address
+// ============================================================================
+
+async function addressHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    return { address: keypair.publicKey.toBase58() };
+  });
+}
+
+// ============================================================================
+// Jupiter Handlers
+// ============================================================================
+
+async function jupiterSwapHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const inputMint = toolInput.input_mint as string;
+  const outputMint = toolInput.output_mint as string;
+  const amount = toolInput.amount as string;
+  const slippageBps = toolInput.slippage_bps as number | undefined;
+  const swapMode = toolInput.swap_mode as 'ExactIn' | 'ExactOut' | undefined;
+  const priorityFeeLamports = toolInput.priority_fee_lamports as number | undefined;
+  const onlyDirectRoutes = toolInput.only_direct_routes as boolean | undefined;
+
+  return safeHandler(async () => {
+    const { wallet, jupiter } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return jupiter.executeJupiterSwap(connection, keypair, {
+      inputMint,
+      outputMint,
+      amount,
+      slippageBps,
+      swapMode,
+      priorityFeeLamports,
+      onlyDirectRoutes,
+    });
+  }, 'Jupiter swap failed. Set SOLANA_PRIVATE_KEY and SOLANA_RPC_URL.');
+}
+
+// ============================================================================
+// Raydium Handlers
+// ============================================================================
+
+async function raydiumSwapHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, raydium } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return raydium.executeRaydiumSwap(connection, keypair, {
+      inputMint: toolInput.input_mint as string,
+      outputMint: toolInput.output_mint as string,
+      amount: toolInput.amount as string,
+      slippageBps: toolInput.slippage_bps as number | undefined,
+      swapMode: toolInput.swap_mode as 'BaseIn' | 'BaseOut' | undefined,
+      txVersion: toolInput.tx_version as 'V0' | 'LEGACY' | undefined,
+      computeUnitPriceMicroLamports: toolInput.compute_unit_price_micro_lamports as number | undefined,
+    });
+  });
+}
+
+async function raydiumPoolsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { raydium, tokenlist } = await getSolanaModules();
+    const tokenMints = toolInput.token_mints as string[] | undefined;
+    const tokenSymbols = toolInput.token_symbols as string[] | undefined;
+    const limit = toolInput.limit as number | undefined;
+    const resolvedMints = tokenMints && tokenMints.length > 0
+      ? tokenMints
+      : tokenSymbols && tokenSymbols.length > 0
+        ? await tokenlist.resolveTokenMints(tokenSymbols)
+        : undefined;
+    return raydium.listRaydiumPools({ tokenMints: resolvedMints, limit });
+  });
+}
+
+async function raydiumQuoteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { raydium } = await getSolanaModules();
+    return raydium.getRaydiumQuote({
+      inputMint: toolInput.input_mint as string,
+      outputMint: toolInput.output_mint as string,
+      amount: toolInput.amount as string,
+      slippageBps: toolInput.slippage_bps as number | undefined,
+      swapMode: toolInput.swap_mode as 'BaseIn' | 'BaseOut' | undefined,
+    });
+  });
+}
+
+// ============================================================================
+// Orca Handlers
+// ============================================================================
+
+async function orcaSwapHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, orca } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return orca.executeOrcaWhirlpoolSwap(connection, keypair, {
+      poolAddress: toolInput.pool_address as string,
+      inputMint: toolInput.input_mint as string,
+      amount: toolInput.amount as string,
+      slippageBps: toolInput.slippage_bps as number | undefined,
+    });
+  });
+}
+
+async function orcaPoolsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { orca, tokenlist } = await getSolanaModules();
+    const tokenMints = toolInput.token_mints as string[] | undefined;
+    const tokenSymbols = toolInput.token_symbols as string[] | undefined;
+    const limit = toolInput.limit as number | undefined;
+    const resolvedMints = tokenMints && tokenMints.length > 0
+      ? tokenMints
+      : tokenSymbols && tokenSymbols.length > 0
+        ? await tokenlist.resolveTokenMints(tokenSymbols)
+        : undefined;
+    return orca.listOrcaWhirlpoolPools({ tokenMints: resolvedMints, limit });
+  });
+}
+
+async function orcaQuoteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { orca } = await getSolanaModules();
+    return orca.getOrcaWhirlpoolQuote({
+      poolAddress: toolInput.pool_address as string,
+      inputMint: toolInput.input_mint as string,
+      amount: toolInput.amount as string,
+      slippageBps: toolInput.slippage_bps as number | undefined,
+    });
+  });
+}
+
+// ============================================================================
+// Meteora Handlers
+// ============================================================================
+
+async function meteoraSwapHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, meteora } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return meteora.executeMeteoraDlmmSwap(connection, keypair, {
+      poolAddress: toolInput.pool_address as string,
+      inputMint: toolInput.input_mint as string,
+      outputMint: toolInput.output_mint as string,
+      inAmount: toolInput.in_amount as string,
+      slippageBps: toolInput.slippage_bps as number | undefined,
+      allowPartialFill: toolInput.allow_partial_fill as boolean | undefined,
+      maxExtraBinArrays: toolInput.max_extra_bin_arrays as number | undefined,
+    });
+  });
+}
+
+async function meteoraPoolsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, meteora, tokenlist } = await getSolanaModules();
+    const connection = wallet.getSolanaConnection();
+    const tokenMints = toolInput.token_mints as string[] | undefined;
+    const tokenSymbols = toolInput.token_symbols as string[] | undefined;
+    const limit = toolInput.limit as number | undefined;
+    const resolvedMints = tokenMints && tokenMints.length > 0
+      ? tokenMints
+      : tokenSymbols && tokenSymbols.length > 0
+        ? await tokenlist.resolveTokenMints(tokenSymbols)
+        : undefined;
+    return meteora.listMeteoraDlmmPools(connection, { tokenMints: resolvedMints, limit, includeLiquidity: true });
+  });
+}
+
+async function meteoraQuoteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, meteora } = await getSolanaModules();
+    const connection = wallet.getSolanaConnection();
+    return meteora.getMeteoraDlmmQuote(connection, {
+      poolAddress: toolInput.pool_address as string,
+      inputMint: toolInput.input_mint as string,
+      inAmount: toolInput.in_amount as string,
+      slippageBps: toolInput.slippage_bps as number | undefined,
+    });
+  });
+}
+
+// ============================================================================
+// Pump.fun Handlers
+// ============================================================================
+
+async function pumpfunTradeHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const action = toolInput.action as 'buy' | 'sell';
+  const mint = toolInput.mint as string;
+  const amountRaw = toolInput.amount as string;
+  const denominatedInSol = toolInput.denominated_in_sol as boolean;
+  const slippageBps = toolInput.slippage_bps as number | undefined;
+  const priorityFeeLamports = toolInput.priority_fee_lamports as number | undefined;
+  const pool = toolInput.pool as string | undefined;
+
+  const amountValue = amountRaw?.trim();
+  if (!amountValue) {
+    return JSON.stringify({ error: 'amount is required' });
+  }
+
+  return safeHandler(async () => {
+    const { wallet, pumpapi } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return pumpapi.executePumpFunTrade(connection, keypair, {
+      action,
+      mint,
+      amount: amountValue,
+      denominatedInSol,
+      slippageBps,
+      priorityFeeLamports,
+      pool,
+    });
+  }, 'Ensure PUMPFUN_LOCAL_TX_URL is reachable and SOLANA_PRIVATE_KEY is set.');
+}
+
+const PUMPFUN_FRONTEND_API = 'https://frontend-api-v3.pump.fun';
+
+async function pumpFrontendRequest<T>(endpoint: string): Promise<T> {
+  const response = await fetch(`${PUMPFUN_FRONTEND_API}${endpoint}`, {
+    headers: { 'Accept': 'application/json' },
+  });
+  if (!response.ok) throw new Error(`Pump.fun API error: ${response.status}`);
+  return response.json() as Promise<T>;
+}
+
+async function pumpfunTrendingHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; volume24h?: number;
+    }>>('/coins/top-runners');
+    return { tokens: tokens.slice(0, 20) };
+  });
+}
+
+async function pumpfunNewHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; bondingCurveProgress?: number;
+    }>>('/coins/currently-live?limit=20&sort=created_timestamp&order=desc');
+    return { tokens };
+  });
+}
+
+async function pumpfunLiveHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; holders?: number;
+    }>>('/coins/currently-live?limit=20');
+    return { tokens };
+  });
+}
+
+async function pumpfunGraduatedHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; liquidity?: number;
+    }>>('/coins/graduated?limit=20');
+    return { tokens };
+  });
+}
+
+async function pumpfunSearchHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const query = toolInput.query as string;
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; graduated?: boolean;
+    }>>(`/coins/search?query=${encodeURIComponent(query)}&limit=20`);
+    return { tokens };
+  });
+}
+
+async function pumpfunVolatileHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number;
+    }>>('/coins/volatile?limit=20');
+    return { tokens };
+  });
+}
+
+async function pumpfunTokenHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  return safeHandler(async () => {
+    const token = await pumpFrontendRequest<{
+      mint: string; name: string; symbol: string; description?: string;
+      price?: number; priceUsd?: number; marketCap?: number; liquidity?: number;
+      volume24h?: number; holders?: number; bondingCurveProgress?: number;
+      graduated?: boolean; creator?: string; twitter?: string; telegram?: string; website?: string;
+    }>(`/coins/${mint}`);
+    return token;
+  });
+}
+
+async function pumpfunPriceHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  return safeHandler(async () => {
+    const [token, ohlcv] = await Promise.all([
+      pumpFrontendRequest<{ price?: number; priceUsd?: number; marketCap?: number }>(`/coins/${mint}`),
+      pumpFrontendRequest<Array<{ timestamp: number; open: number; high: number; low: number; close: number; volume: number }>>(`/coins/${mint}/ohlcv?interval=1h&limit=24`).catch(() => null),
+    ]);
+    return { ...token, ohlcv };
+  });
+}
+
+async function pumpfunHoldersHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  return safeHandler(async () => {
+    const holders = await pumpFrontendRequest<Array<{
+      wallet: string; balance: number; percentage: number; isCreator?: boolean;
+    }>>(`/coins/${mint}/holders?limit=20`);
+    return { holders };
+  });
+}
+
+async function pumpfunTradesHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  const limit = (toolInput.limit as number) ?? 20;
+  return safeHandler(async () => {
+    const trades = await pumpFrontendRequest<Array<{
+      signature: string; type: 'buy' | 'sell'; solAmount: number; tokenAmount: number;
+      pricePerToken: number; wallet: string; timestamp: number;
+    }>>(`/coins/${mint}/trades?limit=${limit}`);
+    return { trades };
+  });
+}
+
+async function pumpfunChartHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  const interval = (toolInput.interval as string) ?? '1h';
+  const limit = (toolInput.limit as number) ?? 24;
+  return safeHandler(async () => {
+    const ohlcv = await pumpFrontendRequest<Array<{
+      timestamp: number; open: number; high: number; low: number; close: number; volume: number;
+    }>>(`/coins/${mint}/ohlcv?interval=${interval}&limit=${limit}`);
+    return { ohlcv };
+  });
+}
+
+async function pumpfunCreateHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const name = toolInput.name as string;
+  const symbol = toolInput.symbol as string;
+  const description = toolInput.description as string;
+  const imageUrl = toolInput.image_url as string | undefined;
+  const twitter = toolInput.twitter as string | undefined;
+  const telegram = toolInput.telegram as string | undefined;
+  const website = toolInput.website as string | undefined;
+  const initialBuyLamports = toolInput.initial_buy_lamports as number | undefined;
+
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+
+    const apiKey = process.env.PUMPPORTAL_API_KEY;
+    const url = apiKey
+      ? `https://pumpportal.fun/api/create?api-key=${apiKey}`
+      : 'https://pumpportal.fun/api/create';
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        publicKey: keypair.publicKey.toBase58(),
+        name, symbol, description, imageUrl, twitter, telegram, website, initialBuyLamports,
+      }),
+    });
+
+    if (!response.ok) throw new Error(`Create failed: ${response.status}`);
+    const result = await response.json() as { mint: string; transaction: string };
+
+    const { VersionedTransaction } = await import('@solana/web3.js');
+    const tx = VersionedTransaction.deserialize(Buffer.from(result.transaction, 'base64'));
+    tx.sign([keypair]);
+    const signature = await connection.sendRawTransaction(tx.serialize());
+    await connection.confirmTransaction(signature, 'confirmed');
+
+    return { mint: result.mint, signature };
+  }, 'Token creation failed. Ensure SOLANA_PRIVATE_KEY is set.');
+}
+
+async function pumpfunClaimHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+
+    const apiKey = process.env.PUMPPORTAL_API_KEY;
+    const url = apiKey
+      ? `https://pumpportal.fun/api/claim-fees?api-key=${apiKey}`
+      : 'https://pumpportal.fun/api/claim-fees';
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ publicKey: keypair.publicKey.toBase58(), mint }),
+    });
+
+    if (!response.ok) throw new Error(`Claim failed: ${response.status}`);
+    const result = await response.json() as { transaction?: string; amount?: number };
+
+    if (!result.transaction) return { claimed: false, message: 'No fees to claim' };
+
+    const { VersionedTransaction } = await import('@solana/web3.js');
+    const tx = VersionedTransaction.deserialize(Buffer.from(result.transaction, 'base64'));
+    tx.sign([keypair]);
+    const signature = await connection.sendRawTransaction(tx.serialize());
+    await connection.confirmTransaction(signature, 'confirmed');
+
+    return { claimed: true, amount: result.amount, signature };
+  }, 'Fee claim failed. Ensure SOLANA_PRIVATE_KEY is set.');
+}
+
+async function pumpfunKothHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; bondingCurveProgress?: number;
+    }>>('/coins/king-of-the-hill');
+    return { tokens };
+  });
+}
+
+async function pumpfunForYouHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; volume24h?: number;
+    }>>('/coins/for-you?limit=20');
+    return { tokens };
+  });
+}
+
+async function pumpfunSimilarHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  return safeHandler(async () => {
+    const tokens = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; similarity?: number;
+    }>>(`/coins/similar?mint=${mint}&limit=20`);
+    return { tokens };
+  });
+}
+
+async function pumpfunUserCoinsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const address = toolInput.address as string;
+  return safeHandler(async () => {
+    const coins = await pumpFrontendRequest<Array<{
+      mint: string; name: string; symbol: string; marketCap?: number; graduated?: boolean;
+    }>>(`/coins/user-created-coins/${address}`);
+    return { coins };
+  });
+}
+
+async function pumpfunMetasHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const metas = await pumpFrontendRequest<Array<{
+      word: string; count: number; trending?: boolean;
+    }>>('/metas/current');
+    return { metas };
+  });
+}
+
+async function pumpfunLatestTradesHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const limit = (toolInput.limit as number) ?? 50;
+  return safeHandler(async () => {
+    const trades = await pumpFrontendRequest<Array<{
+      mint: string; signature: string; type: 'buy' | 'sell'; solAmount: number;
+      tokenAmount: number; wallet: string; timestamp: number;
+    }>>(`/trades/latest?limit=${limit}`);
+    return { trades };
+  });
+}
+
+async function pumpfunSolPriceHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const result = await pumpFrontendRequest<{ price: number; priceUsd: number }>('/sol-price');
+    return result;
+  });
+}
+
+async function pumpfunIpfsUploadHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const name = toolInput.name as string;
+  const symbol = toolInput.symbol as string;
+  const description = toolInput.description as string;
+  const imageUrl = toolInput.image_url as string | undefined;
+  const twitter = toolInput.twitter as string | undefined;
+  const telegram = toolInput.telegram as string | undefined;
+  const website = toolInput.website as string | undefined;
+
+  return safeHandler(async () => {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('symbol', symbol);
+    formData.append('description', description);
+    if (twitter) formData.append('twitter', twitter);
+    if (telegram) formData.append('telegram', telegram);
+    if (website) formData.append('website', website);
+    formData.append('showName', 'true');
+
+    // If imageUrl provided, fetch and attach as file
+    if (imageUrl) {
+      const imgResponse = await fetch(imageUrl);
+      if (imgResponse.ok) {
+        const blob = await imgResponse.blob();
+        formData.append('file', blob, 'image.png');
+      }
+    }
+
+    const response = await fetch('https://pump.fun/api/ipfs', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error(`IPFS upload failed: ${response.status}`);
+    const result = await response.json() as { metadata: Record<string, unknown>; metadataUri: string };
+    return result;
+  });
+}
+
+// ============================================================================
+// Pump.fun Swarm Handlers
+// ============================================================================
+
+async function swarmWalletsHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+    const wallets = swarm.getWallets();
+    return {
+      count: wallets.length,
+      wallets: wallets.map(w => ({
+        id: w.id,
+        publicKey: w.publicKey,
+        solBalance: w.solBalance,
+        enabled: w.enabled,
+        positionCount: w.positions.size,
+      })),
+    };
+  });
+}
+
+async function swarmBalancesHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+    const balances = await swarm.refreshBalances();
+    const result: Record<string, number> = {};
+    for (const [id, balance] of balances) {
+      result[id] = balance;
+    }
+    return { balances: result, totalSol: Object.values(result).reduce((a, b) => a + b, 0) };
+  });
+}
+
+async function swarmBuyHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  const amountPerWallet = toolInput.amount_per_wallet as number;
+  const walletIds = toolInput.wallet_ids as string[] | undefined;
+  const executionMode = toolInput.execution_mode as 'parallel' | 'bundle' | 'multi-bundle' | 'sequential' | undefined;
+  const slippageBps = toolInput.slippage_bps as number | undefined;
+  const pool = toolInput.pool as string | undefined;
+  const presetName = toolInput.preset as string | undefined;
+  const dex = toolInput.dex as 'pumpfun' | 'bags' | 'meteora' | 'auto' | undefined;
+  const poolAddress = toolInput.pool_address as string | undefined;
+
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+
+    let finalMint = mint;
+    let finalAmount: number | string = amountPerWallet;
+    let finalSlippage = slippageBps;
+    let finalPool = pool;
+    let finalMode = executionMode;
+    let finalWalletIds = walletIds;
+    let finalDex = dex;
+    let finalPoolAddress = poolAddress;
+
+    // Apply preset if specified
+    if (presetName) {
+      const { getSwarmPresetService } = await import('../../solana/swarm-presets');
+      const presetService = getSwarmPresetService();
+      const preset = await presetService.get('agent_user', presetName);
+      if (preset) {
+        const config = preset.config;
+        if (config.mint && !mint) finalMint = config.mint;
+        if (config.amountPerWallet !== undefined && !amountPerWallet) finalAmount = config.amountPerWallet;
+        if (config.slippageBps !== undefined && !slippageBps) finalSlippage = config.slippageBps;
+        if (config.pool && !pool) finalPool = config.pool;
+        if (config.executionMode && !executionMode) finalMode = config.executionMode;
+        if (config.walletIds && config.walletIds.length > 0 && !walletIds) finalWalletIds = config.walletIds;
+      }
+    }
+
+    const result = await swarm.coordinatedBuy({
+      mint: finalMint,
+      action: 'buy',
+      amountPerWallet: finalAmount,
+      denominatedInSol: true,
+      slippageBps: finalSlippage,
+      pool: finalPool,
+      executionMode: finalMode,
+      walletIds: finalWalletIds,
+      dex: finalDex,
+      poolAddress: finalPoolAddress,
+    });
+
+    return {
+      success: result.success,
+      mint: result.mint,
+      totalSolSpent: result.totalSolSpent,
+      executionMode: result.executionMode,
+      executionTimeMs: result.executionTimeMs,
+      bundleIds: result.bundleIds,
+      presetApplied: presetName,
+      dex: finalDex || 'pumpfun',
+      walletResults: result.walletResults.map(wr => ({
+        walletId: wr.walletId,
+        success: wr.success,
+        signature: wr.signature,
+        error: wr.error,
+      })),
+    };
+  }, 'Swarm buy failed. Ensure SOLANA_PRIVATE_KEY and swarm keys are set.');
+}
+
+async function swarmSellHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  const amountPerWallet = toolInput.amount_per_wallet as number | string;
+  const walletIds = toolInput.wallet_ids as string[] | undefined;
+  const executionMode = toolInput.execution_mode as 'parallel' | 'bundle' | 'multi-bundle' | 'sequential' | undefined;
+  const slippageBps = toolInput.slippage_bps as number | undefined;
+  const pool = toolInput.pool as string | undefined;
+  const presetName = toolInput.preset as string | undefined;
+  const dex = toolInput.dex as 'pumpfun' | 'bags' | 'meteora' | 'auto' | undefined;
+  const poolAddress = toolInput.pool_address as string | undefined;
+
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+
+    let finalMint = mint;
+    let finalAmount: number | string = amountPerWallet;
+    let finalSlippage = slippageBps;
+    let finalPool = pool;
+    let finalMode = executionMode;
+    let finalWalletIds = walletIds;
+    let finalDex = dex;
+    let finalPoolAddress = poolAddress;
+
+    // Apply preset if specified
+    if (presetName) {
+      const { getSwarmPresetService } = await import('../../solana/swarm-presets');
+      const presetService = getSwarmPresetService();
+      const preset = await presetService.get('agent_user', presetName);
+      if (preset) {
+        const config = preset.config;
+        if (config.mint && !mint) finalMint = config.mint;
+        if (config.amountPerWallet !== undefined && !amountPerWallet) finalAmount = config.amountPerWallet;
+        if (config.slippageBps !== undefined && !slippageBps) finalSlippage = config.slippageBps;
+        if (config.pool && !pool) finalPool = config.pool;
+        if (config.executionMode && !executionMode) finalMode = config.executionMode;
+        if (config.walletIds && config.walletIds.length > 0 && !walletIds) finalWalletIds = config.walletIds;
+      }
+    }
+
+    const result = await swarm.coordinatedSell({
+      mint: finalMint,
+      action: 'sell',
+      amountPerWallet: finalAmount,
+      denominatedInSol: false,
+      slippageBps: finalSlippage,
+      pool: finalPool,
+      executionMode: finalMode,
+      walletIds: finalWalletIds,
+      dex: finalDex,
+      poolAddress: finalPoolAddress,
+    });
+
+    return {
+      success: result.success,
+      mint: result.mint,
+      totalTokens: result.totalTokens,
+      executionMode: result.executionMode,
+      executionTimeMs: result.executionTimeMs,
+      bundleIds: result.bundleIds,
+      presetApplied: presetName,
+      dex: finalDex || 'pumpfun',
+      walletResults: result.walletResults.map(wr => ({
+        walletId: wr.walletId,
+        success: wr.success,
+        signature: wr.signature,
+        error: wr.error,
+      })),
+    };
+  }, 'Swarm sell failed. Ensure SOLANA_PRIVATE_KEY and swarm keys are set.');
+}
+
+async function swarmPositionHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+    const position = swarm.getSwarmPosition(mint);
+
+    const byWallet: Record<string, number> = {};
+    for (const [id, amount] of position.byWallet) {
+      byWallet[id] = amount;
+    }
+
+    return {
+      mint: position.mint,
+      totalTokens: position.totalTokens,
+      byWallet,
+      lastUpdated: position.lastUpdated,
+    };
+  });
+}
+
+async function swarmRefreshHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+    const position = await swarm.refreshTokenPositions(mint);
+
+    const byWallet: Record<string, number> = {};
+    for (const [id, amount] of position.byWallet) {
+      byWallet[id] = amount;
+    }
+
+    return {
+      mint: position.mint,
+      totalTokens: position.totalTokens,
+      byWallet,
+      lastUpdated: position.lastUpdated,
+    };
+  });
+}
+
+async function swarmEnableHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const walletId = toolInput.wallet_id as string;
+
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+    swarm.enableWallet(walletId);
+    return { success: true, walletId, enabled: true };
+  });
+}
+
+async function swarmDisableHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const walletId = toolInput.wallet_id as string;
+
+  return safeHandler(async () => {
+    const { getSwarm } = await import('../../solana/pump-swarm');
+    const swarm = getSwarm();
+    swarm.disableWallet(walletId);
+    return { success: true, walletId, enabled: false };
+  });
+}
+
+// ============================================================================
+// Swarm Preset Handlers
+// ============================================================================
+
+async function swarmPresetSaveHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const name = toolInput.name as string;
+  const type = (toolInput.type as string) ?? 'strategy';
+  const description = toolInput.description as string | undefined;
+  const config = toolInput.config as Record<string, unknown>;
+  const userId = (toolInput.user_id as string) ?? 'agent_user';
+
+  return safeHandler(async () => {
+    const { getSwarmPresetService } = await import('../../solana/swarm-presets');
+    const presetService = getSwarmPresetService();
+
+    const preset = await presetService.create(userId, {
+      name,
+      type: type as 'strategy' | 'token' | 'wallet_group',
+      description,
+      config: {
+        mint: config.mint as string | undefined,
+        amountPerWallet: config.amountPerWallet as number | undefined,
+        slippageBps: config.slippageBps as number | undefined,
+        pool: config.pool as 'pump' | 'raydium' | 'auto' | undefined,
+        executionMode: config.executionMode as 'parallel' | 'bundle' | 'multi-bundle' | 'sequential' | undefined,
+        walletIds: config.walletIds as string[] | undefined,
+        amountVariancePct: config.amountVariancePct as number | undefined,
+      },
+    });
+
+    return {
+      success: true,
+      preset: {
+        id: preset.id,
+        name: preset.name,
+        type: preset.type,
+        description: preset.description,
+        config: preset.config,
+      },
+    };
+  }, 'Failed to save preset.');
+}
+
+async function swarmPresetListHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const type = toolInput.type as string | undefined;
+  const userId = (toolInput.user_id as string) ?? 'agent_user';
+
+  return safeHandler(async () => {
+    const { getSwarmPresetService } = await import('../../solana/swarm-presets');
+    const presetService = getSwarmPresetService();
+
+    const presets = await presetService.list(
+      userId,
+      type as 'strategy' | 'token' | 'wallet_group' | undefined
+    );
+
+    return {
+      count: presets.length,
+      presets: presets.map(p => ({
+        name: p.name,
+        type: p.type,
+        description: p.description,
+        isBuiltin: p.userId === 'system',
+        config: p.config,
+      })),
+    };
+  });
+}
+
+async function swarmPresetGetHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const name = toolInput.name as string;
+  const userId = (toolInput.user_id as string) ?? 'agent_user';
+
+  return safeHandler(async () => {
+    const { getSwarmPresetService } = await import('../../solana/swarm-presets');
+    const presetService = getSwarmPresetService();
+
+    const preset = await presetService.get(userId, name);
+
+    if (!preset) {
+      return { found: false, name };
+    }
+
+    return {
+      found: true,
+      preset: {
+        id: preset.id,
+        name: preset.name,
+        type: preset.type,
+        description: preset.description,
+        isBuiltin: preset.userId === 'system',
+        config: preset.config,
+        createdAt: preset.createdAt.toISOString(),
+        updatedAt: preset.updatedAt.toISOString(),
+      },
+    };
+  });
+}
+
+async function swarmPresetDeleteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const name = toolInput.name as string;
+  const userId = (toolInput.user_id as string) ?? 'agent_user';
+
+  return safeHandler(async () => {
+    const { getSwarmPresetService } = await import('../../solana/swarm-presets');
+    const presetService = getSwarmPresetService();
+
+    const deleted = await presetService.delete(userId, name);
+
+    return { success: deleted, name };
+  }, 'Failed to delete preset.');
+}
+
+// ============================================================================
+// Drift Handlers
+// ============================================================================
+
+async function driftPlaceOrderHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.executeDriftDirectOrder(connection, keypair, {
+      marketType: toolInput.market_type as 'perp' | 'spot',
+      marketIndex: toolInput.market_index as number,
+      side: toolInput.side as 'buy' | 'sell',
+      orderType: toolInput.order_type as 'limit' | 'market',
+      baseAmount: toolInput.base_amount as string,
+      price: toolInput.price as string | undefined,
+    });
+  });
+}
+
+async function driftCancelOrderHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.cancelDriftOrder(connection, keypair, {
+      orderId: toolInput.order_id as number | undefined,
+      marketIndex: toolInput.market_index as number | undefined,
+      marketType: toolInput.market_type as 'perp' | 'spot' | undefined,
+    });
+  });
+}
+
+async function driftOrdersHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.getDriftOrders(
+      connection,
+      keypair,
+      toolInput.market_index as number | undefined,
+      toolInput.market_type as 'perp' | 'spot' | undefined
+    );
+  });
+}
+
+async function driftPositionsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.getDriftPositions(
+      connection,
+      keypair,
+      toolInput.market_index as number | undefined
+    );
+  });
+}
+
+async function driftBalanceHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.getDriftBalance(connection, keypair);
+  });
+}
+
+async function driftModifyOrderHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.modifyDriftOrder(connection, keypair, {
+      orderId: toolInput.order_id as number,
+      newPrice: toolInput.new_price as string | undefined,
+      newBaseAmount: toolInput.new_base_amount as string | undefined,
+      reduceOnly: toolInput.reduce_only as boolean | undefined,
+    });
+  });
+}
+
+async function driftSetLeverageHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, drift } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const connection = wallet.getSolanaConnection();
+    return drift.setDriftLeverage(connection, keypair, {
+      marketIndex: toolInput.market_index as number,
+      leverage: toolInput.leverage as number,
+    });
+  });
+}
+
+// ============================================================================
+// Auto-Routing Handlers (Best Pool Selection)
+// ============================================================================
+
+async function bestPoolHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, pools } = await getSolanaModules();
+    const connection = wallet.getSolanaConnection();
+    const result = await pools.selectBestPool(connection, {
+      tokenMints: toolInput.token_mints as string[] | undefined,
+      tokenSymbols: toolInput.token_symbols as string[] | undefined,
+      limit: toolInput.limit as number | undefined,
+      sortBy: toolInput.sort_by as 'liquidity' | 'volume24h' | undefined,
+      preferredDexes: toolInput.preferred_dexes as Array<'meteora' | 'raydium' | 'orca'> | undefined,
+    });
+    return result ?? { error: 'No matching pools found' };
+  });
+}
+
+async function autoRouteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, pools } = await getSolanaModules();
+    const connection = wallet.getSolanaConnection();
+    return pools.listAllPools(connection, {
+      tokenMints: toolInput.token_mints as string[] | undefined,
+      tokenSymbols: toolInput.token_symbols as string[] | undefined,
+      sortBy: toolInput.sort_by as 'liquidity' | 'volume24h' | undefined,
+      preferredDexes: toolInput.preferred_dexes as Array<'meteora' | 'raydium' | 'orca'> | undefined,
+      limit: (toolInput.limit as number | undefined) ?? 20,
+    });
+  });
+}
+
+async function autoSwapHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const amount = toolInput.amount as string;
+  const slippageBps = toolInput.slippage_bps as number | undefined;
+  const sortBy = toolInput.sort_by as 'liquidity' | 'volume24h' | undefined;
+  const preferredDexes = toolInput.preferred_dexes as Array<'meteora' | 'raydium' | 'orca'> | undefined;
+  const inputMint = toolInput.input_mint as string | undefined;
+  const outputMint = toolInput.output_mint as string | undefined;
+  const tokenSymbols = toolInput.token_symbols as string[] | undefined;
+
+  return safeHandler(async () => {
+    const { wallet, pools, tokenlist, meteora, raydium, orca } = await getSolanaModules();
+    const connection = wallet.getSolanaConnection();
+    const keypair = wallet.loadSolanaKeypair();
+
+    const resolvedMints = inputMint && outputMint
+      ? [inputMint, outputMint]
+      : tokenSymbols && tokenSymbols.length >= 2
+        ? await tokenlist.resolveTokenMints(tokenSymbols.slice(0, 2))
+        : [];
+
+    if (resolvedMints.length < 2) {
+      return { error: 'Provide input_mint/output_mint or token_symbols with 2 entries.' };
+    }
+
+    const { pool } = await pools.selectBestPoolWithResolvedMints(connection, {
+      tokenMints: resolvedMints,
+      sortBy,
+      preferredDexes,
+    });
+
+    if (!pool) {
+      return { error: 'No matching pools found.' };
+    }
+
+    if (pool.dex === 'meteora') {
+      const result = await meteora.executeMeteoraDlmmSwap(connection, keypair, {
+        poolAddress: pool.address,
+        inputMint: resolvedMints[0],
+        outputMint: resolvedMints[1],
+        inAmount: amount,
+        slippageBps,
+      });
+      return { dex: pool.dex, pool, result };
+    }
+
+    if (pool.dex === 'raydium') {
+      const result = await raydium.executeRaydiumSwap(connection, keypair, {
+        inputMint: resolvedMints[0],
+        outputMint: resolvedMints[1],
+        amount,
+        slippageBps,
+      });
+      return { dex: pool.dex, pool, result };
+    }
+
+    if (pool.dex === 'orca') {
+      const result = await orca.executeOrcaWhirlpoolSwap(connection, keypair, {
+        poolAddress: pool.address,
+        inputMint: resolvedMints[0],
+        amount,
+        slippageBps,
+      });
+      return { dex: pool.dex, pool, result };
+    }
+
+    return { error: 'Unsupported pool type' };
+  });
+}
+
+async function autoQuoteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const { wallet, pools, meteora, raydium, orca } = await getSolanaModules();
+    const connection = wallet.getSolanaConnection();
+    const amount = toolInput.amount as string;
+    const slippageBps = toolInput.slippage_bps as number | undefined;
+
+    const allPools = await pools.listAllPools(connection, {
+      tokenMints: toolInput.token_mints as string[] | undefined,
+      tokenSymbols: toolInput.token_symbols as string[] | undefined,
+      sortBy: toolInput.sort_by as 'liquidity' | 'volume24h' | undefined,
+      preferredDexes: toolInput.preferred_dexes as Array<'meteora' | 'raydium' | 'orca'> | undefined,
+      limit: 30,
+    });
+
+    const perDex = new Map<string, typeof allPools>();
+    for (const pool of allPools) {
+      const list = perDex.get(pool.dex) || [];
+      list.push(pool);
+      perDex.set(pool.dex, list);
+    }
+
+    const results: Array<Record<string, unknown>> = [];
+    for (const [dex, list] of perDex.entries()) {
+      const pool = list[0];
+      if (!pool) continue;
+
+      try {
+        if (dex === 'meteora') {
+          const quote = await meteora.getMeteoraDlmmQuote(connection, {
+            poolAddress: pool.address,
+            inputMint: pool.tokenMintA,
+            inAmount: amount,
+            slippageBps,
+          });
+          results.push({ dex, pool, quote });
+        } else if (dex === 'raydium') {
+          const quote = await raydium.getRaydiumQuote({
+            inputMint: pool.tokenMintA,
+            outputMint: pool.tokenMintB,
+            amount,
+            slippageBps,
+          });
+          results.push({ dex, pool, quote });
+        } else if (dex === 'orca') {
+          const quote = await orca.getOrcaWhirlpoolQuote({
+            poolAddress: pool.address,
+            inputMint: pool.tokenMintA,
+            amount,
+            slippageBps,
+          });
+          results.push({ dex, pool, quote });
+        }
+      } catch (_err: unknown) {
+        results.push({ dex, pool, error: `Quote failed for ${dex}` });
+      }
+    }
+
+    return results;
+  });
+}
+
+// ============================================================================
+// Bags.fm Handlers - Complete API Coverage
+// ============================================================================
+
+const BAGS_API_BASE = 'https://public-api-v2.bags.fm/api/v1';
+
+async function bagsRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const apiKey = process.env.BAGS_API_KEY;
+  if (!apiKey) throw new Error('BAGS_API_KEY not configured. Get one at dev.bags.fm');
+
+  const url = endpoint.startsWith('http') ? endpoint : `${BAGS_API_BASE}${endpoint}`;
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Bags API error: ${response.status} - ${error}`);
+  }
+  const json = await response.json() as { success?: boolean; response?: T; error?: string };
+  if (json.success === false) {
+    throw new Error(`Bags API error: ${json.error || 'Unknown error'}`);
+  }
+  // Unwrap { success, response } envelope
+  return (json.response !== undefined ? json.response : json) as T;
+}
+
+// Trading
+async function bagsQuoteHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const inputMint = toolInput.input_mint as string;
+  const outputMint = toolInput.output_mint as string;
+  const amount = toolInput.amount as string;
+
+  return safeHandler(async () => {
+    const quote = await bagsRequest<{
+      requestId: string;
+      inAmount: string;
+      outAmount: string;
+      minOutAmount: string;
+      priceImpactPct: string;
+      slippageBps: number;
+      routePlan: Array<{ venue: string; inAmount: string; outAmount: string }>;
+    }>(`/trade/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageMode=auto`);
+    return quote;
+  });
+}
+
+async function bagsSwapHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const inputMint = toolInput.input_mint as string;
+  const outputMint = toolInput.output_mint as string;
+  const amount = toolInput.amount as string;
+
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const walletAddress = keypair.publicKey.toBase58();
+    const connection = wallet.getSolanaConnection();
+
+    // Step 1: Get quote
+    const quote = await bagsRequest<Record<string, unknown>>(
+      `/trade/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageMode=auto`
+    );
+
+    // Step 2: Create swap from quote
+    const txResponse = await bagsRequest<{ swapTransaction: string; lastValidBlockHeight: number }>('/trade/swap', {
+      method: 'POST',
+      body: JSON.stringify({ quoteResponse: quote, userPublicKey: walletAddress }),
+    });
+
+    // Step 3: Sign and send (Base58 encoded)
+    const { VersionedTransaction } = await import('@solana/web3.js');
+    const { bs58 } = await import('@coral-xyz/anchor/dist/cjs/utils/bytes');
+    const txBuffer = bs58.decode(txResponse.swapTransaction);
+    const tx = VersionedTransaction.deserialize(txBuffer);
+    tx.sign([keypair]);
+    const signature = await connection.sendRawTransaction(tx.serialize());
+    await connection.confirmTransaction(signature, 'confirmed');
+
+    return { signature, inputMint, outputMint, amount };
+  }, 'Bags swap failed. Ensure BAGS_API_KEY and SOLANA_PRIVATE_KEY are set.');
+}
+
+// Discovery
+async function bagsPoolsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const limit = (toolInput.limit as number) ?? 50;
+
+  return safeHandler(async () => {
+    const pools = await bagsRequest<Array<{
+      tokenMint: string;
+      dbcConfigKey: string;
+      dbcPoolKey: string;
+      dammV2PoolKey?: string | null;
+    }>>('/solana/bags/pools');
+    return { pools: pools.slice(0, limit) };
+  });
+}
+
+async function bagsTrendingHandler(): Promise<HandlerResult> {
+  return safeHandler(async () => {
+    const pools = await bagsRequest<Array<{
+      tokenMint: string;
+      dbcConfigKey: string;
+      dbcPoolKey: string;
+      dammV2PoolKey?: string | null;
+    }>>('/solana/bags/pools?onlyMigrated=true');
+    return { pools };
+  });
+}
+
+async function bagsTokenHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const [creators, lifetimeFees] = await Promise.all([
+      bagsRequest<Array<{ wallet: string; username: string; royaltyBps: number; isCreator: boolean; provider?: string | null; providerUsername?: string | null }>>(`/token-launch/creator/v3?tokenMint=${mint}`).catch(() => null),
+      bagsRequest<string>(`/token-launch/lifetime-fees?tokenMint=${mint}`).catch(() => null),
+    ]);
+    return { creators, lifetimeFees: lifetimeFees ? { lamports: lifetimeFees, sol: parseInt(lifetimeFees, 10) / 1e9 } : null };
+  });
+}
+
+async function bagsCreatorsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const creators = await bagsRequest<Array<{ wallet: string; username: string; royaltyBps: number; isCreator: boolean; provider?: string | null; providerUsername?: string | null }>>(
+      `/token-launch/creator/v3?tokenMint=${mint}`
+    );
+    return { creators };
+  });
+}
+
+async function bagsLifetimeFeesHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const lamports = await bagsRequest<string>(
+      `/token-launch/lifetime-fees?tokenMint=${mint}`
+    );
+    return { lamports, sol: parseInt(lamports, 10) / 1e9 };
+  });
+}
+
+// Fee Claiming
+async function bagsFeesHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const wallet = toolInput.wallet as string;
+
+  return safeHandler(async () => {
+    const positions = await bagsRequest<Array<{
+      baseMint: string;
+      virtualPoolClaimableAmount?: number | null;
+      dammPoolClaimableAmount?: number | null;
+      totalClaimableLamportsUserShare: number;
+      claimableDisplayAmount?: number | null;
+      userBps?: number | null;
+    }>>(`/token-launch/claimable-positions?wallet=${wallet}`);
+    return { positions };
+  });
+}
+
+async function bagsClaimHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const walletArg = toolInput.wallet as string;
+
+  return safeHandler(async () => {
+    const { wallet: solWallet } = await getSolanaModules();
+    const keypair = solWallet.loadSolanaKeypair();
+    const walletAddress = walletArg || keypair.publicKey.toBase58();
+    const connection = solWallet.getSolanaConnection();
+
+    // Get claimable positions first
+    const positions = await bagsRequest<Array<{ baseMint: string; totalClaimableLamportsUserShare: number }>>(
+      `/token-launch/claimable-positions?wallet=${walletAddress}`
+    );
+
+    if (!positions?.length) return { claimed: false, message: 'No fees to claim' };
+
+    const { VersionedTransaction, Transaction } = await import('@solana/web3.js');
+    const { bs58 } = await import('@coral-xyz/anchor/dist/cjs/utils/bytes');
+    const signatures: string[] = [];
+
+    // Claim per token using v3 endpoint
+    for (const pos of positions) {
+      if (pos.totalClaimableLamportsUserShare <= 0) continue;
+      try {
+        const claimResult = await bagsRequest<Array<{ tx: string; blockhash: { blockhash: string; lastValidBlockHeight: number } }>>(
+          `/token-launch/claim-txs/v3`,
+          { method: 'POST', body: JSON.stringify({ feeClaimer: walletAddress, tokenMint: pos.baseMint }) }
+        );
+        for (const claimTx of claimResult) {
+          const txBuffer = bs58.decode(claimTx.tx);
+          try {
+            const tx = VersionedTransaction.deserialize(txBuffer);
+            tx.sign([keypair]);
+            const sig = await connection.sendRawTransaction(tx.serialize());
+            await connection.confirmTransaction(sig, 'confirmed');
+            signatures.push(sig);
+          } catch {
+            const tx = Transaction.from(txBuffer);
+            tx.sign(keypair);
+            const sig = await connection.sendRawTransaction(tx.serialize());
+            await connection.confirmTransaction(sig, 'confirmed');
+            signatures.push(sig);
+          }
+        }
+      } catch (_err: unknown) { /* skip failed token claim */ }
+    }
+
+    return { claimed: signatures.length > 0, signatures };
+  }, 'Claim failed. Ensure BAGS_API_KEY and SOLANA_PRIVATE_KEY are set.');
+}
+
+async function bagsClaimEventsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  const from = toolInput.from as number | undefined;
+  const to = toolInput.to as number | undefined;
+
+  return safeHandler(async () => {
+    let endpoint = `/fee-share/token/claim-events?tokenMint=${mint}`;
+    if (from || to) {
+      endpoint += '&mode=time';
+      if (from) endpoint += `&from=${from}`;
+      if (to) endpoint += `&to=${to}`;
+    }
+    const result = await bagsRequest<{ events: Array<{ wallet: string; isCreator: boolean; amount: string; timestamp: string; signature: string }> }>(endpoint);
+    return result;
+  });
+}
+
+async function bagsClaimStatsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const stats = await bagsRequest<Array<{ wallet: string; username: string; royaltyBps: number; isCreator: boolean; totalClaimed: string }>>(
+      `/token-launch/claim-stats?tokenMint=${mint}`
+    );
+    return stats;
+  });
+}
+
+// Token Launch
+async function bagsLaunchHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const name = toolInput.name as string;
+  const symbol = toolInput.symbol as string;
+  const description = toolInput.description as string;
+  const imageUrl = toolInput.image_url as string | undefined;
+  const twitter = toolInput.twitter as string | undefined;
+  const website = toolInput.website as string | undefined;
+  const telegram = toolInput.telegram as string | undefined;
+  const initialBuyLamports = Math.floor(((toolInput.initial_sol as number) ?? 0) * 1e9);
+
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const walletAddress = keypair.publicKey.toBase58();
+    const connection = wallet.getSolanaConnection();
+
+    // Step 1: Create token info (multipart/form-data)
+    const apiKey = process.env.BAGS_API_KEY;
+    if (!apiKey) throw new Error('BAGS_API_KEY not configured');
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('symbol', symbol);
+    formData.append('description', description);
+    if (imageUrl) formData.append('imageUrl', imageUrl);
+    if (twitter) formData.append('twitter', twitter);
+    if (website) formData.append('website', website);
+    if (telegram) formData.append('telegram', telegram);
+
+    const tokenInfoRes = await fetch(`${BAGS_API_BASE}/token-launch/create-token-info`, {
+      method: 'POST',
+      headers: { 'x-api-key': apiKey },
+      body: formData,
+    });
+    if (!tokenInfoRes.ok) throw new Error(`Token info failed: ${tokenInfoRes.status}`);
+    const tokenInfoJson = await tokenInfoRes.json() as { success: boolean; response: { tokenMint: string; tokenMetadata: string }; error?: string };
+    if (!tokenInfoJson.success) throw new Error(tokenInfoJson.error || 'Token info failed');
+    const tokenInfo = tokenInfoJson.response;
+
+    // Step 2: Create fee share config
+    const feeConfig = await bagsRequest<{ configKey: string; transactions: string[] }>('/token-launch/fee-share/create-config', {
+      method: 'POST',
+      body: JSON.stringify({ payer: walletAddress, baseMint: tokenInfo.tokenMint, feeClaimers: [{ user: walletAddress, userBps: 10000 }] }),
+    });
+
+    const { VersionedTransaction, Transaction } = await import('@solana/web3.js');
+    const { bs58 } = await import('@coral-xyz/anchor/dist/cjs/utils/bytes');
+    for (const txStr of feeConfig.transactions) {
+      const txBuffer = bs58.decode(txStr);
+      try {
+        const tx = VersionedTransaction.deserialize(txBuffer);
+        tx.sign([keypair]);
+        const sig = await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(sig, 'confirmed');
+      } catch {
+        const tx = Transaction.from(txBuffer);
+        tx.sign(keypair);
+        const sig = await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(sig, 'confirmed');
+      }
+    }
+
+    // Step 3: Launch (correct field names: ipfs, wallet)
+    const launchTxStr = await bagsRequest<string>('/token-launch/create-launch-transaction', {
+      method: 'POST',
+      body: JSON.stringify({ ipfs: tokenInfo.tokenMetadata, tokenMint: tokenInfo.tokenMint, wallet: walletAddress, initialBuyLamports, configKey: feeConfig.configKey }),
+    });
+
+    const launchTxBuffer = bs58.decode(launchTxStr);
+    let signature: string;
+    try {
+      const tx = VersionedTransaction.deserialize(launchTxBuffer);
+      tx.sign([keypair]);
+      signature = await connection.sendRawTransaction(tx.serialize());
+    } catch {
+      const tx = Transaction.from(launchTxBuffer);
+      tx.sign(keypair);
+      signature = await connection.sendRawTransaction(tx.serialize());
+    }
+    await connection.confirmTransaction(signature, 'confirmed');
+
+    return { tokenMint: tokenInfo.tokenMint, metadataUrl: tokenInfo.tokenMetadata, signature };
+  }, 'Launch failed. Ensure BAGS_API_KEY and SOLANA_PRIVATE_KEY are set.');
+}
+
+// Fee Share Config
+async function bagsFeeConfigHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+  const feeClaimers = toolInput.fee_claimers as Array<{ user: string; userBps: number }>;
+
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const walletAddress = keypair.publicKey.toBase58();
+    const connection = wallet.getSolanaConnection();
+
+    const result = await bagsRequest<{ configKey: string; transactions: string[] }>('/token-launch/fee-share/create-config', {
+      method: 'POST',
+      body: JSON.stringify({ payer: walletAddress, baseMint: mint, feeClaimers }),
+    });
+
+    const { VersionedTransaction, Transaction } = await import('@solana/web3.js');
+    const { bs58 } = await import('@coral-xyz/anchor/dist/cjs/utils/bytes');
+    const signatures: string[] = [];
+    for (const txStr of result.transactions) {
+      const txBuffer = bs58.decode(txStr);
+      try {
+        const tx = VersionedTransaction.deserialize(txBuffer);
+        tx.sign([keypair]);
+        const sig = await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(sig, 'confirmed');
+        signatures.push(sig);
+      } catch {
+        const tx = Transaction.from(txBuffer);
+        tx.sign(keypair);
+        const sig = await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(sig, 'confirmed');
+        signatures.push(sig);
+      }
+    }
+
+    return { configKey: result.configKey, signatures };
+  });
+}
+
+// Wallet Lookup
+async function bagsWalletLookupHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const provider = toolInput.provider as string;
+  const username = toolInput.username as string;
+
+  return safeHandler(async () => {
+    const result = await bagsRequest<{ wallet: string; provider: string; platformData: { username: string; display_name?: string } }>(
+      `/token-launch/fee-share/wallet/v2?provider=${provider}&username=${username}`
+    );
+    return result;
+  });
+}
+
+async function bagsBulkWalletLookupHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const provider = toolInput.provider as string;
+  const usernames = toolInput.usernames as string[];
+
+  return safeHandler(async () => {
+    // Bulk endpoint expects items array with per-item provider
+    const items = (usernames as string[]).map((username: string) => ({ username, provider }));
+    const result = await bagsRequest<Array<{ username: string; provider: string; wallet: string | null }>>('/token-launch/fee-share/wallet/v2/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    });
+    return result;
+  });
+}
+
+// Partner System
+async function bagsPartnerConfigHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const mint = toolInput.mint as string;
+
+  return safeHandler(async () => {
+    const { wallet } = await getSolanaModules();
+    const keypair = wallet.loadSolanaKeypair();
+    const walletAddress = keypair.publicKey.toBase58();
+    const connection = wallet.getSolanaConnection();
+
+    const result = await bagsRequest<{ partnerKey: string; transaction: string }>('/token-launch/fee-share/partner/create-config', {
+      method: 'POST',
+      body: JSON.stringify({ payer: walletAddress, tokenMint: mint }),
+    });
+
+    const { VersionedTransaction, Transaction } = await import('@solana/web3.js');
+    const { bs58 } = await import('@coral-xyz/anchor/dist/cjs/utils/bytes');
+    const txBuffer = bs58.decode(result.transaction);
+    let signature: string;
+    try {
+      const tx = VersionedTransaction.deserialize(txBuffer);
+      tx.sign([keypair]);
+      signature = await connection.sendRawTransaction(tx.serialize());
+    } catch {
+      const tx = Transaction.from(txBuffer);
+      tx.sign(keypair);
+      signature = await connection.sendRawTransaction(tx.serialize());
+    }
+    await connection.confirmTransaction(signature, 'confirmed');
+
+    return { partnerKey: result.partnerKey, signature };
+  });
+}
+
+async function bagsPartnerClaimHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const walletArg = toolInput.wallet as string | undefined;
+
+  return safeHandler(async () => {
+    const { wallet: solWallet } = await getSolanaModules();
+    const keypair = solWallet.loadSolanaKeypair();
+    const walletAddress = walletArg || keypair.publicKey.toBase58();
+    const connection = solWallet.getSolanaConnection();
+
+    const claimTxs = await bagsRequest<{ transactions: string[] }>('/token-launch/fee-share/partner/claim', {
+      method: 'POST',
+      body: JSON.stringify({ wallet: walletAddress }),
+    });
+
+    if (!claimTxs.transactions?.length) return { claimed: false, message: 'No partner fees to claim' };
+
+    const { VersionedTransaction, Transaction } = await import('@solana/web3.js');
+    const { bs58 } = await import('@coral-xyz/anchor/dist/cjs/utils/bytes');
+    const signatures: string[] = [];
+    for (const txStr of claimTxs.transactions) {
+      const txBuffer = bs58.decode(txStr);
+      try {
+        const tx = VersionedTransaction.deserialize(txBuffer);
+        tx.sign([keypair]);
+        const sig = await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(sig, 'confirmed');
+        signatures.push(sig);
+      } catch {
+        const tx = Transaction.from(txBuffer);
+        tx.sign(keypair);
+        const sig = await connection.sendRawTransaction(tx.serialize());
+        await connection.confirmTransaction(sig, 'confirmed');
+        signatures.push(sig);
+      }
+    }
+
+    return { claimed: true, signatures };
+  });
+}
+
+async function bagsPartnerStatsHandler(toolInput: ToolInput): Promise<HandlerResult> {
+  const partnerKey = toolInput.partner_key as string;
+
+  return safeHandler(async () => {
+    const stats = await bagsRequest<{
+      partnerKey: string;
+      totalLaunches: number;
+      totalFeesEarned: number;
+      claimableAmount: number;
+      tokens: Array<{ mint: string; feesEarned: number }>;
+    }>(`/token-launch/fee-share/partner/stats?partnerKey=${partnerKey}`);
+    return stats;
+  });
+}
+
+// ============================================================================
+// Export All Handlers
+// ============================================================================
+
+export const solanaHandlers: HandlersMap = {
+  // Wallet
+  solana_address: addressHandler,
+
+  // Jupiter
+  solana_jupiter_swap: jupiterSwapHandler,
+
+  // Raydium
+  raydium_swap: raydiumSwapHandler,
+  raydium_pools: raydiumPoolsHandler,
+  raydium_quote: raydiumQuoteHandler,
+
+  // Orca
+  orca_whirlpool_swap: orcaSwapHandler,
+  orca_whirlpool_pools: orcaPoolsHandler,
+  orca_whirlpool_quote: orcaQuoteHandler,
+
+  // Meteora
+  meteora_dlmm_swap: meteoraSwapHandler,
+  meteora_dlmm_pools: meteoraPoolsHandler,
+  meteora_dlmm_quote: meteoraQuoteHandler,
+
+  // Pump.fun - Complete Coverage
+  pumpfun_trade: pumpfunTradeHandler,
+  pumpfun_trending: pumpfunTrendingHandler,
+  pumpfun_new: pumpfunNewHandler,
+  pumpfun_live: pumpfunLiveHandler,
+  pumpfun_graduated: pumpfunGraduatedHandler,
+  pumpfun_search: pumpfunSearchHandler,
+  pumpfun_volatile: pumpfunVolatileHandler,
+  pumpfun_token: pumpfunTokenHandler,
+  pumpfun_price: pumpfunPriceHandler,
+  pumpfun_holders: pumpfunHoldersHandler,
+  pumpfun_trades: pumpfunTradesHandler,
+  pumpfun_chart: pumpfunChartHandler,
+  pumpfun_create: pumpfunCreateHandler,
+  pumpfun_claim: pumpfunClaimHandler,
+  pumpfun_koth: pumpfunKothHandler,
+  pumpfun_for_you: pumpfunForYouHandler,
+  pumpfun_similar: pumpfunSimilarHandler,
+  pumpfun_user_coins: pumpfunUserCoinsHandler,
+  pumpfun_metas: pumpfunMetasHandler,
+  pumpfun_latest_trades: pumpfunLatestTradesHandler,
+  pumpfun_sol_price: pumpfunSolPriceHandler,
+  pumpfun_ipfs_upload: pumpfunIpfsUploadHandler,
+
+  // Pump.fun Swarm
+  swarm_wallets: swarmWalletsHandler,
+  swarm_balances: swarmBalancesHandler,
+  swarm_buy: swarmBuyHandler,
+  swarm_sell: swarmSellHandler,
+  swarm_position: swarmPositionHandler,
+  swarm_refresh: swarmRefreshHandler,
+  swarm_enable: swarmEnableHandler,
+  swarm_disable: swarmDisableHandler,
+
+  // Swarm Presets
+  swarm_preset_save: swarmPresetSaveHandler,
+  swarm_preset_list: swarmPresetListHandler,
+  swarm_preset_get: swarmPresetGetHandler,
+  swarm_preset_delete: swarmPresetDeleteHandler,
+
+  // Drift
+  drift_direct_place_order: driftPlaceOrderHandler,
+  drift_direct_cancel_order: driftCancelOrderHandler,
+  drift_direct_orders: driftOrdersHandler,
+  drift_direct_positions: driftPositionsHandler,
+  drift_direct_balance: driftBalanceHandler,
+  drift_direct_modify_order: driftModifyOrderHandler,
+  drift_direct_set_leverage: driftSetLeverageHandler,
+
+  // Auto-routing
+  solana_best_pool: bestPoolHandler,
+  solana_auto_route: autoRouteHandler,
+  solana_auto_swap: autoSwapHandler,
+  solana_auto_quote: autoQuoteHandler,
+
+  // Bags.fm - Complete Coverage
+  bags_quote: bagsQuoteHandler,
+  bags_swap: bagsSwapHandler,
+  bags_pools: bagsPoolsHandler,
+  bags_trending: bagsTrendingHandler,
+  bags_token: bagsTokenHandler,
+  bags_creators: bagsCreatorsHandler,
+  bags_lifetime_fees: bagsLifetimeFeesHandler,
+  bags_fees: bagsFeesHandler,
+  bags_claim: bagsClaimHandler,
+  bags_claim_events: bagsClaimEventsHandler,
+  bags_claim_stats: bagsClaimStatsHandler,
+  bags_launch: bagsLaunchHandler,
+  bags_fee_config: bagsFeeConfigHandler,
+  bags_wallet_lookup: bagsWalletLookupHandler,
+  bags_bulk_wallet_lookup: bagsBulkWalletLookupHandler,
+  bags_partner_config: bagsPartnerConfigHandler,
+  bags_partner_claim: bagsPartnerClaimHandler,
+  bags_partner_stats: bagsPartnerStatsHandler,
+};
+
+export default solanaHandlers;

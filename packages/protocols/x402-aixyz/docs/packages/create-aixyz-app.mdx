@@ -1,0 +1,95 @@
+---
+title: "create-aixyz-app"
+description: "Scaffold new aixyz agent projects"
+---
+
+import { FileTree } from "/snippets/FileTree.jsx";
+
+## Overview
+
+`create-aixyz-app` is a project scaffolding CLI that generates a new aixyz agent project with the standard directory structure, configuration, and example files.
+
+## Usage
+
+```bash
+bunx create-aixyz-app my-agent
+```
+
+The CLI prompts for:
+
+- **Agent name** — Used in `aixyz.config.ts` and `package.json`
+- **OpenAI API key** — Saved to `.env.local` (optional)
+
+### Non-Interactive Mode
+
+Skip all prompts with the `-y` flag:
+
+```bash
+bunx create-aixyz-app my-agent -y
+```
+
+## What Gets Scaffolded
+
+<FileTree
+  structure={[
+    {
+      name: "my-agent/",
+      children: [
+        { name: "aixyz.config.ts", description: "Agent config (name, description, skills)" },
+        {
+          name: "app/",
+          children: [
+            { name: "agent.ts", description: "Agent definition using Vercel AI SDK" },
+            {
+              name: "tools/",
+              children: [
+                { name: "temperature.ts", description: "Example tool" },
+                { name: "weight.ts", description: "Example tool" },
+                { name: "length.ts", description: "Example tool" },
+              ],
+            },
+            { name: "icon.svg", description: "Agent icon" },
+          ],
+        },
+        { name: "package.json", description: "Dependencies and scripts" },
+        { name: "tsconfig.json", description: "TypeScript configuration" },
+        { name: "vercel.json", description: "Vercel deployment config" },
+        { name: ".env.local", description: "Environment variables" },
+      ],
+    },
+  ]}
+/>
+
+### Scripts
+
+The generated `package.json` includes:
+
+```json title="package.json"
+{
+  "scripts": {
+    "dev": "aixyz dev",
+    "build": "aixyz build"
+  }
+}
+```
+
+## After Scaffolding
+
+```bash
+cd my-agent
+bun install
+bun run dev
+```
+
+Your agent starts at `http://localhost:3000` with A2A, MCP, and x402 support ready to go.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="rocket" href="/getting-started/installation">
+    Full walkthrough of setting up your agent.
+  </Card>
+  <Card title="Project Structure" icon="folder-tree" href="/getting-started/project-structure">
+    Understand the generated project layout.
+  </Card>
+</CardGroup>

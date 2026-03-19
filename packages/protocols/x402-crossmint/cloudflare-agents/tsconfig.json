@@ -1,0 +1,6 @@
+{
+  "extends": "../external/agents/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types"]
+  }
+}

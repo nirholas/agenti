@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChaosChain x402 Facilitator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: linear-gradient(135deg, #f5f1e8 0%, #f9f6f0 50%, #faf8f2 100%); }
+    .status-operational { background: #10b981; }
+    .status-degraded { background: #f59e0b; }
+    .status-down { background: #ef4444; }
+    .gradient-text { background: linear-gradient(135deg, #d4a574 0%, #c9963d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    pre { background: #2d2a24; color: #f5f1e8; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+    code { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.875rem; }
+    .card-beige { background: #fdfbf7; border: 1px solid #e8dfc8; }
+    .accent-gold { color: #c9963d; }
+  </style>
+</head>
+<body class="text-gray-900">
+  
+  <!-- Hero -->
+  <header class="card-beige shadow-sm border-b border-amber-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="text-center">
+        <h1 class="text-5xl font-bold gradient-text mb-4">Managed x402 Facilitator</h1>
+        <p class="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
+          Verify & settle agent payments on Base, Ethereum, and 0G — in seconds.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap">
+          <a href="#quickstart" class="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-amber-700 hover:to-amber-800 transition shadow-md">Get Started</a>
+          <a href="#sdks" class="card-beige px-6 py-3 rounded-lg font-semibold hover:bg-amber-50 transition shadow-sm">SDKs</a>
+          <a href="#status" class="card-beige px-6 py-3 rounded-lg font-semibold hover:bg-amber-50 transition shadow-sm">Status</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Status -->
+  <section id="status" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-3xl font-bold mb-6">Live Status</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="card-beige p-6 rounded-lg shadow-md">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold accent-gold">Service Health</h3>
+          <span id="service-status" class="px-3 py-1 rounded-full text-white text-sm status-operational">Operational</span>
+        </div>
+        <p class="text-sm text-gray-600">Last checked: <span id="last-checked">Loading...</span></p>
+      </div>
+      <div class="card-beige p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-4 accent-gold">Network Status</h3>
+        <ul id="networks-list" class="text-sm text-gray-600 space-y-2">
+          <li>Loading...</li>
+        </ul>
+      </div>
+    </div>
+    <p class="text-sm text-gray-500">
+      <a href="/health" class="accent-gold hover:underline font-semibold">View detailed JSON status →</a>
+    </p>
+  </section>
+
+  <!-- Service Overview -->
+  <section class="card-beige py-12 border-y border-amber-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold mb-6 accent-gold">Service Overview</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <div class="accent-gold text-4xl mb-4">🔒</div>
+          <h3 class="text-xl font-semibold mb-2">Non-custodial Settlement</h3>
+          <p class="text-gray-600">EIP-3009 <code>transferWithAuthorization</code> for USDC. Standard ERC-20 <code>transferFrom</code> for W0G (with approve).</p>
+        </div>
+        <div>
+          <div class="accent-gold text-4xl mb-4">⚡</div>
+          <h3 class="text-xl font-semibold mb-2">Atomic Fee Routing</h3>
+          <p class="text-gray-600">Direct merchant payment + facilitator fee in a single transaction. Full transparency on net/fee breakdown.</p>
+        </div>
+        <div>
+          <div class="accent-gold text-4xl mb-4">🤖</div>
+          <h3 class="text-xl font-semibold mb-2">ERC-8004 and Proof-of-Agency</h3>
+          <p class="text-gray-600">Optional on-chain anchoring of agent identity for compliance and provenance tracking.</p>
+        </div>
+      </div>
+      <div class="mt-8 p-4 bg-amber-50 border border-amber-300 rounded-lg">
+        <p class="text-sm text-gray-700">
+          <strong>⚠️ 0G/W0G supported:</strong> W0G uses standard ERC-20 approve+transfer flow (non-EIP-3009). Users must approve facilitator once before payment.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Endpoints -->
+  <section id="api" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-3xl font-bold mb-6 accent-gold">API Endpoints</h2>
+    <div class="space-y-6">
+      <div class="card-beige p-6 rounded-lg shadow-md">
+        <div class="flex items-center gap-4 mb-4">
+          <span class="bg-green-500 text-white px-3 py-1 rounded font-mono text-sm">POST</span>
+          <code class="text-lg">/verify</code>
+        </div>
+        <p class="text-gray-600 mb-4">Verify payment validity, returns <strong>fee/net breakdown</strong> (human + base units)</p>
+        <details class="text-sm">
+          <summary class="cursor-pointer accent-gold font-semibold">Show example</summary>
+          <pre class="mt-4"><code>{
+  "x402Version": 1,
+  "paymentHeader": {
+    "sender": "0x...",
+    "nonce": "0x...",
+    "signature": "0x..."
+  },
+  "paymentRequirements": {
+    "scheme": "exact",
+    "network": "base-mainnet",
+    "maxAmountRequired": "1000000",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "payTo": "0x..."
+  }
+}</code></pre>
+        </details>
+      </div>
+
+      <div class="card-beige p-6 rounded-lg shadow-md">
+        <div class="flex items-center gap-4 mb-4">
+          <span class="bg-blue-500 text-white px-3 py-1 rounded font-mono text-sm">POST</span>
+          <code class="text-lg">/settle</code>
+        </div>
+        <p class="text-gray-600 mb-4">Execute on-chain settlement, returns <strong>txHash, fee/net, optional proofOfAgency</strong></p>
+        <details class="text-sm">
+          <summary class="cursor-pointer accent-gold font-semibold">Show example</summary>
+          <pre class="mt-4"><code>{
+  "x402Version": 1,
+  "paymentHeader": { ... },
+  "paymentRequirements": { ... },
+  "agentId": "8004#123" // Optional: ERC-8004 agent ID
+}</code></pre>
+        </details>
+      </div>
+
+      <div class="card-beige p-6 rounded-lg shadow-md">
+        <div class="flex items-center gap-4 mb-4">
+          <span class="bg-gray-500 text-white px-3 py-1 rounded font-mono text-sm">GET</span>
+          <code class="text-lg">/supported</code>
+        </div>
+        <p class="text-gray-600">List supported networks and schemes</p>
+      </div>
+
+      <div class="card-beige p-6 rounded-lg shadow-md">
+        <div class="flex items-center gap-4 mb-4">
+          <span class="bg-gray-500 text-white px-3 py-1 rounded font-mono text-sm">GET</span>
+          <code class="text-lg">/health</code>
+        </div>
+        <p class="text-gray-600">Service health check (RPC latency, gas balances)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Integration -->
+  <section id="quickstart" class="card-beige py-12 border-y border-amber-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold mb-6 accent-gold">Quick Integration</h2>
+      
+      <!-- TypeScript -->
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <span class="text-2xl">📘</span> TypeScript (Node.js / Agents)
+        </h3>
+        <pre><code>import { X402PaymentManager } from "@chaoschain/sdk";
+
+const pm = new X402PaymentManager({
+  facilitatorUrl: "https://facilitator.chaoscha.in",
+  apiKey: process.env.CC_API_KEY, // optional for lower fees
+});
+
+// Merchant: return 402 payment requirement
+res.status(402).json({
+  x402Version: 1,
+  paymentRequirements: {
+    scheme: "exact",
+    network: "base-mainnet",
+    maxAmountRequired: "1000000", // 1 USDC (6 decimals)
+    asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    payTo: "0xYourMerchantWallet",
+    resource: "/api/service",
+    description: "AI Analysis",
+  },
+  facilitator: {
+    verify: "https://facilitator.chaoscha.in/verify",
+    settle: "https://facilitator.chaoscha.in/settle",
+  },
+});</code></pre>
+      </div>
+
+      <!-- Python -->
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <span class="text-2xl">🐍</span> Python (Agents / Servers)
+        </h3>
+        <pre><code>from chaoschain_sdk import ChaosChainAgentSDK
+
+sdk = ChaosChainAgentSDK(
+    facilitator_url="https://facilitator.chaoscha.in",
+    api_key=os.getenv("CC_API_KEY")
+)
+
+# Use X402PaywallServer to gate a route with 402
+# Full example in GitHub repo</code></pre>
+      </div>
+
+      <!-- cURL -->
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <span class="text-2xl">🔧</span> cURL (Testing)
+        </h3>
+        <pre><code>curl -s https://facilitator.chaoscha.in/supported | jq</code></pre>
+      </div>
+
+      <!-- Merchant Paywall Server -->
+      <div class="p-6 bg-amber-50 border border-amber-300 rounded-lg">
+        <h3 class="text-lg font-semibold mb-2">Merchant Paywall Server</h3>
+        <p class="text-gray-600 mb-4">3-step snippet: register paid route → 402 → verify+settle using SDK decorators</p>
+        <a href="https://github.com/ChaosChain/chaoschain-x402/blob/main/docs/MERCHANT_GUIDE.md" class="accent-gold hover:underline font-semibold">
+          Full example → Run locally in 2 minutes
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tokens & Chains -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-3xl font-bold mb-6 accent-gold">Supported Tokens & Chains</h2>
+    <div class="card-beige rounded-lg shadow-md overflow-hidden">
+      <table class="min-w-full divide-y divide-amber-200">
+        <thead class="bg-amber-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Network</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Decimals</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">EIP-3009</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gasless</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-amber-200">
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">Base Mainnet</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">USDC</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">6</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">Base Sepolia</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">USDC</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">6</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">Ethereum Mainnet</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">USDC</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">6</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+          </tr>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">Ethereum Sepolia</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">USDC</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">6</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">✅</td>
+          </tr>
+          <tr class="bg-yellow-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">0G Mainnet</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">W0G</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">18</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">❌</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">❌ (Requires approve)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-sm text-gray-500 mt-4">
+      <strong>Note on W0G:</strong> Uses standard ERC-20 approve+transfer flow. Users must approve facilitator before payment.
+      <a href="https://github.com/ChaosChain/chaoschain-x402/blob/main/docs/0G_WOG_GUIDE.md" class="accent-gold hover:underline font-semibold">Read W0G guide →</a>
+    </p>
+  </section>
+
+  <!-- SDKs & Docs -->
+  <section id="sdks" class="card-beige py-12 border-y border-amber-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold mb-6 accent-gold">SDKs & Documentation</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="https://github.com/ChaosChain/chaoschain-sdk-ts" class="bg-white p-6 rounded-lg hover:shadow-lg transition border-2 border-amber-200 hover:border-amber-400">
+          <h3 class="text-xl font-semibold mb-2">📘 TypeScript SDK</h3>
+          <p class="text-gray-600">Full-featured SDK for Node.js agents and web apps</p>
+        </a>
+        <a href="https://github.com/ChaosChain/chaoschain/tree/main/packages/sdk" class="bg-white p-6 rounded-lg hover:shadow-lg transition border-2 border-amber-200 hover:border-amber-400">
+          <h3 class="text-xl font-semibold mb-2">🐍 Python SDK</h3>
+          <p class="text-gray-600">Pythonic interface for AI agents and servers</p>
+        </a>
+        <a href="https://github.com/ChaosChain/chaoschain-x402/blob/main/docs/0G_WOG_GUIDE.md" class="bg-white p-6 rounded-lg hover:shadow-lg transition border-2 border-amber-200 hover:border-amber-400">
+          <h3 class="text-xl font-semibold mb-2">⚡ 0G / W0G Guide</h3>
+          <p class="text-gray-600">Complete guide for 0G network integration</p>
+        </a>
+        <a href="https://github.com/ChaosChain/chaoschain-x402/blob/main/README.md" class="bg-white p-6 rounded-lg hover:shadow-lg transition border-2 border-amber-200 hover:border-amber-400">
+          <h3 class="text-xl font-semibold mb-2">📖 API Reference</h3>
+          <p class="text-gray-600">Complete API documentation and examples</p>
+        </a>
+        <a href="https://github.com/ChaosChain/chaoschain-x402/blob/main/docs/MERCHANT_GUIDE.md" class="bg-white p-6 rounded-lg hover:shadow-lg transition border-2 border-amber-200 hover:border-amber-400">
+          <h3 class="text-xl font-semibold mb-2">💰 Merchant Guide</h3>
+          <p class="text-gray-600">Set up payment-protected APIs in minutes</p>
+        </a>
+        <a href="https://github.com/ChaosChain/chaoschain-x402" class="bg-white p-6 rounded-lg hover:shadow-lg transition border-2 border-amber-200 hover:border-amber-400">
+          <h3 class="text-xl font-semibold mb-2">⚙️ Self-Host Guide</h3>
+          <p class="text-gray-600">Run your own facilitator instance</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-amber-100 border-t border-amber-300 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <p class="text-gray-700 mb-4">
+          <strong>This is the managed on-ramp.</strong> The decentralized facilitator (Chainlink CRE + Proof of Agency) is under active development.
+        </p>
+        <p class="text-sm text-gray-600">
+          <a href="https://github.com/ChaosChain/chaoschain-x402" class="accent-gold hover:underline font-semibold">GitHub</a> · 
+          <a href="https://docs.chaoscha.in" class="accent-gold hover:underline font-semibold">Docs</a> · 
+          <a href="https://discord.gg/chaoschain" class="accent-gold hover:underline font-semibold">Discord</a>
+        </p>
+        <p class="text-xs text-gray-400 mt-4">© 2025 ChaosChain Labs. MIT License.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript for Live Status -->
+  <script>
+    async function updateStatus() {
+      try {
+        // Fetch health data
+        const healthRes = await fetch('/health');
+        const health = await healthRes.json();
+        
+        // Update service status
+        const statusEl = document.getElementById('service-status');
+        if (health.healthy) {
+          statusEl.textContent = 'Operational';
+          statusEl.className = 'px-3 py-1 rounded-full text-white text-sm status-operational';
+        } else {
+          statusEl.textContent = 'Degraded';
+          statusEl.className = 'px-3 py-1 rounded-full text-white text-sm status-degraded';
+        }
+        
+        // Update last checked
+        document.getElementById('last-checked').textContent = new Date().toLocaleTimeString();
+        
+        // Update network status (RPC health only, no balances)
+        const networksEl = document.getElementById('networks-list');
+        if (health.networks) {
+          networksEl.innerHTML = Object.entries(health.networks)
+            .map(([network, data]) => {
+              const status = data.rpcHealthy ? '✅' : '❌';
+              const statusText = data.rpcHealthy ? 'Operational' : 'Degraded';
+              const token = data.token || '';
+              return `<li class="flex items-center justify-between"><span>${network} (${token})</span><span class="font-semibold">${status} ${statusText}</span></li>`;
+            })
+            .join('');
+        }
+        
+      } catch (error) {
+        console.error('Failed to fetch status:', error);
+        document.getElementById('service-status').textContent = 'Unknown';
+        document.getElementById('service-status').className = 'px-3 py-1 rounded-full text-white text-sm status-down';
+      }
+    }
+    
+    // Update status on load and every 30 seconds
+    updateStatus();
+    setInterval(updateStatus, 30000);
+  </script>
+</body>
+</html>
+

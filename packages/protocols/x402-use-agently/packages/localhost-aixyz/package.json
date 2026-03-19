@@ -1,0 +1,23 @@
+{
+  "name": "localhost-aixyz",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./test": "./test.ts"
+  },
+  "scripts": {
+    "dev": "aixyz dev",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "ai": "^6",
+    "aixyz": "^0",
+    "express": "^5",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@types/express": "^5",
+    "x402-fl": "^0"
+  }
+}

@@ -1,0 +1,11 @@
+[[chains]]
+chain_type="evm"
+chain_name="ethereum"
+latency=6
+estimation=72 # received money estimation time: 12(block time) * 6 (latency)
+commission=5 # 5% commission rate, if 0, no commission
+commission_min=50 # min is $0.5
+commission_max=200 # max is $2.00
+# admin="xxxxxxxx" # use your admin account private key 0xaa..00 (pay gas), if not set, will use mnemonics/0/0 account
+rpc="https://ethereum-rpc.publicnode.com" # use your own rpc
+tokens=["USDT:0xdAC17F958D2ee523a2206206994597C13D831ec7", "USDC:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:2"]

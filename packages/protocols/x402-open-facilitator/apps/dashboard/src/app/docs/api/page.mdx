@@ -1,0 +1,110 @@
+import { ApiEndpoint } from '@/components/docs/ApiEndpoint';
+
+<PageHeader title="HTTP API Reference" description="For direct HTTP integration without the SDK." />
+
+## Base URL
+
+```
+https://pay.openfacilitator.io
+```
+
+Or your self-hosted instance.
+
+## Endpoints
+
+<ApiEndpoint method="GET" path="/supported" description="Get supported networks and payment kinds" />
+
+### Response
+
+```json
+{
+  "kinds": [
+    { "x402Version": 1, "scheme": "exact", "network": "base" },
+    { "x402Version": 2, "scheme": "exact", "network": "eip155:8453" },
+    { "x402Version": 1, "scheme": "exact", "network": "solana", "extra": { "feePayer": "..." } }
+  ],
+  "signers": {
+    "eip155:*": ["0x..."],
+    "solana:*": ["..."]
+  },
+  "extensions": []
+}
+```
+
+---
+
+<ApiEndpoint method="POST" path="/verify" description="Verify a payment is valid" />
+
+### Request
+
+```json
+{
+  "x402Version": 1,
+  "paymentPayload": {
+    "x402Version": 1,
+    "scheme": "exact",
+    "network": "base",
+    "payload": {
+      "signature": "0x...",
+      "authorization": {
+        "from": "0xSenderAddress",
+        "to": "0xRecipientAddress",
+        "amount": "1000000",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      }
+    }
+  },
+  "paymentRequirements": {
+    "scheme": "exact",
+    "network": "base",
+    "maxAmountRequired": "1000000",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "payTo": "0xRecipientAddress"
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "isValid": true,
+  "payer": "0xSenderAddress"
+}
+```
+
+---
+
+<ApiEndpoint method="POST" path="/settle" description="Settle/broadcast a payment transaction" />
+
+### Request
+
+Same format as `/verify`
+
+### Response
+
+```json
+{
+  "success": true,
+  "transaction": "0x1234...5678",
+  "payer": "0xSenderAddress",
+  "network": "base"
+}
+```
+
+## Error Responses
+
+All endpoints return errors in this format:
+
+```json
+{
+  "error": "Error message",
+  "code": "ERROR_CODE"
+}
+```
+
+| Status Code | Description |
+| ----------- | ----------- |
+| 400 | Bad request (invalid payload) |
+| 401 | Unauthorized |
+| 500 | Internal server error |

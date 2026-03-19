@@ -1,0 +1,43 @@
+{
+  "name": "x402-mcp",
+  "version": "0.1.1",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ethanniser/x402-mcp"
+  },
+  "homepage": "https://vercel.com/blog/introducing-x402-mcp-open-protocol-payments-for-mcp-tools",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "ai": "^5.0.33",
+    "typescript": "5.9.2",
+    "viem": "^2.37.3"
+  },
+  "peerDependencies": {
+    "ai": ">=5.0.0",
+    "viem": ">=2.37.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "@solana/kit": "^3.0.3",
+    "mcp-handler": "^1.0.2",
+    "x402": "^0.6.6",
+    "zod": "^3"
+  }
+}

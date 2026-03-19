@@ -1,0 +1,39 @@
+{
+  "name": "solana-ai-agent",
+  "version": "1.0.0",
+  "description": "The AI agent to interact with Solana - swap tokens, manage wallets, stake SOL",
+  "main": "index.js",
+  "bin": {
+    "solana-agent": "./src/cli.js",
+    "solana-agent-server": "./src/server.js"
+  },
+  "scripts": {
+    "test": "node test/test.js",
+    "cli": "node src/cli.js"
+  },
+  "keywords": [
+    "solana",
+    "ai",
+    "agent",
+    "wallet",
+    "swap",
+    "jupiter",
+    "defi",
+    "blockchain"
+  ],
+  "author": "roswell",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roswelly/solana-ai-agent"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.0",
+    "@solana/web3.js": "^1.98.0",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

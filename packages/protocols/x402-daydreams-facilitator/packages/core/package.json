@@ -1,0 +1,179 @@
+{
+  "name": "@daydreamsai/facilitator",
+  "version": "2.0.0",
+  "description": "x402 Payment Facilitator - Verify and settle x402 payments with custom signers",
+  "type": "module",
+  "main": "./dist/lib.js",
+  "module": "./dist/lib.js",
+  "types": "./dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/lib.js",
+      "types": "./dist/lib.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.js",
+      "types": "./dist/server.d.ts"
+    },
+    "./elysia": {
+      "import": "./dist/elysia/index.js",
+      "types": "./dist/elysia/index.d.ts"
+    },
+    "./hono": {
+      "import": "./dist/hono/index.js",
+      "types": "./dist/hono/index.d.ts"
+    },
+    "./express": {
+      "import": "./dist/express/index.js",
+      "types": "./dist/express/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./dist/middleware/index.js",
+      "types": "./dist/middleware/index.d.ts"
+    },
+    "./signers": {
+      "import": "./dist/signers/index.js",
+      "types": "./dist/signers/index.d.ts"
+    },
+    "./signers/cdp": {
+      "import": "./dist/signers/lib.js",
+      "types": "./dist/signers/lib.d.ts"
+    },
+    "./upto": {
+      "import": "./dist/upto/lib.js",
+      "types": "./dist/upto/lib.d.ts"
+    },
+    "./upto/evm": {
+      "import": "./dist/upto/evm/lib.js",
+      "types": "./dist/upto/evm/lib.d.ts"
+    },
+    "./upto/session": {
+      "import": "./dist/upto/sessionId.js",
+      "types": "./dist/upto/sessionId.d.ts"
+    },
+    "./client": {
+      "import": "./dist/unifiedClient.js",
+      "types": "./dist/unifiedClient.d.ts"
+    },
+    "./config": {
+      "import": "./dist/config.js",
+      "types": "./dist/config.d.ts"
+    },
+    "./networks": {
+      "import": "./dist/networks.js",
+      "types": "./dist/networks.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth/index.js",
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./auth/elysia": {
+      "import": "./dist/auth/middleware/elysia.js",
+      "types": "./dist/auth/middleware/elysia.d.ts"
+    },
+    "./token-gate": {
+      "import": "./dist/token-gate/index.js",
+      "types": "./dist/token-gate/index.d.ts"
+    },
+    "./token-gate/cache/redis": {
+      "import": "./dist/token-gate/cache/redis.js",
+      "types": "./dist/token-gate/cache/redis.d.ts"
+    },
+    "./tracking": {
+      "import": "./dist/tracking/lib.js",
+      "types": "./dist/tracking/lib.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && bun ./scripts/verify-exports.ts",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "typecheck:tests": "tsc --noEmit -p tsconfig.test.json",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "verify:exports": "bun ./scripts/verify-exports.ts"
+  },
+  "keywords": [
+    "x402",
+    "payments",
+    "crypto",
+    "evm",
+    "solana",
+    "facilitator",
+    "usdc",
+    "coinbase",
+    "cdp"
+  ],
+  "author": "Daydreams AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daydreamsai/facilitator"
+  },
+  "bugs": {
+    "url": "https://github.com/daydreamsai/facilitator/issues"
+  },
+  "homepage": "https://github.com/daydreamsai/facilitator#readme",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@elysiajs/static": "^1.4.7",
+    "@types/express": "^5.0.6",
+    "@x402/core": "2.0.0",
+    "@x402/evm": "2.0.0",
+    "@x402/hono": "^2.0.0",
+    "@x402/paywall": "^2.0.0",
+    "@x402/svm": "2.0.0",
+    "express": "^5.2.1",
+    "hono": "^4.11.1",
+    "starknet": "^9.2.1",
+    "viem": "^2.21.54",
+    "x402-starknet": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@coinbase/cdp-sdk": ">=1.40.0",
+    "@solana/kit": ">=2.0.0",
+    "elysia": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@coinbase/cdp-sdk": {
+      "optional": true
+    },
+    "@solana/kit": {
+      "optional": true
+    },
+    "elysia": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@coinbase/cdp-sdk": "^1.40.1",
+    "@elysiajs/node": "^1.0.0",
+    "@hono/node-server": "^1.13.7",
+    "@eslint/js": "^9.24.0",
+    "@scure/base": "^1.2.6",
+    "@solana/kit": "^2.1.1",
+    "@types/node": "^22.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "@x402/extensions": "2.0.0",
+    "dotenv": "^16.4.5",
+    "elysia": "^1.0.0",
+    "eslint": "^9.15.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsdoc": "^50.6.9",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

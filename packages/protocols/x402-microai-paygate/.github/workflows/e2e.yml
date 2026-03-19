@@ -1,0 +1,79 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    paths:
+      - 'gateway/**'
+      - 'verifier/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'run_e2e.sh'
+      - 'package.json'
+      - 'bun.lock'
+      - 'tsconfig.json'
+      - '.github/workflows/e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'gateway/**'
+      - 'verifier/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'run_e2e.sh'
+      - 'package.json'
+      - 'bun.lock'
+      - 'tsconfig.json'
+      - '.github/workflows/e2e.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'z-ai/glm-4.5-air:free' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check OpenRouter key
+        run: |
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "OPENROUTER_API_KEY not set; skipping E2E."
+            exit 0
+          fi
+
+      - name: Set up Go
+        if: env.OPENROUTER_API_KEY != ''
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.x'
+
+      - name: Set up Rust
+        if: env.OPENROUTER_API_KEY != ''
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Bun
+        if: env.OPENROUTER_API_KEY != ''
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Install JS deps
+        if: env.OPENROUTER_API_KEY != ''
+        run: bun install
+
+      - name: Prep Go/Rust deps
+        if: env.OPENROUTER_API_KEY != ''
+        run: |
+          go mod download
+          cargo fetch
+
+      - name: Run E2E (requires API key)
+        if: env.OPENROUTER_API_KEY != ''
+        run: |
+          chmod +x ./run_e2e.sh
+          timeout 150 ./run_e2e.sh

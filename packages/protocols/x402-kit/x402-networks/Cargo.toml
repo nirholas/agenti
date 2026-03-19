@@ -1,0 +1,31 @@
+[package]
+name = "x402-networks"
+version.workspace = true
+edition = "2024"
+repository = "https://github.com/AIMOverse/x402-kit"
+authors = ["Archer <archer@aimo.network>"]
+license = "MIT"
+description = "Concrete chain types and scheme definitions for the x402 payment protocol."
+
+[features]
+default = ["evm", "svm"]
+evm = ["dep:alloy-primitives", "dep:hex", "dep:bon"]
+svm = ["dep:solana-pubkey", "dep:solana-signature", "dep:bon"]
+
+[dependencies]
+x402-core = { version = "2.5.0", path = "../x402-core" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+
+# === Feature "evm" ===
+alloy-primitives = { version = "1.4", optional = true }
+hex = { version = "0.4", optional = true }
+bon = { version = "3.8", optional = true }
+
+# === Feature "svm" ===
+solana-pubkey = { version = "4.0", optional = true }
+solana-signature = { version = "3.1", optional = true }
+
+[dev-dependencies]
+alloy-primitives = { version = "1.4" }
+solana-pubkey = { version = "4.0" }

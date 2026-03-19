@@ -1,0 +1,12 @@
+target-version = "py310"
+line-length = 100
+
+[lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
+ignore = ["E501", "N818", "N806", "UP031"]
+
+[lint.per-file-ignores]
+"**/tests/**" = ["F811", "B018", "B017", "E402", "N802", "N817", "F841", "B904"]
+"core/ag402_core/cli.py" = ["E402", "N812"]
+"examples/**" = ["SIM105"]
+"adapters/openclaw/ag402-skill/**" = ["N999"]

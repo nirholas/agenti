@@ -1,0 +1,16 @@
+[package]
+name = "x402-core"
+version.workspace = true
+edition = "2024"
+repository = "https://github.com/AIMOverse/x402-kit"
+authors = ["Archer <archer@aimo.network>"]
+license = "MIT"
+description = "(V2 Supported) A fully modular SDK for building complex X402 payment integrations."
+
+[dependencies]
+bon = { version = "3.8" }
+url = { version = "2.5", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+thiserror = { version = "2.0" }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+base64 = { version = "0.22" }

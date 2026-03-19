@@ -1,0 +1,50 @@
+# Machinepal server configuration. May be overridden by environment variables.
+server:
+  hostname: localhost
+  http:
+    enable: false
+    port: 8080
+  https:
+    enable: false
+    port: 8443
+    cert_file: certs/insecure_test_localhost.crt
+    key_file: secrets/insecure_test_localhost.key
+
+
+
+network:
+  name: machinepal-easynet
+  payment_address: 0x209693Bc6afc0C5328bA36FaF03C514EF312287C
+  client_wallet_key_file: secrets/insecure_test_client_wallet.key
+
+
+log:
+  # Optional Log verbosity level — one of: trace, debug, info, warn, error, fatal
+  # Default: info
+  level: trace
+
+
+resources:
+  - name: hello_world
+    type: local_file
+    location: resources/hello_world.txt
+    price: 1.545
+    token: USDC
+
+  - name: hello_world_api
+    type: api-jsonrpc
+    location: https://google.com/resources/hello_world.txt
+    price: 1.545
+    token: USDC
+
+  - name: hello_world_api_json_rpc
+    type: api-jsonrpc
+    location: https://google.com/resources/hello_world.txt
+    price: 1.545
+    token: USDC
+
+  - name: hello_world_api_rest
+    type: api-rest
+    location: https://jsonplaceholder.typicode.com/posts/1
+    price: 12
+    token: USDC

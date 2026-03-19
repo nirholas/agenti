@@ -1,0 +1,34 @@
+name: daydreams
+
+services:
+  memgraph:
+    image: memgraph/memgraph-mage:latest
+    container_name: memgraph-mage
+    ports:
+      - "7687:7687"
+      - "7444:7444"
+    command: ["--log-level=TRACE"]
+
+  lab:
+    image: memgraph/lab:latest
+    container_name: memgraph-lab
+    ports:
+      - "3000:3000"
+    depends_on:
+      - memgraph
+    environment:
+      - QUICK_CONNECT_MG_HOST=memgraph
+      - QUICK_CONNECT_MG_PORT=7687
+
+  chroma:
+    image: chromadb/chroma:1.0.17
+    container_name: ${COMPOSE_PROJECT_NAME}_chroma
+    restart: always
+    ports:
+      - "8000:8000"
+  mongo:
+    image: mongo:8.0.4
+    container_name: ${COMPOSE_PROJECT_NAME}_mongo
+    restart: always
+    ports:
+      - "27017:27017"

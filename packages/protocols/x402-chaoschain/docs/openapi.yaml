@@ -1,0 +1,409 @@
+openapi: 3.0.3
+info:
+  title: ChaosChain x402 Decentralized Facilitator API
+  version: 0.1.0
+  description: |
+    REST API for the ChaosChain x402 decentralized facilitator.
+    
+    Provides Byzantine Fault Tolerant (BFT) consensus-based verification and settlement
+    for x402 agent payments using Chainlink Runtime Environment (CRE).
+    
+    **Current Mode:** Simulate (returns mock consensus proofs)  
+    **Production Mode:** Requires CRE DON access (API remains identical)
+    
+  contact:
+    name: ChaosChain Labs
+    email: sumeet.chougule@nethermind.io
+    url: https://github.com/ChaosChain/chaoschain-x402
+  license:
+    name: MIT
+    url: https://github.com/ChaosChain/chaoschain-x402/blob/main/LICENSE
+
+servers:
+  - url: http://localhost:8402
+    description: Local development server (simulate mode)
+  - url: https://facilitator.chaoschain.ai
+    description: Production managed facilitator (coming soon)
+
+tags:
+  - name: Facilitator
+    description: x402 payment facilitator operations
+  - name: Info
+    description: Service information and health
+
+paths:
+  /:
+    get:
+      tags:
+        - Info
+      summary: Health check
+      description: Returns service information and available endpoints
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInfo'
+              example:
+                service: "ChaosChain x402 Decentralized Facilitator"
+                version: "0.1.0"
+                mode: "simulate"
+                endpoints:
+                  verify: "POST /verify"
+                  settle: "POST /settle"
+                  supported: "GET /supported"
+                docs: "https://github.com/ChaosChain/chaoschain-x402"
+
+  /supported:
+    get:
+      tags:
+        - Facilitator
+      summary: Get supported schemes
+      description: Returns list of supported payment schemes and networks (per x402 spec)
+      operationId: getSupportedSchemes
+      responses:
+        '200':
+          description: List of supported (scheme, network) pairs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportedSchemesResponse'
+              example:
+                kinds:
+                  - scheme: "exact"
+                    network: "base-sepolia"
+                  - scheme: "exact"
+                    network: "ethereum-sepolia"
+
+  /verify:
+    post:
+      tags:
+        - Facilitator
+      summary: Verify payment
+      description: |
+        Verifies an x402 payment via decentralized BFT consensus.
+        
+        **Simulate Mode:** Returns mock verification with consensus proof  
+        **Production Mode:** Actual CRE DON consensus verification
+      operationId: verifyPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+            example:
+              x402Version: 1
+              paymentHeader: "eyJ4NDAyVmVyc2lvbiI6MX0..."
+              paymentRequirements:
+                scheme: "exact"
+                network: "base-sepolia"
+                maxAmountRequired: "1000000"
+                payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0"
+                asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                resource: "/api/weather"
+                description: "Weather data access"
+      responses:
+        '200':
+          description: Verification result with consensus proof
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+              example:
+                isValid: true
+                invalidReason: null
+                consensusProof: "0xCRE-MOCK-1730123456789"
+                reportId: "rep_1730123456789"
+                timestamp: 1730123456789
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Invalid payment requirements"
+                code: "VERIFICATION_ERROR"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /settle:
+    post:
+      tags:
+        - Facilitator
+      summary: Settle payment
+      description: |
+        Settles an x402 payment via decentralized BFT consensus.
+        
+        **Simulate Mode:** Returns mock transaction hash  
+        **Production Mode:** Actual on-chain settlement via CRE DON
+      operationId: settlePayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettleRequest'
+            example:
+              x402Version: 1
+              paymentHeader: "eyJ4NDAyVmVyc2lvbiI6MX0..."
+              paymentRequirements:
+                scheme: "exact"
+                network: "base-sepolia"
+                maxAmountRequired: "1000000"
+                payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0"
+                asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                resource: "/api/weather"
+      responses:
+        '200':
+          description: Settlement result with transaction hash
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettleResponse'
+              example:
+                success: true
+                error: null
+                txHash: "0x307837343264333543633636333433303353333233323..."
+                networkId: "base-sepolia"
+                consensusProof: "0xCRE-MOCK-1730123456789"
+                timestamp: 1730123456789
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ServiceInfo:
+      type: object
+      required:
+        - service
+        - version
+        - mode
+      properties:
+        service:
+          type: string
+          example: "ChaosChain x402 Decentralized Facilitator"
+        version:
+          type: string
+          example: "0.1.0"
+        mode:
+          type: string
+          enum: [simulate, remote]
+          example: "simulate"
+        endpoints:
+          type: object
+          additionalProperties:
+            type: string
+        docs:
+          type: string
+          format: uri
+
+    SupportedSchemesResponse:
+      type: object
+      required:
+        - kinds
+      properties:
+        kinds:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchemeNetworkPair'
+
+    SchemeNetworkPair:
+      type: object
+      required:
+        - scheme
+        - network
+      properties:
+        scheme:
+          type: string
+          description: Payment scheme identifier
+          example: "exact"
+        network:
+          type: string
+          description: Blockchain network identifier
+          example: "base-sepolia"
+
+    PaymentRequirements:
+      type: object
+      required:
+        - scheme
+        - network
+        - maxAmountRequired
+        - resource
+        - payTo
+        - asset
+      properties:
+        scheme:
+          type: string
+          description: Payment scheme (e.g., "exact")
+          example: "exact"
+        network:
+          type: string
+          description: Blockchain network (e.g., "base-sepolia")
+          example: "base-sepolia"
+        maxAmountRequired:
+          type: string
+          description: Maximum amount in atomic units (string for large numbers)
+          example: "1000000"
+        resource:
+          type: string
+          description: Resource identifier/URL
+          example: "/api/weather"
+        description:
+          type: string
+          description: Human-readable description
+          example: "Weather data access"
+        mimeType:
+          type: string
+          description: MIME type of the resource
+          example: "application/json"
+        payTo:
+          type: string
+          description: Payment recipient address
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0"
+        maxTimeoutSeconds:
+          type: integer
+          description: Maximum timeout for the operation
+          example: 30
+        asset:
+          type: string
+          description: Payment asset contract address
+          example: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+        extra:
+          type: object
+          nullable: true
+          description: Additional scheme-specific data
+          additionalProperties: true
+
+    VerifyRequest:
+      type: object
+      required:
+        - x402Version
+        - paymentHeader
+        - paymentRequirements
+      properties:
+        x402Version:
+          type: integer
+          description: x402 protocol version
+          example: 1
+        paymentHeader:
+          type: string
+          description: Base64 encoded X-PAYMENT header
+          example: "eyJ4NDAyVmVyc2lvbiI6MX0..."
+        paymentRequirements:
+          $ref: '#/components/schemas/PaymentRequirements'
+
+    VerifyResponse:
+      type: object
+      required:
+        - isValid
+      properties:
+        isValid:
+          type: boolean
+          description: Whether the payment is valid
+          example: true
+        invalidReason:
+          type: string
+          nullable: true
+          description: Reason if payment is invalid
+          example: null
+        consensusProof:
+          type: string
+          description: CRE consensus proof (ChaosChain extension)
+          example: "0xCRE-MOCK-1730123456789"
+        reportId:
+          type: string
+          description: Report identifier (ChaosChain extension)
+          example: "rep_1730123456789"
+        timestamp:
+          type: integer
+          description: Unix timestamp (ChaosChain extension)
+          example: 1730123456789
+
+    SettleRequest:
+      type: object
+      required:
+        - x402Version
+        - paymentHeader
+        - paymentRequirements
+      properties:
+        x402Version:
+          type: integer
+          description: x402 protocol version
+          example: 1
+        paymentHeader:
+          type: string
+          description: Base64 encoded X-PAYMENT header
+          example: "eyJ4NDAyVmVyc2lvbiI6MX0..."
+        paymentRequirements:
+          $ref: '#/components/schemas/PaymentRequirements'
+
+    SettleResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Whether settlement succeeded
+          example: true
+        error:
+          type: string
+          nullable: true
+          description: Error message if failed
+          example: null
+        txHash:
+          type: string
+          nullable: true
+          description: Transaction hash
+          example: "0x307837343264333543633636333433303353333233323..."
+        networkId:
+          type: string
+          nullable: true
+          description: Network identifier
+          example: "base-sepolia"
+        consensusProof:
+          type: string
+          description: CRE consensus proof (ChaosChain extension)
+          example: "0xCRE-MOCK-1730123456789"
+        timestamp:
+          type: integer
+          description: Unix timestamp (ChaosChain extension)
+          example: 1730123456789
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Verification failed"
+        code:
+          type: string
+          description: Error code
+          example: "VERIFICATION_ERROR"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+

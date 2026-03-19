@@ -1,0 +1,47 @@
+<PageHeader title="SDK Reference" description="The OpenFacilitator SDK provides a type-safe way to interact with any x402-compatible facilitator." />
+
+## Installation
+
+```bash
+npm install @openfacilitator/sdk
+```
+
+## Quick Example
+
+```typescript
+import { OpenFacilitator } from '@openfacilitator/sdk';
+
+// Uses https://pay.openfacilitator.io by default
+const facilitator = new OpenFacilitator();
+
+// Verify payment
+const verification = await facilitator.verify(payment, requirements);
+
+// Settle payment
+const settlement = await facilitator.settle(payment, requirements);
+
+// Get supported networks
+const supported = await facilitator.supported();
+```
+
+## API Reference
+
+| Method | Description |
+| ------ | ----------- |
+| [`verify()`](/docs/sdk/verify) | Verify a payment is valid |
+| [`settle()`](/docs/sdk/settle) | Settle/broadcast a payment |
+| [`supported()`](/docs/sdk/supported) | Get supported networks |
+| [`getFeePayer()`](/docs/sdk/fee-payer) | Get Solana fee payer address |
+| [`getFeePayerMap()`](/docs/sdk/fee-payer) | Get all fee payers by network |
+
+## Utilities
+
+| Function | Description |
+| -------- | ----------- |
+| [`getNetwork()`](/docs/sdk/networks) | Get network info by ID |
+| [`toV2NetworkId()`](/docs/sdk/networks) | Convert v1 to v2 network ID |
+| [`toV1NetworkId()`](/docs/sdk/networks) | Convert v2 to v1 network ID |
+
+## Error Handling
+
+See [Error Handling](/docs/sdk/errors) for details on error types and handling.

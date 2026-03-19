@@ -1,0 +1,114 @@
+/**
+ * Authentication Status Component Styles
+ */
+
+.auth-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--bg-secondary, #f5f5f5);
+  border: 1px solid var(--border-color, #e0e0e0);
+  font-size: 0.875rem;
+}
+
+.auth-status.authenticated {
+  border-color: var(--success-color, #4caf50);
+  background: var(--success-bg, #e8f5e9);
+}
+
+.auth-status.unauthenticated {
+  border-color: var(--warning-color, #ff9800);
+  background: var(--warning-bg, #fff3e0);
+}
+
+.auth-status-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auth-icon {
+  font-size: 1rem;
+}
+
+.auth-label {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+}
+
+.auth-indicator {
+  margin-left: auto;
+  font-size: 0.75rem;
+}
+
+.auth-indicator.active {
+  color: var(--success-color, #4caf50);
+}
+
+.auth-indicator.inactive {
+  color: var(--warning-color, #ff9800);
+}
+
+.auth-status-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  margin-top: 0.25rem;
+}
+
+.auth-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.detail-label {
+  color: var(--text-secondary, #666);
+}
+
+.detail-value {
+  font-weight: 500;
+}
+
+.detail-value.success {
+  color: var(--success-color, #4caf50);
+}
+
+.detail-value.warning {
+  color: var(--warning-color, #ff9800);
+}
+
+.auth-refresh-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary-color, #1976d2);
+  color: white;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.auth-refresh-btn:hover:not(:disabled) {
+  background: var(--primary-dark, #1565c0);
+}
+
+.auth-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-error {
+  margin-top: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 4px;
+  background: var(--error-bg, #ffebee);
+  color: var(--error-color, #d32f2f);
+  font-size: 0.75rem;
+}

@@ -1,0 +1,218 @@
+---
+title: Inputs
+description: How Daydreams agents receive information and trigger processing.
+---
+
+## What is an Input?
+
+An input is how your agent **listens** to the outside world. Inputs trigger your agent when something happens - like a Discord message, file change, or webhook event.
+
+For common patterns like schema validation, error handling, and external service integration, see [Building Block Operations](/docs/core/concepts/building-block-operations).
+
+## Inputs vs Actions/Outputs
+
+Understanding the difference:
+
+| Building Block | Purpose | Triggers Agent | LLM Controls |
+|---------------|---------|----------------|---------------|
+| **Inputs** | Listen for external events | ✅ Yes - wakes up agent | ❌ No - automatic listening |
+| **Actions** | Get data, perform operations | ❌ No - LLM calls them | ✅ Yes - LLM decides when |
+| **Outputs** | Communicate results | ❌ No - LLM triggers them | ✅ Yes - LLM decides when |
+
+### Input Flow
+
+```text title="input-flow.txt"
+1. External event happens (Discord message, file change, etc.)
+2. Input detects the event
+3. Input calls send(context, args, data) → triggers agent
+4. Agent processes the input and responds
+```
+
+## Creating Your First Input
+
+Here's a simple input that listens for file changes:
+
+```typescript title="file-watcher-input.ts"
+import { input } from "@daydreamsai/core";
+import * as z from "zod";
+import fs from "fs";
+
+export const fileWatcher = input({
+  type: "file:watcher",
+  
+  // Schema validates incoming data
+  schema: z.object({
+    filename: z.string(),
+    content: z.string(),
+    event: z.enum(["created", "modified", "deleted"]),
+  }),
+
+  // Subscribe function starts listening and returns cleanup
+  subscribe: (send, agent) => {
+    const watcher = fs.watch("./watched-files", (eventType, filename) => {
+      if (filename) {
+        try {
+          const content = fs.readFileSync(`./watched-files/${filename}`, "utf8");
+          send(fileContext, { filename }, {
+            filename,
+            content,
+            event: eventType === "rename" ? "created" : "modified",
+          });
+        } catch (error) {
+          send(fileContext, { filename }, {
+            filename,
+            content: "",
+            event: "deleted",
+          });
+        }
+      }
+    });
+
+    return () => watcher.close(); // Cleanup function
+  },
+});
+```
+
+## Context Targeting
+
+Inputs route data to specific context instances:
+
+```typescript title="context-targeting.ts"
+const discordInput = input({
+  type: "discord:message",
+  schema: z.object({
+    content: z.string(),
+    userId: z.string(),
+    channelId: z.string(),
+  }),
+  subscribe: (send, agent) => {
+    discord.on("messageCreate", (message) => {
+      // Route to user-specific chat context
+      send(
+        chatContext,
+        { userId: message.author.id }, // Context args
+        {
+          content: message.content,
+          userId: message.author.id,
+          channelId: message.channel.id,
+        }
+      );
+    });
+
+    return () => discord.removeAllListeners("messageCreate");
+  },
+});
+```
+
+This creates separate context instances:
+- User "alice" → `chat:alice` context
+- User "bob" → `chat:bob` context  
+- Each maintains separate memory
+
+## Input Patterns
+
+### Real-Time (Event-Driven) - Preferred
+
+```typescript title="realtime-input.ts"
+// ✅ Responds immediately to events
+subscribe: (send, agent) => {
+  websocket.on("message", (data) => {
+    send(context, args, data);
+  });
+  return () => websocket.close();
+};
+```
+
+### Polling - When Necessary
+
+```typescript title="polling-input.ts"
+// For APIs without webhooks or real-time events
+subscribe: (send, agent) => {
+  const checkForUpdates = async () => {
+    const updates = await api.getUpdates();
+    updates.forEach(item => {
+      send(context, { id: item.id }, item);
+    });
+  };
+
+  const interval = setInterval(checkForUpdates, 5000);
+  return () => clearInterval(interval);
+};
+```
+
+## Multiple Inputs
+
+Agents can listen to multiple sources simultaneously:
+
+```typescript title="multiple-inputs.ts"
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  inputs: [
+    discordInput,   // Discord messages
+    slackInput,     // Slack messages  
+    webhookInput,   // API webhooks
+    fileWatcher,    // File changes
+    cronTrigger,    // Scheduled events
+  ],
+});
+
+// Agent responds to any input automatically
+```
+
+## Subscribe Pattern Best Practices
+
+### Always Return Cleanup Functions
+
+```typescript title="cleanup-pattern.ts"
+// ✅ Good - proper cleanup prevents memory leaks
+subscribe: (send, agent) => {
+  const listener = (data) => send(context, args, data);
+  eventSource.addEventListener("event", listener);
+
+  return () => {
+    eventSource.removeEventListener("event", listener);
+    eventSource.close();
+  };
+};
+
+// ❌ Bad - no cleanup causes memory leaks
+subscribe: (send, agent) => {
+  eventSource.addEventListener("event", (data) => {
+    send(context, args, data);
+  });
+  return () => {}; // Nothing cleaned up!
+};
+```
+
+### Context Routing
+
+```typescript title="context-routing.ts"
+subscribe: (send, agent) => {
+  service.on("event", (event) => {
+    // Route to appropriate context based on event data
+    switch (event.type) {
+      case "user_message":
+        send(chatContext, { userId: event.userId }, event.data);
+        break;
+      case "system_alert":
+        send(alertContext, { alertId: event.id }, event.data);
+        break;
+      case "game_move":
+        send(gameContext, { gameId: event.gameId }, event.data);
+        break;
+    }
+  });
+
+  return () => service.removeAllListeners("event");
+};
+```
+
+## Key Takeaways
+
+- **Inputs trigger agents** - Turn agents from one-time scripts into responsive assistants
+- **Subscribe pattern** - Watch external sources, call `send()` when events occur
+- **Context targeting** - Route inputs to appropriate context instances  
+- **Always cleanup** - Return cleanup functions to prevent memory leaks
+- **Real-time preferred** - Use event-driven patterns over polling when possible
+
+For error handling, connection resilience, and validation patterns, see [Building Block Operations](/docs/core/concepts/building-block-operations).

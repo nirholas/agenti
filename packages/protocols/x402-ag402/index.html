@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ag402 — Your AI Agent Pays for APIs. You Set the Budget. Done.</title>
+<meta name="description" content="Your AI agent pays for API calls automatically. On-chain USDC settlement. 6-layer budget safety. Non-custodial. Open source.">
+<meta property="og:title" content="Ag402 — Automatic Payments for AI Agents">
+<meta property="og:description" content="Your AI agent pays for API calls automatically. On-chain USDC settlement. 6-layer budget safety. Non-custodial. Open source.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aethercore-dev.github.io/ag402/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ag402 — Automatic Payments for AI Agents">
+<meta name="twitter:description" content="Your AI agent pays for API calls automatically. On-chain USDC. 6-layer safety. Non-custodial. Open source.">
+<link rel="canonical" href="https://aethercore-dev.github.io/ag402/">
+<!-- TODO: Add og:image after creating social preview image (1280x640) -->
+<!-- <meta property="og:image" content="https://aethercore-dev.github.io/ag402/social-preview.png"> -->
+<!-- <meta name="twitter:image" content="https://aethercore-dev.github.io/ag402/social-preview.png"> -->
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0e17;
+  --surface: #111827;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --accent: #06b6d4;
+  --accent-glow: rgba(6, 182, 212, 0.15);
+  --green: #22c55e;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --font: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Container ── */
+.container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Hero ── */
+.hero {
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.version-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  font-family: var(--font);
+}
+.version-badge span { color: var(--green); }
+h1 {
+  font-size: clamp(40px, 7vw, 72px);
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+h1 .accent { color: var(--accent); }
+.tagline {
+  font-size: 18px;
+  color: var(--text-dim);
+  max-width: 540px;
+  margin-bottom: 40px;
+}
+.tagline strong { color: var(--text); font-weight: 600; }
+
+/* ── Terminal ── */
+.terminal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  width: 100%;
+  max-width: 600px;
+  text-align: left;
+  font-family: var(--font);
+  font-size: 13px;
+  overflow: hidden;
+  margin-bottom: 36px;
+}
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+}
+.terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-dot.r { background: #ef4444; }
+.terminal-dot.y { background: #eab308; }
+.terminal-dot.g { background: #22c55e; }
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+.terminal-body { padding: 16px 18px; line-height: 2; }
+.terminal-body .dim { color: var(--text-dim); }
+.terminal-body .green { color: var(--green); }
+.terminal-body .cyan { color: var(--accent); }
+.terminal-body .orange { color: var(--orange); }
+.terminal-body .line {
+  opacity: 0;
+  animation: typeLine 0.4s forwards;
+}
+.terminal-body .line:nth-child(1) { animation-delay: 0.2s; }
+.terminal-body .line:nth-child(2) { animation-delay: 0.7s; }
+.terminal-body .line:nth-child(3) { animation-delay: 1.2s; }
+.terminal-body .line:nth-child(4) { animation-delay: 1.7s; }
+.terminal-body .line:nth-child(5) { animation-delay: 2.2s; }
+.terminal-body .line:nth-child(6) { animation-delay: 2.7s; }
+.terminal-body .line:nth-child(7) { animation-delay: 3.2s; }
+@keyframes typeLine {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Buttons ── */
+.buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  font-family: var(--sans);
+}
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+}
+.btn-primary:hover { background: #22d3ee; text-decoration: none; }
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--accent); text-decoration: none; }
+
+/* ── Section ── */
+section { padding: 80px 0; }
+.section-label {
+  font-family: var(--font);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 40px;
+}
+
+/* ── Cards ── */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--accent); }
+.card-icon { font-size: 28px; margin-bottom: 14px; }
+.card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.card .card-outcome {
+  font-size: 15px;
+  color: var(--green);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+.card ul {
+  list-style: none;
+  margin-top: 12px;
+}
+.card ul li {
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 4px 0;
+}
+.card ul li::before {
+  content: '\2713  ';
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* ── Security ── */
+.security-points {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+.security-point {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+.security-point .icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.security-point h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.security-point p {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.security-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+}
+
+/* ── Cost ── */
+.cost-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.cost-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 16px;
+  text-align: center;
+}
+.cost-item .cost-value {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font);
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.cost-item .cost-value.free { color: var(--green); }
+.cost-item .cost-label {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* ── Comparison ── */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.compare-col {
+  padding: 0;
+}
+.compare-col.highlight {
+  background: var(--surface);
+}
+.compare-header {
+  padding: 20px 20px;
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 1px solid var(--border);
+}
+.compare-col:not(:last-child) .compare-header,
+.compare-col:not(:last-child) .compare-row {
+  border-right: 1px solid var(--border);
+}
+.compare-col.highlight .compare-header {
+  color: var(--accent);
+}
+.compare-row {
+  padding: 14px 20px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+.compare-col .compare-row:last-child {
+  border-bottom: none;
+}
+.compare-row .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  opacity: 0.6;
+  margin-bottom: 2px;
+}
+.compare-row.yes { color: var(--green); }
+.compare-row.no { color: var(--red); }
+.compare-row.partial { color: var(--orange); }
+
+/* ── Case Study ── */
+.case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+}
+.case-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.case-card .case-price {
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.case-card p {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-width: 600px;
+}
+.case-card ul {
+  list-style: none;
+  margin-top: 14px;
+  columns: 2;
+  column-gap: 32px;
+}
+.case-card ul li {
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 3px 0;
+}
+.case-card ul li::before {
+  content: '\2713  ';
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* ── Getting Started ── */
+.start-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.start-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.start-card:hover { border-color: var(--accent); }
+.start-card .start-icon { font-size: 32px; margin-bottom: 14px; }
+.start-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.start-card p {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.start-card .prompt-box {
+  padding: 12px 14px;
+  background: rgba(6, 182, 212, 0.06);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: left;
+}
+.start-card .prompt-box strong { color: var(--accent); font-style: normal; }
+
+/* ── Trust bar ── */
+.trust-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.trust-item {
+  text-align: center;
+}
+.trust-item .trust-num {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font);
+  color: var(--accent);
+}
+.trust-item .trust-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ── Footer ── */
+footer {
+  padding: 48px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+}
+.footer-grid h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.footer-grid a {
+  display: block;
+  color: var(--text-dim);
+  padding: 3px 0;
+  font-size: 13px;
+}
+.footer-grid a:hover { color: var(--accent); }
+.footer-about p {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.footer-bottom {
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.footer-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.footer-badges img { height: 20px; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .cards { grid-template-columns: 1fr; }
+  .cost-grid { grid-template-columns: repeat(2, 1fr); }
+  .security-points { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .compare-col:not(:last-child) .compare-header,
+  .compare-col:not(:last-child) .compare-row { border-right: none; }
+  .case-card ul { columns: 1; }
+  .start-options { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .trust-bar { gap: 24px; }
+  h1 { letter-spacing: -1px; }
+  section { padding: 60px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="container">
+    <div class="version-badge"><span>&#9679;</span> v0.1.14 — Open Source · MIT License</div>
+    <h1>Your AI agent <span class="accent">pays for APIs</span></h1>
+    <p class="tagline">Agent hits a paywall. Ag402 pays <strong>automatically</strong> — on-chain, within budget, non-custodial. Your code sees a normal response. <strong>That's it.</strong></p>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+        <span class="terminal-title">ag402 — live payment flow</span>
+      </div>
+      <div class="terminal-body">
+        <div class="line"><span class="dim">1.</span> Agent requests <span class="cyan">GET /api/token-audit</span></div>
+        <div class="line"><span class="dim">2.</span> Server responds <span class="orange">402 Payment Required</span> — $0.05 USDC</div>
+        <div class="line"><span class="dim">3.</span> Ag402 checks budget: <span class="green">$0.05 &le; $5.00 limit ✓</span></div>
+        <div class="line"><span class="dim">4.</span> Solana on-chain transfer: <span class="cyan">0.05 USDC → seller</span></div>
+        <div class="line"><span class="dim">5.</span> Retry with proof: <span class="cyan">Authorization: x402 ...</span></div>
+        <div class="line"><span class="dim">6.</span> Server responds <span class="green">200 OK</span> — audit report received</div>
+        <div class="line"><span class="green">✓ Transparent to your agent — it only sees the 200</span></div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <a href="https://colab.research.google.com/github/AetherCore-Dev/ag402/blob/main/examples/ag402_quickstart.ipynb" class="btn btn-primary">
+        &#9654; Try in Browser (Colab)
+      </a>
+      <a href="https://github.com/AetherCore-Dev/ag402" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 98 96" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6C29.304 70.67 17.9 66.352 17.9 47.243c0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 19.162-11.567 23.346-22.533 24.568 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/></svg>
+        GitHub
+      </a>
+      <a href="https://pypi.org/project/ag402-core/" class="btn btn-ghost">PyPI</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── For Sellers / Buyers ── -->
+<section id="for-you">
+  <div class="container">
+    <div class="section-label">Built For</div>
+    <h2>Both Sides of the Market</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">&#127978;</div>
+        <h3>API Providers (Sellers)</h3>
+        <div class="card-outcome">No Stripe. No signup forms. Revenue in minutes.</div>
+        <p>You set a price. AI agents pay per call in USDC. Funds arrive directly in your wallet. Instant settlement, no chargebacks.</p>
+        <ul>
+          <li>Set your own price per call</li>
+          <li>Instant on-chain settlement</li>
+          <li>No invoicing, no API key management</li>
+          <li>Automatic replay protection</li>
+          <li>No private key needed — only your public address</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#129302;</div>
+        <h3>AI Developers (Buyers)</h3>
+        <div class="card-outcome">Your agent pays $0.01 per call. You get data. Done.</div>
+        <p>Give your agent a wallet and a budget. It encounters a paid API, pays automatically, and keeps working. Zero code changes.</p>
+        <ul>
+          <li>6-layer budget safety system</li>
+          <li>Works with Claude, Cursor, LangChain</li>
+          <li>Non-custodial encrypted wallet</li>
+          <li>$100 test funds to start</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Security ── -->
+<section id="security">
+  <div class="container">
+    <div class="section-label">Security</div>
+    <h2>Your Money is Safe</h2>
+
+    <div class="security-points">
+      <div class="security-point">
+        <div class="icon">&#128272;</div>
+        <h3>Non-Custodial</h3>
+        <p>Your private key stays on your machine. No central server. No account. We store nothing.</p>
+      </div>
+      <div class="security-point">
+        <div class="icon">&#128737;</div>
+        <h3>6-Layer Budget Guard</h3>
+        <p>Per-TX cap, per-minute cap, daily cap, circuit breaker, auto-rollback, key redaction. All hardcoded.</p>
+      </div>
+      <div class="security-point">
+        <div class="icon">&#128683;</div>
+        <h3>Zero Telemetry</h3>
+        <p>No call logs. No IP tracking. No analytics. 100% open source, MIT license. Audit the code yourself.</p>
+      </div>
+    </div>
+    <p class="security-link"><a href="https://github.com/AetherCore-Dev/ag402#security-promise">Full security details in README →</a></p>
+  </div>
+</section>
+
+<!-- ── What It Costs ── -->
+<section id="cost">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2>What It Costs</h2>
+    <div class="cost-grid">
+      <div class="cost-item">
+        <div class="cost-value">USDC</div>
+        <div class="cost-label">Stablecoin — always $1.00, no crypto volatility</div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-value">~$0.001</div>
+        <div class="cost-label">Solana network fee per transaction</div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-value">You decide</div>
+        <div class="cost-label">Sellers set their own API price</div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-value free">$0</div>
+        <div class="cost-label">Ag402 platform fee — open source</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Comparison ── -->
+<section id="comparison">
+  <div class="container">
+    <div class="section-label">Why Ag402</div>
+    <h2>vs Traditional Solutions</h2>
+    <div class="compare-grid">
+      <div class="compare-col highlight">
+        <div class="compare-header">Ag402</div>
+        <div class="compare-row yes"><div class="label">Setup</div>Tell your AI — done</div>
+        <div class="compare-row yes"><div class="label">Micro-payments</div>$0.001+ per call</div>
+        <div class="compare-row yes"><div class="label">Custody</div>Your keys, your wallet</div>
+        <div class="compare-row yes"><div class="label">Settlement</div>Instant on-chain</div>
+        <div class="compare-row yes"><div class="label">Platform fee</div>$0 — open source</div>
+        <div class="compare-row yes"><div class="label">Standard</div>HTTP 402</div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-header">API Keys</div>
+        <div class="compare-row partial"><div class="label">Setup</div>Manual signup</div>
+        <div class="compare-row no"><div class="label">Micro-payments</div>N/A</div>
+        <div class="compare-row partial"><div class="label">Custody</div>Provider holds</div>
+        <div class="compare-row partial"><div class="label">Settlement</div>Monthly invoice</div>
+        <div class="compare-row partial"><div class="label">Platform fee</div>Varies</div>
+        <div class="compare-row no"><div class="label">Standard</div>Proprietary</div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-header">Stripe / PayPal</div>
+        <div class="compare-row no"><div class="label">Setup</div>Complex OAuth</div>
+        <div class="compare-row partial"><div class="label">Micro-payments</div>High fees</div>
+        <div class="compare-row no"><div class="label">Custody</div>Custodial</div>
+        <div class="compare-row partial"><div class="label">Settlement</div>3–5 days</div>
+        <div class="compare-row no"><div class="label">Platform fee</div>2.9% + $0.30</div>
+        <div class="compare-row no"><div class="label">Standard</div>Proprietary</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Case Study ── -->
+<section id="case-study">
+  <div class="container">
+    <div class="section-label">In Production</div>
+    <h2>Token RugCheck</h2>
+    <div class="case-card">
+      <h3><a href="https://github.com/AetherCore-Dev/token-rugcheck">Token RugCheck</a></h3>
+      <div class="case-price">0.02 USDC per audit — live on Solana mainnet</div>
+      <p>AI agents pay per audit to detect rug pulls before purchasing tokens. A production service built entirely on ag402.</p>
+      <ul>
+        <li>Seller wraps audit API with ag402 gateway</li>
+        <li>Buyer's agent calls API — ag402 auto-pays</li>
+        <li>Three-layer audit: machine verdict → LLM → raw evidence</li>
+        <li>Zero changes to business logic on either side</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── Getting Started ── -->
+<section id="get-started">
+  <div class="container">
+    <div class="section-label">Get Started</div>
+    <h2>Tell Your AI Assistant</h2>
+
+    <div class="start-options">
+      <div class="start-card">
+        <div class="start-icon">&#129302;</div>
+        <h3>Buy API Access</h3>
+        <p>Give your AI agent the ability to pay for APIs autonomously.</p>
+        <div class="prompt-box">
+          <strong>Tell your AI:</strong> "Install ag402 and run the demo so I can see how x402 payments work."
+        </div>
+      </div>
+      <div class="start-card">
+        <div class="start-icon">&#127978;</div>
+        <h3>Sell API Access</h3>
+        <p>Monetize your existing API with per-call USDC payments.</p>
+        <div class="prompt-box">
+          <strong>Tell your AI:</strong> "I want to sell access to my API at $0.05 per call using ag402."
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 32px;">
+      <span style="color: var(--text-dim); font-size: 14px;">Or try it in your browser — zero install:</span><br/><br/>
+      <a href="https://colab.research.google.com/github/AetherCore-Dev/ag402/blob/main/examples/ag402_quickstart.ipynb" class="btn btn-primary" style="font-size: 15px; padding: 12px 28px;">
+        &#9654; Open in Google Colab
+      </a>
+    </p>
+  </div>
+</section>
+
+<!-- ── Trust bar + Footer ── -->
+<footer>
+  <div class="container">
+    <div class="trust-bar">
+      <div class="trust-item">
+        <div class="trust-num">588+</div>
+        <div class="trust-label">Tests Passing</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">90%+</div>
+        <div class="trust-label">Coverage</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">6</div>
+        <div class="trust-label">Safety Layers</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">&lt;1s</div>
+        <div class="trust-label">Settlement</div>
+      </div>
+    </div>
+
+    <div class="footer-grid" style="margin-top: 32px;">
+      <div class="footer-about">
+        <h4>Ag402</h4>
+        <p>Open-source payment infrastructure for the AI agent economy. HTTP 402 standard. Solana USDC settlement. Non-custodial.</p>
+        <div class="footer-badges">
+          <a href="https://github.com/AetherCore-Dev/ag402/actions/workflows/ci.yml"><img src="https://github.com/AetherCore-Dev/ag402/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+          <img src="https://img.shields.io/badge/tests-588%2B-brightgreen" alt="Tests">
+          <img src="https://img.shields.io/pypi/v/ag402-core" alt="PyPI">
+        </div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <a href="https://colab.research.google.com/github/AetherCore-Dev/ag402/blob/main/examples/ag402_quickstart.ipynb">Colab Notebook</a>
+        <a href="https://github.com/AetherCore-Dev/ag402/blob/main/docs/guide-claude-code.md">Claude Code Guide</a>
+        <a href="https://github.com/AetherCore-Dev/ag402/blob/main/docs/guide-cursor.md">Cursor Guide</a>
+        <a href="https://github.com/AetherCore-Dev/ag402/blob/main/docs/guide-openclaw.md">OpenClaw Guide</a>
+        <a href="https://github.com/AetherCore-Dev/ag402/blob/main/docs/guide-localnet.md">Local Validator Guide</a>
+      </div>
+      <div>
+        <h4>Project</h4>
+        <a href="https://github.com/AetherCore-Dev/ag402">GitHub</a>
+        <a href="https://pypi.org/project/ag402-core/">PyPI</a>
+        <a href="https://github.com/AetherCore-Dev/ag402/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/AetherCore-Dev/ag402/blob/main/CONTRIBUTING.md">Contributing</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Ag402 — Open-source. Non-custodial. Zero telemetry. Built for the AI agent economy.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

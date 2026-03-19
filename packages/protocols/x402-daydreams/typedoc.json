@@ -1,0 +1,25 @@
+{
+  "entryPoints": ["packages/core/src/types.ts"],
+  "out": "docs/content/docs/api",
+  "plugin": [
+    "typedoc-plugin-markdown",
+    "typedoc-plugin-frontmatter",
+    "./scripts/custom-types.mjs"
+  ],
+  "hideGenerator": true,
+  "router": "structure",
+  "tsconfig": "packages/core/tsconfig.json",
+  "exclude": [
+    "**/__tests__/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "clients/**/*",
+    "examples/**/*",
+    "docs/**/*",
+    "packages/!(core)/**/*"
+  ],
+  "skipErrorChecking": true,
+  "flattenOutputFiles": true,
+  "mergeReadme": true,
+  "entryFileName": "api-reference"
+}

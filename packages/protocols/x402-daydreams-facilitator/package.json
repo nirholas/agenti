@@ -1,0 +1,40 @@
+{
+  "workspaces": {
+    "packages": [
+      "examples",
+      "examples/facilitator-server",
+      "packages/*"
+    ],
+    "catalog": {
+      "typescript": "^5.9.2",
+      "tsup": "^8.5.0"
+    }
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "build": "bun run --filter '@daydreamsai/*' build",
+    "build:packages": "bun run scripts/build-packages.ts",
+    "typecheck": "bun run --filter '@daydreamsai/*' typecheck",
+    "test": "bun run --filter '@daydreamsai/facilitator' test",
+    "setup:changesets": "bun run scripts/setup-changesets.ts",
+    "changeset": "bunx changeset",
+    "release:version": "bunx changeset version",
+    "release:publish": "bun run build:packages && bun run scripts/changeset-publish.ts",
+    "release": "bun run release:version && bun run release:publish"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
+    "@types/bun": "^1.2.21",
+    "@types/node": "^24.3.1",
+    "@types/three": "^0.180.0",
+    "three": "^0.180.0",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9"
+  }
+}

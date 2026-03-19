@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"],
+      "env": ["*"]
+    },
+    "build": {
+      "inputs": ["tsconfig.json", "aixyz.config.ts", "src", "app"],
+      "outputs": ["dist", ".vercel/output"],
+      "dependsOn": ["^build"],
+      "env": ["*"]
+    },
+    "test": {
+      "inputs": ["tsconfig.json", "src", "app"],
+      "dependsOn": ["^test"]
+    },
+    "lint": {
+      "outputs": [],
+      "outputLogs": "errors-only"
+    }
+  }
+}

@@ -1,0 +1,324 @@
+---
+title: AI Nanoservice with x402 Payments
+description:
+  Build a paid AI assistant API using Daydreams agents and x402 micropayments
+---
+
+This tutorial shows you how to create an AI nanoservice - a pay-per-use API
+endpoint where users pay micropayments for each AI request. We'll use Daydreams
+for the AI agent and x402 for handling payments.
+
+## What You'll Build
+
+A production-ready AI service that:
+
+- Charges $0.01 per API request automatically
+- Maintains conversation history per user session
+- Handles payments through x402 middleware
+- Provides a clean REST API interface
+
+## Prerequisites
+
+- Bun installed (`curl -fsSL https://bun.sh/install | bash`)
+- OpenAI API key
+- Ethereum wallet with some test funds (for Base Sepolia)
+
+## Step 1: Create the Project
+
+First, set up your project structure:
+
+```bash
+mkdir ai-nanoservice
+cd ai-nanoservice
+bun init -y
+```
+
+Install the required dependencies:
+
+```bash
+bun add @daydreamsai/core @ai-sdk/openai hono @hono/node-server x402-hono dotenv zod
+```
+
+## Step 2: Build the AI Service
+
+Create `server.ts` with the following code:
+
+```typescript
+import { config } from "dotenv";
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { paymentMiddleware, type Network, type Resource } from "x402-hono";
+import { createDreams, context, LogLevel } from "@daydreamsai/core";
+import { openai } from "@ai-sdk/openai";
+import * as z from "zod";
+
+config();
+
+// Payment configuration
+const facilitatorUrl = "https://facilitator.x402.rs";
+const payTo = (process.env.ADDRESS as `0x${string}`) || "0xYourWalletAddress";
+const network = (process.env.NETWORK as Network) || "base-sepolia";
+const openaiKey = process.env.OPENAI_API_KEY;
+
+if (!openaiKey) {
+  console.error("Missing OPENAI_API_KEY");
+  process.exit(1);
+}
+```
+
+## Step 3: Define the AI Context
+
+Contexts in Daydreams manage conversation state and memory. Add this to your
+`server.ts`:
+
+```typescript
+// Memory structure for each session
+interface AssistantMemory {
+  requestCount: number;
+  lastQuery?: string;
+  history: Array<{ query: string; response: string; timestamp: Date }>;
+}
+
+// Create a stateful context
+const assistantContext = context<AssistantMemory>({
+  type: "ai-assistant",
+
+  schema: z.object({
+    sessionId: z.string().describe("Session identifier"),
+  }),
+
+  create: () => ({
+    requestCount: 0,
+    history: [],
+  }),
+
+  render: (state) => {
+    return `
+AI Assistant Session: ${state.args.sessionId}
+Requests: ${state.memory.requestCount}
+${state.memory.lastQuery ? `Last Query: ${state.memory.lastQuery}` : ""}
+Recent History: ${
+      state.memory.history
+        .slice(-3)
+        .map((h) => `- ${h.query}`)
+        .join("\n") || "None"
+    }
+    `.trim();
+  },
+
+  instructions: `You are a helpful AI assistant providing a paid nano service.
+You should provide concise, valuable responses to user queries.
+Remember the conversation history and context.`,
+});
+```
+
+## Step 4: Create the Agent
+
+Initialize the Daydreams agent with your context:
+
+```typescript
+const agent = createDreams({
+  logLevel: LogLevel.INFO,
+  model: openai("gpt-4o-mini"), // Using mini for cost efficiency
+  contexts: [assistantContext],
+  inputs: {
+    text: {
+      description: "User query",
+      schema: z.string(),
+    },
+  },
+  outputs: {
+    text: {
+      description: "Assistant response",
+      schema: z.string(),
+    },
+  },
+});
+
+// Start the agent
+await agent.start();
+```
+
+## Step 5: Set Up the API Server
+
+Create the Hono server with payment middleware:
+
+```typescript
+const app = new Hono();
+
+console.log("AI Assistant nano service is running on port 4021");
+console.log(`Payment required: $0.01 per request to ${payTo}`);
+
+// Apply payment middleware to the assistant endpoint
+app.use(
+  paymentMiddleware(
+    payTo,
+    {
+      "/assistant": {
+        price: "$0.01", // $0.01 per request
+        network,
+      },
+    },
+    {
+      url: facilitatorUrl,
+    }
+  )
+);
+```
+
+## Step 6: Implement the Assistant Endpoint
+
+Add the main API endpoint that processes AI requests:
+
+```typescript
+app.post("/assistant", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { query, sessionId = "default" } = body;
+
+    if (!query) {
+      return c.json({ error: "Query is required" }, 400);
+    }
+
+    // Get the context state
+    const contextState = await agent.getContext({
+      context: assistantContext,
+      args: { sessionId },
+    });
+
+    // Update request count
+    contextState.memory.requestCount++;
+    contextState.memory.lastQuery = query;
+
+    // Send query to agent
+    const result = await agent.send({
+      context: assistantContext,
+      args: { sessionId },
+      input: { type: "text", data: query },
+    });
+
+    // Extract response
+    const output = result.find((r) => r.ref === "output");
+    const response =
+      output && "data" in output
+        ? output.data
+        : "I couldn't process your request.";
+
+    return c.json({
+      response,
+      sessionId,
+      requestCount: contextState.memory.requestCount,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
+});
+
+// Start server
+serve({
+  fetch: app.fetch,
+  port: 4021,
+});
+```
+
+## Step 7: Environment Configuration
+
+Create a `.env` file:
+
+```bash
+# x402 Payment Configuration
+ADDRESS=0xYourWalletAddressHere
+NETWORK=base-sepolia
+
+# OpenAI API Key
+OPENAI_API_KEY=sk-...
+```
+
+## Step 8: Testing Your Service
+
+### Start the Server
+
+```bash
+bun run server.ts
+```
+
+You should see:
+
+```
+AI Assistant nano service is running on port 4021
+Payment required: $0.01 per request to 0xYourWallet...
+```
+
+### Test with the x402 Client
+
+Create a test client using `x402-fetch`:
+
+```typescript
+import { privateKeyToAccount } from "viem/accounts";
+import { wrapFetchWithPayment } from "x402-fetch";
+
+const account = privateKeyToAccount("0xYourPrivateKey");
+const fetchWithPayment = wrapFetchWithPayment(fetch, account);
+
+// Make a paid request
+const response = await fetchWithPayment("http://localhost:4021/assistant", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    query: "What is the capital of France?",
+    sessionId: "user-123",
+  }),
+});
+
+const result = await response.json();
+console.log("AI Response:", result.response);
+```
+
+## Understanding the Payment Flow
+
+1. **Client Request**: User sends a POST request to `/assistant`
+2. **Payment Middleware**: x402 intercepts and requests payment
+3. **Blockchain Transaction**: Client wallet signs and sends micropayment
+4. **Request Processing**: After payment confirmation, request reaches your
+   handler
+5. **AI Response**: Agent processes query and returns response
+
+The payment happens automatically when using `x402-fetch` on the client side.
+
+## Advanced Features
+
+The example includes an advanced server (`advanced-server.ts`) with:
+
+- Multiple service tiers (assistant, analyzer, generator)
+- Different pricing for each service
+- Custom actions for text analysis
+- User preferences and credits system
+
+## Production Considerations
+
+1. **Security**: Always use environment variables for sensitive data
+2. **Persistence**: Consider using a database for session storage
+3. **Scaling**: Use Docker for easy deployment
+4. **Monitoring**: Add logging and analytics
+5. **Error Handling**: Implement proper error responses
+
+## Complete Example
+
+The full example is available at:
+[examples/x402/nanoservice](https://github.com/daydreamsai/daydreams/tree/main/examples/x402/nanoservice)
+
+This includes:
+
+- Basic and advanced server implementations
+- Client examples with payment handling
+- Docker configuration
+- Interactive CLI client
+
+## Next Steps
+
+- Deploy to a cloud provider
+- Add custom actions for your use case
+- Implement different pricing tiers
+- Create a web interface
+- Add authentication for user management \*/}

@@ -1,0 +1,80 @@
+{
+  "name": "@ampersend_ai/ampersend-sdk",
+  "description": "Tooling for building applications with x402 payment capabilities. Supports buyer and seller roles.",
+  "version": "0.0.11",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edgeandnode/ampersend-sdk.git"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "ampersend": "./dist/cli/ampersend.js",
+    "ampersend-proxy": "./dist/mcp/proxy/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./ampersend": {
+      "types": "./dist/ampersend/index.d.ts",
+      "default": "./dist/ampersend/index.js"
+    },
+    "./x402": {
+      "types": "./dist/x402/index.d.ts",
+      "default": "./dist/x402/index.js"
+    },
+    "./mcp/client": {
+      "types": "./dist/mcp/client/index.d.ts",
+      "default": "./dist/mcp/client/index.js"
+    },
+    "./mcp/proxy": {
+      "types": "./dist/mcp/proxy/index.d.ts",
+      "default": "./dist/mcp/proxy/index.js"
+    },
+    "./smart-account": {
+      "types": "./dist/smart-account/index.d.ts",
+      "default": "./dist/smart-account/index.js"
+    },
+    "./mcp/server/fastmcp": {
+      "types": "./dist/mcp/server/fastmcp/index.d.ts",
+      "default": "./dist/mcp/server/fastmcp/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json --force",
+    "clean": "rm -rf dist .tsbuildinfo",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --check --ignore-path ../../.prettierignore",
+    "format:fix": "prettier . --write --list-different --ignore-path ../../.prettierignore",
+    "test": "vitest run",
+    "proxy:dev": "tsx watch src/mcp/proxy/cli.ts",
+    "proxy:start": "node dist/mcp/proxy/cli.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "npm:@ampersend_ai/modelcontextprotocol-sdk@^1.20.1",
+    "@rhinestone/module-sdk": "^0.4.0",
+    "@types/express": "^5.0.6",
+    "@x402/core": "^2.5.0",
+    "@x402/fetch": "^2.5.0",
+    "async-mutex": "^0.5.0",
+    "commander": "^12.1.0",
+    "effect": "^3.19.19",
+    "express": "^5.2.1",
+    "fastmcp": "npm:@ampersend_ai/fastmcp@^1.0.0",
+    "siwe": "^3.0.0",
+    "viem": "^2.45.0",
+    "x402": "^0.6.6",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

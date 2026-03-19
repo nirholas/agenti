@@ -1,0 +1,98 @@
+import { Callout } from '@/components/docs/Callout';
+
+<PageHeader title="Self-Hosting" description="Export and run your own OpenFacilitator instance." />
+
+## Export Configuration
+
+1. Go to your facilitator's manage page
+2. Click **Export for Self-Host**
+3. Download the configuration package
+
+The export includes:
+- Docker configuration
+- Environment template
+- Your facilitator settings
+
+## Docker Setup
+
+```bash
+# Unzip the export
+unzip openfacilitator-export.zip
+cd openfacilitator
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your values
+nano .env
+
+# Start the container
+docker-compose up -d
+```
+
+## Environment Variables
+
+| Variable | Description | Required |
+| -------- | ----------- | -------- |
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `EVM_PRIVATE_KEY` | EVM wallet private key | For EVM networks |
+| `SOLANA_PRIVATE_KEY` | Solana wallet private key | For Solana |
+| `PORT` | Server port (default: 3000) | No |
+
+<Callout type="danger">
+Never commit private keys to version control. Use environment variables or a secrets manager.
+</Callout>
+
+## Deploying
+
+### Railway
+
+1. Create a new project on [Railway](https://railway.app)
+2. Connect your repository or upload the export
+3. Add environment variables
+4. Deploy
+
+### Vercel
+
+The facilitator server requires a long-running process and is not compatible with Vercel's serverless functions.
+
+### DigitalOcean / AWS / GCP
+
+Use the Docker image:
+
+```bash
+docker pull openfacilitator/server:latest
+docker run -d -p 3000:3000 --env-file .env openfacilitator/server:latest
+```
+
+## Custom Domain
+
+After deploying, add a CNAME record pointing to your deployment:
+
+| Type | Name | Value |
+| ---- | ---- | ----- |
+| CNAME | `pay` | `your-deployment.railway.app` |
+
+See [DNS Setup](/docs/dns-setup) for detailed instructions.
+
+## Updating
+
+```bash
+docker-compose pull
+docker-compose up -d
+```
+
+## Monitoring
+
+The `/health` endpoint returns server status:
+
+```bash
+curl https://pay.yourdomain.com/health
+```
+
+```json
+{
+  "status": "ok",
+  "version": "0.1.0"
+}
+```

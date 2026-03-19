@@ -1,0 +1,61 @@
+import { Callout } from '@/components/docs/Callout';
+
+<PageHeader title="settle()" description="Settle (broadcast) a payment transaction on-chain." />
+
+## Usage
+
+```typescript
+const result = await facilitator.settle(payment, requirements);
+```
+
+## Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `payment` | `PaymentPayload` | The payment to settle |
+| `requirements` | `PaymentRequirements` | The payment requirements |
+
+## Response
+
+```typescript
+interface SettleResponse {
+  success: boolean;
+  transaction: string;  // Empty string "" if failed
+  payer: string;
+  network: string;
+  errorReason?: string;
+}
+```
+
+## Example
+
+```typescript
+const result = await facilitator.settle(payment, requirements);
+
+if (result.success) {
+  console.log('Transaction:', result.transaction);
+  // e.g., 0x1234...5678
+} else {
+  console.error('Settlement failed:', result.errorReason);
+}
+```
+
+## Errors
+
+Throws `SettlementError` if the request fails.
+
+```typescript
+import { SettlementError } from '@openfacilitator/sdk';
+
+try {
+  await facilitator.settle(payment, requirements);
+} catch (error) {
+  if (error instanceof SettlementError) {
+    console.error('Settlement failed:', error.message);
+  }
+}
+```
+
+<Callout type="tip">
+Always verify a payment before settling to avoid wasting gas on invalid transactions.
+</Callout>

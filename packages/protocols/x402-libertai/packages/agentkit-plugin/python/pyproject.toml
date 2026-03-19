@@ -1,0 +1,38 @@
+[project]
+name = "libertai-agentkit-plugin"
+version = "0.1.0"
+description = "Build autonomous agents that pay for their own compute and inference — powered by AgentKit, Aleph Cloud, and LibertAI"
+authors = [{ name = "LibertAI.io team", email = "hello@libertai.io" }]
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "coinbase-agentkit>=0.7.0",
+    "libertai-x402>=0.1.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.27.0",
+]
+
+[project.urls]
+Homepage = "https://libertai.io"
+Repository = "https://github.com/LibertAI/libertai-agents"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.11.0"
+ruff = "^0.6.0"
+pytest = "^8.0.0"
+pytest-asyncio = "^0.24.0"
+
+[tool.mypy]
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["coinbase_agentkit.*", "libertai_x402.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"

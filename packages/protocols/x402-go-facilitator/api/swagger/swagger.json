@@ -1,0 +1,295 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API server for x402 payment facilitator",
+        "title": "x402 Facilitator API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/settle": {
+            "post": {
+                "description": "Settle a payment using the facilitator",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "Settle payment",
+                "parameters": [
+                    {
+                        "description": "Settlement request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.PaymentSettleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.PaymentSettleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/supported": {
+            "get": {
+                "description": "Get supported payment kinds",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "List supported kinds",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.SupportedKind"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/verify": {
+            "post": {
+                "description": "Verify a payment using the facilitator",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "Verify payment",
+                "parameters": [
+                    {
+                        "description": "Payment verification request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.PaymentVerifyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.PaymentVerifyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/echo.HTTPError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "echo.HTTPError": {
+            "type": "object",
+            "properties": {
+                "message": {}
+            }
+        },
+        "types.PaymentPayload": {
+            "type": "object",
+            "properties": {
+                "network": {
+                    "description": "Network ID of the accepted paymentRequirements the client is using to pay",
+                    "type": "string"
+                },
+                "payload": {
+                    "description": "Payload is E-dependent and may contain authorization and signature data",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "scheme": {
+                    "description": "Scheme value of the accepted paymentRequirements the client is using to pay",
+                    "type": "string"
+                },
+                "x402Version": {
+                    "description": "Version of the x402 payment protocol",
+                    "type": "integer"
+                }
+            }
+        },
+        "types.PaymentRequirements": {
+            "type": "object",
+            "properties": {
+                "asset": {
+                    "description": "Address of the EIP-3009 compliant ERC20 contract",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description of the resource",
+                    "type": "string"
+                },
+                "extra": {
+                    "description": "Extra information about the payment details specific to the scheme",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "maxAmountRequired": {
+                    "description": "Maximum amount required to pay for the resource in atomic units",
+                    "type": "string"
+                },
+                "maxTimeoutSeconds": {
+                    "description": "Maximum time in seconds for the resource server to respond",
+                    "type": "integer"
+                },
+                "mimeType": {
+                    "description": "MIME type of the resource response",
+                    "type": "string"
+                },
+                "network": {
+                    "description": "Network of the blockchain to send payment on (e.g., \"base-sepolia\")",
+                    "type": "string"
+                },
+                "outputSchema": {
+                    "description": "Output schema of the resource response (optional)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "payTo": {
+                    "description": "Address to pay value to",
+                    "type": "string"
+                },
+                "resource": {
+                    "description": "URL of the resource to pay for",
+                    "type": "string"
+                },
+                "scheme": {
+                    "description": "Scheme of the payment protocol to use (e.g., \"exact\")",
+                    "type": "string"
+                }
+            }
+        },
+        "types.PaymentSettleRequest": {
+            "type": "object",
+            "properties": {
+                "paymentHeader": {
+                    "$ref": "#/definitions/types.PaymentPayload"
+                },
+                "paymentRequirements": {
+                    "$ref": "#/definitions/types.PaymentRequirements"
+                },
+                "x402Version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.PaymentSettleResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "description": "Error message, if any",
+                    "type": "string"
+                },
+                "networkId": {
+                    "description": "Network ID where the transaction was submitted",
+                    "type": "string"
+                },
+                "success": {
+                    "description": "Whether the payment was successful",
+                    "type": "boolean"
+                },
+                "txHash": {
+                    "description": "Transaction hash of the settled payment",
+                    "type": "string"
+                }
+            }
+        },
+        "types.PaymentVerifyRequest": {
+            "type": "object",
+            "properties": {
+                "paymentHeader": {
+                    "$ref": "#/definitions/types.PaymentPayload"
+                },
+                "paymentRequirements": {
+                    "$ref": "#/definitions/types.PaymentRequirements"
+                },
+                "x402Version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.PaymentVerifyResponse": {
+            "type": "object",
+            "properties": {
+                "invalidReason": {
+                    "description": "Error message or reason for invalidity, if applicable",
+                    "type": "string"
+                },
+                "isValid": {
+                    "description": "Whether the payment payload is valid",
+                    "type": "boolean"
+                },
+                "payer": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SupportedKind": {
+            "type": "object",
+            "properties": {
+                "network": {
+                    "type": "string"
+                },
+                "scheme": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

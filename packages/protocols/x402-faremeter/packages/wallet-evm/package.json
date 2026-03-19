@@ -1,0 +1,35 @@
+{
+  "name": "@faremeter/wallet-evm",
+  "version": "0.17.1",
+  "description": "EVM private key wallet adapter for Faremeter payments using viem",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/asserts": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/types": "workspace:^",
+    "viem": "catalog:"
+  }
+}

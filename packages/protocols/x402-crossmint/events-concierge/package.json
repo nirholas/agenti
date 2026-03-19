@@ -1,0 +1,38 @@
+{
+  "name": "events-concierge",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "worker": "wrangler dev --port 8787",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "1.0.0",
+    "@ai-sdk/react": "^1.0.0",
+    "@crossmint/client-sdk-react-ui": "^2.5.6",
+    "@crossmint/wallets-sdk": "^0.14.3",
+    "agents": "^0.2.7",
+    "ai": "3.4.32",
+    "hono": "^4.9.9",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "uuid": "^9.0.0",
+    "viem": "^2.21.54",
+    "x402-fetch": "^0.6.0",
+    "x402-hono": "^0.6.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.13.7",
+    "@cloudflare/workers-types": "^4.20250927.0",
+    "@types/react": "^19.1.15",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7",
+    "wrangler": "^4.42.0"
+  }
+}

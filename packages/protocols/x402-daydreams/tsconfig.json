@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    // Enable latest features
+    "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "baseUrl": ".",
+    "paths": {
+      "@daydreamsai/core": ["./packages/core/src/index.ts"],
+      "@daydreamsai/mcp": ["./packages/mcp/src/index.ts"],
+      "@daydreamsai/chroma": ["./packages/chroma/src/index.ts"],
+      "@daydreamsai/mongodb": ["./packages/mongodb/src/index.ts"],
+      "@daydreamsai/telegram": ["./packages/telegram/src/index.ts"],
+      "@daydreamsai/twitter": ["./packages/twitter/src/index.ts"],
+      "@daydreamsai/discord": ["./packages/discord/src/index.ts"],
+      "@daydreamsai/hyperliquid": ["./packages/hyperliquid/src/index.ts"],
+      "@daydreamsai/defai": ["./packages/defai/src/index.ts"],
+      "@daydreamsai/create-agent": ["./packages/create-agent/src/index.ts"]
+    }
+  }
+}

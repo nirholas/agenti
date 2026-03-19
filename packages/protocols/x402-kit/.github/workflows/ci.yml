@@ -1,0 +1,182 @@
+name: Rust CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["**"]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  build-x402-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build x402-core
+        run: |
+          cargo build -p x402-core --release
+
+  build-x402-kit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        features:
+          - "" # no extra features
+          - "facilitator-client"
+          - "evm"
+          - "svm"
+          - "paywall"
+          - "axum"
+          - "actix-web"
+          - "all" # marker for all features
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build with features = ${{ matrix.features }}
+        run: |
+          if [ "${{ matrix.features }}" = "all" ]; then
+            cargo build -p x402-kit --release --all-features
+          elif [ "${{ matrix.features }}" = "" ]; then
+            cargo build -p x402-kit --release --no-default-features
+          else
+            cargo build -p x402-kit --release --no-default-features --features "${{ matrix.features }}"
+          fi
+
+  build-x402-signer:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        features:
+          - "" # no extra features
+          - "evm"
+          - "svm"
+          - "solana-rpc"
+          - "reqwest"
+          - "all" # marker for all features
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build with features = ${{ matrix.features }}
+        run: |
+          if [ "${{ matrix.features }}" = "all" ]; then
+            cargo build -p x402-signer --release --all-features
+          elif [ "${{ matrix.features }}" = "" ]; then
+            cargo build -p x402-signer --release --no-default-features
+          else
+            cargo build -p x402-signer --release --no-default-features --features "${{ matrix.features }}"
+          fi
+
+  build-x402-paywall:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        features:
+          - "" # no extra features
+          - "tracing"
+          - "axum"
+          - "actix-web"
+          - "all" # marker for all features
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build with features = ${{ matrix.features }}
+        run: |
+          if [ "${{ matrix.features }}" = "all" ]; then
+            cargo build -p x402-paywall --release --all-features
+          elif [ "${{ matrix.features }}" = "" ]; then
+            cargo build -p x402-paywall --release --no-default-features
+          else
+            cargo build -p x402-paywall --release --no-default-features --features "${{ matrix.features }}"
+          fi
+
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+
+      - name: Run cargo fmt
+        run: cargo fmt -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+
+      - name: Run clippy action
+        uses: clechasseur/rs-clippy-check@v3
+        with:
+          args: --all-features
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Install nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: nextest
+
+      - name: Test with latest nextest release
+        uses: actions-rs/cargo@v1
+        with:
+          command: nextest
+          args: run --all-features
+
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rust-docs
+
+      - name: Run cargo doc
+        run: cargo doc --no-deps --all-features
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  test-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run doc tests
+        run: cargo test --all-features --doc

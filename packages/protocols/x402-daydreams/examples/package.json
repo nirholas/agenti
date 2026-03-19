@@ -1,0 +1,35 @@
+{
+  "name": "x402",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "2.0.0-beta.13",
+    "@ai-sdk/google": "2.0.0-beta.19",
+    "@ai-sdk/groq": "2.0.0-beta.12",
+    "@ai-sdk/openai": "2.0.0-beta.16",
+    "@ai-sdk/provider": "2.0.0-beta.2",
+    "@coinbase/cdp-sdk": "1.36.0",
+    "@coinbase/x402": "^0.5.1",
+    "@daydreamsai/ai-sdk-provider": "^0.1.2",
+    "@daydreamsai/chromadb": "workspace:*",
+    "@daydreamsai/cli": "workspace:*",
+    "@daydreamsai/core": "workspace:*",
+    "@daydreamsai/discord": "workspace:*",
+    "@daydreamsai/mcp": "workspace:*",
+    "@daydreamsai/mongodb": "workspace:*",
+    "@daydreamsai/supabase": "workspace:*",
+    "@daydreamsai/twitter": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@octokit/rest": "catalog:",
+    "@tavily/core": "catalog:",
+    "ai": "^5.0.12",
+    "dotenv": "catalog:",
+    "viem": "^2.31.7",
+    "x402": "^0.5.2",
+    "zod": "catalog:"
+  }
+}

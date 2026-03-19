@@ -1,0 +1,51 @@
+{
+  "name": "@faremeter/payment-evm",
+  "version": "0.17.1",
+  "description": "EVM payment scheme implementations for x402 protocol (EIP-3009 gasless USDC transfers)",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./exact": {
+      "require": "./dist/src/exact/index.js",
+      "import": "./dist/src/exact/index.js",
+      "types": "./dist/src/exact/index.d.ts"
+    },
+    "./erc20": {
+      "require": "./dist/src/erc20.js",
+      "import": "./dist/src/erc20.js",
+      "types": "./dist/src/erc20.d.ts"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/asserts": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/info": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "arktype": "catalog:",
+    "viem": "catalog:"
+  }
+}

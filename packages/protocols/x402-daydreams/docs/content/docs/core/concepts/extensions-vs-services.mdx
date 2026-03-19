@@ -1,0 +1,152 @@
+---
+title: Extensions vs Services
+description: When to use extensions vs services in Daydreams.
+---
+
+## Quick Comparison
+
+**Services** = Infrastructure ("how to connect")
+**Extensions** = Features ("what agent can do")
+
+| | Service | Extension |
+|---|---|---|
+| **Purpose** | Manage infrastructure | Provide complete features |
+| **Contains** | API clients, DB connections | Actions, contexts, inputs, outputs |
+| **Used by** | Multiple extensions | Agents directly |
+| **Analogy** | Power supply, motherboard | Complete software package |
+| **Lifecycle** | `register()` → `boot()` | `install()` when added |
+
+## When to Use Each
+
+### Create a Service When:
+- Managing external connections (database, API clients)
+- Sharing utilities across multiple extensions
+- Handling lifecycle management (startup, shutdown)
+- Environment-based configuration
+
+### Create an Extension When:
+- Bundling complete feature set for a domain
+- Adding platform support (Discord, Twitter, etc.)
+- Packaging related actions/contexts/inputs/outputs
+- Building reusable functionality for agents
+
+## Real-World Example
+
+### Service: Discord Client Management
+```typescript title="discord-service.ts"
+const discordService = service({
+  name: "discord",
+  register: (container) => {
+    container.singleton("discordClient", () => new Client({
+      token: process.env.DISCORD_TOKEN,
+      intents: [GatewayIntentBits.Guilds]
+    }));
+  },
+  boot: async (container) => {
+    await container.resolve("discordClient").login();
+  },
+});
+```
+
+### Extension: Complete Discord Integration
+```typescript title="discord-extension.ts"
+const discord = extension({
+  name: "discord",
+  services: [discordService], // Uses the service for client
+  contexts: [discordContext], // Server/channel state
+  actions: [sendMessage, createChannel], // What agent can do
+  inputs: [messageListener], // Listen for messages
+  outputs: [messageReply], // Send responses
+});
+```
+
+
+
+## Complete Example: Trading System
+
+```typescript title="trading-system.ts"
+// 1. Services handle API connections
+const alpacaService = service({
+  name: "alpaca",
+  register: (container) => {
+    container.singleton("alpacaClient", () => new AlpacaApi({
+      key: process.env.ALPACA_KEY,
+      secret: process.env.ALPACA_SECRET,
+    }));
+  },
+  boot: async (container) => {
+    await container.resolve("alpacaClient").authenticate();
+  },
+});
+
+const marketDataService = service({
+  name: "marketData", 
+  register: (container) => {
+    container.singleton("marketClient", () => new MarketDataClient(process.env.MARKET_KEY));
+  },
+});
+
+// 2. Extension bundles all trading features
+const trading = extension({
+  name: "trading",
+  services: [alpacaService, marketDataService], // Infrastructure
+  contexts: [portfolioContext, watchlistContext], // State management
+  actions: [buyStock, sellStock, getQuote], // Capabilities
+  inputs: [priceAlerts], // Event listening
+  outputs: [orderConfirmation], // Notifications
+});
+
+// 3. Agent gets complete trading functionality
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  extensions: [trading], // One line = full trading system
+});
+```
+
+## Architecture Flow
+
+```text title="architecture.txt"
+Extension Layer (What Agent Can Do)
+├── Contexts: portfolio, watchlist state
+├── Actions: buy, sell, get quotes  
+├── Inputs: listen for price alerts
+└── Outputs: send confirmations
+
+Service Layer (How to Connect)
+├── alpacaService: trading API client
+└── marketDataService: market data client
+
+Execution Flow:
+1. Services register and boot (API connections)
+2. Extension components merge into agent
+3. LLM can use all features automatically
+4. Shared infrastructure across all actions
+```
+
+
+## Design Guidelines
+
+### Services Should:
+- Focus on single infrastructure domain
+- Provide clean abstractions for external systems
+- Handle connection lifecycle and configuration
+- Be reusable across multiple extensions
+
+### Extensions Should:
+- Bundle cohesive feature sets
+- Include everything needed for the domain
+- Use services for infrastructure needs
+- Provide complete agent capabilities
+
+## Key Takeaways
+
+- **Services = Infrastructure** - API clients, databases, utilities
+- **Extensions = Features** - Complete domain functionality  
+- **Clear separation** - "How to connect" vs "What agent can do"
+- **Composition** - Extensions use services, agents use extensions
+- **Reusability** - Services shared across extensions, extensions shared across agents
+
+## See Also
+
+- [Extensions](/docs/core/concepts/extensions) - Building feature packages
+- [Services](/docs/core/concepts/services) - Infrastructure management

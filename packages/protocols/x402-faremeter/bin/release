@@ -1,0 +1,63 @@
+#!/usr/bin/env opsh
+# shellcheck shell=bash disable=SC2164
+opsh::version::require v0.7.0
+lib::import step-runner git command
+
+BUMP="${1:-minor}"
+
+case "$BUMP" in
+major | minor | patch) ;;
+*) log::fatal "usage: release [major|minor|patch] (default: minor)" ;;
+esac
+
+step::10::check_prerequisites() {
+	git::repo::is-clean || log::fatal "working tree is not clean"
+
+	local branch
+	branch=$(git::repo::current-branch)
+	[[ $branch == "main" ]] || log::fatal "releases must be on the main branch (currently on $branch)"
+
+	git config --get user.signingkey >/dev/null 2>&1 || log::fatal "no GPG signing key configured (set git config user.signingkey)"
+}
+
+step::20::determine_version() {
+	CURRENT_TAG=$(git describe --tags --abbrev=0 2>/dev/null) || log::fatal "no existing tags found"
+
+	NEW_TAG=$(semver::bump "$BUMP" "$CURRENT_TAG") || log::fatal "failed to bump version"
+	NEW_VERSION="${NEW_TAG#v}"
+
+	git::tag::exists "$NEW_TAG" && log::fatal "tag $NEW_TAG already exists"
+
+	log::info "$CURRENT_TAG -> $NEW_TAG"
+}
+
+step::30::update_package_versions() {
+	command::exists jq || log::fatal "jq is required but not installed"
+
+	local pkgfiles pkgfile tmpfile actual
+	pkgfiles=(packages/*/package.json)
+	[[ -f ${pkgfiles[0]} ]] || log::fatal "no package.json files found under packages/"
+
+	for pkgfile in "${pkgfiles[@]}"; do
+		tmpfile=$(temp::file)
+		jq --arg v "$NEW_VERSION" '.version = $v' "$pkgfile" >"$tmpfile"
+		mv "$tmpfile" "$pkgfile"
+
+		actual=$(jq -r '.version' "$pkgfile")
+		[[ $actual == "$NEW_VERSION" ]] || log::fatal "$pkgfile: expected version $NEW_VERSION, got $actual"
+	done
+
+	pnpm prettier --write packages/*/package.json >/dev/null
+}
+
+step::40::commit_and_tag() {
+	log::info "committing and tagging $NEW_TAG"
+
+	git add packages/*/package.json
+	git commit -m "Update faremeter version to $NEW_TAG"
+	git tag -s "$NEW_TAG" -m "faremeter $NEW_TAG"
+
+	log::info "run: git push && git push origin $NEW_TAG"
+}
+
+steps::run step

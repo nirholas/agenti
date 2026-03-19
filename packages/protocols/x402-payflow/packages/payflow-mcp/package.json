@@ -1,0 +1,47 @@
+{
+  "name": "@chainbound/payflow-mcp",
+  "version": "0.0.2",
+  "description": "Payflow MCP server",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "payflow-mcp": "./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chainbound/payflow"
+  },
+  "homepage": "https://github.com/chainbound/payflow#readme",
+  "bugs": {
+    "url": "https://github.com/chainbound/payflow/issues"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "blockchain",
+    "evm",
+    "ethereum",
+    "x402",
+    "micropayments",
+    "zap"
+  ],
+  "author": "Chainbound Developers <dev@chainbound.io>",
+  "license": "MIT",
+  "dependencies": {
+    "@coinbase/x402": "^0.3.7",
+    "@duckdb/node-api": "1.3.0-alpha.21",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "debug": "^4.4.1",
+    "express": "^5.1.0",
+    "viem": "^2.30.0",
+    "x402": "^0.3.7",
+    "zod": "^3.25.23"
+  }
+}

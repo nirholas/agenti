@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402 Facilitator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main {
+      flex: 1;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: normal;
+      margin-bottom: 2rem;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    .section-title {
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+    .list {
+      list-style: none;
+    }
+    .list li {
+      padding: 0.25rem 0;
+    }
+    .list li::before {
+      content: "- ";
+      color: #888;
+    }
+    .scheme {
+      color: #888;
+      font-size: 0.85em;
+    }
+    .loading {
+      color: #888;
+    }
+    .error {
+      color: #ff6b6b;
+    }
+    footer {
+      padding-top: 2rem;
+      color: #444;
+      font-size: 0.85rem;
+      display: flex;
+      gap: 1.5rem;
+    }
+    a {
+      color: #888;
+      text-decoration: none;
+    }
+    a:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>x402 facilitator</h1>
+
+    <div id="content">
+      <p class="loading">loading...</p>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://daydreams.systems" target="_blank">daydreams.systems</a>
+    <a href="https://twitter.com/daydreamsagents" target="_blank">twitter</a>
+    <a href="https://github.com/daydreamsai" target="_blank">github</a>
+  </footer>
+
+  <script>
+    async function loadSupported() {
+      const content = document.getElementById('content');
+
+      try {
+        const response = await fetch('/supported');
+        const data = await response.json();
+
+        // Group by version and network type
+        const v2Networks = [];
+        const v1Networks = [];
+
+        if (data.kinds) {
+          for (const kind of data.kinds) {
+            const entry = {
+              network: kind.network,
+              scheme: kind.scheme,
+              version: kind.x402Version
+            };
+
+            if (kind.x402Version === 2) {
+              v2Networks.push(entry);
+            } else {
+              v1Networks.push(entry);
+            }
+          }
+        }
+
+        // Dedupe and group schemes per network
+        const groupByNetwork = (entries) => {
+          const map = new Map();
+          for (const e of entries) {
+            if (!map.has(e.network)) {
+              map.set(e.network, new Set());
+            }
+            map.get(e.network).add(e.scheme);
+          }
+          // Convert sets to arrays and sort
+          const result = new Map();
+          for (const [network, schemes] of map) {
+            result.set(network, [...schemes].sort());
+          }
+          return result;
+        };
+
+        const v2Grouped = groupByNetwork(v2Networks);
+        const v1Grouped = groupByNetwork(v1Networks);
+
+        let html = '';
+
+        if (v2Grouped.size > 0) {
+          html += '<div class="section">';
+          html += '<div class="section-title">networks (v2)</div>';
+          html += '<ul class="list">';
+          for (const [network, schemes] of v2Grouped) {
+            html += `<li>${network} <span class="scheme">[${schemes.join(', ')}]</span></li>`;
+          }
+          html += '</ul></div>';
+        }
+
+        if (v1Grouped.size > 0) {
+          html += '<div class="section">';
+          html += '<div class="section-title">networks (v1)</div>';
+          html += '<ul class="list">';
+          for (const [network, schemes] of v1Grouped) {
+            html += `<li>${network} <span class="scheme">[${schemes.join(', ')}]</span></li>`;
+          }
+          html += '</ul></div>';
+        }
+
+        if (html === '') {
+          html = '<p class="loading">no networks configured</p>';
+        }
+
+        content.innerHTML = html;
+
+      } catch (err) {
+        content.innerHTML = '<p class="error">failed to load supported networks</p>';
+        console.error(err);
+      }
+    }
+
+    loadSupported();
+  </script>
+</body>
+</html>

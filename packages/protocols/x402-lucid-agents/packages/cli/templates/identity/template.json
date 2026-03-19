@@ -1,0 +1,234 @@
+{
+  "id": "identity",
+  "name": "Agent with ERC-8004 Identity",
+  "description": "Full-featured agent with ERC-8004 identity registration, payments, and trust metadata.",
+  "adapters": ["hono", "express", "tanstack-ui", "tanstack-headless", "next"],
+  "package": {
+    "dependencies": {
+      "@lucid-agents/identity": "latest",
+      "@lucid-agents/wallet": "latest",
+      "viem": "^2.41.2"
+    }
+  },
+  "wizard": {
+    "prompts": [
+      {
+        "key": "AGENT_DESCRIPTION",
+        "type": "input",
+        "message": "How would you describe your agent?",
+        "defaultValue": "Verifiable agent with on-chain identity"
+      },
+      {
+        "key": "AGENT_VERSION",
+        "type": "input",
+        "message": "What version should the agent start at?",
+        "defaultValue": "0.1.0"
+      },
+      {
+        "key": "AGENT_DOMAIN",
+        "type": "input",
+        "message": "What domain will host your agent?",
+        "defaultValue": "agent.example.com"
+      },
+      {
+        "key": "IDENTITY_INCLUDE_A2A",
+        "type": "confirm",
+        "message": "Include A2A service in registration?",
+        "defaultValue": true
+      },
+      {
+        "key": "IDENTITY_A2A_ENDPOINT",
+        "type": "input",
+        "message": "A2A endpoint",
+        "defaultValue": "https://{{AGENT_DOMAIN}}/.well-known/agent-card.json",
+        "when": { "key": "IDENTITY_INCLUDE_A2A", "equals": true }
+      },
+      {
+        "key": "IDENTITY_A2A_VERSION",
+        "type": "input",
+        "message": "A2A version",
+        "defaultValue": "0.3.0",
+        "when": { "key": "IDENTITY_INCLUDE_A2A", "equals": true }
+      },
+      {
+        "key": "IDENTITY_INCLUDE_WEB",
+        "type": "confirm",
+        "message": "Include website service in registration?",
+        "defaultValue": true
+      },
+      {
+        "key": "IDENTITY_WEBSITE",
+        "type": "input",
+        "message": "Website endpoint",
+        "defaultValue": "https://{{AGENT_DOMAIN}}/",
+        "when": { "key": "IDENTITY_INCLUDE_WEB", "equals": true }
+      },
+      {
+        "key": "IDENTITY_INCLUDE_OASF",
+        "type": "confirm",
+        "message": "Include OASF service in registration?",
+        "defaultValue": false
+      },
+      {
+        "key": "IDENTITY_OASF_ENDPOINT",
+        "type": "input",
+        "message": "OASF endpoint",
+        "defaultValue": "https://{{AGENT_DOMAIN}}/.well-known/oasf-record.json",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_OASF_VERSION",
+        "type": "input",
+        "message": "OASF version",
+        "defaultValue": "0.8.0",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_OASF_AUTHORS_JSON",
+        "type": "input",
+        "message": "OASF authors (JSON array)",
+        "defaultValue": "[\"ops@{{AGENT_DOMAIN}}\"]",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_OASF_SKILLS_JSON",
+        "type": "input",
+        "message": "OASF skills (JSON array)",
+        "defaultValue": "[\"reasoning\"]",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_OASF_DOMAINS_JSON",
+        "type": "input",
+        "message": "OASF domains (JSON array)",
+        "defaultValue": "[\"assistant\"]",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_OASF_MODULES_JSON",
+        "type": "input",
+        "message": "OASF modules (JSON array of URIs)",
+        "defaultValue": "[\"https://{{AGENT_DOMAIN}}/modules/core\"]",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_OASF_LOCATORS_JSON",
+        "type": "input",
+        "message": "OASF locators (JSON array of URIs)",
+        "defaultValue": "[\"https://{{AGENT_DOMAIN}}/.well-known/oasf-record.json\"]",
+        "when": { "key": "IDENTITY_INCLUDE_OASF", "equals": true }
+      },
+      {
+        "key": "IDENTITY_INCLUDE_TWITTER",
+        "type": "confirm",
+        "message": "Include Twitter service in registration?",
+        "defaultValue": false
+      },
+      {
+        "key": "IDENTITY_TWITTER",
+        "type": "input",
+        "message": "Twitter handle or URL",
+        "defaultValue": "",
+        "when": { "key": "IDENTITY_INCLUDE_TWITTER", "equals": true }
+      },
+      {
+        "key": "IDENTITY_INCLUDE_EMAIL",
+        "type": "confirm",
+        "message": "Include email service in registration?",
+        "defaultValue": false
+      },
+      {
+        "key": "IDENTITY_EMAIL",
+        "type": "input",
+        "message": "Support email",
+        "defaultValue": "",
+        "when": { "key": "IDENTITY_INCLUDE_EMAIL", "equals": true }
+      },
+      {
+        "key": "PAYMENTS_FACILITATOR_URL",
+        "type": "input",
+        "message": "Facilitator URL",
+        "defaultValue": "https://facilitator.daydreams.systems"
+      },
+      {
+        "key": "PAYMENTS_FACILITATOR_AUTH",
+        "type": "input",
+        "message": "Facilitator auth token (optional, defaults to DREAMS_AUTH_TOKEN)",
+        "defaultValue": ""
+      },
+      {
+        "key": "PAYMENTS_NETWORK",
+        "type": "select",
+        "message": "Payment network",
+        "choices": [
+          { "value": "ethereum", "title": "Ethereum (EVM mainnet)" },
+          { "value": "base", "title": "Base (EVM mainnet)" },
+          { "value": "base-sepolia", "title": "Base Sepolia (EVM testnet)" },
+          { "value": "solana", "title": "Solana Mainnet" },
+          { "value": "solana-devnet", "title": "Solana Devnet" }
+        ],
+        "defaultValue": "ethereum"
+      },
+      {
+        "key": "PAYMENTS_DESTINATION",
+        "type": "select",
+        "message": "Payment destination mode",
+        "choices": [
+          { "value": "static", "title": "Static wallet address" },
+          { "value": "stripe", "title": "Stripe dynamic destination (Base only)" }
+        ],
+        "defaultValue": "static"
+      },
+      {
+        "key": "PAYMENTS_RECEIVABLE_ADDRESS",
+        "type": "input",
+        "message": "Payment address (0x... for EVM, Base58 for Solana)",
+        "defaultValue": "",
+        "when": {
+          "key": "PAYMENTS_DESTINATION",
+          "equals": "static"
+        }
+      },
+      {
+        "key": "STRIPE_SECRET_KEY",
+        "type": "input",
+        "message": "Stripe secret key (required for Stripe destination mode)",
+        "defaultValue": "",
+        "when": {
+          "key": "PAYMENTS_DESTINATION",
+          "equals": "stripe"
+        }
+      },
+      {
+        "key": "RPC_URL",
+        "type": "input",
+        "message": "RPC URL (blockchain endpoint)",
+        "defaultValue": "https://eth.llamarpc.com"
+      },
+      {
+        "key": "CHAIN_ID",
+        "type": "input",
+        "message": "Chain ID",
+        "defaultValue": "1"
+      },
+      {
+        "key": "IDENTITY_AUTO_REGISTER",
+        "type": "confirm",
+        "message": "Auto-register on ERC-8004 registry?",
+        "defaultValue": true
+      },
+      {
+        "key": "AGENT_WALLET_PRIVATE_KEY",
+        "type": "input",
+        "message": "Agent wallet private key (required for identity registration)",
+        "defaultValue": ""
+      },
+      {
+        "key": "DEVELOPER_WALLET_PRIVATE_KEY",
+        "type": "input",
+        "message": "Developer wallet private key (optional, for contract interactions)",
+        "defaultValue": ""
+      }
+    ]
+  }
+}

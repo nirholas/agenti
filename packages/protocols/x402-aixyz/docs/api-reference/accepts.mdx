@@ -1,0 +1,116 @@
+---
+title: "aixyz/accepts"
+description: "Payment configuration types and facilitator client for x402 gating"
+---
+
+Types and utilities for configuring x402 payment gating on agent and tool endpoints.
+
+```typescript
+import type { Accepts, AcceptsX402, AcceptsFree } from "aixyz/accepts";
+import { HTTPFacilitatorClient, facilitator } from "aixyz/accepts";
+```
+
+## Types
+
+### `Accepts`
+
+Union type for payment configuration:
+
+```typescript
+type Accepts = AcceptsX402 | AcceptsFree;
+```
+
+### `AcceptsX402`
+
+Requires x402 exact payment:
+
+```typescript
+type AcceptsX402 = {
+  scheme: "exact";
+  price: string; // USD string, e.g. "$0.005"
+  network?: string; // CAIP-2 chain ID, overrides config
+  payTo?: string; // EVM address, overrides config
+};
+```
+
+| Field     | Type     | Required | Description                                                   |
+| --------- | -------- | -------- | ------------------------------------------------------------- |
+| `scheme`  | `string` | Yes      | Must be `"exact"`                                             |
+| `price`   | `string` | Yes      | USD price string (e.g. `"$0.005"`)                            |
+| `network` | `string` | No       | CAIP-2 chain ID, overrides `x402.network` from config         |
+| `payTo`   | `string` | No       | EVM address to receive payment, overrides `x402.payTo` config |
+
+### `AcceptsFree`
+
+No payment required:
+
+```typescript
+type AcceptsFree = {
+  scheme: "free";
+};
+```
+
+## Exports
+
+### `HTTPFacilitatorClient`
+
+Client for communicating with an x402 facilitator service. Re-exported from `@x402/core/server`.
+
+```typescript
+import { HTTPFacilitatorClient } from "aixyz/accepts";
+
+const client = new HTTPFacilitatorClient({
+  url: "https://x402.use-agently.com/facilitator",
+});
+```
+
+### `facilitator`
+
+The default facilitator client used by `AixyzApp`. Points to the Agently-hosted x402 facilitator.
+
+```typescript
+import { facilitator } from "aixyz/accepts";
+```
+
+### `AcceptsScheme`
+
+Zod schema for validating `Accepts` objects at runtime:
+
+```typescript
+import { AcceptsScheme } from "aixyz/accepts";
+
+AcceptsScheme.parse({ scheme: "exact", price: "$0.005" });
+```
+
+## Usage
+
+Agents and tools declare an `accepts` export to control x402 payment gating. Endpoints without `accepts` are **not registered**.
+
+```typescript title="app/agent.ts"
+import type { Accepts } from "aixyz/accepts";
+
+export const accepts: Accepts = {
+  scheme: "exact",
+  price: "$0.005",
+};
+```
+
+```typescript title="app/tools/lookup.ts"
+import type { Accepts } from "aixyz/accepts";
+
+export const accepts: Accepts = {
+  scheme: "free",
+};
+```
+
+### Custom facilitator
+
+Create `app/accepts.ts` to override the default facilitator:
+
+```typescript title="app/accepts.ts"
+import { HTTPFacilitatorClient } from "aixyz/accepts";
+
+export const facilitator = new HTTPFacilitatorClient({
+  url: process.env.X402_FACILITATOR_URL ?? "https://x402.use-agently.com/facilitator",
+});
+```

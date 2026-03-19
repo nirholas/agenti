@@ -1,0 +1,48 @@
+import { NetworksTable } from '@/components/docs/NetworksTable';
+import { Callout } from '@/components/docs/Callout';
+
+<PageHeader title="Supported Networks" description="OpenFacilitator supports both x402 v1 (human-readable) and v2 (CAIP-2) network identifiers." />
+
+## Network IDs
+
+- **v1**: Human-readable names like `base`, `solana`
+- **v2**: CAIP-2 format like `eip155:8453`, `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp`
+
+Both versions are supported — use whichever you prefer.
+
+<NetworksTable />
+
+## Wallet Requirements
+
+| Type | Networks | Wallet Needed |
+| ---- | -------- | ------------- |
+| EVM | Base, Polygon, Avalanche, Sei, IoTeX, Peaq, X Layer | 1 EVM wallet (same address works on all chains) |
+| Solana | Solana | 1 Solana wallet |
+
+<Callout type="info">
+One EVM wallet works across all EVM networks. You don't need separate wallets per chain.
+</Callout>
+
+## Using Network IDs
+
+### In SDK
+
+```typescript
+import { getNetwork, toV2NetworkId } from '@openfacilitator/sdk';
+
+// Get network info
+const base = getNetwork('base');
+console.log(base.chainId); // 8453
+
+// Convert between versions
+toV2NetworkId('base'); // 'eip155:8453'
+```
+
+### In API Requests
+
+Both work:
+
+```json
+{ "network": "base" }
+{ "network": "eip155:8453" }
+```

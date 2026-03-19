@@ -1,0 +1,257 @@
+{{TEMPLATE_IMPORTS}}
+import { z } from 'zod';
+import { createAgent } from '@lucid-agents/core';
+import { http } from '@lucid-agents/http';
+import { wallets, walletsFromEnv } from '@lucid-agents/wallet';
+import { a2a } from '@lucid-agents/a2a';
+import {
+  fetchAndSendMessage,
+  fetchAndInvoke,
+  type Task,
+  type TaskStatus,
+} from '@lucid-agents/a2a';
+import { createRuntimePaymentContext } from '@lucid-agents/payments';
+
+{{TEMPLATE_PRE_SETUP}}
+const agent = await createAgent({
+  name: process.env.AGENT_NAME ?? 'trading-recommendation-agent',
+  version: process.env.AGENT_VERSION ?? '0.1.0',
+  description: process.env.AGENT_DESCRIPTION ?? 'Trading recommendation agent that buys data and generates signals',
+})
+  .use(http())
+  .use(wallets({ config: walletsFromEnv() }))
+  .use(a2a())
+  .build();
+
+{{TEMPLATE_POST_SETUP}}
+
+/**
+ * Trading Recommendation Agent - Buys data and generates trading signals
+ *
+ * This agent uses A2A client to buy data from the data agent,
+ * then processes it to generate trading signals/recommendations.
+ */
+const DATA_AGENT_URL = process.env.DATA_AGENT_URL || 'http://localhost:3001';
+
+agent.entrypoints.add({
+  key: 'generateSignal',
+  description: 'Generate trading signal by buying data and analyzing it',
+  input: z.object({
+    symbol: z.string(),
+    strategy: z.enum(['momentum', 'mean-reversion', 'breakout']).optional(),
+  }),
+  output: z.object({
+    symbol: z.string(),
+    signal: z.enum(['BUY', 'SELL', 'HOLD']),
+    confidence: z.number(),
+    reasoning: z.string(),
+    dataPrice: z.string().optional(),
+  }),
+  handler: async ctx => {
+    const { symbol, strategy = 'momentum' } = ctx.input;
+
+    // Create payment-enabled fetch if wallet is available
+    let fetchWithPayment: typeof fetch | undefined;
+    if (agent.wallets?.agent) {
+      try {
+        const paymentContext = await createRuntimePaymentContext({
+          runtime: agent,
+          network: process.env.PAYMENTS_NETWORK || 'ethereum',
+        });
+        fetchWithPayment = paymentContext.fetchWithPayment;
+      } catch (error) {
+        console.warn('Failed to create payment context:', error);
+      }
+    }
+
+    // Buy market data from data agent using task-based operations
+    let marketData: any;
+    let dataPrice: string | undefined;
+
+    try {
+      // Fetch data agent card to get pricing
+      const dataCard = await agent.a2a?.fetchCard(
+        DATA_AGENT_URL,
+        fetchWithPayment
+      );
+      const entrypoint = dataCard?.entrypoints?.getMarketData;
+      dataPrice = entrypoint?.pricing?.invoke;
+
+      // Create task on data agent (returns immediately with taskId)
+      const taskResponse = await fetchAndSendMessage(
+        DATA_AGENT_URL,
+        'getMarketData',
+        { symbol, timeframe: '1h' },
+        fetchWithPayment
+      );
+
+      // Wait for task to complete by polling
+      let task: Task | undefined;
+      const maxWaitMs = 30000;
+      const startTime = Date.now();
+
+      while (Date.now() - startTime < maxWaitMs) {
+        if (!dataCard || !agent.a2a) {
+          throw new Error('A2A runtime not available');
+        }
+        task = await agent.a2a.client.getTask(
+          dataCard,
+          taskResponse.taskId,
+          fetchWithPayment
+        );
+
+        if (task.status === 'completed' || task.status === 'failed') {
+          break;
+        }
+
+        // Poll every 100ms
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      if (!task || task.status === 'failed') {
+        throw new Error(
+          `Task failed: ${task?.error?.message || 'Unknown error'}`
+        );
+      }
+
+      if (task.status !== 'completed' || !task.result) {
+        throw new Error('Task did not complete in time');
+      }
+
+      marketData = task.result.output;
+    } catch (error) {
+      throw new Error(`Failed to fetch market data: ${(error as Error).message}`);
+    }
+
+    // Generate trading signal based on strategy
+    let signal: 'BUY' | 'SELL' | 'HOLD';
+    let confidence: number;
+    let reasoning: string;
+
+    const prices = marketData.data.map((d: any) => d.close);
+    const recentPrices = prices.slice(-5);
+    const avgPrice = recentPrices.reduce((a: number, b: number) => a + b, 0) / recentPrices.length;
+    const currentPrice = prices[prices.length - 1];
+    const priceChange = ((currentPrice - avgPrice) / avgPrice) * 100;
+
+    switch (strategy) {
+      case 'momentum':
+        if (priceChange > 2) {
+          signal = 'BUY';
+          confidence = Math.min(0.9, 0.5 + Math.abs(priceChange) / 20);
+          reasoning = `Strong upward momentum detected (${priceChange.toFixed(2)}% above average)`;
+        } else if (priceChange < -2) {
+          signal = 'SELL';
+          confidence = Math.min(0.9, 0.5 + Math.abs(priceChange) / 20);
+          reasoning = `Strong downward momentum detected (${priceChange.toFixed(2)}% below average)`;
+        } else {
+          signal = 'HOLD';
+          confidence = 0.6;
+          reasoning = 'No clear momentum trend';
+        }
+        break;
+      case 'mean-reversion':
+        if (priceChange > 5) {
+          signal = 'SELL';
+          confidence = 0.75;
+          reasoning = `Price significantly above mean, expecting reversion`;
+        } else if (priceChange < -5) {
+          signal = 'BUY';
+          confidence = 0.75;
+          reasoning = `Price significantly below mean, expecting reversion`;
+        } else {
+          signal = 'HOLD';
+          confidence = 0.5;
+          reasoning = 'Price near mean, no reversion signal';
+        }
+        break;
+      case 'breakout':
+        const high = Math.max(...prices);
+        const low = Math.min(...prices);
+        const range = high - low;
+        if (currentPrice > high - range * 0.1) {
+          signal = 'BUY';
+          confidence = 0.8;
+          reasoning = 'Price breaking above resistance';
+        } else if (currentPrice < low + range * 0.1) {
+          signal = 'SELL';
+          confidence = 0.8;
+          reasoning = 'Price breaking below support';
+        } else {
+          signal = 'HOLD';
+          confidence = 0.5;
+          reasoning = 'No breakout detected';
+        }
+        break;
+    }
+
+    return {
+      output: {
+        symbol,
+        signal,
+        confidence,
+        reasoning,
+        dataPrice,
+      },
+      usage: { total_tokens: 0 },
+    };
+  },
+});
+
+agent.entrypoints.add({
+  key: 'quickSignal',
+  description: 'Quick signal using price data only (cheaper)',
+  input: z.object({
+    symbol: z.string(),
+  }),
+  output: z.object({
+    symbol: z.string(),
+    signal: z.enum(['BUY', 'SELL', 'HOLD']),
+    price: z.number(),
+  }),
+  handler: async ctx => {
+    const { symbol } = ctx.input;
+
+    // Create payment-enabled fetch
+    let fetchWithPayment: typeof fetch | undefined;
+    if (agent.wallets?.agent) {
+      try {
+        const paymentContext = await createRuntimePaymentContext({
+          runtime: agent,
+          network: process.env.PAYMENTS_NETWORK || 'ethereum',
+        });
+        fetchWithPayment = paymentContext.fetchWithPayment;
+      } catch (error) {
+        console.warn('Failed to create payment context:', error);
+      }
+    }
+
+    // Buy price data (cheaper endpoint)
+    let priceData: any;
+    try {
+      const result = await fetchAndInvoke(
+        DATA_AGENT_URL,
+        'getPrice',
+        { symbol },
+        fetchWithPayment
+      );
+      priceData = result.output;
+    } catch (error) {
+      throw new Error(`Failed to fetch price: ${(error as Error).message}`);
+    }
+
+    // Simple signal based on price
+    const price = priceData.price;
+    const signal: 'BUY' | 'SELL' | 'HOLD' = price > 120 ? 'SELL' : price < 100 ? 'BUY' : 'HOLD';
+
+    return {
+      output: {
+        symbol,
+        signal,
+        price,
+      },
+      usage: { total_tokens: 0 },
+    };
+  },
+});
+

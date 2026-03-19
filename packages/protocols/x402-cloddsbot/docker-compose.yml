@@ -1,0 +1,17 @@
+services:
+  clodds:
+    build: .
+    ports:
+      - "18789:18789"
+    env_file:
+      - .env
+    environment:
+      CLODDS_STATE_DIR: /data
+      CLODDS_WORKSPACE: /data/workspace
+      CLODDS_CONFIG_PATH: /data/clodds.json
+    volumes:
+      - clodds_data:/data
+    restart: unless-stopped
+
+volumes:
+  clodds_data:

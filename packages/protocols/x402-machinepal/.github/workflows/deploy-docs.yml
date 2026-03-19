@@ -1,0 +1,75 @@
+name: Deploy Docusaurus Docs
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch: # This enables manual triggering only
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: false
+          persist-credentials: true # ensure token is available for push
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: docs/package.json
+
+      - name: Install dependencies
+        working-directory: docs
+        run: npm install
+
+      - name: Build Docusaurus site
+        working-directory: docs
+        run: npm run build
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git config --global init.defaultBranch main
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: docs/build
+          force_orphan: false
+          enable_jekyll: false
+
+      - name: Verify deployed site is reachable
+        run: |
+          echo "🔍 Checking if site is live..."
+          REPO_NAME=$(basename "${{ github.event.repository.name }}")
+          OWNER="${{ github.repository_owner }}"
+          DEPLOY_URL="https://${OWNER}.github.io/${REPO_NAME}/"
+
+          echo "Testing $DEPLOY_URL ..."
+          # Wait for GitHub Pages to update (bash-compatible loop)
+          for i in $(seq 1 10); do
+            echo "Attempt $i..."
+            if curl -sSfL "$DEPLOY_URL" | grep -q "<html"; then
+              echo "✅ Site is live at $DEPLOY_URL"
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "❌ Could not verify site at $DEPLOY_URL after multiple attempts"
+          exit 1

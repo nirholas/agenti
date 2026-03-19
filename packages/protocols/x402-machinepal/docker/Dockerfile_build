@@ -1,0 +1,36 @@
+# ==========================================
+# STAGE 1: Builder
+# ==========================================
+FROM ubuntu:22.04
+
+
+# Prevent interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Copy both the package list and the script to /tmp
+COPY packages.txt install_packages.sh /tmp/
+
+# Make the script executable and run it
+# We use bash explicitly to run it, ensuring compatibility
+RUN cd /tmp && ./install_packages.sh
+
+
+WORKDIR /app
+RUN git clone https://github.com/skalenetwork/machinepal --recursive --depth 1 --shallow-submodules
+WORKDIR /app/machinepal
+
+# 4. Setup VCPKG
+ENV VCPKG_ROOT=/app/machinepal/external/vcpkg
+
+# Configure, Build, and Cleanup in a single layer
+RUN cd docker && ./vcpkg_packages_install.sh \
+    && cd .. \
+    && cmake -S . -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake \
+      -DVCPKG_TARGET_TRIPLET=x64-linux \
+    && cmake --build build \
+    && rm -rf $VCPKG_ROOT \
+    && rm -rf build/*/
+

@@ -1,0 +1,29 @@
+{
+  "name": "a2a-x402-js-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Basic A2A x402 example using the official A2A JavaScript SDK",
+  "scripts": {
+    "server": "node server.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@a2a-js/sdk": "^0.3.3",
+    "@crossmint/client-sdk-react-ui": "^2.4.13",
+    "@crossmint/wallets-sdk": "^0.14.0",
+    "@types/node": "^24.5.0",
+    "@types/react": "^19.1.13",
+    "dotenv": "^17.2.2",
+    "ethers": "^6.13.2",
+    "express": "^4.19.2",
+    "next": "15.5.9",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.9.2",
+    "uuid": "^9.0.1",
+    "viem": "^2.33.1"
+  }
+}

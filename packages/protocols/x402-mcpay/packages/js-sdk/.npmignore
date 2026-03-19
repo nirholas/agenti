@@ -1,0 +1,23 @@
+# Source code
+src/
+tsconfig.json
+.env
+.env.*
+
+# Development files
+node_modules/
+.git/
+.gitignore
+*.log
+.DS_Store
+
+# Development/Testing
+test/
+tests/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Build artifacts
+*.tsbuildinfo 

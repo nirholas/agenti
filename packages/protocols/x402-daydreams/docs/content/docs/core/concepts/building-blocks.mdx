@@ -1,0 +1,195 @@
+---
+title: Building Blocks
+description: The core components that make up a Daydreams agent.
+---
+
+Every Daydreams agent is built from four main building blocks that work together to create intelligent, stateful behavior. These components handle how agents receive information, maintain state, perform actions, and respond to users.
+
+## The Four Building Blocks
+
+### 1. Inputs - How Your Agent Listens
+
+Inputs define how your agent receives and processes information from external sources. They create structured `InputRef` objects that flow through the agent's processing pipeline.
+
+```typescript title="input-example.ts"
+import { input } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Text input with validation
+const textInput = input({
+  description: "Processes user text messages",
+  schema: z.string(),
+  handler: async (data) => {
+    // Optional processing logic
+    return { processed: true, length: data.length };
+  }
+});
+```
+
+**Examples:**
+- Discord/Telegram messages
+- CLI user input  
+- HTTP API requests
+- File system events
+- Timer/scheduled triggers
+
+### 2. Outputs - How Your Agent Speaks
+
+Outputs define how your agent sends information to external systems. The LLM uses outputs by generating `<output>` XML tags that get processed by output handlers.
+
+```typescript title="output-example.ts"
+import { output } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Text output with validation  
+const textOutput = output({
+  description: "Sends text responses to users",
+  schema: z.string(),
+  handler: async (content) => {
+    console.log(`Agent says: ${content}`);
+    return { sent: true, timestamp: Date.now() };
+  }
+});
+```
+
+**Examples:**
+- Chat platform messages (Discord, Slack)
+- Email notifications
+- HTTP API responses
+- File system writes
+- Database updates
+
+### 3. Actions - What Your Agent Can Do
+
+Actions are capabilities that give your agent superpowers. The LLM can call actions using `<action_call>` XML tags, and results flow back into the conversation context.
+
+```typescript title="action-example.ts"
+import { action } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Weather action with full context access
+const getWeather = action({
+  name: "get-weather", 
+  description: "Gets current weather for a location",
+  schema: z.object({
+    location: z.string(),
+  }),
+  handler: async ({ location }, ctx) => {
+    // Access context memory, agent, working memory
+    const weather = await weatherAPI.get(location);
+    ctx.memory.lastWeatherCheck = Date.now();
+    
+    return { temperature: weather.temp, condition: weather.condition };
+  },
+});
+```
+
+**Examples:**
+- External API calls (weather, search, databases)
+- Memory operations (save user preferences, retrieve history)
+- File system operations (read, write, process files)
+- Cross-context communication (sync user data)
+
+### 4. Contexts - Your Agent's Workspace
+
+Contexts are isolated, stateful workspaces that maintain separate memory for different conversations or tasks. They enable agents to handle multiple simultaneous interactions without mixing data.
+
+```typescript title="context-example.ts"
+import { context } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Chat context with lifecycle hooks and composition
+const chatContext = context({
+  type: "chat",
+  schema: z.object({ userId: z.string() }),
+  
+  // Initialize memory 
+  create: () => ({ messages: [], preferences: {} }),
+  
+  // Context-specific actions via .setActions()
+  // Context composition via .use()
+  // Custom instructions, render, lifecycle hooks
+}).setActions([/* context-specific actions */]);
+```
+
+**Examples:**
+- User conversations (each user gets isolated memory)
+- Game sessions (each game maintains separate state) 
+- Project workspaces (documents, tasks, team members)
+- Multi-step workflows (onboarding, checkout processes)
+
+## How They Work Together
+
+Here's the complete flow showing how building blocks interact:
+
+```typescript title="complete-flow-example.ts"
+// 1. Input creates InputRef and triggers agent.send()
+await agent.send({
+  context: chatContext,
+  args: { userId: "alice" },
+  input: { type: "text", data: "What's the weather in NYC?" }
+});
+```
+
+**Execution Flow:**
+1. **Input processing** → InputRef created and added to working memory
+2. **Context preparation** → `chat:alice` context loaded with memory/history
+3. **LLM reasoning** → Generates structured XML response with context awareness
+4. **Action execution** → `<action_call name="get-weather">` parsed and executed
+5. **Action results** → Weather data returned and added to working memory  
+6. **Output generation** → `<output type="text">` sends response to user
+7. **Memory persistence** → All changes saved, context state updated
+
+## Advanced Building Block Concepts
+
+### Context Composition
+Contexts can include other contexts for modular functionality:
+```typescript
+const composedContext = context({ type: "main" })
+  .use((state) => [
+    { context: analyticsContext, args: { userId: state.args.userId } },
+    { context: preferencesContext, args: { userId: state.args.userId } }
+  ]);
+// Now has access to analytics and preferences actions/memory
+```
+
+### Action Scoping
+Actions can be global (available everywhere) or context-specific:
+```typescript
+// Global actions - available in all contexts
+const agent = createDreams({ actions: [globalTimeAction] });
+
+// Context actions - only available in specific contexts  
+const chatContext = context({}).setActions([chatSpecificAction]);
+```
+
+### Memory System Integration
+All building blocks interact with the dual-memory system:
+- **Working Memory** - Temporary execution logs (inputs, outputs, actions, results)
+- **Persistent Memory** - Long-term context memory + vector/KV storage
+
+## Architecture Mental Model
+
+If you know React, think of it this way:
+
+- **Contexts** = React components (isolated state, lifecycle hooks, composition)
+- **Actions** = Event handlers (capabilities with full context access)
+- **Inputs/Outputs** = Props/callbacks (typed data flow in/out)
+- **Agent** = React app (orchestrates everything with an execution engine)
+- **Working Memory** = Component state during render
+- **Context Memory** = Component state that persists between renders
+
+## Common Patterns Across Building Blocks
+
+For detailed patterns on schema validation, error handling, memory access, and external service integration that apply to all building blocks, see [Building Block Operations](/docs/core/concepts/building-block-operations).
+
+## Next Steps
+
+Now that you understand the building blocks, you can dive deeper into each one:
+
+- **[Contexts](/docs/core/concepts/contexts)** - Learn how to manage state and memory
+- **[Actions](/docs/core/concepts/actions)** - Define what your agent can do
+- **[Inputs](/docs/core/concepts/inputs)** - Set up ways for your agent to receive information
+- **[Outputs](/docs/core/concepts/outputs)** - Configure how your agent responds
+- **[Building Block Operations](/docs/core/concepts/building-block-operations)** - Common patterns for all building blocks
+- **[Agent Lifecycle](/docs/core/concepts/agent-lifecycle)** - Understand the complete execution flow

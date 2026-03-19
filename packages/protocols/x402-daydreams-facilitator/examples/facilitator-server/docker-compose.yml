@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: facilitator
+      POSTGRES_USER: facilitator
+      POSTGRES_PASSWORD: facilitator
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U facilitator"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  facilitator:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PORT=8090
+      - DATABASE_URL=postgresql://facilitator:facilitator@postgres:5432/facilitator
+      # EVM Signer (required - use one of CDP or private key)
+      # For CDP (recommended):
+      # - CDP_API_KEY_ID=${CDP_API_KEY_ID}
+      # - CDP_API_KEY_SECRET=${CDP_API_KEY_SECRET}
+      # - CDP_WALLET_SECRET=${CDP_WALLET_SECRET}
+      # - CDP_ACCOUNT_NAME=${CDP_ACCOUNT_NAME}
+      # For private key (fallback):
+      - EVM_PRIVATE_KEY=${EVM_PRIVATE_KEY}
+      # Networks to enable (comma-separated)
+      - EVM_NETWORKS=${EVM_NETWORKS:-base-sepolia}
+      # Optional SVM support
+      # - SVM_PRIVATE_KEY=${SVM_PRIVATE_KEY}
+      # - SVM_NETWORKS=${SVM_NETWORKS:-solana-devnet}
+      # Optional RPC API keys (for better rate limits)
+      # - ALCHEMY_API_KEY=${ALCHEMY_API_KEY}
+      # - INFURA_API_KEY=${INFURA_API_KEY}
+      # - HELIUS_API_KEY=${HELIUS_API_KEY}
+      # OpenTelemetry (optional)
+      # - OTEL_SERVICE_NAME=x402-facilitator
+      # - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/supported"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  pgdata:

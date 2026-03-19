@@ -1,0 +1,25 @@
+{
+  "name": "@x402-sovereign/example-hono",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Example showing sovereign facilitator + paywalled API in one server (local only, not published)",
+  "main": "./src/index.ts",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "facilitator": "bun run src/facilitator.ts",
+    "api": "bun run src/api.ts",
+    "separate": "bun run --filter @x402-sovereign/example-hono facilitator & bun run --filter @x402-sovereign/example-hono api"
+  },
+  "dependencies": {
+    "@x402-sovereign/core": "workspace:*",
+    "hono": "^4.10.3",
+    "viem": "^2.38.4",
+    "x402-hono": "^0.6.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
+

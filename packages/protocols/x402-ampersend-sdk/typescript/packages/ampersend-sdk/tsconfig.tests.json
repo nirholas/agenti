@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.jsonc",
+  "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "rootDir": "tests",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["../src/*"]
+    }
+  },
+  "include": ["tests"]
+}

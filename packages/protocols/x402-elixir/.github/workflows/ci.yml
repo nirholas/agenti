@@ -1,0 +1,72 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        elixir: ["1.19"]
+        otp: ["27"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-v2-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-v2-
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - run: mix format --check-formatted
+      - run: mix credo --strict
+      - name: Run tests with coverage
+        run: mix coveralls
+        env:
+          MIX_ENV: test
+      - run: mix compile --no-optional-deps --warnings-as-errors
+        name: Compile without optional deps
+
+  dialyzer:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        elixir: ["1.19"]
+        otp: ["27"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-v2-${{ matrix.elixir }}-${{ matrix.otp }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-v2-${{ matrix.elixir }}-${{ matrix.otp }}-
+            ${{ runner.os }}-mix-v2-
+      - name: Cache PLTs
+        uses: actions/cache@v4
+        with:
+          path: priv/plts
+          key: ${{ runner.os }}-plt-v3-${{ matrix.elixir }}-${{ matrix.otp }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-plt-v3-${{ matrix.elixir }}-${{ matrix.otp }}-
+            ${{ runner.os }}-plt-v3-
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - run: mix dialyzer --format github

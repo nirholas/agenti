@@ -1,0 +1,11 @@
+name: Bun
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  call-ci:
+    uses: qntx/workflows/.github/workflows/bun.yml@main

@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["x402v1/*.ts", "x402v2/*.ts", "x402-interop/*.ts", "rides/*.ts"]
+}

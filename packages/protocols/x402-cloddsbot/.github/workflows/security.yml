@@ -1,0 +1,55 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Run weekly on Monday at 9am UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (high/critical) - production only
+        run: npm audit --audit-level=high --production
+
+      - name: audit-ci (moderate+) - production only
+        run: npx --yes audit-ci --moderate --production
+
+      - name: Check for known vulnerabilities
+        run: |
+          echo "=== Security Summary ==="
+          npm audit --json | jq '.metadata.vulnerabilities'
+
+  # CodeQL Analysis - Enable when repo is public or GitHub Advanced Security is enabled
+  # codeql:
+  #   name: CodeQL Analysis
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     security-events: write
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v6
+  #     - name: Initialize CodeQL
+  #       uses: github/codeql-action/init@v3
+  #       with:
+  #         languages: javascript-typescript
+  #     - name: Autobuild
+  #       uses: github/codeql-action/autobuild@v3
+  #     - name: Perform CodeQL Analysis
+  #       uses: github/codeql-action/analyze@v3

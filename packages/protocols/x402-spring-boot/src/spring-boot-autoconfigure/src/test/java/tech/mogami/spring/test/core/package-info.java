@@ -1,0 +1,1 @@
+package tech.mogami.spring.test.core;

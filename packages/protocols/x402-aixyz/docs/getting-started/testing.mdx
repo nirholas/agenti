@@ -1,0 +1,122 @@
+---
+title: "Testing"
+description: "Test your agent with bun:test and aixyz/test utilities"
+---
+
+import { FileTree } from "/snippets/FileTree.jsx";
+
+## Overview
+
+aixyz provides a `loadEnv` utility from `aixyz/test` for loading environment variables during tests. Combined with Bun's built-in test runner, you can write both deterministic and non-deterministic agent tests.
+
+## Test File Convention
+
+Place your test file alongside your agent:
+
+<FileTree
+  structure={[
+    {
+      name: "app/",
+      children: [
+        { name: "agent.ts" },
+        { name: "agent.test.ts", description: "Tests for the agent" },
+        { name: "tools/", children: [{ name: "weather.ts" }] },
+      ],
+    },
+  ]}
+/>
+
+## Writing Tests
+
+```typescript title="app/agent.test.ts"
+import { describe, expect, test } from "bun:test";
+import { ToolLoopAgent } from "ai";
+import { loadEnv } from "aixyz/test";
+import agent, { accepts } from "./agent";
+
+// Deterministic tests — no API calls, always run
+test("default export is a ToolLoopAgent", () => {
+  expect(agent).toBeInstanceOf(ToolLoopAgent);
+});
+
+test("has convertTemperature tool registered", () => {
+  expect(agent.tools).toHaveProperty("convertTemperature");
+});
+
+test("accepts config uses exact scheme", () => {
+  expect(accepts.scheme).toBe("exact");
+});
+
+// Non-deterministic tests — require API key, skip gracefully in CI
+describe("non deterministic agent test", () => {
+  loadEnv();
+
+  test.skipIf(!process.env.OPENAI_API_KEY)("agent can convert temperature", async () => {
+    const result = await agent.generate({
+      prompt: "convert 100 degrees celsius to fahrenheit",
+    });
+    expect(result.text).toContain("212");
+  });
+});
+```
+
+## `loadEnv()`
+
+The `loadEnv` function from `aixyz/test` loads environment variables for test runs. It loads `.env.test.local` (where your `OPENAI_API_KEY` lives for tests) while `.env.local` is ignored during testing.
+
+```typescript
+import { loadEnv } from "aixyz/test";
+
+describe("tests needing env vars", () => {
+  loadEnv();
+
+  // process.env is now populated
+});
+```
+
+## Deterministic vs Non-Deterministic
+
+| Type              | Description                            | CI-Safe |
+| ----------------- | -------------------------------------- | ------- |
+| Deterministic     | Validate agent type, tools, config     | Yes     |
+| Non-deterministic | Call LLM and validate response content | No\*    |
+
+\* Use `test.skipIf(!process.env.OPENAI_API_KEY)` to skip gracefully when no API key is available.
+
+## Fully Offline Tests with `fake()`
+
+Use `fake()` from `aixyz/model` to replace the real LLM with a deterministic transform. It returns a `LanguageModelV3` that works with `ToolLoopAgent` — no API key, no network calls:
+
+```typescript title="app/agent.ts"
+import { fake } from "aixyz/model";
+import { ToolLoopAgent } from "ai";
+
+export const model = fake((lastMessage) => `You said: ${lastMessage}`);
+
+export default new ToolLoopAgent({ model, instructions: "..." });
+```
+
+Then test the model's output directly:
+
+```typescript title="app/agent.test.ts"
+import type { Prompt } from "aixyz/model";
+import { model } from "./agent";
+
+test("echoes back the user message", async () => {
+  const prompt: Prompt = [{ role: "user", content: [{ type: "text", text: "hello" }] }];
+  const result = await model.doGenerate({ prompt });
+  expect(result.content).toEqual([{ type: "text", text: "You said: hello" }]);
+});
+```
+
+See the [`aixyz/model` API reference](/api-reference/fake) for full details and the [Fake Model Agent template](/templates/advanced/fake-llm) for a complete working example.
+
+## Running Tests
+
+```bash
+# Run all tests
+bun test
+
+# Run a specific test file
+bun test app/agent.test.ts
+```

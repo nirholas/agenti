@@ -1,0 +1,63 @@
+{
+  "name": "@ag402/fetch",
+  "version": "0.1.20",
+  "description": "TypeScript SDK for x402 auto-payment — wraps fetch() to handle HTTP 402 Payment Required",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run lint && npm test && npm run build"
+  },
+  "keywords": [
+    "x402",
+    "payment",
+    "http",
+    "solana",
+    "usdc",
+    "ai-agent",
+    "ag402",
+    "fetch",
+    "402"
+  ],
+  "author": {
+    "name": "ag402",
+    "url": "https://github.com/agentpayments/ag402"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agentpayments/ag402.git",
+    "directory": "sdk/typescript"
+  },
+  "homepage": "https://github.com/agentpayments/ag402/tree/main/sdk/typescript#readme",
+  "bugs": {
+    "url": "https://github.com/agentpayments/ag402/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

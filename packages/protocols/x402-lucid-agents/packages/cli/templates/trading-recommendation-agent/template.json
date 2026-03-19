@@ -1,0 +1,51 @@
+{
+  "id": "trading-recommendation-agent",
+  "name": "Trading Recommendation Agent",
+  "description": "Agent that buys trading data and generates trading signals/recommendations (shopper agent)",
+  "adapters": ["hono", "express"],
+  "package": {
+    "dependencies": {}
+  },
+  "wizard": {
+    "prompts": [
+      {
+        "key": "AGENT_DESCRIPTION",
+        "type": "input",
+        "message": "How would you describe your recommendation agent?",
+        "defaultValue": "Trading signal generator agent"
+      },
+      {
+        "key": "AGENT_VERSION",
+        "type": "input",
+        "message": "What version should the agent start at?",
+        "defaultValue": "0.1.0"
+      },
+      {
+        "key": "DATA_AGENT_URL",
+        "type": "input",
+        "message": "Data agent URL (the agent you'll buy data from)",
+        "defaultValue": "http://localhost:3001"
+      },
+      {
+        "key": "AGENT_WALLET_PRIVATE_KEY",
+        "type": "input",
+        "message": "Agent wallet private key (pays for data)",
+        "defaultValue": ""
+      },
+      {
+        "key": "PAYMENTS_NETWORK",
+        "type": "select",
+        "message": "Payment network (must match data agent)",
+        "choices": [
+          { "value": "ethereum", "title": "Ethereum (EVM mainnet)" },
+          { "value": "base", "title": "Base (EVM mainnet)" },
+          { "value": "base-sepolia", "title": "Base Sepolia (EVM testnet)" },
+          { "value": "solana", "title": "Solana Mainnet" },
+          { "value": "solana-devnet", "title": "Solana Devnet" }
+        ],
+        "defaultValue": "ethereum"
+      }
+    ]
+  }
+}
+

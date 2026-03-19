@@ -1,0 +1,32 @@
+{
+  "name": "@openfacilitator/integration-tests",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Integration tests for OpenFacilitator endpoints",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --exclude='**/*-real*'",
+    "test:watch": "vitest",
+    "test:free": "vitest run --testNamePattern='free endpoint'",
+    "test:custom": "vitest run --testNamePattern='custom domain'",
+    "test:solana": "vitest run src/solana-real.test.ts",
+    "test:security": "vitest run src/solana-security.test.ts",
+    "test:base": "vitest run src/base-real.test.ts",
+    "test:real": "vitest run src/*-real.test.ts",
+    "test:all": "vitest run"
+  },
+  "devDependencies": {
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.0",
+    "@types/node": "^22.15.21",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.8.3",
+    "viem": "^2.23.2",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@openfacilitator/sdk": "workspace:*"
+  }
+}
+

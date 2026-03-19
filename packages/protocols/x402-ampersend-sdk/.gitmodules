@@ -1,0 +1,15 @@
+[submodule "solidity/account-modules/lib/forge-std"]
+	path = solidity/account-modules/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "solidity/account-modules/lib/modulekit"]
+	path = solidity/account-modules/lib/modulekit
+	url = https://github.com/pcarranzav/modulekit
+[submodule "solidity/account-modules/lib/openzeppelin-contracts"]
+	path = solidity/account-modules/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "solidity/account-modules/lib/BokkyPooBahsDateTimeLibrary"]
+	path = solidity/account-modules/lib/BokkyPooBahsDateTimeLibrary
+	url = https://github.com/bokkypoobah/BokkyPooBahsDateTimeLibrary
+[submodule "solidity/account-modules/lib/safe-singleton-deployer-sol"]
+	path = solidity/account-modules/lib/safe-singleton-deployer-sol
+	url = https://github.com/wilsoncusack/safe-singleton-deployer-sol

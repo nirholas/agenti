@@ -1,0 +1,25 @@
+node_modules
+*/node_modules
+*/bun.lockb
+
+old/
+old/*
+
+.env.gcloud
+.env
+.env.local
+
+
+# Build outputs
+dist/
+*/dist/
+*.tsbuildinfo
+
+# Data directories
+.data/
+*/.data/
+
+# Database files
+*.db
+
+.cursor

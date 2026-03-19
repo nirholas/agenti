@@ -1,0 +1,62 @@
+{
+  "name": "@faremeter/info",
+  "version": "0.17.1",
+  "description": "Network and asset information lookup utilities for Solana and EVM chains",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./solana": {
+      "require": "./dist/src/solana.js",
+      "import": "./dist/src/solana.js",
+      "types": "./dist/src/solana.d.ts"
+    },
+    "./evm": {
+      "require": "./dist/src/evm.js",
+      "import": "./dist/src/evm.js",
+      "types": "./dist/src/evm.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/asserts": "catalog:",
+    "@tapjs/tsx": "catalog:",
+    "@types/web": "catalog:",
+    "@typescript/lib-dom": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/types": "workspace:^",
+    "arktype": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "@tapjs/tsx",
+      "!@tapjs/typescript"
+    ]
+  }
+}

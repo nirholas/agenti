@@ -1,0 +1,107 @@
+{{TEMPLATE_IMPORTS}}
+import { paymentsFromEnv } from '@lucid-agents/payments';
+
+const payments = paymentsFromEnv();
+
+{{TEMPLATE_PRE_SETUP}}
+const appOptions = {
+  payments: payments || {
+    facilitatorUrl: process.env.PAYMENTS_FACILITATOR_URL as `${string}://${string}`,
+    facilitatorAuth: process.env.PAYMENTS_FACILITATOR_AUTH,
+    payTo: process.env.PAYMENTS_RECEIVABLE_ADDRESS as `0x${string}`,
+    network: process.env.PAYMENTS_NETWORK as any,
+  },
+  ap2: payments ? { roles: ['merchant'], required: true } : undefined,
+};
+
+{{TEMPLATE_POST_SETUP}}
+
+/**
+ * Trading Data Agent - Provides mock trading data
+ *
+ * This agent sells trading data to other agents via A2A.
+ * Entrypoints are priced and require payment.
+ */
+addEntrypoint({
+  key: 'getMarketData',
+  description: 'Get mock market data for a symbol',
+  input: z.object({
+    symbol: z.string(),
+    timeframe: z.enum(['1h', '4h', '1d']).optional(),
+  }),
+  output: z.object({
+    symbol: z.string(),
+    price: z.number(),
+    volume: z.number(),
+    timestamp: z.string(),
+    data: z.array(z.object({
+      time: z.string(),
+      open: z.number(),
+      high: z.number(),
+      low: z.number(),
+      close: z.number(),
+      volume: z.number(),
+    })),
+  }),
+  price: '5000', // Price in base units (e.g., wei for EVM)
+  handler: async ctx => {
+    const { symbol, timeframe = '1h' } = ctx.input;
+
+    // Generate mock trading data
+    const basePrice = 100 + Math.random() * 50;
+    const dataPoints = timeframe === '1d' ? 30 : timeframe === '4h' ? 6 : 24;
+
+    const data = Array.from({ length: dataPoints }, (_, i) => {
+      const variation = (Math.random() - 0.5) * 10;
+      const price = basePrice + variation;
+      return {
+        time: new Date(Date.now() - (dataPoints - i) * 3600000).toISOString(),
+        open: price,
+        high: price + Math.random() * 5,
+        low: price - Math.random() * 5,
+        close: price + (Math.random() - 0.5) * 2,
+        volume: Math.floor(Math.random() * 1000000),
+      };
+    });
+
+    return {
+      output: {
+        symbol,
+        price: basePrice,
+        volume: data.reduce((sum, d) => sum + d.volume, 0),
+        timestamp: new Date().toISOString(),
+        data,
+      },
+      usage: { total_tokens: 0 },
+    };
+  },
+});
+
+addEntrypoint({
+  key: 'getPrice',
+  description: 'Get current price for a symbol',
+  input: z.object({
+    symbol: z.string(),
+  }),
+  output: z.object({
+    symbol: z.string(),
+    price: z.number(),
+    timestamp: z.string(),
+  }),
+  price: '1000', // Lower price for simple price query
+  handler: async ctx => {
+    const { symbol } = ctx.input;
+
+    // Generate mock price
+    const price = 100 + Math.random() * 50;
+
+    return {
+      output: {
+        symbol,
+        price,
+        timestamp: new Date().toISOString(),
+      },
+      usage: { total_tokens: 0 },
+    };
+  },
+});

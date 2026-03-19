@@ -1,0 +1,68 @@
+{
+  "title": "Cryptocurrency Transaction Analytics Dataset",
+  "version": "2.1",
+  "lastUpdated": "2026-01-20",
+  "description": "Curated dataset containing aggregated cryptocurrency transaction metrics, market indicators, and on-chain analytics for research and machine learning applications.",
+  "schema": {
+    "fields": [
+      {"name": "timestamp", "type": "datetime", "description": "UTC timestamp of the data point"},
+      {"name": "network", "type": "string", "description": "Blockchain network identifier"},
+      {"name": "txCount", "type": "integer", "description": "Number of transactions"},
+      {"name": "avgGasPrice", "type": "float", "description": "Average gas price in native units"},
+      {"name": "activeAddresses", "type": "integer", "description": "Unique active addresses"},
+      {"name": "volumeUSD", "type": "float", "description": "Total transaction volume in USD"}
+    ]
+  },
+  "data": [
+    {
+      "timestamp": "2026-01-20T00:00:00Z",
+      "network": "ethereum",
+      "txCount": 1245678,
+      "avgGasPrice": 25.4,
+      "activeAddresses": 543210,
+      "volumeUSD": 8750000000
+    },
+    {
+      "timestamp": "2026-01-20T00:00:00Z",
+      "network": "base",
+      "txCount": 2345678,
+      "avgGasPrice": 0.001,
+      "activeAddresses": 234567,
+      "volumeUSD": 1250000000
+    },
+    {
+      "timestamp": "2026-01-20T00:00:00Z",
+      "network": "solana",
+      "txCount": 45678901,
+      "avgGasPrice": 0.00025,
+      "activeAddresses": 876543,
+      "volumeUSD": 3450000000
+    },
+    {
+      "timestamp": "2026-01-19T00:00:00Z",
+      "network": "ethereum",
+      "txCount": 1198765,
+      "avgGasPrice": 28.7,
+      "activeAddresses": 521098,
+      "volumeUSD": 7890000000
+    },
+    {
+      "timestamp": "2026-01-19T00:00:00Z",
+      "network": "base",
+      "txCount": 2198765,
+      "avgGasPrice": 0.0012,
+      "activeAddresses": 219876,
+      "volumeUSD": 1180000000
+    }
+  ],
+  "metadata": {
+    "recordCount": 5,
+    "networks": ["ethereum", "base", "solana"],
+    "dateRange": {
+      "start": "2026-01-19",
+      "end": "2026-01-20"
+    }
+  },
+  "premium": true,
+  "source": "x402-data-service"
+}

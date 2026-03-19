@@ -1,0 +1,19 @@
+#!/usr/bin/env opsh
+# shellcheck shell=bash
+
+PREV_HEAD=$1
+shift
+NEW_HEAD=$1
+shift
+IS_BRANCH_CHECKOUT=$1
+shift
+
+source "$SCRIPTDIR/lib.opsh"
+
+step::000::remove-build-artifacts() {
+	if [[ $PREV_HEAD != $NEW_HEAD && $IS_BRANCH_CHECKOUT = 1 ]]; then
+		make clean
+	fi
+}
+
+steps::run step

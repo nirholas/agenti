@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Trading Data Agent Template Arguments",
+  "type": "object",
+  "properties": {
+    "AGENT_DESCRIPTION": {
+      "type": "string",
+      "description": "Description of the data agent"
+    },
+    "AGENT_VERSION": {
+      "type": "string",
+      "description": "Version number for the agent",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "PAYMENTS_FACILITATOR_URL": {
+      "type": "string",
+      "format": "uri",
+      "description": "x402 facilitator URL"
+    },
+    "PAYMENTS_FACILITATOR_AUTH": {
+      "type": "string",
+      "description": "Optional bearer token for facilitator requests. If empty, runtime falls back to DREAMS_AUTH_TOKEN when available.",
+      "default": ""
+    },
+    "PAYMENTS_NETWORK": {
+      "type": "string",
+      "enum": ["ethereum", "base", "base-sepolia", "solana", "solana-devnet"],
+      "default": "ethereum",
+      "description": "Payment network"
+    },
+    "PAYMENTS_DESTINATION": {
+      "type": "string",
+      "enum": ["static", "stripe"],
+      "default": "static",
+      "description": "Payment destination mode"
+    },
+    "PAYMENTS_RECEIVABLE_ADDRESS": {
+      "type": "string",
+      "description": "Address that receives payments in static destination mode"
+    },
+    "STRIPE_SECRET_KEY": {
+      "type": "string",
+      "description": "Stripe secret key used for dynamic destination mode (Base mainnet only)",
+      "default": ""
+    }
+  },
+  "required": ["AGENT_DESCRIPTION", "AGENT_VERSION"]
+}

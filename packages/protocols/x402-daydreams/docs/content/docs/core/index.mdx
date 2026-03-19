@@ -1,0 +1,83 @@
+---
+title: Daydreams Framework
+description: TypeScript framework for building stateful AI agents with composable contexts.
+---
+
+> ⚠️ **Alpha Software**: Expect breaking changes. API not yet stable.
+
+## What Makes Daydreams Different?
+
+**Composable Contexts** - the key innovation that sets Daydreams apart.
+
+Most AI frameworks treat conversations as stateless. Daydreams provides **isolated, stateful workspaces** that can be composed together for complex behaviors:
+
+```typescript
+// Single context
+const chatContext = context({ type: "chat" });
+
+// Composed contexts - combine functionality
+const customerServiceContext = context({ type: "customer-service" })
+  .use(state => [
+    { context: accountContext, args: { customerId: state.args.customerId } },
+    { context: ticketContext, args: { customerId: state.args.customerId } }
+  ]);
+```
+
+**Result**: The LLM automatically gets access to chat, account, AND ticket data in a single conversation.
+
+## Framework Features
+
+| Feature | Description | Benefit |
+|---------|-------------|----------|
+| **Composable Contexts** | Combine isolated workspaces with `.use()` | Modular, reusable agent behaviors |
+| **Stateful Memory** | Persistent memory per context instance | Agents that truly remember conversations |
+| **Action Scoping** | Context-specific capabilities via `.setActions()` | Precise control over agent abilities |
+| **Multi-User Isolation** | Separate context instances per user/session | Secure, scalable multi-tenant support |
+| **Real-time Streaming** | XML-based LLM response parsing | Immediate action execution |
+| **TypeScript-first** | Full type safety across all components | Better developer experience |
+| **Model Agnostic** | Works with any AI SDK provider | Flexibility in model choice |
+| **Extension System** | Pre-built integrations (Discord, Twitter, etc.) | Rapid development |
+
+## Architecture Overview
+
+Daydreams agents are built from four core components:
+
+```typescript
+// Building blocks work together
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  
+  contexts: [customerContext],  // Stateful workspaces
+  actions: [linkAccount],       // What agent can do  
+  inputs: [discordMessage],     // How to listen
+  outputs: [emailReply],        // How to respond
+});
+```
+
+**Flow**: Input triggers agent → LLM reasons with context data → Actions execute → Outputs communicate → Memory persists
+
+## Get Started
+
+### 🚀 **Quickstart**
+[Your First Agent](/docs/core/first-agent) - Build a customer service agent that showcases contexts, composition, and action scoping
+
+### 📚 **Learn the Concepts**
+- [Building Blocks](/docs/core/concepts/building-blocks) - Core components overview
+- [Contexts](/docs/core/concepts/contexts) - Stateful workspaces and composition patterns
+- [Actions, Inputs, Outputs](/docs/core/concepts/building-block-operations) - Agent capabilities
+- [Agent Lifecycle](/docs/core/concepts/agent-lifecycle) - How agents process information
+
+### 🏗️ **System Architecture**
+- [Services](/docs/core/concepts/services) - Infrastructure management
+- [Extensions](/docs/core/concepts/extensions) - Feature packaging
+- [Extensions vs Services](/docs/core/concepts/extensions-vs-services) - Decision guide
+
+### 🔧 **Advanced Topics**
+- [Context Composition](/docs/core/concepts/composing-contexts) - Advanced patterns
+- [Prompting](/docs/core/concepts/prompting) - LLM interaction structure
+- [MCP Integration](/docs/core/concepts/mcp) - External service connections
+
+### 💻 **Examples & Tutorials**
+- [Installation Guide](/docs/core/installation) - Development setup
+- [Example Agents](/docs/tutorials/examples) - Complete working examples
+- [API Reference](/docs/api) - Detailed documentation

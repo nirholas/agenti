@@ -1,0 +1,142 @@
+openapi: 3.1.0
+
+info:
+  title: MicroAI Paygate API
+  version: "1.0.0"
+  description: API documentation for MicroAI Paygate
+
+paths:
+  /healthz:
+    get:
+      summary: Health check
+      description: Returns gateway health status
+      responses:
+        "200":
+          description: Gateway is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  service:
+                    type: string
+                    example: gateway
+                  status:
+                    type: string
+                    example: ok
+
+  /api/ai/summarize:
+    post:
+      summary: Summarize text
+      description: Proxies a text summarization request and enforces x402 payment
+      parameters:
+        - name: X-402-Signature
+          in: header
+          required: false
+          description: EIP-712 signature authorizing payment
+          schema:
+            type: string
+
+        - name: X-402-Nonce
+          in: header
+          required: false
+          description: Nonce from 402 response
+          schema:
+            type: string
+
+        - name: X-402-Timestamp
+          in: header
+          required: false
+          description: Unix timestamp (in seconds) from the original 402 paymentContext, used in the EIP-712 payment message
+          schema:
+            type: string
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  example: "Artificial intelligence is transforming software development."
+
+      responses:
+        "200":
+          description: Summary generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: "AI is changing how software is built."
+
+        "402":
+          description: Payment required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Payment Required"
+                  message:
+                    type: string
+                    example: "Please sign the payment context"
+                  paymentContext:
+                    type: object
+                    properties:
+                      recipient:
+                        type: string
+                        description: Ethereum address of payment recipient
+                        example: "0x2cAF48b4BA1C58721a85dFADa5aC01C2DFa62219"
+                      token:
+                        type: string
+                        description: Token symbol for payment
+                        example: "USDC"
+                      amount:
+                        type: string
+                        description: Payment amount in token units
+                        example: "0.001"
+                      nonce:
+                        type: string
+                        description: Unique payment nonce (UUID)
+                        example: "550e8400-e29b-41d4-a716-446655440000"
+                      chainId:
+                        type: integer
+                        description: Blockchain network ID
+                        example: 8453
+                      timestamp:
+                        type: integer
+                        description: Unix timestamp in seconds used in EIP-712 payment message
+                        example: 1700000000
+
+        "403":
+          description: Invalid signature
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string

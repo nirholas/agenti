@@ -1,0 +1,27 @@
+{
+  "name": "faremeter",
+  "license": "GPL-3.0-only",
+  "packageManager": "pnpm@10.19.0",
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "jiti": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsdoc-markdown": "catalog:",
+    "tsx": "catalog:",
+    "typedoc": "catalog:",
+    "typedoc-plugin-frontmatter": "catalog:",
+    "typedoc-plugin-markdown": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "!@tapjs/typescript",
+      "@tapjs/tsx"
+    ]
+  }
+}

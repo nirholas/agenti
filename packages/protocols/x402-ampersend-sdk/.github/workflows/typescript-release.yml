@@ -1,0 +1,99 @@
+name: TypeScript Release
+
+on:
+  push:
+    tags:
+      - "ts-v*.*.*"
+      - "ts-v*.*.*-alpha.*"
+      - "ts-v*.*.*-beta.*"
+
+permissions:
+  contents: read
+  id-token: write # Required for npm provenance
+
+env:
+  NODE_VERSION: "22.x"
+
+jobs:
+  verify-version:
+    name: "ts: verify version"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/ts-v}
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          echo "Tagged version: $TAG"
+
+      - name: Read package.json version
+        id: package
+        run: |
+          VERSION=$(node -p "require('./typescript/packages/ampersend-sdk/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Package version: $VERSION"
+
+      - name: Compare versions
+        run: |
+          if [ "${{ steps.tag.outputs.version }}" != "${{ steps.package.outputs.version }}" ]; then
+            echo "ERROR: Tag version (${{ steps.tag.outputs.version }}) does not match package.json version (${{ steps.package.outputs.version }})"
+            exit 1
+          fi
+          echo "✓ Versions match: ${{ steps.tag.outputs.version }}"
+
+  publish:
+    name: "ts: publish to npm"
+    runs-on: ubuntu-latest
+    needs: verify-version
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/@ampersend_ai/ampersend-sdk
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        run: pnpm --filter ampersend-sdk build
+
+      - name: Determine publish tag
+        id: publish-tag
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/ts-v}"
+          if [[ "$VERSION" == *"-alpha."* ]]; then
+            echo "tag=alpha" >> $GITHUB_OUTPUT
+            echo "Publishing with tag: alpha"
+          elif [[ "$VERSION" == *"-beta."* ]]; then
+            echo "tag=beta" >> $GITHUB_OUTPUT
+            echo "Publishing with tag: beta"
+          else
+            echo "tag=latest" >> $GITHUB_OUTPUT
+            echo "Publishing with tag: latest"
+          fi
+
+      - name: Publish to npm
+        run: npm publish --access public --tag ${{ steps.publish-tag.outputs.tag }}
+        working-directory: typescript/packages/ampersend-sdk

@@ -1,0 +1,169 @@
+---
+title: Context Engineering
+description: Structure, parsing, and customization of Daydreams prompts and XML responses.
+---
+
+## Overview
+
+Context engineering is how Daydreams shapes what the model sees and how it should respond. It covers:
+- Prompt structure: the sections we render into one prompt
+- XML response contract: what tags the model must output
+- Streaming + parsing: how we parse tags as they stream
+- Customization hooks: swapping prompt builders, response adapters, and tag handling
+
+Core files:
+- `packages/core/src/prompts/main.ts` (prompt sections + formatter)
+- `packages/core/src/prompts/default-builder.ts` (default PromptBuilder)
+- `packages/core/src/response/default-xml-adapter.ts` (response adapter)
+- `packages/core/src/handlers/handle-stream.ts` (streaming XML parser → logs)
+- `packages/core/src/parsing/xml.ts` and `.../formatters.ts` (XML utilities)
+
+For a higher-level tour of how prompts are assembled, see [Prompting](/docs/core/concepts/prompting).
+
+## Prompt Structure
+
+The main prompt template contains four sections rendered and stitched together:
+- `intro`: short system role
+- `instructions`: rules and the XML response contract with examples
+- `content`: current situation, tools, and context
+- `response`: a final nudge to begin the `<response>` block
+
+Source: `prompts/main.ts`
+
+Sections are assembled by `formatPromptSections(...)`, which converts live state to XML blocks:
+- Current situation: `unprocessed-inputs`, `pending-operations`, `recent-action-results`, `context-state`
+- Tools: `available-actions`, `available-outputs`
+- Knowledge/history: `semantic-context` (relevant memories), `recent-history`, `decision-context` (recent thoughts)
+
+These are composed with the XML helpers (see `parsing/formatters.ts`: `xml`, `formatXml`, and formatters for actions/outputs/logs).
+
+## XML Response Contract
+
+The LLM must reply with a single `<response>...</response>` block containing some of:
+- `<reasoning>`: model’s plan/chain of thought (internal; captured as `thought` logs)
+- `<action_call name="...">{json}</action_call>`: tool invocation; JSON body must parse
+- `<output name="...">{json|text}</output>`: agent output; JSON body for structured outputs
+
+Important details in `main.ts` instructions:
+- Exactly one top-level `<response>` block
+- Valid JSON bodies for `<action_call>` and `<output>`
+- Use the provided examples to match formatting
+
+Template references: you can embed `{{...}}` to reference data (e.g., `{{calls[0].id}}`). See “Template Engine” note in `main.ts`.
+
+## Streaming + Parsing
+
+Responses are streamed and parsed incrementally:
+- `default-xml-adapter.ts` wraps provider streams to ensure a single `<response>` wrapper and exposes a `handleStream` that delegates to the core handler.
+- `handlers/handle-stream.ts` uses `xmlStreamParser(...)` to parse tags as they arrive and converts them into Daydreams logs:
+  - `<reasoning>` → `ThoughtRef`
+  - `<action_call>` → `ActionCall`
+  - `<output>` → `OutputRef`
+
+Default parsed tags: `think`, `thinking`, `response`, `output`, `action_call`, `reasoning`.
+
+Each tag is tracked with an index and depth; text content updates the current element until the tag closes. As tags finish, corresponding logs are pushed (`pushLog`) and also chunked for streaming UIs.
+
+## Default XML Tags
+
+The response parser recognizes these tags by default and maps them to Daydreams logs:
+
+- `response`: container for the whole reply; not logged, ensures a single top-level block
+- `reasoning` (also `think`/`thinking`): captured as `ThoughtRef` with `content`
+- `action_call name="..."` + JSON body: becomes an `ActionCall` with `name`, `params` (from attributes), and parsed `data`
+- `output name="..."` + body: becomes an `OutputRef` with `name`, `params` (from attributes), and parsed `data`
+
+Notes:
+- Attributes other than `name` on `action_call`/`output` are treated as `params` on the log.
+- Only these tags are handled by the default adapter/handler; additional tags are ignored unless you extend the handler or adapter.
+
+## Customization Hooks
+
+You can tailor both prompt generation and response parsing.
+
+1) Replace the Prompt Builder
+
+```ts title="custom-prompt-builder.ts"
+import type { PromptBuilder } from "@daydreamsai/core";
+import { mainPrompt } from "@daydreamsai/core";
+
+export const myPrompt: PromptBuilder = {
+  name: "my-main",
+  build(input) {
+    // Reuse default formatter but change sizes/ordering
+    const data = mainPrompt.formatter({
+      contexts: input.contexts,
+      outputs: input.outputs,
+      actions: input.actions,
+      workingMemory: input.workingMemory,
+      maxWorkingMemorySize: 6,
+      chainOfThoughtSize: 2,
+    });
+
+    // Or modify sections here before render
+    const prompt = mainPrompt.render({
+      ...data,
+      // e.g., prepend a policy note into decision-context
+      decisionContext: {
+        tag: "decision-context",
+        params: {},
+        children: ["Follow safety policy X before actions.", data.decisionContext],
+      },
+    } as any);
+    return { prompt };
+  },
+};
+
+// Install on the agent
+const agent = createDreams({ prompt: myPrompt });
+```
+
+2) Provide Per-Context Rendering and Instructions
+
+Contexts can inject custom text or XML via `instructions` and `render` (see `types.ts`). The default formatter includes each context’s rendered output under `<context-state>`.
+
+```ts title="context-render.ts"
+const chat = context({
+  type: "chat",
+  render: (state) => `Chat:${state.args.userId} messages=${state.memory.messages.length}`,
+  instructions: "Be concise and friendly for chat interactions.",
+});
+```
+
+3) Swap the Response Adapter
+
+If your model/provider needs a different wrapper or parsing policy, replace the adapter:
+
+```ts title="custom-response-adapter.ts"
+const agent = createDreams({
+  response: {
+    prepareStream({ model, stream }) {
+      // Wrap with custom tags or sanitize text
+      return { stream: stream.textStream, getTextResponse: () => stream.text };
+    },
+    async handleStream({ textStream, index, defaultHandlers }) {
+      // Delegate to core XML handler or implement your own
+      await defaultXmlResponseAdapter.handleStream({
+        textStream,
+        index,
+        defaultHandlers,
+      });
+    },
+  },
+});
+```
+
+4) Add Your Own Prompt Template
+
+You can build entirely custom templates via `createPrompt` and `render` utilities (see `prompts/types.ts`) or compose multiple prompts. Then set `prompt` on the agent as above.
+
+## Practical Tips
+
+- Keep `<response>` short and strictly valid; malformed JSON stops actions/outputs.
+- Prefer structured outputs (JSON bodies) for machine handling; keep prose in `content` fields.
+- Control prompt size with `maxWorkingMemorySize` and `chainOfThoughtSize` in your builder.
+- If you add new tags, ensure your adapter/handler recognizes and maps them to logs or ignores them safely.
+
+See also:
+- [Prompting](/docs/core/concepts/prompting)
+- API: `PromptBuilder` and `ResponseAdapter` in `/docs/api/Agent` and `/docs/api/api-reference`

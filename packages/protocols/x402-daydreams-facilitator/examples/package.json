@@ -1,0 +1,43 @@
+{
+  "name": "@daydreamsai/facilitator-examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "auth": "bun run authExample.ts",
+    "hono": "bun run hono.ts",
+    "hono:client": "bun run honoClient.ts",
+    "hono:server": "bun run honoServer.ts",
+    "paid-api": "bun run paidApi.ts",
+    "paid-api:all": "bun run paidApiAll.ts",
+    "paid-api:express": "bun run paidApiExpress.ts",
+    "paid-api:hono": "bun run paidApiHono.ts",
+    "smoke:client": "bun run smokeClient.ts",
+    "starknet:api": "bun run starknetApi.ts",
+    "starknet:client": "bun run starknetClient.ts",
+    "token-gated:api": "bun run token-gated-api.ts",
+    "token-metered:api": "bun run tokenMeteredApi.ts",
+    "token-metered:client": "bun run tokenMeteredClient.ts",
+    "upto": "bun run uptoModule.ts"
+  },
+  "dependencies": {
+    "@daydreamsai/facilitator": "workspace:*",
+    "@elysiajs/node": "^1.0.0",
+    "@hono/node-server": "^1.13.7",
+    "@x402/core": "^2.0.0",
+    "@x402/hono": "^2.0.0",
+    "@x402/paywall": "^2.0.0",
+    "dotenv": "^16.4.5",
+    "elysia": "^1.0.0",
+    "express": "^5.2.1",
+    "hono": "^4.11.1",
+    "ioredis": "^5.4.2",
+    "pg": "^8.11.5",
+    "starknet": "^9.2.1",
+    "viem": "^2.21.54",
+    "x402-starknet": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}

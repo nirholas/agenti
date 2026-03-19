@@ -1,0 +1,61 @@
+[package]
+name = "x402-kit"
+version.workspace = true
+edition = "2024"
+repository = "https://github.com/AIMOverse/x402-kit"
+authors = ["Archer <archer@aimo.network>"]
+license = "MIT"
+description = "(V2 Supported) A fully modular SDK for building complex X402 payment integrations."
+
+[features]
+default = ["facilitator-client", "evm", "svm", "axum", "actix-web"]
+facilitator-client = ["dep:http", "dep:reqwest-middleware"]
+evm = ["x402-networks/evm", "dep:alloy-primitives"]
+svm = [
+    "x402-networks/svm",
+    "dep:solana-pubkey",
+    "dep:solana-signature",
+    "dep:hex",
+]
+paywall = ["dep:x402-paywall"]
+axum = ["paywall", "x402-paywall/axum"]
+actix-web = ["paywall", "x402-paywall/actix-web"]
+
+[dependencies]
+# === Core Deps ===
+x402-core = { version = "2.5.0", path = "../x402-core" }
+x402-networks = { version = "2.5.0", path = "../x402-networks", default-features = false }
+x402-extensions = { version = "2.5.0", path = "../x402-extensions" }
+bon = { version = "3.8" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+thiserror = { version = "2.0" }
+url = { version = "2.5" }
+
+# === Feature "evm" ===
+alloy-primitives = { version = "1.4", optional = true }
+
+# === Feature "svm" ===
+solana-pubkey = { version = "4.0", optional = true }
+solana-signature = { version = "3.1", optional = true }
+hex = { version = "0.4", optional = true }
+
+# === Feature "facilitator-client" ===
+reqwest-middleware = { version = "0.5", optional = true, features = ["json"] }
+http = { version = "1.4", optional = true }
+
+# === Feature "paywall" ===
+x402-paywall = { version = "2.5.0", path = "../x402-paywall", optional = true, default-features = false }
+
+[dev-dependencies]
+alloy-primitives = { version = "1.4" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+url = { version = "2.5" }
+url-macro = { version = "0.2" }
+axum = { version = "0.8" }
+tracing-subscriber = { version = "0.3" }
+tower-http = { version = "0.6", features = ["trace"] }
+futures-util = { version = "0.3" }
+solana-pubkey = { version = "4" }
+tracing = { version = "0.1" }
+actix-web = "4"

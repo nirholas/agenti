@@ -1,0 +1,154 @@
+================================================================================
+  OLD x402 FLOW (CENTRALIZED) — The Problem
+================================================================================
+
+   ┌─────────────────┐
+   │  Agent (Alice)  │  ← AI agent needs to pay for a service
+   │  ERC-8004 ID    │
+   └────────┬────────┘
+            │
+            │ 1. Makes request with x402 payment (EIP-712 signature)
+            ▼
+   ┌─────────────────────────┐
+   │   Resource Server       │
+   └────────┬────────────────┘
+            │
+            │ 2. Forwards to trusted facilitator
+            ▼
+   ┌─────────────────────────┐
+   │  ⚠️  CENTRALIZED        │  🔴 PROBLEMS:
+   │   FACILITATOR SERVER    │  • Single point of failure
+   │                         │  • Requires trust in operator
+   │  • verify()             │  • Can be censored or hacked
+   │  • settle()             │  • Every builder must host their own
+   │  • Must be trusted!     │  • No cryptographic proof
+   └────────┬────────────────┘
+            │
+            │ 3. Submits transaction
+            ▼
+   ┌─────────────────────────┐
+   │   Target Blockchain     │
+   │   (Base, Ethereum)      │
+   └─────────────────────────┘
+
+
+================================================================================
+  NEW CHAOSCHAIN-x402 FLOW (DECENTRALIZED) — The Solution
+================================================================================
+
+   ┌─────────────────┐
+   │  Agent (Charlie)│
+   │  ERC-8004 ID    │
+   └────────┬────────┘
+            │
+            │ 1. Makes request with x402 payment (EIP-712 signature)
+            ▼
+   ┌─────────────────────────┐
+   │Resource Server (Alice)  │
+   │  ERC-8004 ID            │
+   └────────┬────────────────┘
+            │
+            │ 2. Forwards to DECENTRALIZED facilitator
+            ▼
+   ╔═════════════════════════════════════════════════════════════╗
+   ║  ✅ CHAOSCHAIN-x402 (Chainlink CRE)                         ║
+   ║  Decentralized Facilitator Workflow DON                     ║
+   ║                                                             ║
+   ║  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     ║
+   ║  │ Node A   │  │ Node B   │  │ Node C   │  │ Node D   │     ║
+   ║  │ verify() │  │ verify() │  │ verify() │  │ verify() │     ║
+   ║  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘     ║
+   ║       └──────────────┴──────────────┴──────────────┘        ║
+   ║                         ▼                                   ║
+   ║              Byzantine Fault Tolerant (BFT)                 ║
+   ║              Consensus Aggregation                          ║
+   ║                         ▼                                   ║
+   ║       Single Cryptographically Verified Result              ║
+   ║                                                             ║
+   ║  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     ║
+   ║  │ Node A   │  │ Node B   │  │ Node C   │  │ Node D   │     ║
+   ║  │ settle() │  │ settle() │  │ settle() │  │ settle() │     ║
+   ║  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘     ║
+   ║       └──────────────┴──────────────┴──────────────┘        ║
+   ║                         ▼                                   ║
+   ║              Consensus on Settlement                        ║
+   ╚═══════════════════════════╤═════════════════════════════════╝
+                               │
+                               │ 3. Submits verified transaction + proof
+                               ▼
+   ┌──────────────────────────────────────────────┐
+   │   Target Blockchain                          │
+   │   • ERC-20 Transfer (USDC)                   │
+   │   • ERC-8004 ValidationRegistry              │
+   │   • Proof-of-Agency Attestation              │
+   └──────────────────────────────────────────────┘
+
+
+   ✅ BENEFITS:
+   • No single point of failure (distributed across DON)
+   • Trustless verification via BFT consensus
+   • Cryptographic proofs for every operation
+   • Universal facilitator - any builder can use it
+   • Censorship resistant
+   • Verifiable Proof-of-Agency attached to payments
+
+
+================================================================================
+  MULTI-CHAIN SUPPORT
+================================================================================
+
+The CRE workflow can target multiple chains:
+
+   ChaosChain-x402 Facilitator DON
+              │
+              ├─────────► Base (native x402)
+              │
+              ├─────────► 0G Chain (z402 variant)
+              │
+              └─────────► Ethereum (USDC, native x402)
+
+
+================================================================================
+  TECHNICAL FLOW
+================================================================================
+
+1. VERIFY PHASE
+   Client → Resource Server → CRE Workflow DON
+   • Each node independently verifies EIP-712 signature
+   • BFT consensus ensures validity
+   • Returns: { isValid: true, consensusProof: "0x..." }
+
+2. SETTLE PHASE
+   CRE Workflow DON → Blockchain
+   • Each node independently prepares transaction
+   • BFT consensus on transaction parameters
+   • One node submits (others monitor)
+   • Returns: { txHash: "0x...", chainId: 84532 }
+
+3. PROOF-OF-AGENCY
+   CRE Workflow DON → ValidationRegistry (ERC-8004)
+   • Attestation of verified payment
+   • Links agent identity to transaction
+   • Builds on-chain reputation
+
+
+================================================================================
+  DEVELOPER USAGE
+================================================================================
+
+Option 1: Use ChaosChain Managed Facilitator (SaaS)
+   
+   X402_FACILITATOR_URL="https://facilitator.chaoschain.ai"
+
+Option 2: Self-Host CRE Workflows
+   
+   npm install -g @chainlink/cre-cli
+   cre deploy workflows/x402-facilitator
+   
+Option 3: Community Validator Network
+   
+   Register node → Stake tokens → Earn protocol fees
+
+
+================================================================================
+

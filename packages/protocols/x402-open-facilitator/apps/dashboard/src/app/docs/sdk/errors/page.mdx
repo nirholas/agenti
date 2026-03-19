@@ -1,0 +1,123 @@
+<PageHeader title="Error Handling" description="The SDK provides typed errors for different failure scenarios." />
+
+## Error Types
+
+### FacilitatorError
+
+Base error class. All other errors extend this.
+
+```typescript
+class FacilitatorError extends Error {
+  code: string;
+  statusCode?: number;
+  details?: unknown;
+}
+```
+
+### VerificationError
+
+Thrown when payment verification fails.
+
+```typescript
+import { VerificationError } from '@openfacilitator/sdk';
+
+try {
+  await facilitator.verify(payment, requirements);
+} catch (error) {
+  if (error instanceof VerificationError) {
+    console.error('Verification failed:', error.message);
+  }
+}
+```
+
+### SettlementError
+
+Thrown when payment settlement fails.
+
+```typescript
+import { SettlementError } from '@openfacilitator/sdk';
+
+try {
+  await facilitator.settle(payment, requirements);
+} catch (error) {
+  if (error instanceof SettlementError) {
+    console.error('Settlement failed:', error.message);
+  }
+}
+```
+
+### NetworkError
+
+Thrown when a network request fails (timeout, connection error, etc.).
+
+```typescript
+import { NetworkError } from '@openfacilitator/sdk';
+
+try {
+  await facilitator.supported();
+} catch (error) {
+  if (error instanceof NetworkError) {
+    console.error('Network error:', error.message);
+  }
+}
+```
+
+### ConfigurationError
+
+Thrown when the SDK is misconfigured.
+
+```typescript
+import { ConfigurationError } from '@openfacilitator/sdk';
+
+try {
+  new OpenFacilitator({ url: '' }); // Missing URL
+} catch (error) {
+  if (error instanceof ConfigurationError) {
+    console.error('Config error:', error.message);
+  }
+}
+```
+
+## Error Handling Pattern
+
+```typescript
+import {
+  OpenFacilitator,
+  FacilitatorError,
+  VerificationError,
+  SettlementError,
+  NetworkError
+} from '@openfacilitator/sdk';
+
+async function processPayment(payment, requirements) {
+  try {
+    const verification = await facilitator.verify(payment, requirements);
+
+    if (!verification.valid) {
+      throw new Error(`Invalid payment: ${verification.error}`);
+    }
+
+    const settlement = await facilitator.settle(payment, requirements);
+
+    if (!settlement.success) {
+      throw new Error(`Settlement failed: ${settlement.error}`);
+    }
+
+    return settlement.transactionHash;
+
+  } catch (error) {
+    if (error instanceof VerificationError) {
+      // Handle verification-specific error
+    } else if (error instanceof SettlementError) {
+      // Handle settlement-specific error
+    } else if (error instanceof NetworkError) {
+      // Handle network error (retry?)
+    } else if (error instanceof FacilitatorError) {
+      // Handle other facilitator errors
+    } else {
+      // Handle unexpected errors
+    }
+    throw error;
+  }
+}
+```

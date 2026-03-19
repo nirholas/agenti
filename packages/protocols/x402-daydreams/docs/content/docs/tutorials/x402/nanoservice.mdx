@@ -1,0 +1,103 @@
+---
+title: Building a Nanoservice Agent
+description:
+  Create a pay-per-use AI agent using DreamsAI's nanoservice infrastructure with
+  built-in micropayments.
+---
+
+This tutorial demonstrates how to build an AI agent that operates as a
+nanoservice - a pay-per-use service that handles micropayments automatically
+through the DreamsAI router.
+
+## Step 1: Set Up Authentication
+
+First, configure your wallet authentication using a private key. This wallet
+will handle micropayments for each AI request.
+
+```typescript title="Setup authentication"
+import { createDreamsRouterAuth } from "@daydreamsai/ai-sdk-provider";
+import { privateKeyToAccount } from "viem/accounts";
+
+const { dreamsRouter, user } = await createDreamsRouterAuth(
+  privateKeyToAccount(Bun.env.PRIVATE_KEY as `0x${string}`),
+  {
+    payments: {
+      amount: "100000", // $0.10 USDC per request
+      network: "base-sepolia",
+    },
+  }
+);
+
+// Check your balance
+console.log("User balance:", user.balance);
+```
+
+The `createDreamsRouterAuth` function:
+
+- Takes your wallet's private key (stored securely in environment variables)
+- Configures payment settings (amount per request and network)
+- Returns a router for model access and user information
+
+## Step 2: Configure the Agent
+
+Set up your DreamsAI agent with the authenticated router and desired model.
+
+```typescript title="Configure agent"
+import { createDreams, LogLevel } from "@daydreamsai/core";
+import { cliExtension } from "@daydreamsai/cli";
+
+const agent = createDreams({
+  logLevel: LogLevel.DEBUG,
+  model: dreamsRouter("google-vertex/gemini-2.5-flash"),
+  extensions: [cliExtension], // Add CLI interface for testing
+});
+```
+
+Configuration options:
+
+- `logLevel`: Controls debugging output
+- `model`: Specifies the AI model accessed through the router
+- `extensions`: Add capabilities like CLI, Discord, or custom integrations
+
+## Step 3: Launch the Nanoservice
+
+Start your agent to begin handling requests with automatic micropayments.
+
+```typescript title="Complete implementation"
+import { createDreamsRouterAuth } from "@daydreamsai/ai-sdk-provider";
+import { createDreams, LogLevel } from "@daydreamsai/core";
+import { cliExtension } from "@daydreamsai/cli";
+import { privateKeyToAccount } from "viem/accounts";
+
+// Step 1: Authentication
+const { dreamsRouter, user } = await createDreamsRouterAuth(
+  privateKeyToAccount(Bun.env.PRIVATE_KEY as `0x${string}`),
+  {
+    payments: {
+      amount: "100000", // $0.10 USDC
+      network: "base-sepolia",
+    },
+  }
+);
+
+console.log("Balance:", user.balance);
+
+// Step 2 & 3: Configure and start
+createDreams({
+  logLevel: LogLevel.DEBUG,
+  model: dreamsRouter("google-vertex/gemini-2.5-flash"),
+  extensions: [cliExtension],
+}).start();
+```
+
+## How It Works
+
+Each request to your agent:
+
+1. Deducts the configured amount from your wallet balance
+2. Routes the request to the specified AI model
+3. Returns the response to your agent
+4. Handles all blockchain transactions automatically
+
+This creates a true nanoservice where users pay only for what they use, with no
+subscription fees or upfront costs.

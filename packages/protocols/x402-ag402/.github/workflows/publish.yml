@@ -1,0 +1,92 @@
+name: Publish to PyPI and npm
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-protocol:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: cd protocol && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: protocol/dist/
+
+  publish-core:
+    runs-on: ubuntu-latest
+    needs: publish-protocol
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: cd core && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: core/dist/
+
+  publish-mcp:
+    runs-on: ubuntu-latest
+    needs: publish-core
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: cd adapters/mcp && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: adapters/mcp/dist/
+
+  publish-client-mcp:
+    runs-on: ubuntu-latest
+    needs: publish-core
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: cd adapters/client_mcp && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: adapters/client_mcp/dist/
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - run: cd sdk/typescript && npm ci
+      - run: cd sdk/typescript && npm run lint
+      - run: cd sdk/typescript && npm test
+      - run: cd sdk/typescript && npm run build
+      - run: cd sdk/typescript && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

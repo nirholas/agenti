@@ -1,0 +1,26 @@
+{
+  "name": "crossmint-x402",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-14",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "nodejs_compat_populate_process_env"
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "PAY_AGENT",
+        "class_name": "PayAgent"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["PayAgent"]
+    }
+  ],
+  "vars": {
+    "SERVER_ADDRESS": "0xYourServerWalletAddressHere"
+  }
+}

@@ -1,0 +1,16 @@
+name: "Setup Mono Repo"
+description: "Setup tooling for mono repo"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - run: |
+        echo "DO_NOT_TRACK=1" >> $GITHUB_ENV
+        echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
+        echo "TURBO_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
+        bun install
+      shell: bash

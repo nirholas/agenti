@@ -1,0 +1,54 @@
+name: x402 CI
+
+on:
+  push:
+    paths:
+      - packages/x402/**
+  pull_request:
+    paths:
+      - packages/x402/**
+
+jobs:
+  x402-ts-ci:
+    name: TypeScript - Build, Lint & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/x402/typescript
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: packages/x402/typescript/.nvmrc
+          cache: npm
+          cache-dependency-path: packages/x402/typescript/package-lock.json
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Check formatting
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+
+  x402-python-ci:
+    name: Python - Lint & Type Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/x402/python
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pipx install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Lint
+        run: poetry run ruff check .
+      - name: Type check
+        run: poetry run mypy libertai_x402/

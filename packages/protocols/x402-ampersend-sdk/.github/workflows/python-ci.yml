@@ -1,0 +1,53 @@
+name: Python CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  python-ci:
+    name: "py: ci"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Check lockfile
+        run: uv lock --check
+
+      - name: Cache mypy
+        uses: actions/cache@v4
+        with:
+          path: .mypy_cache
+          key: mypy-${{ runner.os }}-py3.13-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            mypy-${{ runner.os }}-py3.13-
+            mypy-${{ runner.os }}-
+
+      - name: Install Python 3.13
+        run: uv python install 3.13
+
+      - name: Install deps
+        run: uv sync --frozen --all-packages --group dev
+
+      - name: Lint
+        run: uv run -- ruff check --output-format=github python
+
+      - name: Format
+        if: always()
+        run: uv run -- ruff format --diff python
+
+      - name: Typecheck
+        if: always()
+        run: uv run -- mypy python
+
+      - name: Test
+        run: uv run -- pytest

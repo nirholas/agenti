@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE chains SET block=$1,updated_at=$2 WHERE name = $3",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8",
+        "Timestamp",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "e1975e67ef7b791164bdb02e66b07037d4a053b202e4dd4c2ee63612922e9aea"
+}

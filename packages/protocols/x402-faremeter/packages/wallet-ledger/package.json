@@ -1,0 +1,32 @@
+{
+  "name": "@faremeter/wallet-ledger",
+  "version": "0.17.1",
+  "description": "Ledger hardware wallet integration for secure Faremeter payments on Solana and EVM",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "dependencies": {
+    "@faremeter/logs": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "@ledgerhq/hw-app-eth": "^6.36.0",
+    "@ledgerhq/hw-app-solana": "^7.2.0",
+    "@ledgerhq/hw-transport": "^6.31.0",
+    "@ledgerhq/hw-transport-node-hid": "^6.29.0",
+    "@ledgerhq/hw-transport-webusb": "^6.29.0",
+    "@solana/web3.js": "catalog:",
+    "arktype": "catalog:",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:"
+  }
+}

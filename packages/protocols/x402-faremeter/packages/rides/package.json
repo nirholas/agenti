@@ -1,0 +1,63 @@
+{
+  "name": "@faremeter/rides",
+  "version": "0.17.1",
+  "description": "Low-boilerplate no friction API for getting on x402 quick",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/asserts": "catalog:",
+    "@tapjs/tsx": "catalog:",
+    "@types/promise-fs": "catalog:",
+    "@types/web": "catalog:",
+    "@typescript/lib-dom": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/fetch": "workspace:^",
+    "@faremeter/info": "workspace:^",
+    "@faremeter/logs": "workspace:^",
+    "@faremeter/payment-evm": "workspace:^",
+    "@faremeter/payment-solana": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "@faremeter/wallet-evm": "workspace:^",
+    "@faremeter/wallet-solana": "workspace:^",
+    "@solana/kit": "catalog:",
+    "@solana/web3.js": "catalog:",
+    "arktype": "catalog:",
+    "viem": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "@tapjs/tsx",
+      "!@tapjs/typescript"
+    ]
+  }
+}

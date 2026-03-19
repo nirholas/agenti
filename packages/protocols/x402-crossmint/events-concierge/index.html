@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Event RSVP MCP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <script type="module" src="/@vite/client"></script>
+    <script type="module">
+      import RefreshRuntime from '/@react-refresh';
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="/src/App.tsx" type="module"></script>
+    <!-- Simple link to My MCP page for convenience during dev -->
+    <div style="position:fixed;bottom:12px;right:12px;font-family:system-ui;font-size:12px;">
+      <a href="/?view=my-mcp" style="color:#3b82f6;text-decoration:none">My MCP →</a>
+    </div>
+  </body>
+</html>

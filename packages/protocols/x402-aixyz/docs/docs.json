@@ -1,0 +1,128 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "aixyz",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "getting-started/installation",
+              "getting-started/project-structure",
+              "getting-started/why-bun",
+              "getting-started/agent-and-tools",
+              "getting-started/payments",
+              "getting-started/deploying",
+              "getting-started/testing"
+            ]
+          },
+          {
+            "group": "CLI",
+            "pages": ["packages/aixyz", "packages/create-aixyz-app"]
+          },
+          {
+            "group": "Config",
+            "pages": ["config/aixyz-config", "config/environment-variables"]
+          },
+          {
+            "group": "File-system layout",
+            "pages": ["api-reference/agent", "api-reference/agents", "api-reference/tools"]
+          },
+          {
+            "group": "Functions",
+            "pages": [
+              "api-reference/accepts",
+              "api-reference/aixyz-config",
+              "api-reference/aixyz-server",
+              "api-reference/aixyz-model-fake",
+              "api-reference/unstable-with-index-page",
+              "api-reference/experimental-stripe-payment-intent-plugin"
+            ]
+          },
+          {
+            "group": "Protocols",
+            "pages": ["protocols/a2a", "protocols/mcp", "protocols/x402", "protocols/erc-8004"]
+          }
+        ]
+      },
+      {
+        "tab": "Templates",
+        "groups": [
+          {
+            "group": "Templates",
+            "pages": ["templates/overview"]
+          },
+          {
+            "group": "Basic",
+            "pages": [
+              "templates/basic/boilerplate",
+              "templates/basic/local-llm",
+              "templates/basic/chainlink",
+              "templates/basic/flight-search"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "templates/advanced/sub-agents",
+              "templates/advanced/with-custom-server",
+              "templates/advanced/with-custom-facilitator",
+              "templates/advanced/with-tests",
+              "templates/advanced/fake-llm",
+              "templates/advanced/with-express"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "use-agently",
+          "href": "https://use-agently.com",
+          "icon": "/icons/use-agently.svg"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/AgentlyHQ/aixyz",
+          "icon": "github"
+        },
+        {
+          "anchor": "npm",
+          "href": "https://www.npmjs.com/package/aixyz",
+          "icon": "npm"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/AgentlyHQ/aixyz"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/AgentlyHQ",
+      "x": "https://x.com/AgentlyHQ",
+      "discord": "https://discord.gg/Fyp7XZQZ",
+      "telegram": "https://t.me/useagently"
+    }
+  }
+}

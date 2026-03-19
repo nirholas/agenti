@@ -1,0 +1,26 @@
+{
+  "name": "vlayer-client-example",
+  "module": "index.ts",
+  "type": "module",
+  "version": "0.0.3",
+  "private": true,
+  "scripts": {
+    "dev": "tsx --watch index.ts",
+    "start": "tsx index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.2",
+    "dotenv": "^17.2.3",
+    "mcpay": "workspace:*",
+    "x402": "^0.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "license": "GPL-3.0-only",
+  "packageManager": "pnpm@10.12.1",
+  "type": "module",
+  "dependencies": {
+    "@faremeter/facilitator": "workspace:^",
+    "@faremeter/middleware": "workspace:^",
+    "@faremeter/rides": "workspace:^",
+    "@faremeter/test-harness": "workspace:^",
+    "@faremeter/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@tapjs/tsx": "catalog:",
+    "tap": "catalog:",
+    "typescript": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "@tapjs/tsx",
+      "!@tapjs/typescript"
+    ]
+  }
+}

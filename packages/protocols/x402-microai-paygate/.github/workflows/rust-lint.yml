@@ -1,0 +1,34 @@
+name: Rust Lint
+
+on:
+  pull_request:
+    paths:
+      - 'verifier/**'
+      - '.github/workflows/rust-lint.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'verifier/**'
+      - '.github/workflows/rust-lint.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cargo fmt (check)
+        working-directory: verifier
+        run: cargo fmt -- --check
+
+      - name: Cargo clippy
+        working-directory: verifier
+        run: cargo clippy -- -D warnings

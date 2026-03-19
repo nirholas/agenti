@@ -1,0 +1,54 @@
+{
+  "name": "@faremeter/facilitator",
+  "version": "0.17.1",
+  "description": "Facilitator server implementation for x402 protocol payment settlement and validation",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/tsx": "catalog:",
+    "@types/express": "catalog:",
+    "@types/web": "catalog:",
+    "@typescript/lib-dom": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/info": "workspace:^",
+    "@faremeter/logs": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "hono": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "!@tapjs/typescript",
+      "@tapjs/tsx"
+    ]
+  }
+}

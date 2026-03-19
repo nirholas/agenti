@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM deposits WHERE id=$1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "customer",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "amount",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "tx",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "settled_amount",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "settled_tx",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "settled_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "9e78a46177fc3f836ab7b74fd2081b8d435949d5c12bfb5b646e675c640d6d45"
+}

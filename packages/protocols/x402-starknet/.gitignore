@@ -1,0 +1,55 @@
+# Bun
+node_modules/
+*.log
+*.lock
+bun.lockb
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# TypeScript
+*.js
+*.d.ts
+!*.config.js
+!vitest.config.ts
+!scripts/*.ts
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Cairo / Scarb
+contracts/target/
+contracts/Scarb.lock
+
+# Deployment artifacts
+deployments.json
+*.deployed
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS
+Thumbs.db
+.DS_Store
+
+.claude/

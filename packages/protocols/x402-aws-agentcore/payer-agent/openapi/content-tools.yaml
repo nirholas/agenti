@@ -1,0 +1,1396 @@
+openapi: 3.0.3
+info:
+  title: x402 Premium Content API
+  description: |
+    Premium content endpoints protected by x402 payment protocol.
+    
+    All endpoints return HTTP 402 Payment Required when accessed without valid payment.
+    Clients must include a signed payment in the `X-PAYMENT-SIGNATURE` header to access content.
+    
+    ## Payment Flow
+    1. Client requests content without payment
+    2. Server returns 402 with `X-PAYMENT-REQUIRED` header containing payment requirements
+    3. Client signs payment using EIP-3009 authorization
+    4. Client retries request with `X-PAYMENT-SIGNATURE` header
+    5. Server verifies payment, settles on blockchain, returns content with `X-PAYMENT-RESPONSE` header
+    
+    ## x402 Protocol Version
+    This API implements x402 v2 protocol with the "exact" payment scheme on Base Sepolia (eip155:84532).
+  version: 1.0.0
+  contact:
+    name: x402 Demo Team
+  license:
+    name: MIT-0
+    url: https://opensource.org/licenses/MIT-0
+
+servers:
+  - url: https://{cloudfront-distribution}.cloudfront.net
+    description: CloudFront distribution serving protected content (deployed via seller-infrastructure CDK stack)
+    variables:
+      cloudfront-distribution:
+        default: d1234567890abc
+        description: |
+          CloudFront distribution ID from seller-infrastructure deployment.
+          
+          To get the distribution ID after deploying:
+            cd seller-infrastructure && cdk deploy
+            # Look for output: X402DistributionId = dXXXXXXXXXXXXX
+          
+          Or query CloudFormation:
+            aws cloudformation describe-stacks --stack-name X402SellerStack \
+              --query "Stacks[0].Outputs[?ExportName=='X402DistributionId'].OutputValue" \
+              --output text
+  - url: https://{seller-cloudfront-url}
+    description: |
+      Environment variable reference for Gateway target configuration.
+      Set X402_SELLER_CLOUDFRONT_URL to the CloudFront distribution hostname.
+    variables:
+      seller-cloudfront-url:
+        default: dXXXXXXXXXXXXX.cloudfront.net
+        description: |
+          CloudFront distribution hostname from seller-infrastructure deployment.
+          This is typically set via the X402_SELLER_CLOUDFRONT_URL environment variable.
+
+tags:
+  - name: Premium Content
+    description: Premium content endpoints requiring x402 payment
+  - name: Market Data
+    description: Real-time market and financial data
+  - name: Research
+    description: Research reports and datasets
+
+security:
+  - x402Payment: []
+
+paths:
+  /api/premium-article:
+    get:
+      operationId: get_premium_article
+      summary: Get Premium Article
+      description: |
+        Retrieves a premium article about AI and blockchain integration.
+        
+        ## x402 Payment Flow
+        
+        1. **Initial Request**: Client requests without `X-PAYMENT-SIGNATURE` header
+        2. **402 Response**: Server returns HTTP 402 with payment requirements in body and `X-PAYMENT-REQUIRED` header
+        3. **Payment Signing**: Client signs EIP-3009 authorization for the required amount
+        4. **Retry with Payment**: Client retries with `X-PAYMENT-SIGNATURE` header containing Base64-encoded PaymentPayload
+        5. **Content Delivery**: Server verifies payment, settles on blockchain, returns content with `X-PAYMENT-RESPONSE` header
+        
+        ## Pricing
+        
+        | Field | Value |
+        |-------|-------|
+        | **Price** | 1000 USDC units (0.001 USDC) |
+        | **Network** | Base Sepolia (eip155:84532) |
+        | **Scheme** | exact (EIP-3009 Transfer with Authorization) |
+        | **Asset** | USDC (0x036CbD53842c5426634e7929541eC2318f3dCF7e) |
+        | **Timeout** | 60 seconds |
+        
+        ## x402 Protocol Version
+        
+        This endpoint implements x402 v2 protocol with the "exact" payment scheme.
+      tags:
+        - Premium Content
+      # MCP Tool Extension - defines how this operation appears as an MCP tool
+      x-mcp-tool:
+        name: get_premium_article
+        description: |
+          Retrieve a premium article about AI and blockchain integration.
+          Returns article title, author, publication date, full content, and tags.
+          Requires x402 payment: 1000 USDC units (0.001 USDC) on Base Sepolia testnet.
+        category: content
+        tags:
+          - premium-content
+          - article
+          - ai
+          - blockchain
+          - x402-payment
+        priority: 1
+        requires_payment: true
+        payment:
+          price_units: "1000"
+          price_display: "0.001 USDC"
+          asset: USDC
+          network: Base Sepolia
+      parameters:
+        - $ref: '#/components/parameters/PaymentSignature'
+      responses:
+        '200':
+          description: |
+            Article content delivered successfully.
+            
+            The `X-PAYMENT-RESPONSE` header contains Base64-encoded SettlementResponse
+            with the blockchain transaction hash confirming payment settlement.
+          headers:
+            X-PAYMENT-RESPONSE:
+              $ref: '#/components/headers/PaymentResponse'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PremiumArticle'
+              examples:
+                success:
+                  summary: Successfully retrieved premium article
+                  value:
+                    title: "The Future of AI and Blockchain Integration"
+                    author: "Tech Insights"
+                    date: "2026-01-26"
+                    content: "Artificial Intelligence and Blockchain are converging to create new paradigms in technology..."
+                    fullText: "This is premium content that requires payment to access. The full article explores how AI agents can autonomously interact with blockchain networks, enabling new forms of machine-to-machine commerce and decentralized decision-making..."
+                    tags: ["AI", "blockchain", "technology", "innovation", "x402"]
+        '402':
+          description: |
+            Payment required to access this resource.
+            
+            The response body contains the full x402 v2 PaymentRequired schema.
+            The `X-PAYMENT-REQUIRED` header contains the same data as Base64-encoded JSON.
+            
+            To access the content, the client must:
+            1. Parse the payment requirements from the response
+            2. Sign an EIP-3009 authorization for the required amount
+            3. Retry the request with the signed payment in `X-PAYMENT-SIGNATURE` header
+          headers:
+            X-PAYMENT-REQUIRED:
+              description: Base64-encoded PaymentRequired JSON object
+              schema:
+                type: string
+                format: byte
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: "*"
+            Access-Control-Expose-Headers:
+              schema:
+                type: string
+                example: "X-PAYMENT-REQUIRED, X-PAYMENT-RESPONSE"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+              example:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/premium-article"
+                  description: "Premium article about AI and blockchain integration"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "1000"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/weather-data:
+    get:
+      operationId: get_weather_data
+      summary: Get Real-time Weather Data
+      description: |
+        Retrieves current weather conditions and 5-day forecast.
+        Data is dynamically generated with realistic weather patterns.
+        
+        **Price**: 500 USDC units (0.0005 USDC)
+        **Network**: Base Sepolia (eip155:84532)
+      tags:
+        - Market Data
+      # MCP Tool Extension
+      x-mcp-tool:
+        name: get_weather_data
+        description: |
+          Get real-time weather data and 5-day forecast for San Francisco.
+          Returns current conditions (temperature, humidity, wind) and daily forecasts.
+          Requires x402 payment: 500 USDC units (0.0005 USDC) on Base Sepolia testnet.
+        category: market-data
+        tags:
+          - weather
+          - forecast
+          - real-time
+          - x402-payment
+        priority: 2
+        requires_payment: true
+        payment:
+          price_units: "500"
+          price_display: "0.0005 USDC"
+          asset: USDC
+          network: Base Sepolia
+      parameters:
+        - $ref: '#/components/parameters/PaymentSignature'
+      responses:
+        '200':
+          description: Weather data delivered successfully
+          headers:
+            X-PAYMENT-RESPONSE:
+              $ref: '#/components/headers/PaymentResponse'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherData'
+              example:
+                location: "San Francisco, CA"
+                timestamp: "2026-01-26T12:00:00Z"
+                current:
+                  temperature: 62
+                  temperatureUnit: "F"
+                  conditions: "Partly Cloudy"
+                  humidity: 65
+                  windSpeed: 12
+                  windUnit: "mph"
+                  uvIndex: 4
+                forecast:
+                  - day: "Tue"
+                    conditions: "Sunny"
+                    high: 68
+                    low: 52
+                source: "x402-weather-service"
+                premium: true
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/market-analysis:
+    get:
+      operationId: get_market_analysis
+      summary: Get Cryptocurrency Market Analysis
+      description: |
+        Retrieves real-time cryptocurrency market data and analysis.
+        Includes prices, 24h changes, volume, market sentiment, and key events.
+        
+        ## x402 Payment Flow
+        
+        1. **Initial Request**: Client requests without `X-PAYMENT-SIGNATURE` header
+        2. **402 Response**: Server returns HTTP 402 with payment requirements in body and `X-PAYMENT-REQUIRED` header
+        3. **Payment Signing**: Client signs EIP-3009 authorization for the required amount
+        4. **Retry with Payment**: Client retries with `X-PAYMENT-SIGNATURE` header containing Base64-encoded PaymentPayload
+        5. **Content Delivery**: Server verifies payment, settles on blockchain, returns content with `X-PAYMENT-RESPONSE` header
+        
+        ## Pricing
+        
+        | Field | Value |
+        |-------|-------|
+        | **Price** | 2000 USDC units (0.002 USDC) |
+        | **Network** | Base Sepolia (eip155:84532) |
+        | **Scheme** | exact (EIP-3009 Transfer with Authorization) |
+        | **Asset** | USDC (0x036CbD53842c5426634e7929541eC2318f3dCF7e) |
+        | **Timeout** | 60 seconds |
+        
+        ## Data Included
+        
+        - **Market Prices**: Real-time prices for major cryptocurrencies (BTC, ETH, SOL, etc.)
+        - **24h Changes**: Price change percentages over the last 24 hours
+        - **Volume**: 24-hour trading volume data
+        - **Market Cap**: Current market capitalization
+        - **Sentiment Analysis**: Overall market sentiment (Bullish/Bearish/Neutral)
+        - **Key Events**: Upcoming events that may impact markets
+        - **Risk Assessment**: Current market risk level
+        
+        ## x402 Protocol Version
+        
+        This endpoint implements x402 v2 protocol with the "exact" payment scheme.
+      tags:
+        - Market Data
+      # MCP Tool Extension
+      x-mcp-tool:
+        name: get_market_analysis
+        description: |
+          Get cryptocurrency market analysis with real-time prices and sentiment.
+          Returns prices for BTC/ETH/SOL, 24h changes, volume, sentiment analysis, and key events.
+          Requires x402 payment: 2000 USDC units (0.002 USDC) on Base Sepolia testnet.
+        category: market-data
+        tags:
+          - cryptocurrency
+          - market-analysis
+          - prices
+          - sentiment
+          - real-time
+          - x402-payment
+        priority: 3
+        requires_payment: true
+        payment:
+          price_units: "2000"
+          price_display: "0.002 USDC"
+          asset: USDC
+          network: Base Sepolia
+      parameters:
+        - $ref: '#/components/parameters/PaymentSignature'
+      responses:
+        '200':
+          description: |
+            Market analysis delivered successfully.
+            
+            The `X-PAYMENT-RESPONSE` header contains Base64-encoded SettlementResponse
+            with the blockchain transaction hash confirming payment settlement.
+          headers:
+            X-PAYMENT-RESPONSE:
+              $ref: '#/components/headers/PaymentResponse'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketAnalysis'
+              examples:
+                success:
+                  summary: Successfully retrieved market analysis
+                  value:
+                    timestamp: "2026-01-26T12:00:00Z"
+                    date: "2026-01-26"
+                    markets:
+                      BTC:
+                        name: "Bitcoin"
+                        price: "98500.00"
+                        change24h: "+2.35%"
+                        volume24h: "25.5B"
+                        marketCap: "1920000M"
+                      ETH:
+                        name: "Ethereum"
+                        price: "3850.00"
+                        change24h: "+1.82%"
+                        volume24h: "12.3B"
+                        marketCap: "462000M"
+                      SOL:
+                        name: "Solana"
+                        price: "185.50"
+                        change24h: "+4.12%"
+                        volume24h: "3.8B"
+                        marketCap: "82000M"
+                    analysis:
+                      overallSentiment: "Bullish"
+                      summary: "Market showing positive momentum with strong institutional inflows. Bitcoin approaching key resistance levels while altcoins demonstrate relative strength."
+                      keyEvents:
+                        - "Federal Reserve meeting scheduled for next week"
+                        - "Major protocol upgrade announced for Ethereum"
+                        - "Institutional adoption news from major financial firms"
+                      riskLevel: "Medium"
+                    source: "x402-market-service"
+                    premium: true
+        '402':
+          description: |
+            Payment required to access this resource.
+            
+            The response body contains the full x402 v2 PaymentRequired schema.
+            The `X-PAYMENT-REQUIRED` header contains the same data as Base64-encoded JSON.
+            
+            To access the content, the client must:
+            1. Parse the payment requirements from the response
+            2. Sign an EIP-3009 authorization for the required amount (2000 USDC units)
+            3. Retry the request with the signed payment in `X-PAYMENT-SIGNATURE` header
+          headers:
+            X-PAYMENT-REQUIRED:
+              description: Base64-encoded PaymentRequired JSON object
+              schema:
+                type: string
+                format: byte
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: "*"
+            Access-Control-Expose-Headers:
+              schema:
+                type: string
+                example: "X-PAYMENT-REQUIRED, X-PAYMENT-RESPONSE"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+              example:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/market-analysis"
+                  description: "Real-time cryptocurrency market analysis and sentiment data"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "2000"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/research-report:
+    get:
+      operationId: get_research_report
+      summary: Get Blockchain Research Report
+      description: |
+        Retrieves an in-depth research report on blockchain technology trends for 2026.
+        Content is stored in S3 and delivered via CloudFront.
+        
+        ## x402 Payment Flow
+        
+        1. **Initial Request**: Client requests without `X-PAYMENT-SIGNATURE` header
+        2. **402 Response**: Server returns HTTP 402 with payment requirements in body and `X-PAYMENT-REQUIRED` header
+        3. **Payment Signing**: Client signs EIP-3009 authorization for the required amount
+        4. **Retry with Payment**: Client retries with `X-PAYMENT-SIGNATURE` header containing Base64-encoded PaymentPayload
+        5. **Content Delivery**: Server verifies payment, settles on blockchain, returns content with `X-PAYMENT-RESPONSE` header
+        
+        ## Pricing
+        
+        | Field | Value |
+        |-------|-------|
+        | **Price** | 5000 USDC units (0.005 USDC) |
+        | **Network** | Base Sepolia (eip155:84532) |
+        | **Scheme** | exact (EIP-3009 Transfer with Authorization) |
+        | **Asset** | USDC (0x036CbD53842c5426634e7929541eC2318f3dCF7e) |
+        | **Timeout** | 60 seconds |
+        
+        ## Report Contents
+        
+        - **Executive Summary**: High-level overview of blockchain industry trends
+        - **Market Overview**: Market size projections, growth rates, and top sectors
+        - **Technology Trends**: Analysis of ZK proofs, account abstraction, cross-chain bridges
+        - **Regulatory Landscape**: Global regulatory developments and frameworks
+        - **Recommendations**: Strategic guidance for organizations
+        
+        ## x402 Protocol Version
+        
+        This endpoint implements x402 v2 protocol with the "exact" payment scheme.
+      tags:
+        - Research
+      # MCP Tool Extension
+      x-mcp-tool:
+        name: get_research_report
+        description: |
+          Get in-depth blockchain technology research report for 2026.
+          Returns executive summary, market overview, technology trends, and strategic recommendations.
+          Requires x402 payment: 5000 USDC units (0.005 USDC) on Base Sepolia testnet.
+        category: research
+        tags:
+          - research
+          - blockchain
+          - technology-trends
+          - enterprise
+          - premium-content
+          - x402-payment
+        priority: 4
+        requires_payment: true
+        payment:
+          price_units: "5000"
+          price_display: "0.005 USDC"
+          asset: USDC
+          network: Base Sepolia
+      parameters:
+        - $ref: '#/components/parameters/PaymentSignature'
+      responses:
+        '200':
+          description: |
+            Research report delivered successfully.
+            
+            The `X-PAYMENT-RESPONSE` header contains Base64-encoded SettlementResponse
+            with the blockchain transaction hash confirming payment settlement.
+          headers:
+            X-PAYMENT-RESPONSE:
+              $ref: '#/components/headers/PaymentResponse'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchReport'
+              examples:
+                success:
+                  summary: Successfully retrieved research report
+                  value:
+                    title: "Blockchain Technology Trends 2026"
+                    author: "x402 Research Team"
+                    publishDate: "2026-01-15"
+                    version: "1.0"
+                    abstract: "This comprehensive research report analyzes the current state and future trajectory of blockchain technology, with a focus on enterprise adoption, scalability solutions, and emerging use cases."
+                    sections:
+                      - title: "Executive Summary"
+                        content: "The blockchain industry continues to mature with significant advancements in scalability, interoperability, and enterprise adoption."
+                      - title: "Market Overview"
+                        content: "The global blockchain market is projected to reach $163 billion by 2027."
+                        data:
+                          marketSize2026: "$94.5B"
+                          projectedGrowth: "68.4%"
+                          topSectors: ["DeFi", "Supply Chain", "Digital Identity", "Healthcare"]
+                      - title: "Technology Trends"
+                        content: "Key technological developments include zero-knowledge proofs for privacy, cross-chain bridges for interoperability, and account abstraction for improved user experience."
+                        trends:
+                          - name: "Zero-Knowledge Proofs"
+                            impact: "High"
+                            maturity: "Growing"
+                          - name: "Account Abstraction"
+                            impact: "High"
+                            maturity: "Emerging"
+                    premium: true
+                    source: "x402-research-service"
+        '402':
+          description: |
+            Payment required to access this resource.
+            
+            The response body contains the full x402 v2 PaymentRequired schema.
+            The `X-PAYMENT-REQUIRED` header contains the same data as Base64-encoded JSON.
+            
+            To access the content, the client must:
+            1. Parse the payment requirements from the response
+            2. Sign an EIP-3009 authorization for the required amount (5000 USDC units)
+            3. Retry the request with the signed payment in `X-PAYMENT-SIGNATURE` header
+          headers:
+            X-PAYMENT-REQUIRED:
+              description: Base64-encoded PaymentRequired JSON object
+              schema:
+                type: string
+                format: byte
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: "*"
+            Access-Control-Expose-Headers:
+              schema:
+                type: string
+                example: "X-PAYMENT-REQUIRED, X-PAYMENT-RESPONSE"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+              example:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/research-report"
+                  description: "In-depth blockchain technology research report for 2026"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "5000"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+
+components:
+  securitySchemes:
+    x402Payment:
+      type: apiKey
+      in: header
+      name: X-PAYMENT-SIGNATURE
+      description: |
+        x402 payment authorization header.
+        
+        Contains a Base64-encoded PaymentPayload JSON object with:
+        - `x402Version`: Protocol version (must be 2)
+        - `resource`: Information about the resource being accessed
+        - `accepted`: The payment method chosen from the 402 response's `accepts` array
+        - `payload`: Scheme-specific payment data (e.g., EIP-3009 signature and authorization)
+        - `extensions`: Optional protocol extensions
+        
+        ## Creating a Payment Signature
+        
+        1. Receive 402 response with payment requirements
+        2. Choose a payment method from the `accepts` array
+        3. Sign an EIP-3009 authorization for the required amount
+        4. Construct PaymentPayload with the signature and authorization
+        5. Base64-encode the JSON and include in this header
+        
+        ## Example PaymentPayload Structure
+        
+        ```json
+        {
+          "x402Version": 2,
+          "resource": { "url": "https://api.example.com/api/premium-article" },
+          "accepted": { "scheme": "exact", "network": "eip155:84532", ... },
+          "payload": {
+            "signature": "0x...",
+            "authorization": { "from": "0x...", "to": "0x...", "value": "1000", ... }
+          }
+        }
+        ```
+
+  parameters:
+    PaymentSignature:
+      name: X-PAYMENT-SIGNATURE
+      in: header
+      required: false
+      description: |
+        Base64-encoded x402 payment payload containing signed EIP-3009 authorization.
+        Required to access protected content. If omitted, server returns 402 Payment Required.
+      schema:
+        type: string
+        format: byte
+      example: "eyJ4NDAyVmVyc2lvbiI6MiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vcHJlbWl1bS1kYXRhIn0sImFjY2VwdGVkIjp7InNjaGVtZSI6ImV4YWN0IiwibmV0d29yayI6ImVpcDE1NTo4NDUzMiIsImFtb3VudCI6IjEwMDAiLCJhc3NldCI6IjB4MDM2Q2JENTM4NDJjNTQyNjYzNGU3OTI5NTQxZUMyMzE4ZjNkQ0Y3ZSIsInBheVRvIjoiMHg3NDJkMzVDYzY2MzRDMDUzMjkyNWEzYjg0NEJjOWU3NTk1ZjBiRWIiLCJtYXhUaW1lb3V0U2Vjb25kcyI6NjB9LCJwYXlsb2FkIjp7InNpZ25hdHVyZSI6IjB4Li4uIiwiYXV0aG9yaXphdGlvbiI6eyJmcm9tIjoiMHguLi4iLCJ0byI6IjB4Li4uIiwidmFsdWUiOiIxMDAwIiwidmFsaWRBZnRlciI6IjE3NDA2NzIwODkiLCJ2YWxpZEJlZm9yZSI6IjE3NDA2NzIxNTQiLCJub25jZSI6IjB4Li4uIn19fQ=="
+
+  headers:
+    PaymentResponse:
+      description: |
+        Base64-encoded settlement response containing transaction hash and network info.
+        Present only on successful payment settlement.
+      schema:
+        type: string
+        format: byte
+      example: "eyJzdWNjZXNzIjp0cnVlLCJ0cmFuc2FjdGlvbiI6IjB4MTIzNDU2Nzg5MGFiY2RlZjEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmMTIzNDU2Nzg5MGFiY2RlZiIsIm5ldHdvcmsiOiJlaXAxNTU6ODQ1MzIiLCJwYXllciI6IjB4ODU3YjA2NTE5RTkxZTNBNTQ1Mzg3OTFiRGJiMEUyMjM3M2UzNmI2NiJ9"
+    
+    RequestId:
+      description: Unique request identifier for tracing and debugging
+      schema:
+        type: string
+      example: "req_m1abc123_xyz789"
+
+  schemas:
+    # x402 Protocol Schemas
+    PaymentRequirements:
+      type: object
+      description: Payment requirements that a seller accepts (x402 v2)
+      required:
+        - scheme
+        - network
+        - amount
+        - asset
+        - payTo
+        - maxTimeoutSeconds
+      properties:
+        scheme:
+          type: string
+          description: Payment scheme identifier
+          enum: [exact]
+          example: "exact"
+        network:
+          type: string
+          description: Blockchain network in CAIP-2 format
+          example: "eip155:84532"
+        amount:
+          type: string
+          description: Required payment amount in atomic token units
+          example: "1000"
+        asset:
+          type: string
+          description: Token contract address
+          example: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+        payTo:
+          type: string
+          description: Recipient wallet address
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+        maxTimeoutSeconds:
+          type: integer
+          description: Maximum time allowed for payment completion
+          example: 60
+        extra:
+          type: object
+          description: Scheme-specific additional information
+          properties:
+            name:
+              type: string
+              example: "USDC"
+            version:
+              type: string
+              example: "2"
+            assetTransferMethod:
+              type: string
+              example: "eip3009"
+
+    ResourceInfo:
+      type: object
+      description: Information about the protected resource
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL of the protected resource
+        description:
+          type: string
+          description: Human-readable description
+        mimeType:
+          type: string
+          description: MIME type of the expected response
+
+    PaymentRequired:
+      type: object
+      description: x402 v2 Payment Required response body
+      required:
+        - x402Version
+        - resource
+        - accepts
+      properties:
+        x402Version:
+          type: integer
+          description: Protocol version (must be 2)
+          enum: [2]
+        error:
+          type: string
+          description: Human-readable error message
+        resource:
+          $ref: '#/components/schemas/ResourceInfo'
+        accepts:
+          type: array
+          description: Array of acceptable payment methods
+          items:
+            $ref: '#/components/schemas/PaymentRequirements'
+        extensions:
+          type: object
+          description: Protocol extensions data
+          additionalProperties: true
+
+    SettlementResponse:
+      type: object
+      description: Payment settlement response
+      required:
+        - success
+        - transaction
+        - network
+      properties:
+        success:
+          type: boolean
+          description: Whether settlement was successful
+        transaction:
+          type: string
+          description: Blockchain transaction hash
+          example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        network:
+          type: string
+          description: Blockchain network in CAIP-2 format
+          example: "eip155:84532"
+        payer:
+          type: string
+          description: Payer wallet address
+          example: "0x857b06519E91e3A54538791bDbb0E22373e36b66"
+        errorReason:
+          type: string
+          description: Error reason if settlement failed
+
+    # Content Schemas
+    PremiumArticle:
+      type: object
+      description: Premium article content
+      required:
+        - title
+        - author
+        - date
+        - content
+      properties:
+        title:
+          type: string
+          description: Article title
+        author:
+          type: string
+          description: Article author
+        date:
+          type: string
+          format: date
+          description: Publication date
+        content:
+          type: string
+          description: Article summary/excerpt
+        fullText:
+          type: string
+          description: Full article content
+        tags:
+          type: array
+          items:
+            type: string
+          description: Article tags/categories
+
+    WeatherData:
+      type: object
+      description: Real-time weather data and forecast
+      required:
+        - location
+        - timestamp
+        - current
+      properties:
+        location:
+          type: string
+          description: Location name
+        timestamp:
+          type: string
+          format: date-time
+          description: Data timestamp
+        current:
+          type: object
+          required:
+            - temperature
+            - conditions
+          properties:
+            temperature:
+              type: number
+              description: Current temperature
+            temperatureUnit:
+              type: string
+              enum: [F, C]
+            conditions:
+              type: string
+              description: Weather conditions
+            humidity:
+              type: integer
+              description: Humidity percentage
+            windSpeed:
+              type: number
+              description: Wind speed
+            windUnit:
+              type: string
+              enum: [mph, kph]
+            uvIndex:
+              type: integer
+              description: UV index (0-11)
+        forecast:
+          type: array
+          description: 5-day forecast
+          items:
+            type: object
+            properties:
+              day:
+                type: string
+              conditions:
+                type: string
+              high:
+                type: number
+              low:
+                type: number
+        source:
+          type: string
+          description: Data source identifier
+        premium:
+          type: boolean
+          description: Premium content flag
+
+    MarketAnalysis:
+      type: object
+      description: Cryptocurrency market analysis
+      required:
+        - timestamp
+        - markets
+        - analysis
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        date:
+          type: string
+          format: date
+        markets:
+          type: object
+          description: Market data by cryptocurrency symbol
+          additionalProperties:
+            type: object
+            properties:
+              name:
+                type: string
+              price:
+                type: string
+              change24h:
+                type: string
+              volume24h:
+                type: string
+              marketCap:
+                type: string
+        analysis:
+          type: object
+          properties:
+            overallSentiment:
+              type: string
+              enum: [Bullish, Bearish, Neutral, Very Bullish, Cautiously Optimistic]
+            summary:
+              type: string
+            keyEvents:
+              type: array
+              items:
+                type: string
+            riskLevel:
+              type: string
+              enum: [Low, Medium, High]
+        source:
+          type: string
+        premium:
+          type: boolean
+
+    ResearchReport:
+      type: object
+      description: In-depth blockchain technology research report
+      required:
+        - title
+        - author
+        - publishDate
+        - abstract
+        - sections
+      properties:
+        title:
+          type: string
+          description: Report title
+          example: "Blockchain Technology Trends 2026"
+        author:
+          type: string
+          description: Report author or team
+          example: "x402 Research Team"
+        publishDate:
+          type: string
+          format: date
+          description: Publication date
+          example: "2026-01-15"
+        version:
+          type: string
+          description: Report version
+          example: "1.0"
+        abstract:
+          type: string
+          description: Executive summary of the report
+        sections:
+          type: array
+          description: Report sections with detailed analysis
+          items:
+            type: object
+            required:
+              - title
+              - content
+            properties:
+              title:
+                type: string
+                description: Section heading
+              content:
+                type: string
+                description: Section content
+              data:
+                type: object
+                description: Optional structured data for the section
+                properties:
+                  marketSize2026:
+                    type: string
+                  projectedGrowth:
+                    type: string
+                  topSectors:
+                    type: array
+                    items:
+                      type: string
+              trends:
+                type: array
+                description: Technology trends analysis
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Trend name
+                    impact:
+                      type: string
+                      enum: [High, Medium, Low]
+                      description: Impact level
+                    maturity:
+                      type: string
+                      enum: [Emerging, Growing, Mature]
+                      description: Maturity stage
+        premium:
+          type: boolean
+          description: Premium content flag
+          example: true
+        source:
+          type: string
+          description: Data source identifier
+          example: "x402-research-service"
+
+    ErrorResponse:
+      type: object
+      description: |
+        Standard error response for non-402 errors.
+        
+        All error responses include:
+        - `error`: The HTTP status text or error category
+        - `message`: A human-readable description of what went wrong
+        - `code`: A machine-readable error code for programmatic handling
+        
+        Some errors may include additional `details` with context-specific information.
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type/category (e.g., "Bad Request", "Unauthorized", "Internal Server Error")
+          example: "Bad Request"
+        message:
+          type: string
+          description: Human-readable error message with specific details
+          example: "Payment payload structure is invalid"
+        code:
+          type: string
+          description: |
+            Machine-readable error code for programmatic error handling.
+            
+            Common codes:
+            - `INVALID_PAYLOAD_STRUCTURE` - Malformed payment payload
+            - `INVALID_ENCODING` - Base64 decoding failed
+            - `MISSING_FIELD` - Required field missing
+            - `AMOUNT_MISMATCH` - Payment amount incorrect
+            - `UNSUPPORTED_SCHEME` - Payment scheme not supported
+            - `UNSUPPORTED_NETWORK` - Blockchain network not supported
+            - `UNSUPPORTED_VERSION` - x402 protocol version not supported
+            - `INVALID_SIGNATURE` - Signature verification failed
+            - `AUTHORIZATION_EXPIRED` - Payment authorization expired
+            - `AUTHORIZATION_NOT_YET_VALID` - Authorization validAfter not reached
+            - `SIGNER_MISMATCH` - Signer doesn't match authorization
+            - `NONCE_REUSED` - Nonce already used (replay attack)
+            - `INSUFFICIENT_BALANCE` - Wallet balance too low
+            - `PAYMENT_PROCESSING_ERROR` - Generic processing failure
+            - `RPC_UNAVAILABLE` - Blockchain RPC unreachable
+            - `SETTLEMENT_FAILED` - On-chain settlement failed
+            - `TIMEOUT` - Operation timed out
+          example: "INVALID_PAYLOAD_STRUCTURE"
+        details:
+          type: object
+          description: Additional context-specific error details
+          additionalProperties: true
+          example:
+            transactionHash: "0x1234..."
+            reason: "Transaction reverted"
+        x402Version:
+          type: integer
+          description: Protocol version (present for 402 errors only)
+          example: 2
+
+  responses:
+    PaymentRequired:
+      description: |
+        Payment required to access this resource (HTTP 402).
+        
+        The response body contains the full x402 v2 PaymentRequired schema with:
+        - `x402Version`: Protocol version (must be 2)
+        - `error`: Human-readable error message
+        - `resource`: Information about the protected resource
+        - `accepts`: Array of acceptable payment methods
+        - `extensions`: Optional protocol extensions
+        
+        The `X-PAYMENT-REQUIRED` header contains the same data as Base64-encoded JSON
+        for clients that prefer header-based parsing.
+      headers:
+        X-PAYMENT-REQUIRED:
+          description: |
+            Base64-encoded PaymentRequired JSON object.
+            Contains the same data as the response body for header-based parsing.
+          schema:
+            type: string
+            format: byte
+          example: "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IFJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vYXBpL3ByZW1pdW0tYXJ0aWNsZSIsImRlc2NyaXB0aW9uIjoiUHJlbWl1bSBhcnRpY2xlIGFib3V0IEFJIGFuZCBibG9ja2NoYWluIGludGVncmF0aW9uIiwibWltZVR5cGUiOiJhcHBsaWNhdGlvbi9qc29uIn0sImFjY2VwdHMiOlt7InNjaGVtZSI6ImV4YWN0IiwibmV0d29yayI6ImVpcDE1NTo4NDUzMiIsImFtb3VudCI6IjEwMDAiLCJhc3NldCI6IjB4MDM2Q2JENTM4NDJjNTQyNjYzNGU3OTI5NTQxZUMyMzE4ZjNkQ0Y3ZSIsInBheVRvIjoiMHg3NDJkMzVDYzY2MzRDMDUzMjkyNWEzYjg0NEJjOWU3NTk1ZjBiRWIiLCJtYXhUaW1lb3V0U2Vjb25kcyI6NjAsImV4dHJhIjp7Im5hbWUiOiJVU0RDIiwidmVyc2lvbiI6IjIiLCJhc3NldFRyYW5zZmVyTWV0aG9kIjoiZWlwMzAwOSJ9fV0sImV4dGVuc2lvbnMiOnt9fQ=="
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+            example: "*"
+        Access-Control-Expose-Headers:
+          schema:
+            type: string
+            example: "X-PAYMENT-REQUIRED, X-PAYMENT-RESPONSE"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequired'
+          examples:
+            premium_article:
+              summary: Payment required for premium article
+              description: Example 402 response for the premium article endpoint
+              value:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/premium-article"
+                  description: "Premium article about AI and blockchain integration"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "1000"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+            weather_data:
+              summary: Payment required for weather data
+              value:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/weather-data"
+                  description: "Real-time weather data and 5-day forecast"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "500"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+            market_analysis:
+              summary: Payment required for market analysis
+              value:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/market-analysis"
+                  description: "Real-time cryptocurrency market analysis and sentiment data"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "2000"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+            research_report:
+              summary: Payment required for research report
+              value:
+                x402Version: 2
+                error: "Payment Required"
+                resource:
+                  url: "https://api.example.com/api/research-report"
+                  description: "In-depth blockchain technology research report for 2026"
+                  mimeType: "application/json"
+                accepts:
+                  - scheme: "exact"
+                    network: "eip155:84532"
+                    amount: "5000"
+                    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+                    payTo: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                    maxTimeoutSeconds: 60
+                    extra:
+                      name: "USDC"
+                      version: "2"
+                      assetTransferMethod: "eip3009"
+                extensions: {}
+
+    BadRequest:
+      description: |
+        Invalid payment payload or request (HTTP 400).
+        
+        This error occurs when:
+        - The payment payload structure is malformed
+        - The Base64 encoding is invalid
+        - Required fields are missing from the payment
+        - The payment amount doesn't match the required amount
+        - The payment scheme or network is not supported
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalid_structure:
+              summary: Invalid payload structure
+              description: The payment payload JSON structure is malformed or missing required fields
+              value:
+                error: "Bad Request"
+                message: "Payment payload structure is invalid"
+                code: "INVALID_PAYLOAD_STRUCTURE"
+            decode_error:
+              summary: Base64 decode error
+              description: The X-PAYMENT-SIGNATURE header contains invalid Base64 encoding
+              value:
+                error: "Bad Request"
+                message: "Invalid payment payload encoding - expected Base64"
+                code: "INVALID_ENCODING"
+            missing_signature:
+              summary: Missing signature field
+              description: The payment payload is missing the required signature field
+              value:
+                error: "Bad Request"
+                message: "Payment payload missing required field: signature"
+                code: "MISSING_FIELD"
+            invalid_amount:
+              summary: Invalid payment amount
+              description: The payment amount doesn't match the required amount for the resource
+              value:
+                error: "Bad Request"
+                message: "Payment amount mismatch: expected 1000, received 500"
+                code: "AMOUNT_MISMATCH"
+            unsupported_scheme:
+              summary: Unsupported payment scheme
+              description: The payment scheme specified is not supported by this endpoint
+              value:
+                error: "Bad Request"
+                message: "Unsupported payment scheme: streaming. Supported: exact"
+                code: "UNSUPPORTED_SCHEME"
+            unsupported_network:
+              summary: Unsupported network
+              description: The blockchain network specified is not supported
+              value:
+                error: "Bad Request"
+                message: "Unsupported network: eip155:1. Supported: eip155:84532"
+                code: "UNSUPPORTED_NETWORK"
+            invalid_version:
+              summary: Invalid x402 version
+              description: The x402 protocol version is not supported
+              value:
+                error: "Bad Request"
+                message: "Unsupported x402 version: 1. Supported: 2"
+                code: "UNSUPPORTED_VERSION"
+
+    Unauthorized:
+      description: |
+        Payment authorization failed (HTTP 401).
+        
+        This error occurs when:
+        - The payment signature is invalid or cannot be verified
+        - The payment authorization has expired (validBefore timestamp passed)
+        - The payment authorization is not yet valid (validAfter timestamp not reached)
+        - The signer address doesn't match the authorization
+        - The nonce has already been used (replay attack prevention)
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        WWW-Authenticate:
+          description: Authentication scheme information
+          schema:
+            type: string
+          example: 'X402 realm="x402-payment", scheme="exact", network="eip155:84532"'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalid_signature:
+              summary: Invalid payment signature
+              description: The EIP-3009 signature cannot be verified against the authorization data
+              value:
+                error: "Unauthorized"
+                message: "Payment signature verification failed"
+                code: "INVALID_SIGNATURE"
+            expired_authorization:
+              summary: Expired authorization
+              description: The payment authorization's validBefore timestamp has passed
+              value:
+                error: "Unauthorized"
+                message: "Payment authorization has expired"
+                code: "AUTHORIZATION_EXPIRED"
+            authorization_not_yet_valid:
+              summary: Authorization not yet valid
+              description: The payment authorization's validAfter timestamp has not been reached
+              value:
+                error: "Unauthorized"
+                message: "Payment authorization is not yet valid"
+                code: "AUTHORIZATION_NOT_YET_VALID"
+            signer_mismatch:
+              summary: Signer address mismatch
+              description: The recovered signer address doesn't match the authorization's from address
+              value:
+                error: "Unauthorized"
+                message: "Signer address does not match authorization"
+                code: "SIGNER_MISMATCH"
+            nonce_already_used:
+              summary: Nonce already used
+              description: The authorization nonce has already been used (potential replay attack)
+              value:
+                error: "Unauthorized"
+                message: "Authorization nonce has already been used"
+                code: "NONCE_REUSED"
+            insufficient_balance:
+              summary: Insufficient balance
+              description: The payer wallet has insufficient token balance for the payment
+              value:
+                error: "Unauthorized"
+                message: "Insufficient USDC balance for payment"
+                code: "INSUFFICIENT_BALANCE"
+
+    InternalError:
+      description: |
+        Server error during payment processing (HTTP 500).
+        
+        This error occurs when:
+        - The blockchain RPC endpoint is unavailable
+        - Payment settlement transaction fails on-chain
+        - Internal service communication fails
+        - Unexpected server-side errors occur
+        
+        Clients should retry the request with exponential backoff.
+        If the error persists, the payment may need to be re-signed with a new nonce.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Retry-After:
+          description: Suggested wait time before retrying (in seconds)
+          schema:
+            type: integer
+          example: 30
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            processing_error:
+              summary: Payment processing error
+              description: Generic payment processing failure
+              value:
+                error: "Internal Server Error"
+                message: "Failed to process payment"
+                code: "PAYMENT_PROCESSING_ERROR"
+            rpc_unavailable:
+              summary: Blockchain RPC unavailable
+              description: Unable to connect to the blockchain RPC endpoint
+              value:
+                error: "Internal Server Error"
+                message: "Blockchain RPC endpoint unavailable"
+                code: "RPC_UNAVAILABLE"
+            settlement_failed:
+              summary: Settlement transaction failed
+              description: The on-chain payment settlement transaction failed
+              value:
+                error: "Internal Server Error"
+                message: "Payment settlement transaction failed"
+                code: "SETTLEMENT_FAILED"
+                details:
+                  transactionHash: "0x1234567890abcdef..."
+                  reason: "Transaction reverted"
+            timeout:
+              summary: Request timeout
+              description: The payment verification or settlement timed out
+              value:
+                error: "Internal Server Error"
+                message: "Payment processing timed out"
+                code: "TIMEOUT"

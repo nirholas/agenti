@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist"
+  },
+  "include": [
+    "*.ts",
+    "solana-example/*.ts",
+    "solana-exact-example/*.ts",
+    "evm-example/*.ts"
+  ]
+}

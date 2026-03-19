@@ -1,0 +1,323 @@
+---
+title: Quickstart
+description: Get started with Daydreams Router in under 5 minutes
+---
+
+# Quickstart Guide
+
+Make your first API call to the Dreams Router in under 5 minutes.
+
+## Authentication Methods
+
+### API Key
+
+Add your API key to request headers:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+Get your key from [router.daydreams.systems](https://router.daydreams.systems).
+
+### x402 Payments (Pay-per-use)
+
+Instead of an API key, you can pay per request using USDC micropayments via the `X-Payment` header:
+
+```javascript
+import { generateX402Payment } from "@daydreamsai/ai-sdk-provider";
+import { privateKeyToAccount } from "viem/accounts";
+
+const account = privateKeyToAccount("0x...your-private-key");
+
+// Generate x402-compliant payment header
+const paymentHeader = await generateX402Payment(account, {
+  amount: "100000", // $0.10 USDC (6 decimals)
+  network: "base-sepolia", // or "base" for mainnet
+});
+
+// Make request with X-Payment header
+const response = await fetch(
+  "https://router.daydreams.systems/v1/chat/completions",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Payment": paymentHeader, // x402-compliant payment
+    },
+    body: JSON.stringify({
+      model: "google-vertex/gemini-2.5-flash",
+      messages: [{ role: "user", content: "Hello!" }],
+    }),
+  }
+);
+```
+
+For browser/wagmi environments:
+
+```javascript
+import { generateX402PaymentBrowser } from "@daydreamsai/ai-sdk-provider";
+import { useAccount, useSignTypedData } from "wagmi";
+
+const { address } = useAccount();
+const { signTypedDataAsync } = useSignTypedData();
+
+const paymentHeader = await generateX402PaymentBrowser(
+  address,
+  signTypedDataAsync,
+  { amount: "100000", network: "base-sepolia" }
+);
+
+// Use paymentHeader in X-Payment header
+```
+
+## Making Your First Request
+
+The primary endpoint for AI completions is `/v1/chat/completions`. Here's a
+simple example using curl:
+
+```bash
+curl -X POST https://router.daydreams.systems/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "google-vertex/gemini-2.5-flash",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, how are you?"
+      }
+    ],
+    "stream": false
+  }'
+```
+
+## Request Schema
+
+The completions endpoint accepts the following parameters:
+
+### Required Fields
+
+- **`model`** (string): The model identifier (e.g., "gpt-4",
+  "claude-3-opus-20240229", "gemini-pro")
+- **`messages`** (array): An array of message objects representing the
+  conversation
+
+### Message Object Structure
+
+Each message in the `messages` array must have:
+
+- **`role`** (string): One of "system", "user", or "assistant"
+- **`content`** (string): The text content of the message
+
+Example:
+
+```json
+{
+  "role": "user",
+  "content": "What is the capital of France?"
+}
+```
+
+### Optional Fields
+
+- **`stream`** (boolean): Enable streaming responses (default: false)
+- **`temperature`** (number): Controls randomness (0.0 to 2.0, default: 1.0)
+- **`max_tokens`** (number): Maximum tokens to generate
+- **`top_p`** (number): Nucleus sampling parameter (0.0 to 1.0)
+- **`frequency_penalty`** (number): Reduce repetition (-2.0 to 2.0)
+- **`presence_penalty`** (number): Encourage new topics (-2.0 to 2.0)
+- **`stop`** (string or array): Stop sequences
+- **`user`** (string): Unique identifier for end-user tracking
+
+### Complete Request Example
+
+```json
+{
+  "model": "google-vertex/gemini-2.5-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Explain quantum computing in simple terms."
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 500,
+  "stream": false
+}
+```
+
+## Response Format
+
+Dreams Router standardizes all responses to the OpenAI format, regardless of the
+underlying provider:
+
+```json
+{
+  "id": "chatcmpl-123",
+  "object": "chat.completion",
+  "created": 1677652288,
+  "model": "google-vertex/gemini-2.5-flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Quantum computing is a type of computing that uses quantum mechanical phenomena..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 150,
+    "total_tokens": 170
+  }
+}
+```
+
+### Response Fields
+
+- **`id`**: Unique identifier for the completion
+- **`object`**: Always "chat.completion" for non-streaming responses
+- **`created`**: Unix timestamp of when the completion was created
+- **`model`**: The model used for the completion
+- **`choices`**: Array of completion choices (usually one)
+  - **`index`**: Position in the choices array
+  - **`message`**: The generated message with role and content
+  - **`finish_reason`**: Why generation stopped ("stop", "length",
+    "content_filter", etc.)
+- **`usage`**: Token usage statistics for billing and monitoring
+
+## Streaming Responses
+
+For real-time responses, enable streaming by setting `stream: true`:
+
+```bash
+curl -X POST https://router.daydreams.systems/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "google-vertex/gemini-2.5-flash",
+    "messages": [{"role": "user", "content": "Write a story"}],
+    "stream": true
+  }'
+```
+
+Streaming responses are sent as Server-Sent Events (SSE) with the following
+format:
+
+```
+data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1677652288,"model":"google-vertex/gemini-2.5-flash","choices":[{"index":0,"delta":{"content":"Once"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1677652288,"model":"google-vertex/gemini-2.5-flash","choices":[{"index":0,"delta":{"content":" upon"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1677652288,"model":"google-vertex/gemini-2.5-flash","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+```
+
+## Available Models
+
+Dreams Router supports models from multiple providers including OpenAI,
+Anthropic, Google, Groq, xAI, Moonshot, and Cerebras.
+
+To get a complete, up-to-date list of available models with their capabilities
+and pricing, use the `/v1/models` endpoint:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://api-beta.daydreams.systems/v1/models
+```
+
+Common HTTP status codes:
+
+- `400`: Bad Request (invalid parameters)
+- `401`: Unauthorized (missing or invalid API key)
+- `402`: Payment Required (insufficient balance)
+- `404`: Not Found (invalid model)
+- `429`: Too Many Requests (rate limit exceeded)
+- `500`: Internal Server Error
+
+## Rate Limiting
+
+API requests are rate-limited per user. Rate limit information is included in
+response headers:
+
+- `X-RateLimit-Limit`: Maximum requests per window
+- `X-RateLimit-Remaining`: Remaining requests in current window
+- `X-RateLimit-Reset`: Unix timestamp when the window resets
+
+## SDK Integration
+
+### OpenAI SDK Compatible
+
+```python
+# Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_API_KEY",
+    base_url="https://router.daydreams.systems/v1"
+)
+
+response = client.chat.completions.create(
+    model="google-vertex/gemini-2.5-flash",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+```javascript
+// JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "YOUR_API_KEY",
+  baseURL: "https://router.daydreams.systems/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "google-vertex/gemini-2.5-flash",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Dreams SDK Integration
+
+For TypeScript projects using Vercel AI SDK, see the
+[Dreams SDK guide](./dreams-sdk) for detailed integration instructions with
+payment support.
+
+## Cost Tracking
+
+Each request incurs costs based on the model used and tokens processed. The
+response includes usage information for tracking:
+
+- **Prompt tokens**: Tokens in your input messages
+- **Completion tokens**: Tokens in the generated response
+- **Total tokens**: Sum of prompt and completion tokens
+
+## Best Practices
+
+1. **Use System Messages**: Include a system message to set the AI's behavior
+   and context
+2. **Set Max Tokens**: Always specify `max_tokens` to control costs and response
+   length
+3. **Handle Streaming**: For long responses, use streaming to improve user
+   experience
+4. **Implement Retries**: Add exponential backoff for transient errors
+5. **Monitor Usage**: Track your token usage to manage costs effectively
+6. **Cache Responses**: Consider caching responses for repeated queries
+
+## Next Steps
+
+- [Dreams SDK Integration](./dreams-sdk) - TypeScript integration with Vercel AI
+  SDK
+- [API Reference](https://router.daydreams.systems/docs) - Complete endpoint
+  documentation
+- [Model Catalog](/v1/models) - View all available models and pricing
+- [Examples](https://github.com/daydreamsai/daydreams/tree/main/examples) -
+  Working implementations

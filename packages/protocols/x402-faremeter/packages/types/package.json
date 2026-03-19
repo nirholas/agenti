@@ -1,0 +1,86 @@
+{
+  "name": "@faremeter/types",
+  "version": "0.17.1",
+  "description": "TypeScript type definitions and runtime validation for x402 protocol and Faremeter ecosystem",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./client": {
+      "require": "./dist/src/client.js",
+      "import": "./dist/src/client.js",
+      "types": "./dist/src/client.d.ts"
+    },
+    "./facilitator": {
+      "require": "./dist/src/facilitator.js",
+      "import": "./dist/src/facilitator.js",
+      "types": "./dist/src/facilitator.d.ts"
+    },
+    "./x402": {
+      "require": "./dist/src/x402.js",
+      "import": "./dist/src/x402.js",
+      "types": "./dist/src/x402.d.ts"
+    },
+    "./x402v2": {
+      "require": "./dist/src/x402v2.js",
+      "import": "./dist/src/x402v2.js",
+      "types": "./dist/src/x402v2.d.ts"
+    },
+    "./x402-adapters": {
+      "require": "./dist/src/x402-adapters.js",
+      "import": "./dist/src/x402-adapters.js",
+      "types": "./dist/src/x402-adapters.d.ts"
+    },
+    "./solana": {
+      "require": "./dist/src/solana.js",
+      "import": "./dist/src/solana.js",
+      "types": "./dist/src/solana.d.ts"
+    },
+    "./evm": {
+      "require": "./dist/src/evm.js",
+      "import": "./dist/src/evm.js",
+      "types": "./dist/src/evm.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/asserts": "catalog:",
+    "@tapjs/tsx": "catalog:",
+    "@types/web": "catalog:",
+    "@typescript/lib-dom": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "arktype": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "@tapjs/tsx",
+      "!@tapjs/typescript"
+    ]
+  }
+}

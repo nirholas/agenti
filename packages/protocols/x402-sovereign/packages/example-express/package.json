@@ -1,0 +1,23 @@
+{
+  "name": "@x402-sovereign/example-express",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@x402-sovereign/core": "workspace:*",
+    "express": "^4.21.2",
+    "viem": "^2.38.4",
+    "x402-express": "^0.6.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
+

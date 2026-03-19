@@ -1,0 +1,524 @@
+#!/usr/bin/env bash
+
+#- SECTION 00-header
+set -euo pipefail
+IFS=''
+
+if [ -z "$BASH_VERSION" ]; then
+    echo "FATAL: $0 requires bash to function properly!"
+    exit 1
+fi
+
+if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
+    echo "FATAL: $0 requires bash v4 or greater!"
+    exit 1
+fi
+
+shopt -s inherit_errexit
+set -o errtrace
+
+OPSHROOTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")"/.. &>/dev/null && pwd)
+
+_OPSH_VERSION="0.7.0"
+_OPSH_LIB_IMPORTED=()
+EXIT_FUNCS=()
+
+exit::trap() {
+    local i
+    for ((i = ${#EXIT_FUNCS[@]} - 1; i >= 0; i--)); do
+        eval "${EXIT_FUNCS[$i]}"
+    done
+}
+
+trap exit::trap EXIT
+
+exit::trigger() {
+    EXIT_FUNCS+=("$@")
+}
+
+TMPDIR=$(mktemp -d)
+export TMPDIR
+
+temp::cleanup() {
+    log::debug cleaning up "$TMPDIR"...
+    rm -rf "$TMPDIR"
+}
+
+exit::trigger temp::cleanup
+
+# shellcheck disable=SC2120 # these options are optional.
+temp::file() {
+    mktemp -p "$TMPDIR" "$@"
+}
+
+# shellcheck disable=SC2120 # these options are optional.
+temp::dir() {
+    mktemp -d -p "$TMPDIR" "$@"
+}
+
+CRED=''
+CGRN=''
+CYEL=''
+CBLU=''
+CNONE=''
+
+if [[ -t 1 ]]; then
+    CRED='\033[0;31m'
+    CGRN='\033[0;32m'
+    CYEL='\033[0;33m'
+    CBLU='\033[0;34m'
+    CNONE='\033[0m'
+fi
+
+log::output() {
+    local level
+    level="$1"
+    shift
+
+    printf "$level:\t%s\n" "$*" >&2
+}
+
+log::debug() {
+    [[ -v DEBUG ]] || return 0
+
+    log::output "${CBLU}DEBUG${CNONE}" "$@"
+}
+
+log::info() {
+    log::output "${CGRN}INFO${CNONE}" "$@"
+}
+
+log::warn() {
+    log::output "${CYEL}WARN${CNONE}" "$@"
+}
+
+log::error() {
+    log::output "${CRED}ERROR${CNONE}" "$@"
+}
+
+log::fatal() {
+    log::output "${CRED}FATAL${CNONE}" "$@"
+    exit 1
+}
+
+lib::import::is-imported() {
+    local libfile i
+    libfile=$1
+    shift
+
+    for i in "${_OPSH_LIB_IMPORTED[@]}"; do
+        if [[ $libfile == "$i" ]]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+lib::import() {
+    local libfile
+    for libname in "$@"; do
+        if lib::import::is-imported "$libname"; then
+            continue
+        fi
+
+        libfile="$OPSHROOTDIR/share/opsh/$libname.opsh"
+        [[ -f $libfile ]] || log::fatal "library '$libname' not found!"
+
+        # shellcheck disable=SC1090
+        source "$libfile"
+        _OPSH_LIB_IMPORTED+=("$libname")
+    done
+}
+
+array::join() {
+    local IFS=$1
+    shift
+    echo "$*"
+}
+
+array::split() {
+    local -n name=$1
+    shift
+    local IFS=$1
+    shift
+
+    # shellcheck disable=SC2034,SC2206
+    name=($@)
+}
+
+opsh::version() {
+    if [[ -v _OPSH_VERSION ]]; then
+        echo "$_OPSH_VERSION"
+        return 0
+    fi
+
+    lib::import git
+
+    git::repo::version
+}
+
+opsh::version::require() {
+    local minver=$1
+    shift
+
+    local thisver
+    thisver=$(opsh::version) || log::fatal "couldn't retrieve installed opsh version!"
+
+    lib::import semver
+
+    semver::test "$thisver" -ge "$minver" || log::fatal "opsh ($thisver) is older than required ($minver)!"
+}
+_OPSH_LIB_IMPORTED+=(cloud-init)
+_OPSH_LIB_IMPORTED+=(command)
+_OPSH_LIB_IMPORTED+=(git)
+_OPSH_LIB_IMPORTED+=(semver)
+_OPSH_LIB_IMPORTED+=(ssh)
+_OPSH_LIB_IMPORTED+=(step-runner)
+_OPSH_LIB_IMPORTED+=(test-harness)
+lib::import command
+
+cloud-init::is-enabled() {
+    command::exists cloud-init || return 1
+}
+
+cloud-init::wait-for-finish() {
+    local ret=0
+
+    cloud-init status --wait &>/dev/null || ret=$?
+
+    case "$ret" in
+    0 | 2)
+        return 0
+        ;;
+    *)
+        return "$ret"
+        ;;
+    esac
+}
+command::exists() {
+    local command=$1
+    shift
+
+    command -v "$command" &>/dev/null || return 1
+}
+git::repo::version() {
+    git describe --tags --dirty 2>/dev/null || git rev-parse --short HEAD
+}
+
+git::repo::current-branch() {
+    git rev-parse --abbrev-ref HEAD
+}
+
+git::repo::is-clean() {
+    [[ $(git status --porcelain | wc -c) -eq 0 ]] || return 1
+}
+
+git::tag::exists() {
+    local tag=$1
+    shift
+
+    [[ $(git tag -l "$tag") == "$tag" ]] || return 1
+}
+
+git::tag::lookup::remote() {
+    local remote tag tagfile tagcount
+    remote=$1
+    shift
+    tag=$1
+    shift
+
+    tagfile=$(temp::file)
+
+    git ls-remote --tags "$remote" "$tag" >"$tagfile"
+
+    tagcount=$(wc -l <"$tagfile")
+
+    if [[ $tagcount -lt 1 ]]; then
+        return 1
+    fi
+
+    if [[ $tagcount -gt 1 ]]; then
+        return 2
+    fi
+
+    awk '{ print $1;}' <"$tagfile"
+    rm "$tagfile"
+}
+_OPSH_SEMVER_NUM='0|[1-9][0-9]*'
+_OPSH_SEMVER_REGEX="^[vV]?($_OPSH_SEMVER_NUM)\\.($_OPSH_SEMVER_NUM)\\.($_OPSH_SEMVER_NUM)((\+|-).+)?\$"
+
+OPSH_SEMVER=()
+
+semver::parse() {
+    local ver=$1
+    shift
+
+    # shellcheck disable=SC2319
+    [[ "$ver" =~ $_OPSH_SEMVER_REGEX ]] || return "$?"
+
+    OPSH_SEMVER=("${BASH_REMATCH[@]:1:3}")
+
+    if [[ -n ${BASH_REMATCH[4]} ]]; then
+        OPSH_SEMVER+=("${BASH_REMATCH[4]}")
+    fi
+}
+
+# Note: This is a very naive version of a semver test.  It can be
+# extended in future to support a full set of expressions.
+
+semver::test() {
+    semver::parse "$1" || return 1
+    # shellcheck disable=SC2034
+    local left=("${OPSH_SEMVER[@]}")
+    shift
+
+    local op=$1
+    shift
+
+    semver::parse "$1" || return 1
+    # shellcheck disable=SC2034
+    local right=("${OPSH_SEMVER[@]}")
+    shift
+
+    [[ $# -eq 0 ]] || return 1
+
+    local gtret ltret eqret
+
+    case "$op" in
+    -eq)
+        gtret=1 ltret=1 eqret=0
+        ;;
+    -gt)
+        gtret=0 ltret=1 eqret=1
+        ;;
+    -lt)
+        gtret=1 ltret=0 eqret=1
+        ;;
+    -ge)
+        gtret=0 ltret=1 eqret=0
+        ;;
+    -le)
+        gtret=1 ltret=0 eqret=0
+        ;;
+    *)
+        log::fatal "unknown semver expression comparison operator '$op'!"
+        ;;
+    esac
+
+    for i in {0..2}; do
+        if [[ ${left[$i]} -gt ${right[$i]} ]]; then
+            return $gtret
+        fi
+        if [[ ${left[$i]} -lt ${right[$i]} ]]; then
+            return $ltret
+        fi
+    done
+
+    return $eqret
+
+}
+
+semver::bump() {
+    local -l pos=$1
+    shift
+
+    local ver=$1
+    shift
+
+    local prefix=""
+
+    if [[ "$ver" =~ ^([vV]) ]]; then
+        prefix="${BASH_REMATCH[0]}"
+    fi
+
+    semver::parse "$ver" || return 1
+
+    local idx
+
+    case "$pos" in
+    major)
+        idx=0
+        ;;
+    minor)
+        idx=1
+        ;;
+    patch)
+        idx=2
+        ;;
+    *)
+        return 1
+        ;;
+    esac
+
+    OPSH_SEMVER[idx]=$((OPSH_SEMVER[idx] + 1))
+
+    for ((idx = idx + 1; idx < 3; idx++)); do
+        OPSH_SEMVER[idx]=0
+    done
+
+    prefix="$prefix$(array::join . "${OPSH_SEMVER[@]:0:3}")"
+
+    if [[ ${#OPSH_SEMVER[@]} -eq 4 ]]; then
+        prefix="$prefix${OPSH_SEMVER[3]}"
+    fi
+
+    echo "$prefix"
+}
+export _OPSH_SSH_CONTEXT
+
+ssh::end() {
+    [[ -v _OPSH_SSH_CONTEXT ]] || return 0
+    eval "$(cat "$_OPSH_SSH_CONTEXT/env")"
+    eval "$(ssh-agent -k | grep -v echo)"
+    unset _OPSH_SSH_CONTEXT
+}
+
+ssh::begin() {
+    _OPSH_SSH_CONTEXT=$(temp::dir)
+    chmod 700 "$_OPSH_SSH_CONTEXT"
+
+    log::debug "launching local SSH agent..."
+    ssh-agent | grep -v echo >"$_OPSH_SSH_CONTEXT/env" 2>/dev/null
+    eval "$(cat "$_OPSH_SSH_CONTEXT/env")"
+
+    exit::trigger ssh::end
+}
+
+ssh::config() {
+    cat >>"$_OPSH_SSH_CONTEXT/config"
+}
+
+ssh::background::close() {
+    log::debug "closing SSH port forwarding..."
+
+    echo >&"${_OPSH_SSH_COPROC[1]}"
+    wait "$_OPSH_SSH_COPROC_PID"
+}
+
+ssh::background::run() {
+    local response
+    log::debug "launching port forwarding..."
+    coproc _OPSH_SSH_COPROC { ssh -F "$_OPSH_SSH_CONTEXT/config" "$@" "echo goliath online ; read"; }
+    read -r response <&"${_OPSH_SSH_COPROC[0]}"
+
+    [[ $response = "goliath online" ]] || log::fatal "failed to port forward"
+
+    exit::trigger ssh::background::close
+}
+
+ssh::key::add() {
+    local keyfile
+    keyfile=$(temp::file)
+    chmod 600 "$keyfile"
+
+    if [[ $# -gt 0 ]]; then
+        for i in "$@"; do
+            cat "$i" >"$keyfile"
+            ssh-add "$keyfile" 2>/dev/null
+        done
+    else
+        cat >"$keyfile"
+        ssh-add "$keyfile" 2>/dev/null
+
+    fi
+    rm "$keyfile"
+}
+# Run a series of functions, in order, starting with a prefix.
+steps::run() {
+    local prefix start name
+
+    prefix=$1
+    shift
+    start=""
+
+    if [[ $# -gt 0 ]]; then
+        start="${prefix}::$1"
+        shift
+        log::warn "starting steps with $start..."
+    fi
+
+    while read -r name; do
+        if [[ $name > $start || $name = "$start" ]]; then
+            log::info "running step $name..."
+            $name
+        fi
+    done < <(declare -F | grep "$prefix::" | awk '{ print $3; }')
+}
+# NOTE: This API is in flux.  It will probably change over time.
+
+_TESTING_REGISTERED_FUNCS=()
+_TESTING_REGISTERED_DESC=()
+
+testing::register() {
+    local func
+    func=$1
+    shift
+
+    _TESTING_REGISTERED_FUNCS+=("$func")
+
+    if [[ $# -gt 0 ]]; then
+        _TESTING_REGISTERED_DESC+=("$*")
+    else
+        _TESTING_REGISTERED_DESC+=("")
+    fi
+}
+
+testing::run() {
+    echo "TAP version 13"
+    echo "1..${#_TESTING_REGISTERED_FUNCS[@]}"
+
+    local res desc outfile n
+
+    outfile=$(temp::file)
+
+    n=1
+    for func in "${_TESTING_REGISTERED_FUNCS[@]}"; do
+        res=0
+        ("$func") >"$outfile" 2>&1 || res=$?
+
+        if [[ $res -ne 0 ]]; then
+            echo -n "not "
+        fi
+
+        desc="${_TESTING_REGISTERED_DESC[$((n - 1))]}"
+
+        if [[ -z $desc ]]; then
+            echo "ok $n"
+        else
+            echo "ok $n - $desc"
+        fi
+
+        if [[ -s $outfile ]]; then
+            sed 's:^:# :' <"$outfile"
+        fi
+
+        n=$((n + 1))
+    done
+}
+
+testing::fail() {
+    local msg=""
+
+    if [[ $# -gt 0 ]]; then
+        msg=": $*"
+    fi
+
+    log::fatal "${BASH_SOURCE[1]}:${BASH_LINENO[0]} inside ${FUNCNAME[1]}${msg}"
+}
+#- SECTION 20-command
+if [[ $# -lt 1 ]]; then
+    log::fatal "$0 requires a single argument of the script to run!"
+fi
+
+SCRIPTFILE="$1"
+shift
+[[ -f $SCRIPTFILE ]] || log::fatal "$0 can only run normal files that exist!"
+
+# shellcheck disable=SC2034
+SCRIPTDIR=$(dirname -- "$SCRIPTFILE")
+
+BASH_ARGV0=$SCRIPTFILE
+# shellcheck disable=SC1090
+source "$SCRIPTFILE"
+#- SECTION 30-end

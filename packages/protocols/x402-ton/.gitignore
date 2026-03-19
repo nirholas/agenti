@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Secrets
+*.pem
+*.key
+
+# Data (SQLite, runtime)
+data/
+
+# Coverage
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Misc
+*.tgz
+*.log
+
+# Obsidian
+.obsidian/
+
+# Unused lockfiles
+pnpm-lock.yaml
+pnpm-workspace.yaml

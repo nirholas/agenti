@@ -1,0 +1,688 @@
+---
+title: Building Block Operations
+description: Common patterns for working with actions, inputs, and outputs in Daydreams agents.
+---
+
+## Working with Building Blocks
+
+This guide covers the common patterns and best practices that apply to all building blocks - actions, inputs, and outputs. For specific details on each building block type, see [Actions](/docs/core/concepts/actions), [Inputs](/docs/core/concepts/inputs), and [Outputs](/docs/core/concepts/outputs).
+
+## The Complete Agent Flow
+
+Here's how actions, inputs, and outputs work together in a real agent:
+
+```typescript title="complete-agent-flow.ts"
+import { createDreams, context, action, input, output } from "@daydreamsai/core";
+import { openai } from "@ai-sdk/openai";
+import * as z from "zod";
+
+// 1. INPUT: Listen for Discord messages
+const discordInput = input({
+  type: "discord:message",
+  schema: z.object({
+    content: z.string(),
+    userId: z.string(),
+    channelId: z.string(),
+  }),
+  subscribe: (send, agent) => {
+    discord.on("messageCreate", (message) => {
+      send(
+        chatContext,
+        { userId: message.author.id },
+        {
+          content: message.content,
+          userId: message.author.id,
+          channelId: message.channel.id,
+        }
+      );
+    });
+    return () => discord.removeAllListeners("messageCreate");
+  },
+});
+
+// 2. ACTION: Get weather data
+const getWeather = action({
+  name: "get-weather",
+  description: "Gets current weather for a city",
+  schema: z.object({
+    city: z.string().describe("City name"),
+  }),
+  handler: async ({ city }) => {
+    const response = await fetch(`https://api.weather.com/${city}`);
+    const data = await response.json();
+    return { 
+      temperature: data.temp, 
+      condition: data.condition,
+      city 
+    };
+  },
+});
+
+// 3. OUTPUT: Send Discord response
+const discordOutput = output({
+  type: "discord:message",
+  description: "Sends a message to Discord",
+  schema: z.string(),
+  attributes: z.object({
+    channelId: z.string(),
+  }),
+  handler: async (message, ctx) => {
+    const { channelId } = ctx.outputRef.params;
+    await discord.send(channelId, message);
+    return { sent: true };
+  },
+});
+
+// 4. CONTEXT: Tie everything together
+const chatContext = context({
+  type: "chat",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ messages: [] }),
+});
+
+// 5. AGENT: Complete system
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  contexts: [chatContext],
+  inputs: [discordInput],
+  outputs: [discordOutput],
+  actions: [getWeather],
+});
+
+// Now when user types: "What's the weather in Boston?"
+// 1. INPUT detects Discord message → triggers agent
+// 2. Agent processes message and calls ACTION to get weather
+// 3. Agent uses OUTPUT to send weather info back to Discord
+// Complete conversation loop! 🎉
+```
+
+## Schema Validation Patterns
+
+All building blocks use [Zod](https://zod.dev) schemas for validation. Here are the essential patterns:
+
+### Basic Schema Patterns
+
+```typescript title="basic-schemas.ts"
+// Simple types
+schema: z.string(),                    // Any string
+schema: z.number(),                    // Any number
+schema: z.boolean(),                   // true/false
+
+// Objects with validation
+schema: z.object({
+  email: z.string().email(),           // Valid email format
+  age: z.number().min(0).max(150),     // Number between 0-150
+  name: z.string().min(1).max(100),    // String 1-100 chars
+}),
+
+// Arrays and optionals
+schema: z.array(z.string()),           // Array of strings
+schema: z.string().optional(),         // Optional string
+schema: z.string().default("hello"),   // String with default value
+
+// Enums for controlled values
+schema: z.enum(["small", "medium", "large"]),
+```
+
+### Advanced Validation
+
+```typescript title="advanced-schemas.ts"
+// Descriptions help LLMs understand what to provide
+schema: z.object({
+  city: z.string().describe("Name of the city to check weather for"),
+  units: z.enum(["celsius", "fahrenheit"]).describe("Temperature units"),
+  includeForecast: z.boolean().optional().default(false)
+    .describe("Whether to include 3-day forecast"),
+}),
+
+// Transformations and refinements
+schema: z.string().transform(s => s.toLowerCase()),
+schema: z.number().refine(n => n > 0, "Must be positive"),
+
+// Conditional schemas
+schema: z.discriminatedUnion("type", [
+  z.object({ type: z.literal("email"), address: z.string().email() }),
+  z.object({ type: z.literal("phone"), number: z.string() }),
+]),
+```
+
+### Schema Best Practices
+
+```typescript title="schema-best-practices.ts"
+// ✅ Good - specific constraints and descriptions
+const userSchema = z.object({
+  email: z.string().email().describe("User's email address"),
+  age: z.number().min(13).max(120).describe("Age in years"),
+  preferences: z.array(z.string()).max(10).describe("Up to 10 preferences"),
+});
+
+// ✅ Good - sensible defaults
+const configSchema = z.object({
+  timeout: z.number().min(1000).default(5000).describe("Timeout in milliseconds"),
+  retries: z.number().min(0).max(5).default(3).describe("Number of retries"),
+});
+
+// ❌ Bad - too loose, no validation
+const badSchema = z.object({
+  data: z.any(),  // Could be anything!
+  stuff: z.string(),  // No constraints or description
+});
+```
+
+## Context Memory Access
+
+All building blocks can access and modify context memory. Here are the common patterns:
+
+### Reading and Writing Memory
+
+```typescript title="memory-patterns.ts"
+// Memory interface for type safety
+interface ChatMemory {
+  messages: Array<{ role: string; content: string; timestamp: number }>;
+  userPreferences: Record<string, any>;
+  stats: { totalMessages: number; lastActive: number };
+}
+
+const chatAction = action({
+  name: "save-message",
+  schema: z.object({ message: z.string() }),
+  handler: async ({ message }, ctx) => {
+    // Access typed memory
+    const memory = ctx.memory as ChatMemory;
+    
+    // Initialize if needed
+    if (!memory.messages) {
+      memory.messages = [];
+    }
+    if (!memory.stats) {
+      memory.stats = { totalMessages: 0, lastActive: Date.now() };
+    }
+    
+    // Update memory
+    memory.messages.push({
+      role: "user",
+      content: message,
+      timestamp: Date.now(),
+    });
+    memory.stats.totalMessages++;
+    memory.stats.lastActive = Date.now();
+    
+    // Changes persist automatically when handler completes
+    return {
+      success: true,
+      totalMessages: memory.stats.totalMessages,
+    };
+  },
+});
+```
+
+### Memory Best Practices
+
+```typescript title="memory-best-practices.ts"
+// ✅ Good - safe memory access
+handler: async (data, ctx) => {
+  // Always check and initialize
+  if (!ctx.memory.items) {
+    ctx.memory.items = [];
+  }
+  
+  // Update with validation
+  if (data.item && typeof data.item === 'string') {
+    ctx.memory.items.push({
+      id: crypto.randomUUID(),
+      content: data.item,
+      createdAt: Date.now(),
+    });
+  }
+  
+  return { success: true, count: ctx.memory.items.length };
+},
+
+// ❌ Bad - unsafe memory access
+handler: async (data, ctx) => {
+  ctx.memory.items.push(data.item);  // Could crash if items is undefined
+  return { success: true };
+},
+```
+
+## Error Handling Patterns
+
+Consistent error handling across all building blocks:
+
+### Structured Error Responses
+
+```typescript title="error-handling.ts"
+// ✅ Good error handling pattern
+handler: async ({ userId }, ctx) => {
+  try {
+    const user = await database.getUser(userId);
+    
+    if (!user) {
+      return {
+        success: false,
+        error: "USER_NOT_FOUND",
+        message: `No user found with ID: ${userId}`,
+      };
+    }
+    
+    return {
+      success: true,
+      data: user,
+      message: "User retrieved successfully",
+    };
+    
+  } catch (error) {
+    // Log technical details for debugging
+    ctx.agent.logger.error("database-error", error.message, {
+      userId,
+      stack: error.stack,
+    });
+    
+    // Return user-friendly error
+    return {
+      success: false,
+      error: "DATABASE_ERROR",
+      message: "Unable to retrieve user information at this time",
+      retryable: true,
+    };
+  }
+},
+```
+
+### Error Categories
+
+```typescript title="error-categories.ts"
+// Define consistent error types
+const ErrorTypes = {
+  VALIDATION_ERROR: "VALIDATION_ERROR",
+  NOT_FOUND: "NOT_FOUND",
+  PERMISSION_DENIED: "PERMISSION_DENIED",
+  RATE_LIMITED: "RATE_LIMITED",
+  EXTERNAL_SERVICE_ERROR: "EXTERNAL_SERVICE_ERROR",
+  INTERNAL_ERROR: "INTERNAL_ERROR",
+} as const;
+
+// Use in handlers
+handler: async ({ apiKey, query }, ctx) => {
+  if (!apiKey) {
+    return {
+      success: false,
+      error: ErrorTypes.VALIDATION_ERROR,
+      message: "API key is required",
+    };
+  }
+  
+  try {
+    const response = await externalAPI.search(query, { apiKey });
+    
+    if (response.status === 401) {
+      return {
+        success: false,
+        error: ErrorTypes.PERMISSION_DENIED,
+        message: "Invalid API key",
+      };
+    }
+    
+    if (response.status === 429) {
+      return {
+        success: false,
+        error: ErrorTypes.RATE_LIMITED,
+        message: "API rate limit exceeded, please try again later",
+        retryAfter: 60,
+      };
+    }
+    
+    return {
+      success: true,
+      data: response.data,
+    };
+    
+  } catch (error) {
+    return {
+      success: false,
+      error: ErrorTypes.EXTERNAL_SERVICE_ERROR,
+      message: "External service is temporarily unavailable",
+      retryable: true,
+    };
+  }
+},
+```
+
+## Async Operations and External Services
+
+Best practices for handling asynchronous operations:
+
+### Proper Async Patterns
+
+```typescript title="async-patterns.ts"
+// ✅ Good - proper async/await usage
+handler: async ({ url, options }, ctx) => {
+  // Check for cancellation during long operations
+  if (ctx.abortSignal?.aborted) {
+    throw new Error("Operation cancelled");
+  }
+  
+  const response = await fetch(url, {
+    signal: ctx.abortSignal,  // Respect cancellation
+    timeout: 10000,           // Set reasonable timeout
+    ...options,
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  
+  return {
+    success: true,
+    data,
+    statusCode: response.status,
+  };
+},
+
+// ❌ Bad - fire-and-forget, no error handling
+handler: ({ url }) => {
+  fetch(url);  // Promise ignored!
+  return { status: "started" };  // Completes before fetch
+},
+```
+
+### Timeout and Cancellation
+
+```typescript title="timeout-cancellation.ts"
+handler: async ({ items }, ctx) => {
+  const results = [];
+  
+  for (let i = 0; i < items.length; i++) {
+    // Check for cancellation before each operation
+    if (ctx.abortSignal?.aborted) {
+      return {
+        success: false,
+        error: "CANCELLED",
+        message: "Operation was cancelled",
+        processedCount: i,
+      };
+    }
+    
+    try {
+      // Process with timeout
+      const result = await Promise.race([
+        processItem(items[i]),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Timeout")), 5000)
+        ),
+      ]);
+      
+      results.push(result);
+      
+    } catch (error) {
+      // Log and continue with other items
+      ctx.agent.logger.warn("item-processing-failed", {
+        itemIndex: i,
+        error: error.message,
+      });
+    }
+  }
+  
+  return {
+    success: true,
+    processedCount: results.length,
+    totalCount: items.length,
+    results,
+  };
+},
+```
+
+### External Service Integration
+
+```typescript title="external-service-integration.ts"
+// Weather API integration with full error handling
+const weatherAction = action({
+  name: "get-weather",
+  description: "Gets current weather for a location",
+  schema: z.object({
+    location: z.string().describe("City or address"),
+    units: z.enum(["metric", "imperial"]).optional().default("metric"),
+  }),
+  handler: async ({ location, units }, ctx) => {
+    const apiKey = process.env.WEATHER_API_KEY;
+    
+    if (!apiKey) {
+      return {
+        success: false,
+        error: "CONFIGURATION_ERROR",
+        message: "Weather service not configured",
+      };
+    }
+    
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${apiKey}&units=${units}`,
+        {
+          timeout: 10000,
+          signal: ctx.abortSignal,
+        }
+      );
+      
+      if (response.status === 404) {
+        return {
+          success: false,
+          error: "LOCATION_NOT_FOUND",
+          message: `Could not find weather data for "${location}"`,
+        };
+      }
+      
+      if (response.status === 401) {
+        return {
+          success: false,
+          error: "API_KEY_INVALID",
+          message: "Weather service authentication failed",
+        };
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Weather API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Update memory with request history
+      if (!ctx.memory.weatherRequests) {
+        ctx.memory.weatherRequests = [];
+      }
+      ctx.memory.weatherRequests.push({
+        location,
+        timestamp: Date.now(),
+        temperature: data.main.temp,
+      });
+      
+      return {
+        success: true,
+        location: data.name,
+        temperature: Math.round(data.main.temp),
+        condition: data.weather[0].description,
+        humidity: data.main.humidity,
+        units: units,
+        message: `Current weather in ${data.name}: ${Math.round(data.main.temp)}° ${units === 'metric' ? 'C' : 'F'}, ${data.weather[0].description}`,
+      };
+      
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        return {
+          success: false,
+          error: "CANCELLED",
+          message: "Weather request was cancelled",
+        };
+      }
+      
+      ctx.agent.logger.error("weather-api-error", error.message, {
+        location,
+        stack: error.stack,
+      });
+      
+      return {
+        success: false,
+        error: "WEATHER_SERVICE_ERROR",
+        message: "Unable to get weather information right now",
+        retryable: true,
+      };
+    }
+  },
+});
+```
+
+## Building Blocks Working Together
+
+The real power comes from combining all three building blocks:
+
+### Complete Workflow Example
+
+```typescript title="complete-workflow.ts"
+// E-commerce order processing workflow
+
+// 1. INPUT: Webhook from payment processor
+const paymentWebhook = input({
+  type: "payment:webhook",
+  schema: z.object({
+    orderId: z.string(),
+    status: z.enum(["paid", "failed", "refunded"]),
+    amount: z.number(),
+    customerId: z.string(),
+  }),
+  subscribe: (send, agent) => {
+    paymentProcessor.on("webhook", (data) => {
+      send(
+        orderContext,
+        { orderId: data.orderId },
+        {
+          orderId: data.orderId,
+          status: data.status,
+          amount: data.amount,
+          customerId: data.customerId,
+        }
+      );
+    });
+    return () => paymentProcessor.removeAllListeners("webhook");
+  },
+});
+
+// 2. ACTION: Process order based on payment status
+const processOrder = action({
+  name: "process-order",
+  description: "Processes order after payment",
+  schema: z.object({
+    orderId: z.string(),
+    status: z.string(),
+  }),
+  handler: async ({ orderId, status }, ctx) => {
+    // Update order memory
+    if (!ctx.memory.orders) {
+      ctx.memory.orders = {};
+    }
+    
+    ctx.memory.orders[orderId] = {
+      status,
+      processedAt: Date.now(),
+    };
+    
+    if (status === "paid") {
+      // Fulfill order
+      await fulfillmentService.createShipment(orderId);
+      
+      return {
+        success: true,
+        action: "shipped",
+        message: `Order ${orderId} has been shipped`,
+      };
+    } else if (status === "failed") {
+      return {
+        success: true,
+        action: "cancelled",
+        message: `Order ${orderId} has been cancelled due to payment failure`,
+      };
+    }
+    
+    return { success: true, action: "unknown", message: "Order status updated" };
+  },
+});
+
+// 3. OUTPUT: Send notifications to customer and admin
+const emailNotification = output({
+  type: "email:notification",
+  description: "Sends order status email",
+  schema: z.string(),
+  attributes: z.object({
+    to: z.string(),
+    subject: z.string(),
+    type: z.enum(["customer", "admin"]),
+  }),
+  handler: async (body, ctx) => {
+    const { to, subject, type } = ctx.outputRef.params;
+    
+    await emailService.send({
+      to,
+      subject,
+      body,
+      template: type === "customer" ? "customer-order" : "admin-notification",
+    });
+    
+    // Track notifications in memory
+    if (!ctx.memory.notifications) {
+      ctx.memory.notifications = [];
+    }
+    ctx.memory.notifications.push({
+      to,
+      subject,
+      type,
+      sentAt: Date.now(),
+    });
+    
+    return {
+      sent: true,
+      recipient: to,
+      type,
+    };
+  },
+});
+
+// Context ties it all together
+const orderContext = context({
+  type: "order",
+  schema: z.object({ orderId: z.string() }),
+  create: () => ({
+    orders: {},
+    notifications: [],
+    createdAt: Date.now(),
+  }),
+}).setActions([processOrder]);
+
+// Complete agent
+const ecommerceAgent = createDreams({
+  model: openai("gpt-4o"),
+  contexts: [orderContext],
+  inputs: [paymentWebhook],
+  outputs: [emailNotification],
+  
+  instructions: `You process e-commerce orders. When you receive a payment webhook:
+    1. Use processOrder action to update order status
+    2. Send customer notification email
+    3. Send admin notification email
+    Be clear and professional in all communications.`,
+});
+
+// Now the complete flow works automatically:
+// Payment webhook → Process order → Send notifications
+```
+
+## Key Takeaways
+
+- **Building blocks work together** - Design them as a unified system, not isolated pieces
+- **Consistent error handling** - Use structured responses across all handlers
+- **Schema validation** - Always validate inputs with descriptive Zod schemas  
+- **Memory safety** - Check and initialize memory before accessing
+- **Async best practices** - Use proper async/await, handle cancellation and timeouts
+- **External service integration** - Handle failures gracefully with retries and fallbacks
+- **Logging and observability** - Log errors and key events for debugging
+
+The power of Daydreams comes from how seamlessly these building blocks integrate to create sophisticated, stateful agent behaviors.

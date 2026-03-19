@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402 Payment Gateway</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0f;
+      color: #f0f0f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .card {
+      max-width: 480px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 100px;
+      font-size: 12px;
+      color: #00d4ff;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #9d9daa;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .links {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    a {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .primary { background: #f0f0f5; color: #0a0a0f; }
+    .primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .ghost { color: #9d9daa; border: 1px solid rgba(255,255,255,0.08); }
+    .ghost:hover { color: #f0f0f5; background: rgba(255,255,255,0.04); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">x402 Protocol</div>
+    <h1>Payment Gateway</h1>
+    <p>
+      Pay-per-request API access with USDC micropayments.
+      No API keys. No subscriptions. Just HTTP.
+    </p>
+    <div class="links">
+      <a href="/accepted" class="primary">API Discovery</a>
+      <a href="/health" class="ghost">Health Check</a>
+    </div>
+  </div>
+</body>
+</html>

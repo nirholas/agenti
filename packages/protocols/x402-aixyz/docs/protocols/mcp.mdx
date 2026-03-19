@@ -1,0 +1,87 @@
+---
+title: "MCP Protocol"
+description: "Model Context Protocol support for sharing tools with MCP clients"
+---
+
+## Overview
+
+The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) allows AI clients to discover and invoke tools exposed by your agent. aixyz implements MCP via the `MCPPlugin`, serving tools at `/mcp` over a stateless `WebStandardStreamableHTTPServerTransport`.
+
+## Endpoints
+
+| Endpoint | Method | Description                                                        |
+| -------- | ------ | ------------------------------------------------------------------ |
+| `/mcp`   | POST   | JSON-RPC requests using `WebStandardStreamableHTTPServerTransport` |
+| `/mcp`   | GET    | SSE stream for server-initiated messages                           |
+| `/mcp`   | DELETE | Session termination (stateless, returns 200)                       |
+
+## Compatible Clients
+
+Any MCP-compatible client can connect to your agent's `/mcp` endpoint:
+
+- **Claude Desktop**
+- **VS Code** (GitHub Copilot)
+- **Cursor**
+- Other MCP-enabled tools
+
+Point the client at your agent's MCP URL:
+
+```
+http://localhost:3000/mcp
+```
+
+## Automatic Registration
+
+When using the standard `app/` directory structure, all tools in `app/tools/*.ts` are automatically registered as MCP tools during the build. No additional configuration is needed.
+
+<Note>Files starting with `_` (e.g., `app/tools/_helpers.ts`) are excluded from tool registration.</Note>
+
+## Manual Setup
+
+If you're using a custom server, wire up MCP manually with the `MCPPlugin`:
+
+```typescript title="app/server.ts"
+import { MCPPlugin } from "aixyz/app/plugins/mcp";
+import * as lookup from "./tools/lookup";
+
+// Register tools and mount the /mcp endpoint
+await server.withPlugin(
+  new MCPPlugin([
+    {
+      name: "lookup",
+      exports: {
+        default: lookup.default,
+        accepts: { scheme: "exact", price: "$0.001" },
+      },
+    },
+  ]),
+);
+```
+
+## Payment-Gated Tools
+
+Tools with `accepts.scheme === "exact"` require [x402 payment](/protocols/x402) via `@x402/mcp`. The payment wrapper is applied automatically when you provide an `accepts` configuration during registration.
+
+```typescript
+// This tool requires $0.001 per invocation
+await server.withPlugin(
+  new MCPPlugin([
+    {
+      name: "premiumSearch",
+      exports: {
+        default: searchTool,
+        accepts: { scheme: "exact", price: "$0.001" },
+      },
+    },
+  ]),
+);
+```
+
+<CardGroup cols={2}>
+  <Card title="Tools" icon="folder-tree" href="/api-reference/tools">
+    How tools are defined in the app/ directory.
+  </Card>
+  <Card title="A2A Protocol" icon="diagram-project" href="/protocols/a2a">
+    Agent discovery and communication via A2A.
+  </Card>
+</CardGroup>

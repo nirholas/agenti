@@ -1,0 +1,79 @@
+<PageHeader title="Network Utilities" description="Helper functions for working with network identifiers." />
+
+## Functions
+
+### getNetwork()
+
+Get network info by v1 or v2 identifier.
+
+```typescript
+import { getNetwork } from '@openfacilitator/sdk';
+
+const base = getNetwork('base');
+// { v1Id: 'base', v2Id: 'eip155:8453', name: 'Base', type: 'evm', chainId: 8453, testnet: false }
+
+const solana = getNetwork('solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp');
+// { v1Id: 'solana', v2Id: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', name: 'Solana', type: 'solana', testnet: false }
+```
+
+### toV2NetworkId()
+
+Convert a v1 network ID to v2 (CAIP-2).
+
+```typescript
+import { toV2NetworkId } from '@openfacilitator/sdk';
+
+toV2NetworkId('base');      // 'eip155:8453'
+toV2NetworkId('solana');    // 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'
+```
+
+### toV1NetworkId()
+
+Convert a v2 network ID to v1.
+
+```typescript
+import { toV1NetworkId } from '@openfacilitator/sdk';
+
+toV1NetworkId('eip155:8453');  // 'base'
+toV1NetworkId('eip155:137');   // 'polygon'
+```
+
+### getNetworkType()
+
+Get the network type (evm or solana) from an identifier.
+
+```typescript
+import { getNetworkType } from '@openfacilitator/sdk';
+
+getNetworkType('base');           // 'evm'
+getNetworkType('eip155:8453');    // 'evm'
+getNetworkType('solana');         // 'solana'
+```
+
+### isValidNetwork()
+
+Check if a network ID is valid/supported.
+
+```typescript
+import { isValidNetwork } from '@openfacilitator/sdk';
+
+isValidNetwork('base');       // true
+isValidNetwork('ethereum');   // false
+```
+
+## Constants
+
+### NETWORKS
+
+Array of all supported networks.
+
+```typescript
+import { NETWORKS } from '@openfacilitator/sdk';
+
+// Filter mainnets
+const mainnets = NETWORKS.filter(n => !n.testnet);
+
+// Filter by type
+const evmNetworks = NETWORKS.filter(n => n.type === 'evm');
+const solanaNetworks = NETWORKS.filter(n => n.type === 'solana');
+```

@@ -1,0 +1,25 @@
+{
+  "name": "sendvia",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@crossmint/wallets-sdk": "0.16.0",
+    "@types/node": "^24.5.0",
+    "@types/react": "^19.1.13",
+    "axios": "^1.7.9",
+    "dotenv": "^17.2.2",
+    "next": "15.5.9",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.9.2",
+    "viem": "^2.38.0",
+    "x402": "^0.6.6",
+    "x402-axios": "^0.6.6"
+  }
+}

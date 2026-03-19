@@ -1,0 +1,126 @@
+---
+title: Model Context Protocol (MCP)
+description:
+  Connect your agent to any MCP server for expanded capabilities and context.
+---
+
+## What is MCP?
+
+[**Model Context Protocol (MCP)**](https://modelcontextprotocol.io) is an open
+standard that enables AI applications to securely access external data sources,
+tools, and services. Instead of building custom integrations for every service,
+MCP provides a universal interface.
+
+Your Daydreams agent becomes an **MCP client** that can connect to any MCP
+server and use its capabilities as if they were native actions.
+
+## Adding MCP to Your Agent
+
+MCP integration happens through the extension system - just add servers and
+start using their tools:
+
+```typescript title="mcp-setup.ts"
+import { createDreams } from "@daydreamsai/core";
+import { createMcpExtension } from "@daydreamsai/mcp";
+
+const agent = createDreams({
+  extensions: [
+    createMcpExtension([
+      {
+        id: "sqlite",
+        name: "Database Access",
+        transport: {
+          type: "stdio",
+          command: "npx",
+          args: ["@modelcontextprotocol/server-sqlite", "./data.db"],
+        },
+      },
+      {
+        id: "filesystem",
+        name: "File Access",
+        transport: {
+          type: "stdio",
+          command: "npx",
+          args: ["@modelcontextprotocol/server-filesystem", "./docs"],
+        },
+      },
+    ]),
+  ],
+});
+```
+
+## Available Actions
+
+The MCP extension adds these actions:
+
+- **`mcp.listServers`** - Show connected MCP servers
+- **`mcp.listTools`** - List tools available on a server
+- **`mcp.callTool`** - Execute a server's tool
+- **`mcp.listResources`** - List server resources (files, data, etc.)
+- **`mcp.readResource`** - Read a specific resource
+- **`mcp.listPrompts`** - List server-defined prompts
+- **`mcp.getPrompt`** - Get a prompt with arguments
+
+## Transport Types
+
+### Local Servers (stdio)
+
+Most MCP servers run as local processes:
+
+```typescript
+{
+  id: "server-name",
+  transport: {
+    type: "stdio",
+    command: "node",
+    args: ["server.js", "--option", "value"]
+  }
+}
+```
+
+### Remote Servers (SSE)
+
+For HTTP-based MCP servers:
+
+```typescript
+{
+  id: "remote-api",
+  transport: {
+    type: "sse",
+    serverUrl: "https://mcp-server.example.com"
+  }
+}
+```
+
+## Popular MCP Servers
+
+The MCP ecosystem includes servers for common use cases:
+
+- **[@modelcontextprotocol/server-filesystem](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)** -
+  File system access
+- **[@modelcontextprotocol/server-sqlite](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite)** -
+  SQLite database access
+- **[firecrawl-mcp](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch)** -
+  Web scraping
+- **[blender-mcp](https://github.com/modelcontextprotocol/servers)** - 3D
+  rendering
+
+[Browse all available servers →](https://github.com/modelcontextprotocol/servers)
+
+## Next Steps
+
+- **[MCP Tutorial](/docs/tutorials/mcp/mcp-guide)** - Step-by-step setup guide
+- **[Multiple MCP Servers](/docs/tutorials/mcp/multi-server)** - Connect to
+  multiple servers
+- **[Extensions](/docs/core/concepts/extensions)** - Learn about the extension
+  system
+
+## Key Benefits
+
+✅ **Universal interface** - Same API for all external tools  
+✅ **No custom integrations** - Use existing MCP servers  
+✅ **Secure by default** - Controlled access to external resources  
+✅ **Scalable** - Connect to multiple servers simultaneously
+
+MCP transforms your agent from isolated code into a connected system with access
+to the entire MCP ecosystem.

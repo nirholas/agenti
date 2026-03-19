@@ -1,0 +1,23 @@
+/* The style for the floating tooltip */
+#machinepal-payment-tooltip {
+    position: fixed;
+    display: none; /* Hidden by default */
+    background-color: #2775CA; /* USDC Blue-ish color */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 2147483647; /* Max z-index to ensure it stays on top */
+    pointer-events: none; /* Crucial: allows clicks to pass through the tooltip to the link */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Style for when the link is clicked */
+#machinepal-payment-tooltip.paid-status {
+    background-color: #2ecc71; /* Success Green */
+}

@@ -1,0 +1,75 @@
+{
+  "name": "x402ton",
+  "version": "2.0.0",
+  "description": "x402 payment mechanism for TON blockchain — HTTP 402 payments with native TON and USDT jetton",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE", "CHANGELOG.md"],
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TONresistor/x402-ton.git",
+    "directory": "packages/ton"
+  },
+  "bugs": {
+    "url": "https://github.com/TONresistor/x402-ton/issues"
+  },
+  "homepage": "https://github.com/TONresistor/x402-ton#readme",
+  "keywords": [
+    "x402",
+    "ton",
+    "blockchain",
+    "payment",
+    "http-402",
+    "usdt",
+    "jetton",
+    "facilitator",
+    "ai-agent"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:integration": "TESTNET=true vitest run -c vitest.integration.config.ts",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "prepublishOnly": "npm run test && npm run build"
+  },
+  "peerDependencies": {
+    "@ton/core": ">=0.59.0",
+    "@ton/crypto": ">=3.3.0",
+    "@ton/ton": ">=15.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@ton/core": { "optional": false },
+    "@ton/crypto": { "optional": false },
+    "@ton/ton": { "optional": false }
+  },
+  "devDependencies": {
+    "@ton/core": "^0.60.0",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -1,0 +1,116 @@
+import { Callout } from '@/components/docs/Callout';
+
+<PageHeader title="DNS Setup Guide" description="Configure DNS to point your custom domain to your OpenFacilitator instance." />
+
+## Overview
+
+You need to add a CNAME record to your domain's DNS settings.
+
+| Type | Name | Value |
+| ---- | ---- | ----- |
+| CNAME | `pay` (or your subdomain) | `api.openfacilitator.io` |
+
+This will make `pay.yourdomain.com` point to your facilitator.
+
+<Callout type="info">
+DNS changes can take up to 48 hours to propagate worldwide, though most propagate within a few minutes.
+</Callout>
+
+## Step-by-Step Guides
+
+### Cloudflare
+
+1. Log in to your [Cloudflare dashboard](https://dash.cloudflare.com)
+2. Select your domain
+3. Go to **DNS** → **Records**
+4. Click **Add record**
+5. Fill in:
+   - Type: `CNAME`
+   - Name: `pay` (or your chosen subdomain)
+   - Target: `api.openfacilitator.io`
+   - Proxy status: **DNS only** (gray cloud)
+6. Click **Save**
+
+<Callout type="warning">
+Make sure to disable Cloudflare proxy (orange cloud) for the CNAME record. Use "DNS only" (gray cloud).
+</Callout>
+
+### Namecheap
+
+1. Log in to [Namecheap](https://www.namecheap.com)
+2. Go to **Domain List** → **Manage** on your domain
+3. Click **Advanced DNS**
+4. Click **Add New Record**
+5. Fill in:
+   - Type: `CNAME`
+   - Host: `pay`
+   - Value: `api.openfacilitator.io`
+   - TTL: Automatic
+6. Click the checkmark to save
+
+### GoDaddy
+
+1. Log in to [GoDaddy](https://www.godaddy.com)
+2. Go to **My Products** → **DNS** on your domain
+3. Click **Add** in the Records section
+4. Fill in:
+   - Type: `CNAME`
+   - Name: `pay`
+   - Value: `api.openfacilitator.io`
+   - TTL: Default
+5. Click **Save**
+
+### Google Domains / Squarespace
+
+1. Go to [Google Domains](https://domains.google.com) or Squarespace Domains
+2. Select your domain
+3. Go to **DNS** → **Custom records**
+4. Click **Manage custom records**
+5. Fill in:
+   - Host name: `pay`
+   - Type: `CNAME`
+   - Data: `api.openfacilitator.io`
+6. Click **Save**
+
+## Verifying DNS
+
+After adding the record, you can verify it's working:
+
+### Using dig (Mac/Linux)
+
+```bash
+dig pay.yourdomain.com CNAME
+```
+
+Look for `api.openfacilitator.io` in the answer section.
+
+### Using nslookup (Windows)
+
+```bash
+nslookup -type=CNAME pay.yourdomain.com
+```
+
+### Online Tools
+
+- [DNS Checker](https://dnschecker.org)
+- [MX Toolbox](https://mxtoolbox.com/DNSLookup.aspx)
+
+## Troubleshooting
+
+### DNS not propagating
+
+- Wait up to 48 hours
+- Try clearing your local DNS cache:
+  - Mac: `sudo dscacheutil -flushcache`
+  - Windows: `ipconfig /flushdns`
+
+### SSL certificate errors
+
+SSL certificates are automatically provisioned once DNS is verified. This usually takes a few minutes after DNS propagation.
+
+### Wrong IP / Not working
+
+Make sure:
+- The CNAME record points to `api.openfacilitator.io` (not an IP address)
+- Cloudflare proxy is disabled (if using Cloudflare)
+- There are no conflicting A records for the same subdomain

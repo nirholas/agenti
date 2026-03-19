@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libxtst-dev libpng-dev libxinerama-dev libxkbcommon-dev
+
+      - name: Install dependencies
+        env:
+          HUSKY: 0
+        run: bun install --no-scripts
+
+      - name: Build core
+        run: bun run build:packages
+
+      - name: Run tests
+        run: bun test

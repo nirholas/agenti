@@ -1,0 +1,33 @@
+name: "Environment setup"
+description: "Install tools (Java, Maven and Just)"
+
+inputs:
+  central-username: { required: false, description: "Central username" }
+  central-token: { required: false, description: "Central token" }
+  gpg-private-key: { required: false, description: "GPG private key" }
+  gpg-passphrase: { required: false, description: "GPG passphrase" }
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Just Setup
+      uses: taiki-e/install-action@just
+
+    - name: Java Setup
+      uses: actions/setup-java@v4.7.1
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        server-id: central
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
+        gpg-private-key: ${{ inputs.gpg-private-key }}
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+    - name: Set environment variables
+      shell: bash
+      run: |
+        echo "MAVEN_USERNAME=${{ inputs.central-username }}" >> $GITHUB_ENV
+        echo "MAVEN_PASSWORD=${{ inputs.central-token }}" >> $GITHUB_ENV
+        echo "MAVEN_GPG_PASSPHRASE=${{ inputs.gpg-passphrase }}" >> $GITHUB_ENV

@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Type of release (prerelease, prepatch, patch, minor, preminor, major)"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - prerelease
+          - prepatch
+          - patch
+          - minor
+          - preminor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Install Protobuf Compiler
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
+      - name: Install dependencies
+        env:
+          HUSKY: 0
+        run: bun install --no-scripts
+
+      - name: Ensure prepublishOnly hooks
+        run: |
+          chmod +x scripts/add-prepublish-hook.sh
+          ./scripts/add-prepublish-hook.sh
+
+      - name: Build packages
+        run: bun run build:packages
+
+      - name: Run tests
+        run: bun test || echo "No tests configured"
+
+      - name: Version packages with Lerna
+        id: version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Version packages with lerna (without publishing)
+          bunx lerna version ${{ github.event.inputs.release_type }} --conventional-commits --yes --no-private --force-publish --ignore-scripts --no-push
+
+          # Get the new version tag
+          echo "TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Publish packages with bun
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Find all packages and publish them using bun
+          for package in packages/*; do
+            if [ -d "$package" ] && [ -f "$package/package.json" ]; then
+              # Check if package is private
+              IS_PRIVATE=$(cat "$package/package.json" | jq -r '.private // false')
+              
+              if [ "$IS_PRIVATE" != "true" ]; then
+                echo "Publishing $(basename $package)..."
+                (cd "$package" && bun publish --no-git-checks --access public)
+              else
+                echo "Skipping private package: $(basename $package)"
+              fi
+            fi
+          done
+
+      - name: Push tags and commits
+        run: |
+          git push --follow-tags
+
+      - name: Generate Release Notes
+        id: release_notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: commits } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before || 'HEAD~1',
+              head: 'HEAD'
+            });
+
+            const releaseNotes = commits.commits
+              .map(commit => `- ${commit.commit.message.split('\n')[0]}`)
+              .join('\n');
+
+            return releaseNotes;
+
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        env:
+          TAG: ${{ steps.version.outputs.TAG }}
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '';
+
+            // Try to read CHANGELOG.md
+            try {
+              if (fs.existsSync('CHANGELOG.md')) {
+                body = fs.readFileSync('CHANGELOG.md', 'utf8');
+              }
+            } catch (e) {
+              body = ${{ steps.release_notes.outputs.result }} || 'No changelog provided for this release.';
+            }
+
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: process.env.TAG,
+              name: `Release ${process.env.TAG}`,
+              body: body,
+              draft: false,
+              prerelease: ${{ contains(github.event.inputs.release_type, 'pre') }}
+            });

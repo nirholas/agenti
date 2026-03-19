@@ -1,0 +1,148 @@
+//! `OpenAI` client configuration.
+
+use crate::error::{LlmError, Result};
+
+/// Configuration for the `OpenAI` client.
+#[derive(Debug, Clone)]
+pub struct OpenAIConfig {
+    /// API key for authentication.
+    pub api_key: String,
+    /// Base URL for the API (defaults to `OpenAI`'s API).
+    pub base_url: String,
+    /// Default model to use.
+    pub model: String,
+    /// Optional organization ID.
+    pub organization: Option<String>,
+    /// Request timeout in seconds.
+    pub timeout_secs: Option<u64>,
+}
+
+impl OpenAIConfig {
+    /// Default `OpenAI` API base URL.
+    pub const DEFAULT_BASE_URL: &'static str = "https://api.openai.com/v1";
+    /// Default model.
+    pub const DEFAULT_MODEL: &'static str = "gpt-4o";
+    /// Default x402 payment-gated LLM gateway URL.
+    pub const X402_BASE_URL: &'static str = "https://llm.qntx.fun/v1";
+    /// Default model for x402 gateway.
+    pub const X402_DEFAULT_MODEL: &'static str = "openai/gpt-4o-mini";
+
+    /// Creates a new configuration with the given API key.
+    #[must_use]
+    pub fn new(api_key: impl Into<String>) -> Self {
+        Self {
+            api_key: api_key.into(),
+            base_url: Self::DEFAULT_BASE_URL.to_owned(),
+            model: Self::DEFAULT_MODEL.to_owned(),
+            organization: None,
+            timeout_secs: Some(120),
+        }
+    }
+
+    /// Creates configuration from environment variables.
+    ///
+    /// Reads from:
+    /// - `OPENAI_API_KEY` - Required API key
+    /// - `OPENAI_BASE_URL` - Optional base URL
+    /// - `OPENAI_MODEL` - Optional default model
+    /// - `OPENAI_ORGANIZATION` - Optional organization ID
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the `OPENAI_API_KEY` environment variable is not set.
+    pub fn from_env() -> Result<Self> {
+        let api_key = std::env::var("OPENAI_API_KEY")
+            .map_err(|_| LlmError::auth("openai", "OPENAI_API_KEY environment variable not set"))?;
+
+        let base_url =
+            std::env::var("OPENAI_BASE_URL").unwrap_or_else(|_| Self::DEFAULT_BASE_URL.to_owned());
+
+        let model =
+            std::env::var("OPENAI_MODEL").unwrap_or_else(|_| Self::DEFAULT_MODEL.to_owned());
+
+        let organization = std::env::var("OPENAI_ORGANIZATION").ok();
+
+        Ok(Self {
+            api_key,
+            base_url,
+            model,
+            organization,
+            timeout_secs: Some(120),
+        })
+    }
+
+    /// Sets the base URL.
+    #[must_use]
+    pub fn base_url(mut self, url: impl Into<String>) -> Self {
+        self.base_url = url.into();
+        self
+    }
+
+    /// Sets the default model.
+    #[must_use]
+    pub fn model(mut self, model: impl Into<String>) -> Self {
+        self.model = model.into();
+        self
+    }
+
+    /// Sets the organization ID.
+    #[must_use]
+    pub fn organization(mut self, org: impl Into<String>) -> Self {
+        self.organization = Some(org.into());
+        self
+    }
+
+    /// Sets the request timeout.
+    #[must_use]
+    pub const fn timeout(mut self, secs: u64) -> Self {
+        self.timeout_secs = Some(secs);
+        self
+    }
+
+    /// Creates config for Azure `OpenAI`.
+    #[must_use]
+    pub fn azure(endpoint: impl Into<String>, api_key: impl Into<String>) -> Self {
+        Self {
+            api_key: api_key.into(),
+            base_url: endpoint.into(),
+            model: "gpt-4o".to_owned(),
+            organization: None,
+            timeout_secs: Some(120),
+        }
+    }
+
+    /// Creates config for x402 payment-gated LLM gateway.
+    ///
+    /// Defaults:
+    /// - `base_url`: `https://llm.qntx.fun/v1`
+    /// - `api_key`: `"x402"` (payment replaces authentication)
+    /// - `model`: `openai/gpt-4o-mini`
+    /// - `timeout`: 600 s (long timeout for payment + inference)
+    #[must_use]
+    pub fn x402() -> Self {
+        Self {
+            api_key: "x402".to_owned(),
+            base_url: Self::X402_BASE_URL.to_owned(),
+            model: Self::X402_DEFAULT_MODEL.to_owned(),
+            organization: None,
+            timeout_secs: Some(600),
+        }
+    }
+}
+
+/// # Note
+///
+/// The default configuration has an **empty API key** and is not usable
+/// without calling [`OpenAIConfig::new`] or setting the key manually.
+/// Prefer [`OpenAIConfig::new`] or [`OpenAIConfig::from_env`] for production use.
+impl Default for OpenAIConfig {
+    fn default() -> Self {
+        Self {
+            api_key: String::new(),
+            base_url: Self::DEFAULT_BASE_URL.to_owned(),
+            model: Self::DEFAULT_MODEL.to_owned(),
+            organization: None,
+            timeout_secs: Some(120),
+        }
+    }
+}

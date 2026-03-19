@@ -1,0 +1,10 @@
+version: 1
+
+hooks:
+  post_iteration:
+    - command: "golangci-lint run ./..."
+      timeout: 120
+      pipe_output: true
+    - command: "go vet ./..."
+      timeout: 5
+      pipe_output: true

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # HTTP Bridge - REST API for the facilitator
+  http-bridge:
+    build:
+      context: ./http-bridge
+      dockerfile: Dockerfile
+    ports:
+      - "8402:8402"
+    environment:
+      - PORT=8402
+      - CRE_MODE=simulate
+      - LOG_LEVEL=info
+      - NODE_ENV=development
+    volumes:
+      - ./http-bridge:/app
+      - /app/node_modules
+    command: bun run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8402/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # TypeScript Demo
+  ts-demo:
+    build:
+      context: ./examples/ts-demo
+      dockerfile: Dockerfile
+    environment:
+      - X402_FACILITATOR_URL=http://http-bridge:8402
+    volumes:
+      - ./examples/ts-demo:/app
+      - /app/node_modules
+    depends_on:
+      http-bridge:
+        condition: service_healthy
+    command: bun run dev
+    profiles:
+      - demo
+
+  # Python Demo
+  py-demo:
+    build:
+      context: ./examples/py-demo
+      dockerfile: Dockerfile
+    environment:
+      - X402_FACILITATOR_URL=http://http-bridge:8402
+    volumes:
+      - ./examples/py-demo:/app
+    depends_on:
+      http-bridge:
+        condition: service_healthy
+    command: python demo.py
+    profiles:
+      - demo
+

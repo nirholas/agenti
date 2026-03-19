@@ -1,0 +1,807 @@
+---
+title: Contexts
+description: Managing state, memory, and behavior for agent interactions.
+---
+
+## What is a Context?
+
+A context is like a **separate workspace** for your agent. Think of it like
+having different tabs open in your browser - each tab has its own state and
+remembers different things.
+
+## Context Patterns
+
+Daydreams supports three main patterns for organizing your agent's behavior:
+
+### 1. Single Context - Simple & Focused
+
+Perfect for simple agents with one clear purpose:
+
+```typescript title="single-context.ts"
+import { context } from "@daydreamsai/core";
+import * as z from "zod";
+
+const chatBot = context({
+  type: "chat",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ messages: [] }),
+  instructions: "You are a helpful assistant.",
+});
+
+// Simple and focused - handles one thing well
+```
+
+### 2. Multiple Contexts - Separate Workspaces  
+
+When you need completely separate functionality:
+
+```typescript title="multiple-contexts.ts"
+// Chat context for conversations
+const chatContext = context({
+  type: "chat",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ messages: [], preferences: {} }),
+});
+
+// Game context for game sessions
+const gameContext = context({
+  type: "game", 
+  schema: z.object({ gameId: z.string() }),
+  create: () => ({ health: 100, level: 1, inventory: [] }),
+});
+
+// Todo context for task management
+const todoContext = context({
+  type: "todo",
+  schema: z.object({ listId: z.string() }),
+  create: () => ({ tasks: [] }),
+});
+
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  contexts: [chatContext, gameContext, todoContext],
+});
+
+// Each context is completely isolated with separate memory
+```
+
+### 3. 🌟 Composed Contexts - The Power Pattern
+
+**This is where Daydreams shines** - contexts that work together using `.use()`:
+
+```typescript title="composed-contexts.ts"
+import { context, action } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Analytics tracks user behavior
+const analyticsContext = context({
+  type: "analytics",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ events: [], totalSessions: 0 }),
+}).setActions([
+  action({
+    name: "trackEvent",
+    description: "Track user interaction",
+    schema: z.object({ event: z.string(), data: z.any() }),
+    handler: async ({ event, data }, ctx) => {
+      ctx.memory.events.push({ event, data, timestamp: Date.now() });
+      return { tracked: true };
+    },
+  }),
+]);
+
+// Profile stores user preferences
+const profileContext = context({
+  type: "profile",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ name: "", tier: "free", preferences: {} }),
+});
+
+// Premium features context  
+const premiumContext = context({
+  type: "premium",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ advancedFeatures: true }),
+}).setActions([
+  action({
+    name: "generateAdvancedReport",
+    description: "Create detailed analytics report",
+    schema: z.object({ dateRange: z.string() }),
+    handler: async ({ dateRange }, ctx) => {
+      return { report: "Advanced analytics for " + dateRange };
+    },
+  }),
+]);
+
+// Smart chat context that composes all the above
+const smartChatContext = context({
+  type: "chat",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ messages: [] }),
+})
+  .use((state) => [
+    // Always include analytics for every user
+    { context: analyticsContext, args: { userId: state.args.userId } },
+    
+    // Always include profile  
+    { context: profileContext, args: { userId: state.args.userId } },
+    
+    // Include premium features only for premium users
+    state.memory.userTier === "premium" 
+      ? { context: premiumContext, args: { userId: state.args.userId } }
+      : null,
+  ].filter(Boolean));
+
+// Now your chat context has access to:
+// ✅ trackEvent action from analytics
+// ✅ Profile data and preferences
+// ✅ generateAdvancedReport (for premium users only)
+// ✅ Unified behavior across contexts
+```
+
+## When to Use Each Pattern
+
+| Pattern | Use When | Examples |
+|---------|----------|----------|
+| **Single Context** | Simple, focused functionality | FAQ bot, calculator, weather checker |
+| **Multiple Contexts** | Separate user workflows | Chat + Games + Todo lists |
+| **🌟 Composed Contexts** | Rich experiences, conditional features | E-commerce assistant, CRM agent, enterprise apps |
+
+**Most powerful apps use composed contexts** - they provide the flexibility to:
+- Share common functionality (analytics, auth, logging)
+- Enable conditional features based on user tier/preferences  
+- Build modular systems that scale
+- Maintain clean separation while enabling cooperation
+
+## Real-World Example: E-commerce Assistant
+
+Here's how context composition enables sophisticated behavior:
+
+```typescript title="ecommerce-assistant.ts"
+// Product search functionality
+const catalogContext = context({
+  type: "catalog",
+  schema: z.object({ storeId: z.string() }),
+  create: () => ({ recentSearches: [] }),
+}).setActions([
+  action({
+    name: "searchProducts",
+    description: "Search for products in the store",
+    schema: z.object({ query: z.string() }),
+    handler: async ({ query }, ctx) => {
+      ctx.memory.recentSearches.push(query);
+      return { products: await searchProductAPI(query) };
+    },
+  }),
+]);
+
+// Shopping cart management  
+const cartContext = context({
+  type: "cart",
+  schema: z.object({ sessionId: z.string() }),
+  create: () => ({ items: [], total: 0 }),
+}).setActions([
+  action({
+    name: "addToCart",
+    description: "Add item to shopping cart", 
+    schema: z.object({ productId: z.string(), quantity: z.number() }),
+    handler: async ({ productId, quantity }, ctx) => {
+      const product = await getProduct(productId);
+      ctx.memory.items.push({ productId, quantity, price: product.price });
+      ctx.memory.total += product.price * quantity;
+      return { success: true, cartTotal: ctx.memory.total };
+    },
+  }),
+]);
+
+// VIP customer perks
+const vipContext = context({
+  type: "vip",
+  schema: z.object({ customerId: z.string() }),
+  create: () => ({ discountRate: 0.1, freeShipping: true }),
+}).setActions([
+  action({
+    name: "applyVipDiscount", 
+    description: "Apply VIP customer discount",
+    schema: z.object({ amount: z.number() }),
+    handler: async ({ amount }, ctx) => {
+      const discounted = amount * (1 - ctx.memory.discountRate);
+      return { originalAmount: amount, discountedAmount: discounted };
+    },
+  }),
+]);
+
+// Main shopping assistant that composes everything
+const shoppingAssistant = context({
+  type: "shopping-assistant",
+  schema: z.object({ 
+    customerId: z.string(),
+    sessionId: z.string(), 
+    storeId: z.string(),
+    customerTier: z.enum(["regular", "vip"]),
+  }),
+  create: () => ({ conversationStarted: Date.now() }),
+})
+  .use((state) => [
+    // Always include catalog and cart
+    { context: catalogContext, args: { storeId: state.args.storeId } },
+    { context: cartContext, args: { sessionId: state.args.sessionId } },
+    
+    // Include VIP features only for VIP customers
+    state.args.customerTier === "vip"
+      ? { context: vipContext, args: { customerId: state.args.customerId } }
+      : null,
+  ].filter(Boolean))
+  
+  .instructions((state) => {
+    const baseInstructions = "You are a helpful shopping assistant. You can search products and manage the cart.";
+    
+    if (state.args.customerTier === "vip") {
+      return baseInstructions + " This customer is VIP - offer premium service and apply discounts.";
+    }
+    
+    return baseInstructions + " Mention our VIP program if appropriate.";
+  });
+
+// This assistant can now:
+// ✅ Search products across the store catalog  
+// ✅ Manage shopping cart items and totals
+// ✅ Apply VIP discounts (only for VIP customers)
+// ✅ Provide personalized experience based on customer tier
+// ✅ All actions work together seamlessly
+```
+
+## The Problem: Agents Need to Remember Different Things
+
+Without contexts, your agent mixes everything together:
+
+```text title="confused-agent.txt"
+User Alice: "My favorite color is blue"
+User Bob: "What's Alice's favorite color?"
+Agent: "Alice's favorite color is blue"
+// ❌ Bob shouldn't see Alice's private info!
+
+User in Game A: "Go north"
+User in Game B: "What room am I in?"
+Agent: "You went north" (from Game A!)
+// ❌ Wrong game state mixed up!
+
+Project Alpha discussion mixed with Project Beta tasks
+// ❌ Complete chaos!
+```
+
+## The Solution: Contexts Separate Everything
+
+With contexts, each conversation/session/game stays separate:
+
+```text title="organized-agent.txt"
+Alice's Chat Context:
+- Alice: "My favorite color is blue"
+- Agent remembers: Alice likes blue
+
+Bob's Chat Context:
+- Bob: "What's Alice's favorite color?"
+- Agent: "I don't have information about Alice"
+// ✅ Privacy maintained!
+
+Game A Context:
+- Player went north → remembers current room
+
+Game B Context:
+- Separate game state → different room
+// ✅ No mixing of game states!
+```
+
+## How Contexts Work in Your Agent
+
+### 1. You Define Different Context Types
+
+```typescript title="define-contexts.ts"
+import { createDreams } from "@daydreamsai/core";
+import { openai } from "@ai-sdk/openai";
+
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  contexts: [
+    chatContext, // For user conversations
+    gameContext, // For game sessions
+    projectContext, // For project management
+  ],
+});
+```
+
+### 2. Inputs Route to Specific Context Instances
+
+```typescript title="context-routing.ts"
+// Discord input routes to chat contexts
+discordInput.subscribe((send, agent) => {
+  discord.on("message", (msg) => {
+    // Each user gets their own chat context instance
+    send(
+      chatContext,
+      { userId: msg.author.id },
+      {
+        content: msg.content,
+      }
+    );
+  });
+});
+
+// Game input routes to game contexts
+gameInput.subscribe((send, agent) => {
+  gameServer.on("move", (event) => {
+    // Each game gets its own context instance
+    send(
+      gameContext,
+      { gameId: event.gameId },
+      {
+        action: event.action,
+      }
+    );
+  });
+});
+```
+
+### 3. Agent Maintains Separate Memory
+
+```text title="context-instances.txt"
+Chat Context Instances:
+- chat:alice → { messages: [...], preferences: {...} }
+- chat:bob   → { messages: [...], preferences: {...} }
+- chat:carol → { messages: [...], preferences: {...} }
+
+Game Context Instances:
+- game:session1 → { health: 80, level: 3, room: "forest" }
+- game:session2 → { health: 100, level: 1, room: "start" }
+- game:session3 → { health: 45, level: 7, room: "dungeon" }
+
+All completely separate!
+```
+
+## Creating Your First Context
+
+Here's a simple todo list context:
+
+```typescript title="todo-context.ts"
+import { context } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Define what this context remembers
+interface TodoMemory {
+  tasks: { id: string; title: string; done: boolean }[];
+  createdAt: string;
+}
+
+export const todoContext = context({
+  // Type identifies this kind of context
+  type: "todo",
+
+  // Schema defines how to identify specific instances
+  schema: z.object({
+    listId: z.string().describe("Unique ID for this todo list"),
+  }),
+
+  // Create initial memory when first accessed
+  create: (): TodoMemory => ({
+    tasks: [],
+    createdAt: new Date().toISOString(),
+  }),
+
+  // How this context appears to the LLM
+  render: (state) => {
+    const { tasks } = state.memory;
+    const pending = tasks.filter((t) => !t.done).length;
+    const completed = tasks.filter((t) => t.done).length;
+
+    return `
+Todo List: ${state.args.listId}
+Tasks: ${pending} pending, ${completed} completed
+
+Recent tasks:
+${tasks
+  .slice(-5)
+  .map((t) => `${t.done ? "✅" : "⏳"} ${t.title}`)
+  .join("\n")}
+    `;
+  },
+
+  // Instructions for the LLM when this context is active
+  instructions:
+    "Help the user manage their todo list. You can add, complete, and list tasks.",
+});
+```
+
+Use it in your agent:
+
+```typescript title="agent-with-todo.ts"
+import { createDreams } from "@daydreamsai/core";
+import { openai } from "@ai-sdk/openai";
+
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  contexts: [todoContext],
+});
+
+// Now users can have separate todo lists:
+// todo:work → Work tasks
+// todo:personal → Personal tasks
+// todo:shopping → Shopping list
+// Each maintains separate state!
+```
+
+## Context Memory: What Gets Remembered
+
+Context memory persists between conversations:
+
+```typescript title="memory-example.ts"
+// First conversation
+User: "Add 'buy milk' to my shopping list"
+Agent: → todoContext(listId: "shopping")
+       → memory.tasks.push({id: "1", title: "buy milk", done: false})
+       → "Added 'buy milk' to your shopping list"
+
+// Later conversation (hours/days later)
+User: "What's on my shopping list?"
+Agent: → todoContext(listId: "shopping")
+       → Loads saved memory: {tasks: [{title: "buy milk", done: false}]}
+       → "You have 'buy milk' on your shopping list"
+
+// ✅ Context remembered the task across conversations!
+```
+
+## Multiple Contexts in One Agent
+
+Your agent can work with multiple contexts, each maintaining separate state:
+
+```typescript title="multi-context-usage.ts"
+// User sends message to chat context
+await agent.send({
+  context: chatContext,
+  args: { userId: "alice" },
+  input: { type: "text", data: "Add 'finish project' to my work todo list" }
+});
+
+// Later, user queries their todo list directly
+await agent.send({
+  context: todoContext, 
+  args: { listId: "work" },
+  input: { type: "text", data: "What's on my list?" }
+});
+
+// Or the same user in a different chat context
+await agent.send({
+  context: chatContext,
+  args: { userId: "alice" }, // Same user, same context instance
+  input: { type: "text", data: "How was your day?" }
+});
+```
+
+Each context maintains completely separate memory:
+- `chat:alice` remembers Alice's conversation history
+- `todo:work` remembers work-related tasks  
+- `todo:personal` would be a separate todo list
+- Each operates independently with its own actions and memory
+
+## Advanced: Context-Specific Actions
+
+You can attach actions that only work in certain contexts:
+
+```typescript title="context-specific-actions.ts"
+import { context, action } from "@daydreamsai/core";
+import * as z from "zod";
+
+const todoContextWithActions = todoContext.setActions([
+  action({
+    name: "add-task",
+    description: "Adds a new task to the todo list",
+    schema: z.object({
+      title: z.string(),
+    }),
+    handler: async ({ title }, ctx) => {
+      // ctx.memory is automatically typed as TodoMemory!
+      const newTask = {
+        id: crypto.randomUUID(),
+        title,
+        done: false,
+      };
+
+      ctx.memory.tasks.push(newTask);
+
+      return {
+        success: true,
+        taskId: newTask.id,
+        message: `Added "${title}" to the list`,
+      };
+    },
+  }),
+
+  action({
+    name: "complete-task",
+    description: "Marks a task as completed",
+    schema: z.object({
+      taskId: z.string(),
+    }),
+    handler: async ({ taskId }, ctx) => {
+      const task = ctx.memory.tasks.find((t) => t.id === taskId);
+      if (!task) {
+        return { success: false, message: "Task not found" };
+      }
+
+      task.done = true;
+
+      return {
+        success: true,
+        message: `Completed "${task.title}"`,
+      };
+    },
+  }),
+]);
+```
+
+Now these actions only appear when the todo context is active!
+
+## Context Lifecycle
+
+Contexts have hooks for different stages:
+
+```typescript title="context-lifecycle.ts"
+const advancedContext = context({
+  type: "advanced",
+  schema: z.object({ sessionId: z.string() }),
+
+  // Called when context instance is first created
+  create: () => ({
+    startTime: Date.now(),
+    interactions: 0,
+  }),
+
+  // Called once during context setup (before first use)
+  setup: async (args, settings, agent) => {
+    agent.logger.info(`Setting up session: ${args.sessionId}`);
+    return { 
+      createdBy: "system",
+      setupTime: Date.now() 
+    };
+  },
+
+  // Called before each LLM step
+  onStep: async (ctx) => {
+    ctx.memory.interactions++;
+  },
+
+  // Called when a conversation/run completes
+  onRun: async (ctx) => {
+    const duration = Date.now() - ctx.memory.startTime;
+    console.log(`Session completed in ${duration}ms`);
+  },
+
+  // Called if there's an error during execution
+  onError: async (error, ctx) => {
+    console.error(`Error in session ${ctx.id}:`, error);
+  },
+
+  // Custom save function (optional)
+  save: async (state) => {
+    // Custom logic to save context state
+    console.log(`Saving context ${state.id}`);
+  },
+
+  // Custom load function (optional)
+  load: async (id, options) => {
+    // Custom logic to load context memory
+    console.log(`Loading context ${id}`);
+    return { startTime: Date.now(), interactions: 0 };
+  },
+});
+```
+
+## Advanced Context Features
+
+### Custom Context Keys
+
+By default, context instances use `type:key` format. You can customize key generation:
+
+```typescript title="custom-keys.ts"
+const customContext = context({
+  type: "user-session",
+  schema: z.object({ 
+    userId: z.string(), 
+    sessionType: z.string() 
+  }),
+  
+  // Custom key function to create unique IDs
+  key: (args) => `${args.userId}-${args.sessionType}`,
+  
+  create: () => ({ data: {} })
+});
+
+// This creates context IDs like:
+// user-session:alice-support
+// user-session:bob-sales  
+// user-session:carol-general
+```
+
+### Dynamic Instructions
+
+Instructions can be functions that adapt based on context state:
+
+```typescript title="dynamic-instructions.ts"
+const adaptiveContext = context({
+  type: "adaptive",
+  schema: z.object({ userTier: z.string() }),
+  create: () => ({ features: [] }),
+  
+  instructions: (state) => {
+    const base = "You are a helpful assistant.";
+    
+    if (state.args.userTier === "premium") {
+      return base + " You have access to advanced features and priority support.";
+    }
+    
+    return base + " Let me know if you'd like to upgrade for more features!";
+  }
+});
+```
+
+### Context Settings & Model Overrides
+
+Contexts can override agent-level settings:
+
+```typescript title="context-settings.ts"
+const specializedContext = context({
+  type: "specialized",
+  
+  // Override the agent's model for this context
+  model: openai("gpt-4o"),
+  
+  // Context-specific model settings
+  modelSettings: {
+    temperature: 0.1, // More focused responses
+    maxTokens: 2000,
+  },
+  
+  // Limit LLM steps for this context
+  maxSteps: 5,
+  
+  // Limit working memory size
+  maxWorkingMemorySize: 1000,
+  
+  create: () => ({ specialized: true })
+});
+```
+
+### Context Composition
+
+Contexts can include other contexts for modular functionality:
+
+```typescript title="context-composition.ts"
+const analyticsContext = context({
+  type: "analytics",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ events: [] })
+});
+
+const composedContext = context({
+  type: "main",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ data: {} })
+})
+  // Include analytics functionality
+  .use((state) => [
+    { context: analyticsContext, args: { userId: state.args.userId } }
+  ]);
+
+// Now composedContext has access to analytics actions and memory
+```
+
+## Best Practices
+
+### 1. Design Clear Boundaries
+
+```typescript title="good-context-design.ts"
+// ✅ Good - clear, specific purpose
+const userProfileContext = context({
+  type: "user-profile",
+  schema: z.object({ userId: z.string() }),
+  // Manages user preferences, settings, history
+});
+
+const orderContext = context({
+  type: "order",
+  schema: z.object({ orderId: z.string() }),
+  // Manages specific order state, items, shipping
+});
+
+// ❌ Bad - too broad, unclear purpose
+const stuffContext = context({
+  type: "stuff",
+  schema: z.object({ id: z.string() }),
+  // What does this manage? Everything? Nothing clear.
+});
+```
+
+### 2. Keep Memory Structures Simple
+
+```typescript title="good-memory-structure.ts"
+// ✅ Good - clear, simple structure
+interface ChatMemory {
+  messages: Array<{
+    sender: "user" | "agent";
+    content: string;
+    timestamp: number;
+  }>;
+  userPreferences: {
+    language?: string;
+    timezone?: string;
+  };
+}
+
+// ❌ Bad - overly complex, nested
+interface OverComplexMemory {
+  data: {
+    nested: {
+      deeply: {
+        structured: {
+          confusing: {
+            memory: any;
+          };
+        };
+      };
+    };
+  };
+}
+```
+
+### 3. Write Helpful Render Functions
+
+```typescript title="good-render-function.ts"
+// ✅ Good - concise, relevant information
+render: (state) => `
+  Shopping Cart: ${state.args.cartId}
+  Items: ${state.memory.items.length}
+  Total: $${state.memory.total.toFixed(2)}
+  
+  Recent items:
+  ${state.memory.items
+    .slice(-3)
+    .map((item) => `- ${item.name} ($${item.price})`)
+    .join("\n")}
+`;
+
+// ❌ Bad - too much information, overwhelming
+render: (state) => JSON.stringify(state.memory, null, 2); // Dumps everything!
+```
+
+### 4. Use Descriptive Schema
+
+```typescript title="good-schema.ts"
+// ✅ Good - clear descriptions
+schema: z.object({
+  userId: z.string().uuid().describe("Unique identifier for the user"),
+  sessionType: z
+    .enum(["support", "sales", "general"])
+    .describe("Type of support session"),
+});
+
+// ❌ Bad - no descriptions, unclear
+schema: z.object({
+  id: z.string(),
+  type: z.string(),
+});
+```
+
+## Key Takeaways
+
+- **Contexts separate state** - Each conversation/session/game gets its own isolated memory
+- **Instance-based** - Same context type, different instances for different users/sessions  
+- **Memory persists** - State is automatically saved and restored between conversations
+- **Type-safe** - Full TypeScript support for memory, args, and actions
+- **Lifecycle hooks** - `setup`, `onStep`, `onRun`, `onError` for custom behavior
+- **Custom key generation** - Control how context instances are identified
+- **Model overrides** - Each context can use different models and settings
+- **Dynamic instructions** - Instructions can adapt based on context state
+- **Context composition** - Use `.use()` to combine contexts for complex behaviors
+- **Custom save/load** - Override default persistence with custom logic
+- **Context-specific actions** - Actions only available when context is active
+
+Contexts provide isolated, stateful workspaces that enable sophisticated agent behaviors while keeping data separate and organized. They're essential for building agents that can handle multiple simultaneous conversations, games, projects, or any scenario requiring persistent state management.

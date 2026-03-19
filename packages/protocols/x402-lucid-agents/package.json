@@ -1,0 +1,65 @@
+{
+  "name": "@lucid-agents/root",
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "lucid-docs"
+    ],
+    "catalog": {
+      "zod": "^4.1.12",
+      "typescript": "^5.9.2",
+      "@ax-llm/ax": "^14.0.31",
+      "hono": "4.10.1",
+      "express": "^4.19.2",
+      "viem": "^2.41.2",
+      "@x402/core": "^2.2.0",
+      "@x402/fetch": "^2.2.0",
+      "@x402/evm": "^2.2.0",
+      "@x402/hono": "^2.2.0",
+      "@x402/express": "^2.2.0",
+      "@x402/next": "^2.2.0",
+      "stripe": "^20.3.1",
+      "tsup": "^8.5.0"
+    }
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "build": "bun run scripts/build-packages.ts",
+    "build:clean": "bun run scripts/build-packages.ts --clean",
+    "build:packages": "bun run scripts/build-packages.ts",
+    "changeset": "bunx changeset",
+    "release:version": "bunx changeset version",
+    "release:publish": "bun run scripts/build-packages.ts && bun run scripts/changeset-publish.ts",
+    "release": "bun run release:version && bun run release:publish",
+    "lint": "bun run --filter='./packages/*' lint",
+    "lint:fix": "bun run --filter='./packages/*' lint:fix",
+    "format": "bun run --filter='./packages/*' format",
+    "format:check": "bun run --filter='./packages/*' format:check",
+    "type-check": "bun run --filter='./packages/*' type-check",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@types/bun": "^1.2.21",
+    "@types/node": "^24.3.1",
+    "@types/three": "^0.180.0",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "@x402/core": "2.2.0",
+    "@x402/express": "2.2.0",
+    "@x402/hono": "2.2.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "husky": "^9.1.7",
+    "prettier": "^3.0.0"
+  }
+}

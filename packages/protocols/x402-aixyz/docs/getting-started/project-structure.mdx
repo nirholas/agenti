@@ -1,0 +1,153 @@
+---
+title: "Project Structure"
+description: "Understand the app/ directory structure and file conventions"
+---
+
+import { FileTree } from "/snippets/FileTree.jsx";
+
+An aixyz agent is defined by a small set of files in a standard layout. Run `aixyz dev` and the framework auto-generates a server from them.
+
+## Directory Layout
+
+<FileTree
+  title="Project Structure"
+  structure={[
+    {
+      name: "my-agent/",
+      children: [
+        {
+          name: "aixyz.config.ts",
+          description: "Agent identity, payment config, and skills",
+          badge: { text: "required", color: "green" },
+        },
+        {
+          name: "app/",
+          children: [
+            { name: "agent.ts", description: "Main agent definition", badge: { text: "required", color: "green" } },
+            { name: "agent.test.ts", description: "Agent tests" },
+            {
+              name: "server.ts",
+              description: "Custom server override",
+              badge: { text: "optional override", color: "purple" },
+            },
+            {
+              name: "accepts.ts",
+              description: "Custom x402 facilitator",
+              badge: { text: "optional override", color: "purple" },
+            },
+            {
+              name: "erc-8004.ts",
+              description: "ERC-8004 identity registration",
+            },
+            {
+              name: "agents/",
+              children: [
+                { name: "research.ts", description: "Sub-agent → /research/agent" },
+                { name: "implement.ts", description: "Sub-agent → /implement/agent" },
+                { name: "[...].ts", description: "Any sub-agents declaration" },
+              ],
+            },
+            {
+              name: "tools/",
+              children: [
+                { name: "weather.ts", description: "Tool implementation" },
+                { name: "search.ts", description: "Tool implementation" },
+                { name: "_helpers.ts", description: "Ignored — files starting with _ are skipped" },
+                { name: "[...].ts", description: "Any tools declaration" },
+              ],
+            },
+            {
+              name: "icon.svg",
+              description: "Agent icon (served as static asset)",
+            },
+          ],
+        },
+        { name: "package.json", badge: { text: "required", color: "green" } },
+        { name: "tsconfig.json", badge: { text: "required", color: "green" } },
+        { name: "vercel.json", description: "Vercel deployment config" },
+        { name: ".env.local", description: "API keys and environment variables" },
+      ],
+    },
+  ]}
+/>
+
+<div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    fontSize: "0.75rem",
+    color: "#94a3b8",
+    marginTop: "-24px",
+    paddingLeft: "4px",
+  }}
+>
+  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+    <code
+      style={{
+        fontSize: "0.625rem",
+        fontWeight: 500,
+        padding: "1px 6px",
+        borderRadius: "4px",
+        backgroundColor: "rgba(34,197,94,0.1)",
+        color: "#22c55e",
+        border: "1px solid rgba(34,197,94,0.2)",
+      }}
+    >
+      required
+    </code>
+    Must be provided
+  </span>
+  <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+    <code
+      style={{
+        fontSize: "0.625rem",
+        fontWeight: 500,
+        padding: "1px 6px",
+        borderRadius: "4px",
+        backgroundColor: "rgba(168,85,247,0.1)",
+        color: "#a855f7",
+        border: "1px solid rgba(168,85,247,0.2)",
+      }}
+    >
+      optional override
+    </code>
+    Provide to override auto-generated behavior
+  </span>
+</div>
+
+## Key Files
+
+| File                | Required | Description                                                                       |
+| ------------------- | -------- | --------------------------------------------------------------------------------- |
+| `aixyz.config.ts`   | Yes      | [Agent metadata, payment config, and skills](/config/aixyz-config)                |
+| `app/agent.ts`      | Yes\*    | Agent definition using Vercel AI SDK                                              |
+| `app/agents/*.ts`   | No       | Sub-agent definitions, each gets its own endpoint                                 |
+| `app/tools/*.ts`    | No       | Tool implementations, auto-discovered by the build                                |
+| `app/server.ts`     | No       | [Custom server](/api-reference/aixyz-server) — overrides auto-generation entirely |
+| `app/accepts.ts`    | No       | [Custom x402 facilitator](/api-reference/accepts) for payment verification        |
+| `app/erc-8004.ts`   | No       | ERC-8004 identity registration and trust config                                   |
+| `app/agent.test.ts` | No       | Agent tests using `bun:test`                                                      |
+| `app/icon.svg`      | No       | Agent icon served as a static asset                                               |
+| `vercel.json`       | No       | Vercel deployment configuration                                                   |
+
+\* Required if no `app/server.ts` is provided.
+
+## How It Works
+
+The build pipeline scans the `app/` directory to auto-generate a server:
+
+1. Reads `aixyz.config.ts` for agent metadata and skills
+2. Imports `app/agent.ts` for the main agent definition
+3. Discovers all `.ts` files in `app/agents/` for sub-agents (each gets its own A2A endpoint)
+4. Discovers all `.ts` files in `app/tools/` (excluding `_` prefixed files)
+5. Wires up A2A, MCP, and x402 endpoints automatically
+
+The result is a server exposing:
+
+- **A2A** at `/agent` and `/.well-known/agent-card.json` (main agent)
+- **A2A** at `/{name}/agent` and `/{name}/.well-known/agent-card.json` (per sub-agent in `app/agents/`)
+- **MCP** at `/mcp`
+- **x402** payment verification on gated endpoints
+
+For full control, provide `app/server.ts` to override auto-generation. See the [Custom Server template](/templates/advanced/with-custom-server) for an example.

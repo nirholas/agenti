@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Trading Recommendation Agent Template Arguments",
+  "type": "object",
+  "properties": {
+    "AGENT_DESCRIPTION": {
+      "type": "string",
+      "description": "Description of the recommendation agent"
+    },
+    "AGENT_VERSION": {
+      "type": "string",
+      "description": "Version number for the agent",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "DATA_AGENT_URL": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the data agent to buy data from"
+    },
+    "AGENT_WALLET_PRIVATE_KEY": {
+      "type": "string",
+      "description": "Private key for agent wallet (pays for data)"
+    },
+    "PAYMENTS_NETWORK": {
+      "type": "string",
+      "enum": ["ethereum", "base", "base-sepolia", "solana", "solana-devnet"],
+      "default": "ethereum",
+      "description": "Payment network (must match data agent)"
+    }
+  },
+  "required": ["AGENT_DESCRIPTION", "AGENT_VERSION", "DATA_AGENT_URL"]
+}
+

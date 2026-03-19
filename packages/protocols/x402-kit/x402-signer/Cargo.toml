@@ -1,0 +1,111 @@
+[package]
+name = "x402-signer"
+version.workspace = true
+edition = "2024"
+repository = "https://github.com/AIMOverse/x402-kit"
+authors = ["Archer <archer@aimo.network>"]
+license = "MIT"
+description = "Buyer-side signing SDK for the x402 payment protocol."
+
+[features]
+default = ["evm", "svm", "solana-rpc", "reqwest"]
+evm = [
+    "x402-networks/evm",
+    "dep:alloy-core",
+    "dep:alloy-signer",
+    "dep:alloy-primitives",
+    "dep:rand",
+]
+svm = [
+    "x402-networks/svm",
+    "dep:solana-keypair",
+    "dep:solana-pubkey",
+    "dep:solana-instruction",
+    "dep:solana-transaction",
+    "dep:solana-message",
+    "dep:solana-hash",
+    "dep:solana-signer",
+    "dep:solana-signature",
+    "dep:bincode",
+    "dep:base64",
+    "dep:rand",
+    "dep:hex",
+]
+solana-rpc = [
+    "svm",
+    "dep:solana-rpc-client",
+    "dep:solana-rpc-client-api",
+    "dep:solana-account",
+]
+reqwest = [
+    "dep:reqwest",
+    "dep:reqwest-middleware",
+    "dep:http",
+    "dep:async-trait",
+]
+swig = ["svm", "dep:bitrouter-swig-sdk"]
+
+[dependencies]
+# === Core ===
+x402-core = { version = "2.5.0", path = "../x402-core" }
+x402-networks = { version = "2.5.0", path = "../x402-networks", default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+thiserror = { version = "2.0" }
+
+# === Feature "evm" ===
+alloy-core = { version = "1.4", features = ["sol-types"], optional = true }
+alloy-signer = { version = "1.1", optional = true }
+alloy-primitives = { version = "1.4", optional = true }
+rand = { version = "0.9", optional = true }
+
+# === Feature "svm" ===
+solana-pubkey = { version = "4", features = ["curve25519"], optional = true }
+solana-keypair = { version = "3", optional = true }
+solana-instruction = { version = "3", optional = true }
+solana-transaction = { version = "3", features = ["bincode"], optional = true }
+solana-message = { version = "3", optional = true }
+solana-hash = { version = "3", optional = true }
+solana-signer = { version = "3", optional = true }
+solana-signature = { version = "3", optional = true }
+bincode = { version = "2.0", features = ["serde"], optional = true }
+base64 = { version = "0.22", optional = true }
+hex = { version = "0.4", optional = true }
+
+# === Feature "solana-rpc" ===
+solana-rpc-client = { version = "3", optional = true }
+solana-rpc-client-api = { version = "3", optional = true }
+solana-account = { version = "3", optional = true }
+
+# === Feature "swig" ===
+bitrouter-swig-sdk = { version = "0.2", optional = true }
+
+# === Feature "reqwest" ===
+reqwest = { version = "0.13", default-features = false, optional = true }
+reqwest-middleware = { version = "0.5", optional = true }
+http = { version = "1", optional = true }
+async-trait = { version = "0.1", optional = true }
+
+[dev-dependencies]
+alloy = { version = "1" }
+bitrouter-swig-sdk = { version = "0.2" }
+rand = { version = "0.9" }
+reqwest = { version = "0.13" }
+reqwest-middleware = { version = "0.5" }
+solana-client = { version = "3" }
+solana-instruction = { version = "3" }
+solana-keypair = { version = "3" }
+solana-pubkey = { version = "4" }
+solana-rpc-client = { version = "3" }
+solana-transaction = { version = "3" }
+spl-associated-token-account = { version = "8" }
+spl-token = { version = "9" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[[example]]
+name = "svm_swig_embedded"
+required-features = ["swig", "reqwest"]
+
+[[example]]
+name = "svm_swig_delegation"
+required-features = ["swig", "reqwest"]

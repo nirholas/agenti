@@ -1,0 +1,60 @@
+{
+  "name": "@prxvt/sdk",
+  "version": "1.0.0",
+  "description": "px402 - Private x402 payments using zero-knowledge proofs. Pay for APIs privately without revealing your identity.",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "privacy",
+    "px402",
+    "x402",
+    "zero-knowledge",
+    "payments",
+    "zkp",
+    "usdc"
+  ],
+  "author": "prxvt",
+  "license": "MIT",
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  },
+  "dependencies": {
+    "graphql": "^16.12.0",
+    "graphql-request": "^7.3.4",
+    "snarkjs": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "viem": "^2.0.0"
+  },
+  "optionalDependencies": {
+    "circomlibjs": "^0.1.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prxvt/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/prxvt/sdk/issues"
+  },
+  "homepage": "https://github.com/prxvt/sdk#readme"
+}

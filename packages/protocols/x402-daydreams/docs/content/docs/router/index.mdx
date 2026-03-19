@@ -1,0 +1,79 @@
+---
+title: Daydreams Router
+description: AI model routing with authentication and payments
+---
+
+# Router
+
+The Daydreams Router acts as an intelligent gateway between your application and
+AI models, providing unified access to multiple AI providers through a single
+API.
+
+🌐 **Live Service**:
+[router.daydreams.systems](https://router.daydreams.systems)
+
+## Key Features
+
+- **Unified Interface**: Single API for OpenAI, Anthropic, Google, and more
+- **Model Routing**: Automatic selection and fallback between providers
+- **Dual Authentication**: API keys or x402 USDC micropayments
+- **OpenAI Compatibility**: Works with existing OpenAI SDK clients
+- **Cost Tracking**: Monitor usage across all providers
+
+## How It Works
+
+The router standardizes interactions across AI providers:
+
+1. **Request Reception**: Accepts OpenAI-format requests
+2. **Provider Translation**: Converts to provider-specific formats
+3. **Response Normalization**: Returns standardized OpenAI-format responses
+4. **Error Handling**: Automatic retries and provider fallbacks
+
+## Architecture
+
+```
+Your App → Dreams Router → Provider (OpenAI/Anthropic/Google/etc)
+             ↓
+         Auth Layer (API Key or x402)
+             ↓
+         Response Standardization
+```
+
+## Getting Started
+
+- [Quickstart Guide](./quickstart) - Make your first API call in 5 minutes
+- [Dreams SDK Integration](./dreams-sdk) - Use with Vercel AI SDK and Daydreams
+- [API Reference](https://router.daydreams.systems/docs) - Complete endpoint
+  documentation
+
+## Example Applications
+
+### Nanoservice (Paid AI Assistant)
+
+The
+[nanoservice example](https://github.com/daydreamsai/daydreams/tree/main/examples/x402/nanoservice)
+demonstrates a complete AI service with x402 payments:
+
+```typescript
+// Payment-enabled AI assistant
+const { dreamsRouter } = await createDreamsRouterAuth(account, {
+  payments: {
+    amount: "100000", // $0.10 USDC per request
+    network: "base-sepolia",
+  },
+});
+
+const agent = createDreams({
+  model: dreamsRouter("google-vertex/gemini-2.5-flash"),
+  contexts: [assistantContext],
+});
+```
+
+## Next Steps
+
+- Start with the [Quickstart Guide](./router/quickstart)
+- Explore [Dreams SDK integration](./router/dreams-sdk) for TypeScript projects
+- Learn about [x402 payments](https://www.x402.org/) for micropayment
+  integration
+- View
+  [complete examples](https://github.com/daydreamsai/daydreams/tree/main/examples)

@@ -1,0 +1,53 @@
+{
+  "name": "@chainbound/payflow-sdk",
+  "version": "0.0.3",
+  "description": "Payflow SDK",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chainbound/payflow"
+  },
+  "homepage": "https://github.com/chainbound/payflow#readme",
+  "bugs": {
+    "url": "https://github.com/chainbound/payflow/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "payflow",
+    "mcp",
+    "micropayments",
+    "x402"
+  ],
+  "author": "Chainbound Developers <dev@chainbound.io>",
+  "license": "MIT",
+  "dependencies": {
+    "@coinbase/x402": "^0.3.8",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "debug": "^4.4.1",
+    "x402": "^0.3.7",
+    "zod": "^3.25.23"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  }
+}

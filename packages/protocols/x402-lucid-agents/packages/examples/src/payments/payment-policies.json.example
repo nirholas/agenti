@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Daily Outgoing Limit",
+    "outgoingLimits": {
+      "global": {
+        "maxPaymentUsd": 0.1,
+        "maxTotalUsd": 1.0,
+        "windowMs": 86400000
+      }
+    }
+  },
+  {
+    "name": "API Usage Policy",
+    "outgoingLimits": {
+      "global": {
+        "maxPaymentUsd": 0.05
+      },
+      "perTarget": {
+        "http://localhost:3001": {
+          "maxPaymentUsd": 0.1,
+          "maxTotalUsd": 0.5
+        }
+      }
+    },
+    "allowedRecipients": ["http://localhost:3001"],
+    "rateLimits": {
+      "maxPayments": 100,
+      "windowMs": 3600000
+    }
+  },
+  {
+    "name": "Blocked Services",
+    "blockedRecipients": [
+      "https://blocked-service.example.com",
+      "0x1234567890123456789012345678901234567890"
+    ]
+  }
+]

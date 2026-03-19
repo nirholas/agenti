@@ -1,0 +1,145 @@
+---
+name: pumpfun
+description: "Pump.fun - Complete Solana memecoin launchpad. Discovery, trending, gainers, losers, token data all work without a key. Trading requires SOLANA_PRIVATE_KEY."
+command: pump
+emoji: "🚀"
+---
+
+# Pump.fun - Complete API Coverage (32 Tools)
+
+Pump.fun is the leading Solana memecoin launchpad with bonding curve trading.
+
+## Trading
+
+```
+/pump buy <mint> <amount> [options]     Buy tokens (amount in SOL)
+/pump sell <mint> <amount|%> [options]  Sell tokens (amount or percentage)
+/pump quote <mint> <amount> <action>    Get swap quote
+```
+
+**Options:**
+- `--pool <pool>` - Pool: pump, raydium, pump-amm, launchlab, bonk, auto
+- `--slippage <bps>` - Slippage in basis points (default: 500 = 5%)
+- `--priority <lamports>` - Priority fee for faster execution
+
+**Examples:**
+```
+/pump buy ABC123... 0.1
+/pump buy ABC123... 0.5 --pool auto --slippage 1000
+/pump sell ABC123... 100%
+/pump sell ABC123... 50% --pool raydium
+```
+
+## Discovery
+
+```
+/pump trending               Top tokens by 24h volume (DexScreener enriched)
+/pump gainers                Top 24h price gainers
+/pump losers                 Top 24h price losers
+/pump hot                    Most active right now (1h transactions)
+/pump new-hot                Hottest new tokens by volume
+/pump new                    Recently created tokens
+/pump live                   Currently trading tokens
+/pump graduated              Tokens migrated to PumpSwap
+/pump search <query>         Search tokens by name/symbol
+/pump volatile               High volatility tokens
+/pump koth                   King of the Hill (30-35K mcap)
+/pump for-you                Personalized recommendations
+/pump metas                  Trending narratives/keywords
+```
+
+## Token Data
+
+```
+/pump token <mint>                      Full token info
+/pump stats <mint>                      Volume, txns, liquidity, price change (DexScreener)
+/pump price <mint>                      Current price + 24h stats
+/pump holders <mint>                    Top holders list
+/pump trades <mint> [--limit N]         Recent trades for token
+/pump chart <mint> [--interval X]       OHLCV price chart
+/pump similar <mint>                    Find similar tokens
+```
+
+**Intervals:** 1m, 5m, 15m, 1h, 4h, 1d
+
+## Creator Tools
+
+```
+/pump user-coins <address>              Tokens created by wallet
+/pump create <name> <symbol> <desc>     Launch new token
+/pump claim <mint>                      Claim creator fees
+/pump ipfs-upload <name> <symbol> <desc>  Upload metadata to IPFS
+```
+
+**Create Options:**
+- `--image <url>` - Token image URL
+- `--twitter <url>` - Twitter link
+- `--telegram <url>` - Telegram link
+- `--website <url>` - Website link
+- `--initial <SOL>` - Initial buy amount
+
+## Platform Data
+
+```
+/pump latest-trades [--limit N]         Latest trades platform-wide
+/pump sol-price                         Current SOL price
+```
+
+## Monitoring (WebSocket)
+
+```
+/pump watch <mint>           Watch token for real-time trades
+/pump snipe <symbol>         Wait for token with symbol to launch
+```
+
+## Configuration
+
+```bash
+export SOLANA_PRIVATE_KEY="your-private-key"
+export PUMPPORTAL_API_KEY="your-api-key"     # Optional, for trading API
+export SOLANA_RPC_URL="your-rpc-url"         # Optional, custom RPC
+```
+
+## Pool Options
+
+| Pool | Description |
+|------|-------------|
+| `pump` | Pump.fun bonding curve (default) |
+| `pumpswap` | PumpSwap AMM (graduated tokens) |
+| `pump-amm` | Pump.fun native AMM |
+| `launchlab` | LaunchLab pools |
+| `raydium-cpmm` | Raydium CPMM pools |
+| `bonk` | Bonk pools |
+| `auto` | Automatic best route |
+
+## API Sources
+
+- **Trading:** PumpPortal (pumpportal.fun) - 0.5% fee
+- **Data:** Pump.fun Frontend API v3 (frontend-api-v3.pump.fun)
+- **Analytics:** Advanced API v2 (advanced-api-v2.pump.fun)
+- **Volatility:** Volatility API v2 (volatility-api-v2.pump.fun)
+- **WebSocket:** wss://pumpportal.fun/api/data
+
+## Complete Tool List (32 Tools)
+
+| Category | Tools |
+|----------|-------|
+| **Trading** | trade (buy/sell), quote |
+| **Discovery** | trending, gainers, losers, hot, new-hot, new, live, graduated, search, volatile, koth, for-you, metas |
+| **Token Data** | token, stats, price, holders, trades, chart, similar |
+| **Creator** | user-coins, create, claim, ipfs-upload |
+| **Platform** | latest-trades, sol-price |
+
+## Features
+
+- Bonding curve trading with automatic graduation
+- Multi-pool routing (Pump, Raydium, CPMM, etc.)
+- Token creation with IPFS metadata upload
+- Creator fee claiming
+- Real-time trade streaming via WebSocket
+- Token sniping support
+- OHLCV charts and analytics
+- Holder analysis
+- Trending metas/narratives discovery
+- Similar token recommendations
+- Platform-wide trade feed

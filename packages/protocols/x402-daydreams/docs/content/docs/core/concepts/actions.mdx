@@ -1,0 +1,208 @@
+---
+title: Actions
+description: Define capabilities and interactions for your Daydreams agent.
+---
+
+## What is an Action?
+
+An action is something your agent can **do** - like calling an API, saving data, or performing calculations. Actions are the bridge between LLM reasoning and real-world functionality.
+
+For common patterns like schema validation, error handling, and external service integration, see [Building Block Operations](/docs/core/concepts/building-block-operations).
+
+## Actions vs Inputs/Outputs
+
+Understanding the difference is crucial:
+
+| Building Block | Purpose | When LLM Uses It | Returns Data |
+|---------------|---------|------------------|--------------|
+| **Actions** | Get data, perform operations | When it needs information for reasoning | ✅ Yes - LLM uses results |
+| **Inputs** | Listen for external events | Never - inputs trigger the agent | ❌ No - triggers conversation |
+| **Outputs** | Communicate results | When it wants to respond/notify | ❌ No - final communication step |
+
+### Common Pattern: Actions → Outputs
+
+```xml title="action-then-output-flow.xml"
+<response>
+  <!-- 1. ACTION: Get data for reasoning -->
+  <action_call name="get-weather">{"city": "Boston"}</action_call>
+  
+  <!-- 2. OUTPUT: Communicate result to user -->
+  <output type="discord:message" channelId="123">
+    Weather in Boston: {{calls[0].temperature}}, {{calls[0].condition}}
+  </output>
+</response>
+```
+
+## Creating Your First Action
+
+Here's a simple calculator action:
+
+```typescript title="calculator-action.ts"
+import { action } from "@daydreamsai/core";
+import * as z from "zod";
+
+export const addNumbers = action({
+  // Name the LLM uses to call this action
+  name: "add-numbers",
+
+  // Description helps LLM know when to use it
+  description: "Adds two numbers together",
+
+  // Schema defines what arguments are required
+  schema: z.object({
+    a: z.number().describe("First number"),
+    b: z.number().describe("Second number"),
+  }),
+
+  // Handler is your actual code that runs
+  handler: async ({ a, b }) => {
+    const result = a + b;
+    return {
+      sum: result,
+      message: `${a} + ${b} = ${result}`,
+    };
+  },
+});
+```
+
+Use it in your agent:
+
+```typescript title="agent-with-calculator.ts"
+import { createDreams } from "@daydreamsai/core";
+import { openai } from "@ai-sdk/openai";
+
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  actions: [addNumbers],
+});
+
+// When user asks "What's 5 + 3?":
+// 1. LLM calls addNumbers action with {a: 5, b: 3}
+// 2. Gets back {sum: 8, message: "5 + 3 = 8"}
+// 3. Responds with the calculation result
+```
+
+## Action Scoping and Context Integration
+
+### Global vs Context-Specific Actions
+
+Actions can be scoped at different levels for precise control:
+
+```typescript title="action-scoping.ts"
+import { context, action, createDreams } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Global actions - available in ALL contexts
+const globalTimeAction = action({
+  name: "get-current-time",
+  description: "Gets the current time",
+  handler: async () => ({ time: new Date().toISOString() }),
+});
+
+// Context-specific actions - only available when context is active
+const chatContext = context({
+  type: "chat",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ messages: [], preferences: {} }),
+}).setActions([
+  action({
+    name: "save-preference",
+    description: "Saves a chat preference",
+    schema: z.object({ key: z.string(), value: z.string() }),
+    handler: async ({ key, value }, ctx) => {
+      ctx.memory.preferences[key] = value;
+      return { saved: true, preference: { key, value } };
+    },
+  }),
+]);
+
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  contexts: [chatContext],
+  actions: [globalTimeAction], // Available in all contexts
+});
+```
+
+### Action Availability During Execution
+
+When a context is active, the LLM sees:
+- **Global actions** (defined at agent level)
+- **Context-specific actions** (from the active context via `.setActions()`)
+- **Composed context actions** (from contexts included via `.use()`)
+
+```typescript title="action-composition-example.ts"
+const analyticsContext = context({
+  type: "analytics", 
+  schema: z.object({ userId: z.string() }),
+}).setActions([
+  action({
+    name: "track-event",
+    description: "Track user event",
+    schema: z.object({ event: z.string() }),
+    handler: async ({ event }, ctx) => {
+      return { tracked: true, event };
+    },
+  }),
+]);
+
+const mainContext = context({
+  type: "main",
+  schema: z.object({ userId: z.string() }),
+})
+.use((state) => [
+  { context: analyticsContext, args: { userId: state.args.userId } }
+])
+.setActions([
+  action({
+    name: "main-action", 
+    description: "Main context action",
+    handler: async () => ({ result: "main" }),
+  }),
+]);
+
+// When mainContext is active, LLM can use:
+// ✅ Global actions from agent
+// ✅ main-action from mainContext  
+// ✅ track-event from composed analyticsContext
+```
+
+### Cross-Context Communication
+
+Actions can access other contexts through the agent instance:
+
+```typescript title="cross-context-actions.ts"
+const syncUserData = action({
+  name: "sync-user-data",
+  description: "Syncs data between user contexts",
+  schema: z.object({ targetUserId: z.string() }),
+  handler: async ({ targetUserId }, ctx) => {
+    // Access another context's state
+    const otherContext = await ctx.agent.getContext({
+      context: chatContext,
+      args: { userId: targetUserId }
+    });
+    
+    // Read from other context and update current context
+    const otherPrefs = otherContext.memory.preferences;
+    ctx.memory.syncedPreferences = otherPrefs;
+    
+    return { 
+      synced: true,
+      preferences: otherPrefs,
+      fromContext: otherContext.id,
+    };
+  },
+});
+```
+
+## Key Takeaways
+
+- **Actions enable capabilities** - Bridge between LLM reasoning and real-world functionality
+- **Return data to LLM** - Unlike outputs, actions provide data for further reasoning
+- **Scoped availability** - Global actions vs context-specific via `.setActions()`
+- **Context composition** - Composed contexts contribute their actions automatically
+- **Cross-context communication** - Access other contexts through the agent instance
+- **Memory access** - Read and modify context memory with automatic persistence
+- **Template resolution** - LLM can reference previous results with `{{calls[0].data}}`
+
+For schema validation, error handling, and external service patterns, see [Building Block Operations](/docs/core/concepts/building-block-operations).

@@ -1,0 +1,40 @@
+[package]
+name = "r402-http"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "HTTP transport layer for the x402 payment protocol."
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = []
+client = ["dep:async-trait", "dep:http", "dep:reqwest", "dep:reqwest-middleware"]
+server = ["dep:axum-core", "dep:http", "dep:reqwest", "dep:serde", "dep:tokio", "dep:tower", "dep:url"]
+telemetry = ["dep:tracing", "r402/telemetry"]
+full = ["client", "server", "telemetry"]
+
+[dependencies]
+r402 = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+async-trait = { workspace = true, optional = true }
+axum-core = { workspace = true, optional = true }
+http = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+reqwest-middleware = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+tower = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+url = { workspace = true, optional = true }
+
+[dev-dependencies]
+wiremock = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,40 @@
+name: Publish to Hex.pm
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.19"
+          otp-version: "27"
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
+      - run: mix deps.get
+      - run: mix compile
+
+      - name: Publish to Hex.pm
+        run: |
+          mix hex.publish --yes 2>&1 || mix hex.publish --yes --replace
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+
+      - name: Publish docs to HexDocs
+        run: mix hex.publish docs --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}

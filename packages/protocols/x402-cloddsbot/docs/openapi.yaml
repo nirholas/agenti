@@ -1,0 +1,1441 @@
+openapi: 3.0.3
+info:
+  title: Clodds Compute API
+  description: |
+    Agent compute marketplace - pay USDC for compute resources.
+    No API keys required, just a wallet address.
+
+    ## Authentication
+    Two methods supported:
+    1. **Bearer Token**: Use API key in Authorization header
+    2. **Wallet in Body**: Include wallet address in request body
+
+    ## Priority Pricing
+    Requests support priority levels with different pricing:
+    - `low` (0.8x) - 20% discount, processed last
+    - `normal` (1.0x) - Standard pricing
+    - `high` (1.5x) - 50% premium, faster processing
+    - `urgent` (2.5x) - 150% premium, highest priority
+
+    ## Payment Networks
+    Supports USDC deposits on Base, Ethereum, and Polygon.
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.clodds.com/v1
+    description: Production
+  - url: http://localhost:3456/v1
+    description: Local development
+
+tags:
+  - name: Health
+    description: Health and status endpoints
+  - name: Compute
+    description: Core compute operations
+  - name: Wallet
+    description: Wallet balance and deposits
+  - name: Jobs
+    description: Job management
+  - name: API Keys
+    description: API key management
+  - name: Limits
+    description: Spending limits
+  - name: Admin
+    description: Admin operations (protected)
+  - name: Bittensor
+    description: Bittensor subnet mining (requires CLODDS_TOKEN auth)
+  - name: Percolator
+    description: On-chain Solana perpetual futures (requires PERCOLATOR_ENABLED)
+  - name: Shield
+    description: Security scanning — code, addresses, transactions
+  - name: Audit
+    description: Token security auditing via GoPlus
+  - name: DCA
+    description: Dollar-cost averaging across 16 platforms
+
+paths:
+  /api/percolator/status:
+    get:
+      tags: [Percolator]
+      summary: Get market state
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Market state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  oraclePrice: { type: number }
+                  totalOpenInterest: { type: number }
+                  vault: { type: number }
+                  fundingRate: { type: number }
+                  bestBid: { type: object, nullable: true }
+                  bestAsk: { type: object, nullable: true }
+                  spreadBps: { type: number }
+                  lastCrankSlot: { type: integer }
+
+  /api/percolator/positions:
+    get:
+      tags: [Percolator]
+      summary: Get user positions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Open positions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  positions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        accountIndex: { type: integer }
+                        side: { type: string, enum: [LONG, SHORT] }
+                        size: { type: number }
+                        entryPrice: { type: number }
+                        capital: { type: number }
+                        pnl: { type: number }
+
+  /api/percolator/trade:
+    post:
+      tags: [Percolator]
+      summary: Execute long/short trade
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [direction, size]
+              properties:
+                direction: { type: string, enum: [long, short] }
+                size: { type: number, description: Size in USD }
+      responses:
+        '200':
+          description: Trade result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  signature: { type: string }
+                  slot: { type: integer }
+                  error: { type: string }
+
+  /api/percolator/deposit:
+    post:
+      tags: [Percolator]
+      summary: Deposit USDC collateral
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount]
+              properties:
+                amount: { type: number }
+      responses:
+        '200':
+          description: Deposit result
+
+  /api/percolator/withdraw:
+    post:
+      tags: [Percolator]
+      summary: Withdraw USDC collateral
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount]
+              properties:
+                amount: { type: number }
+      responses:
+        '200':
+          description: Withdraw result
+
+  /api/shield/scan:
+    post:
+      tags: [Shield]
+      summary: Scan code for malicious patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string }
+      responses:
+        '200':
+          description: Scan results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  riskScore: { type: integer, minimum: 0, maximum: 100 }
+                  findings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category: { type: string }
+                        severity: { type: string }
+                        pattern: { type: string }
+                  entropy: { type: number }
+
+  /api/shield/check:
+    post:
+      tags: [Shield]
+      summary: Check address safety
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address]
+              properties:
+                address: { type: string }
+                chain: { type: string }
+      responses:
+        '200':
+          description: Address safety result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  safe: { type: boolean }
+                  chain: { type: string }
+                  flags: { type: array, items: { type: string } }
+                  riskLevel: { type: string, enum: [safe, low, medium, high, critical] }
+
+  /api/shield/validate:
+    post:
+      tags: [Shield]
+      summary: Pre-flight transaction validation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [destination, amount]
+              properties:
+                destination: { type: string }
+                amount: { type: number }
+                token: { type: string }
+      responses:
+        '200':
+          description: Transaction validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allowed: { type: boolean }
+                  warnings: { type: array, items: { type: string } }
+                  riskLevel: { type: string }
+
+  /api/shield/stats:
+    get:
+      tags: [Shield]
+      summary: Scanner statistics
+      responses:
+        '200':
+          description: Security scanner stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  codeScans: { type: integer }
+                  addressChecks: { type: integer }
+                  txValidations: { type: integer }
+                  threatsBlocked: { type: integer }
+                  scamDbSize: { type: integer }
+
+  /api/audit/{address}:
+    get:
+      tags: [Audit]
+      summary: Token security audit
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema: { type: string }
+        - name: chain
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Token audit result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address: { type: string }
+                  chain: { type: string }
+                  riskScore: { type: integer }
+                  riskLevel: { type: string, enum: [safe, low, medium, high, critical] }
+                  riskFlags: { type: array, items: { type: string } }
+                  isHoneypot: { type: boolean }
+                  totalLiquidity: { type: number }
+                  holderCount: { type: integer }
+
+  /api/audit/{address}/safe:
+    get:
+      tags: [Audit]
+      summary: Quick boolean safety check
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema: { type: string }
+        - name: chain
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Safety boolean
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address: { type: string }
+                  chain: { type: string }
+                  safe: { type: boolean }
+
+  /api/dca/orders:
+    get:
+      tags: [DCA]
+      summary: List active DCA orders
+      responses:
+        '200':
+          description: DCA orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        platform: { type: string }
+                        status: { type: string, enum: [active, paused, completed, cancelled] }
+                        totalAmount: { type: number }
+                        amountPerCycle: { type: number }
+                        cyclesCompleted: { type: integer }
+                        cyclesRemaining: { type: integer }
+
+  /api/dca/create:
+    post:
+      tags: [DCA]
+      summary: Create DCA order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, totalAmount, amountPerCycle, intervalSec]
+              properties:
+                platform: { type: string }
+                marketId: { type: string }
+                tokenId: { type: string }
+                totalAmount: { type: number }
+                amountPerCycle: { type: number }
+                intervalSec: { type: integer, description: Cycle interval in seconds }
+                side: { type: string, enum: [buy, sell] }
+                price: { type: number }
+      responses:
+        '200':
+          description: DCA order created
+
+  /api/dca/{id}:
+    get:
+      tags: [DCA]
+      summary: Get DCA order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: DCA order details
+        '404':
+          description: Order not found
+    delete:
+      tags: [DCA]
+      summary: Cancel and delete a DCA order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Order deleted
+        '404':
+          description: Order not found
+
+  /api/dca/{id}/pause:
+    post:
+      tags: [DCA]
+      summary: Pause a running DCA order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Order paused
+        '400':
+          description: Cannot pause (wrong status)
+        '404':
+          description: Order not found
+
+  /api/dca/{id}/resume:
+    post:
+      tags: [DCA]
+      summary: Resume a paused DCA order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Order resumed
+        '400':
+          description: Cannot resume (wrong status)
+        '404':
+          description: Order not found
+
+  /api/bittensor/status:
+    get:
+      tags: [Bittensor]
+      summary: Get mining status
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Mining status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      connected: { type: boolean }
+                      network: { type: string, enum: [mainnet, testnet, local] }
+                      walletLoaded: { type: boolean }
+                      totalTaoEarned: { type: number }
+                      totalUsdEarned: { type: number }
+                      activeMiners:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            subnetId: { type: integer }
+                            type: { type: string }
+                            running: { type: boolean }
+                            uid: { type: integer, nullable: true }
+                            emission: { type: number, nullable: true }
+                            rank: { type: integer, nullable: true }
+
+  /api/bittensor/wallet:
+    get:
+      tags: [Bittensor]
+      summary: Get wallet info and balance
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wallet info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      coldkeyAddress: { type: string }
+                      balance:
+                        type: object
+                        properties:
+                          free: { type: number }
+                          staked: { type: number }
+                          total: { type: number }
+                      network: { type: string }
+                      hotkeys:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            address: { type: string }
+                            name: { type: string }
+                            registeredSubnets:
+                              type: array
+                              items: { type: integer }
+
+  /api/bittensor/earnings:
+    get:
+      tags: [Bittensor]
+      summary: Get earnings by period
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [hourly, daily, weekly, monthly, all]
+            default: daily
+      responses:
+        '200':
+          description: Earnings list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subnetId: { type: integer }
+                        hotkey: { type: string }
+                        taoEarned: { type: number }
+                        usdEarned: { type: number }
+                        apiCost: { type: number }
+                        infraCost: { type: number }
+                        netProfit: { type: number }
+                        period: { type: string }
+                        createdAt: { type: string, format: date-time }
+
+  /api/bittensor/miners:
+    get:
+      tags: [Bittensor]
+      summary: Get registered miner statuses
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Miner statuses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subnetId: { type: integer }
+                        hotkey: { type: string }
+                        uid: { type: integer }
+                        trust: { type: number }
+                        incentive: { type: number }
+                        emission: { type: number }
+                        rank: { type: integer }
+                        active: { type: boolean }
+                        updatedAt: { type: string, format: date-time }
+
+  /api/bittensor/subnets:
+    get:
+      tags: [Bittensor]
+      summary: List available subnets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Subnet list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        netuid: { type: integer }
+                        name: { type: string }
+                        minerCount: { type: integer }
+                        validatorCount: { type: integer }
+                        emissionPct: { type: number }
+                        registrationCost: { type: number }
+                        immunityPeriodBlocks: { type: integer }
+
+  /api/bittensor/register:
+    post:
+      tags: [Bittensor]
+      summary: Register on a subnet
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subnetId]
+              properties:
+                subnetId: { type: integer }
+                hotkeyName: { type: string }
+      responses:
+        '200':
+          description: Registration result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  message: { type: string }
+
+  /api/bittensor/start:
+    post:
+      tags: [Bittensor]
+      summary: Start mining on a subnet
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subnetId]
+              properties:
+                subnetId: { type: integer }
+      responses:
+        '200':
+          description: Start result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  message: { type: string }
+
+  /api/bittensor/stop:
+    post:
+      tags: [Bittensor]
+      summary: Stop mining on a subnet
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subnetId]
+              properties:
+                subnetId: { type: integer }
+      responses:
+        '200':
+          description: Stop result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  message: { type: string }
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: clodds-compute
+                  version:
+                    type: string
+                    example: v1
+
+  /pricing:
+    get:
+      tags: [Health]
+      summary: Get service pricing
+      responses:
+        '200':
+          description: Pricing for all services
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ServicePricing'
+
+  /metrics:
+    get:
+      tags: [Health]
+      summary: Get API metrics
+      responses:
+        '200':
+          description: API metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics'
+
+  /admin/metrics:
+    get:
+      tags: [Admin]
+      summary: Get detailed admin metrics
+      security:
+        - AdminToken: []
+      responses:
+        '200':
+          description: Detailed admin metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMetrics'
+        '401':
+          description: Invalid or missing admin token
+
+  /balance/{wallet}:
+    get:
+      tags: [Wallet]
+      summary: Get wallet balance
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^0x[a-fA-F0-9]{40}$'
+      responses:
+        '200':
+          description: Wallet balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletBalance'
+
+  /deposit:
+    post:
+      tags: [Wallet]
+      summary: Deposit credits
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wallet, paymentProof]
+              properties:
+                wallet:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                paymentProof:
+                  $ref: '#/components/schemas/PaymentProof'
+      responses:
+        '200':
+          description: Deposit successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResult'
+
+  /estimate:
+    post:
+      tags: [Compute]
+      summary: Estimate cost for a request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service]
+              properties:
+                service:
+                  $ref: '#/components/schemas/ComputeService'
+                payload:
+                  type: object
+                priority:
+                  $ref: '#/components/schemas/Priority'
+      responses:
+        '200':
+          description: Cost estimate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CostEstimate'
+
+  /compute/{service}:
+    post:
+      tags: [Compute]
+      summary: Submit compute request
+      security:
+        - BearerAuth: []
+        - {}
+      parameters:
+        - name: service
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ComputeService'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComputeRequest'
+      responses:
+        '202':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComputeResponse'
+        '400':
+          description: Invalid request
+        '402':
+          description: Insufficient balance
+        '429':
+          description: Rate limit exceeded
+
+  /batch:
+    post:
+      tags: [Compute]
+      summary: Submit batch of compute requests
+      security:
+        - BearerAuth: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wallet, requests]
+              properties:
+                wallet:
+                  type: string
+                  description: Only required if not using Bearer token
+                requests:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: object
+                    required: [service]
+                    properties:
+                      service:
+                        $ref: '#/components/schemas/ComputeService'
+                      payload:
+                        type: object
+                      priority:
+                        $ref: '#/components/schemas/Priority'
+      responses:
+        '200':
+          description: Batch results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchResponse'
+
+  /stream/llm:
+    post:
+      tags: [Compute]
+      summary: Streaming LLM inference (SSE)
+      security:
+        - BearerAuth: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LLMRequest'
+      responses:
+        '200':
+          description: SSE stream of LLM response
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /jobs/{wallet}:
+    get:
+      tags: [Jobs]
+      summary: List jobs for wallet
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ComputeResponse'
+                  count:
+                    type: integer
+
+  /job/{jobId}:
+    get:
+      tags: [Jobs]
+      summary: Get job status
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComputeResponse'
+        '404':
+          description: Job not found
+    delete:
+      tags: [Jobs]
+      summary: Cancel job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: X-Wallet-Address
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job cancelled
+        '400':
+          description: Cannot cancel job
+
+  /limits/{wallet}:
+    get:
+      tags: [Limits]
+      summary: Get spending limits
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Spending limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingLimits'
+    post:
+      tags: [Limits]
+      summary: Set spending limits
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dailyLimit:
+                  type: number
+                  nullable: true
+                monthlyLimit:
+                  type: number
+                  nullable: true
+      responses:
+        '200':
+          description: Updated spending limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingLimits'
+
+  /apikeys:
+    post:
+      tags: [API Keys]
+      summary: Create API key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wallet]
+              properties:
+                wallet:
+                  type: string
+                name:
+                  type: string
+                  maxLength: 50
+                  default: Default
+      responses:
+        '201':
+          description: API key created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    type: string
+                    description: The full API key (only shown once)
+                  wallet:
+                    type: string
+                  name:
+                    type: string
+
+  /apikeys/{wallet}:
+    get:
+      tags: [API Keys]
+      summary: List API keys for wallet
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of API keys (masked)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKeys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        apiKey:
+                          type: string
+                          description: Masked API key
+                        name:
+                          type: string
+                        createdAt:
+                          type: integer
+                        lastUsedAt:
+                          type: integer
+                          nullable: true
+                        revoked:
+                          type: boolean
+                  count:
+                    type: integer
+
+  /apikeys/{wallet}/{apiKey}:
+    delete:
+      tags: [API Keys]
+      summary: Revoke API key
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: apiKey
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: API key revoked
+        '404':
+          description: API key not found
+
+  /cache/stats:
+    get:
+      tags: [Health]
+      summary: Get LLM cache statistics
+      responses:
+        '200':
+          description: Cache statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hits:
+                    type: integer
+                  misses:
+                    type: integer
+                  size:
+                    type: integer
+                  hitRate:
+                    type: number
+
+  /cache:
+    delete:
+      tags: [Admin]
+      summary: Clear LLM cache
+      responses:
+        '200':
+          description: Cache cleared
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key authentication
+    AdminToken:
+      type: http
+      scheme: bearer
+      description: Admin token for protected endpoints
+
+  schemas:
+    ComputeService:
+      type: string
+      enum: [llm, code, web, data, storage, trade, gpu, ml, security]
+
+    Priority:
+      type: string
+      enum: [low, normal, high, urgent]
+      default: normal
+
+    ServicePricing:
+      type: object
+      properties:
+        basePrice:
+          type: number
+        pricePerUnit:
+          type: number
+        unit:
+          type: string
+        minCharge:
+          type: number
+        maxCharge:
+          type: number
+
+    WalletBalance:
+      type: object
+      properties:
+        wallet:
+          type: string
+        available:
+          type: number
+        pending:
+          type: number
+        totalDeposited:
+          type: number
+        totalSpent:
+          type: number
+
+    PaymentProof:
+      type: object
+      required: [txHash, network, amountUsd]
+      properties:
+        txHash:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{64}$'
+        network:
+          type: string
+          enum: [base, ethereum, polygon]
+        amountUsd:
+          type: number
+        token:
+          type: string
+          default: USDC
+        timestamp:
+          type: integer
+
+    DepositResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        newBalance:
+          type: number
+        deposited:
+          type: number
+        error:
+          type: string
+
+    CostEstimate:
+      type: object
+      properties:
+        service:
+          $ref: '#/components/schemas/ComputeService'
+        estimatedCost:
+          type: number
+        breakdown:
+          type: object
+          properties:
+            base:
+              type: number
+            usage:
+              type: number
+            subtotal:
+              type: number
+            priorityMultiplier:
+              type: number
+            total:
+              type: number
+        units:
+          type: integer
+        unitType:
+          type: string
+        minCharge:
+          type: number
+        maxCharge:
+          type: number
+        priority:
+          $ref: '#/components/schemas/Priority'
+
+    ComputeRequest:
+      type: object
+      properties:
+        wallet:
+          type: string
+          description: Required if not using Bearer token
+        payload:
+          type: object
+        priority:
+          $ref: '#/components/schemas/Priority'
+        callbackUrl:
+          type: string
+        meta:
+          type: object
+
+    ComputeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        jobId:
+          type: string
+        service:
+          $ref: '#/components/schemas/ComputeService'
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        result:
+          type: object
+        error:
+          type: string
+        cost:
+          type: number
+        timestamp:
+          type: integer
+
+    BatchResponse:
+      type: object
+      properties:
+        batchId:
+          type: string
+        total:
+          type: integer
+        successful:
+          type: integer
+        failed:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComputeResponse'
+
+    LLMRequest:
+      type: object
+      properties:
+        wallet:
+          type: string
+        payload:
+          type: object
+          properties:
+            model:
+              type: string
+              enum: [claude-sonnet-4-20250514, claude-3-5-haiku-latest, claude-opus-4-20250514, gpt-4o, gpt-4o-mini, llama-3.1-70b, llama-3.1-8b, mixtral-8x7b]
+            messages:
+              type: array
+              items:
+                type: object
+                properties:
+                  role:
+                    type: string
+                    enum: [user, assistant, system]
+                  content:
+                    type: string
+            maxTokens:
+              type: integer
+            temperature:
+              type: number
+
+    Metrics:
+      type: object
+      properties:
+        uptime:
+          type: integer
+          description: Uptime in milliseconds
+        totalRequests:
+          type: integer
+        totalRevenue:
+          type: number
+        activeJobs:
+          type: integer
+        jobsByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        requestsByService:
+          type: object
+          additionalProperties:
+            type: integer
+
+    AdminMetrics:
+      allOf:
+        - $ref: '#/components/schemas/Metrics'
+        - type: object
+          properties:
+            circuitBreakers:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    enum: [closed, open, half-open]
+                  failures:
+                    type: integer
+                  lastFailure:
+                    type: integer
+                    nullable: true
+                  cooldownUntil:
+                    type: integer
+                    nullable: true
+            recentErrors:
+              type: array
+              items:
+                type: object
+                properties:
+                  service:
+                    type: string
+                  error:
+                    type: string
+                  timestamp:
+                    type: integer
+            systemInfo:
+              type: object
+              properties:
+                nodeVersion:
+                  type: string
+                platform:
+                  type: string
+                memoryUsageMB:
+                  type: integer
+                cpuUsagePercent:
+                  type: number
+            llmCache:
+              type: object
+              properties:
+                hits:
+                  type: integer
+                misses:
+                  type: integer
+                size:
+                  type: integer
+                hitRate:
+                  type: number
+
+    SpendingLimits:
+      type: object
+      properties:
+        wallet:
+          type: string
+        dailyLimit:
+          type: number
+          nullable: true
+        monthlyLimit:
+          type: number
+          nullable: true
+        dailySpent:
+          type: number
+        monthlySpent:
+          type: number
+        dailyRemaining:
+          type: number
+          nullable: true
+        monthlyRemaining:
+          type: number
+          nullable: true

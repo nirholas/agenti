@@ -1,0 +1,161 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Optional git tag to create (defaults to v<primary version>)'
+        required: false
+        type: string
+      release_name:
+        description: 'Optional release title override'
+        required: false
+        type: string
+      dry_run:
+        description: 'Run without committing, tagging, publishing, or creating a release'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.ref_type == 'branch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate release plan
+        id: plan
+        run: |
+          PLAN_PATH="$RUNNER_TEMP/release-plan.json"
+          NOTES_PATH="$RUNNER_TEMP/release-notes.md"
+          bun run changeset status --json > "$PLAN_PATH"
+          bun run changeset status --output "$NOTES_PATH"
+          echo "RELEASE_PLAN_PATH=$PLAN_PATH" >> "$GITHUB_ENV"
+          echo "RELEASE_NOTES_PATH=$NOTES_PATH" >> "$GITHUB_ENV"
+        env:
+          FORCE_COLOR: '1'
+
+      - name: Determine release metadata
+        id: metadata
+        env:
+          PLAN_PATH: ${{ env.RELEASE_PLAN_PATH }}
+          RELEASE_TAG_INPUT: ${{ github.event.inputs.release_tag }}
+          RELEASE_NAME_INPUT: ${{ github.event.inputs.release_name }}
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
+          const planPath = process.env.PLAN_PATH;
+          if (!planPath || !fs.existsSync(planPath)) {
+            console.log('Release plan file not found.');
+            process.exit(0);
+          }
+          const data = JSON.parse(fs.readFileSync(planPath, 'utf8'));
+          const releases = Array.isArray(data.releases) ? data.releases : [];
+          if (!releases.length) {
+            console.log('No pending changesets found. Nothing to release.');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'should_publish=false\n');
+            process.exit(0);
+          }
+          const primary = releases[0];
+          const defaultTag = `v${primary.newVersion}`;
+          const tag = (process.env.RELEASE_TAG_INPUT || '').trim() || defaultTag;
+          const releaseName = (process.env.RELEASE_NAME_INPUT || '').trim() || `Release ${primary.newVersion}`;
+          fs.appendFileSync(process.env.GITHUB_ENV, `RELEASE_TAG=${tag}\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `RELEASE_NAME=${releaseName}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `should_publish=true\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `primary_version=${primary.newVersion}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `primary_package=${primary.name}\n`);
+          EOF
+
+      - name: Configure git user
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump versions
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        run: bun run release:version
+
+      - name: Commit version changes
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          if git diff --quiet; then
+            echo "No changes produced by release:version step."
+            exit 1
+          fi
+          git add -A
+          git commit -m "chore: release"
+
+      - name: Create release tag
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git tag -a "${RELEASE_TAG}" -m "${RELEASE_NAME}"
+
+      - name: Verify npm token
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::error::NPM_TOKEN secret is required to publish packages."
+            exit 1
+          fi
+
+      - name: Configure npm auth
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+      - name: Publish packages
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun run release:publish
+
+      - name: Push release commit and tags
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        run: git push --follow-tags origin HEAD:${{ github.ref_name }}
+
+      - name: Publish GitHub release
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_NAME }}
+          body_path: ${{ env.RELEASE_NOTES_PATH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Finish dry run
+        if: steps.metadata.outputs.should_publish == 'true' && github.event.inputs.dry_run == 'true'
+        run: |
+          echo "::notice title=Dry Run::Release plan generated. Skipping versioning, tagging, and publishing."
+
+      - name: No release required
+        if: steps.metadata.outputs.should_publish != 'true'
+        run: echo "::notice title=Release::No pending changesets found."

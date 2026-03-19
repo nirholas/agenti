@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+  # Nightly schedule for devnet integration tests (02:00 UTC)
+  schedule:
+    - cron: "0 2 * * *"
+
+# Default: read-only access for all jobs (least privilege)
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check protocol/ core/ adapters/
+
+  test-protocol:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e "protocol/[dev]"
+      - run: cd protocol && pytest tests/ -v --cov=open402 --cov-report=xml --cov-fail-under=80
+
+  test-core:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e protocol/ -e "adapters/mcp/[dev]" && pip install -e "core/[dev]"
+      # Explicitly exclude devnet/localnet tests in CI — they need real
+      # Solana infrastructure that is only available in dedicated jobs.
+      - run: cd core && pytest tests/ -v -m "not devnet and not localnet" --cov=ag402_core --cov-report=xml --cov-fail-under=50
+
+  test-adapters:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e protocol/ -e core/ -e "adapters/mcp/[dev]"
+      - run: cd adapters/mcp && pytest tests/ -v
+
+  test-client-mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e protocol/ -e core/ -e "adapters/client_mcp/[dev]"
+      - run: cd adapters/client_mcp && pytest tests/ -v
+
+  # ── Localnet integration tests (solana-test-validator in CI) ──────────
+  test-localnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+      - name: Install Python deps (with crypto)
+        run: pip install -e protocol/ -e "core/[crypto,dev]"
+      - name: Start solana-test-validator
+        run: |
+          solana-test-validator --reset --quiet &
+          sleep 8
+          solana config set --url http://127.0.0.1:8899
+      - name: Run localnet tests
+        run: cd core && pytest tests/ -m localnet -v -s --timeout=120
+      - name: Stop validator
+        if: always()
+        run: pkill -f solana-test-validator || true
+
+  # ── Devnet integration tests (nightly or manual trigger) ──────────────
+  test-devnet:
+    runs-on: ubuntu-latest
+    # Only run on schedule (nightly) or manual dispatch — not on every PR
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Python deps (with crypto)
+        run: pip install -e protocol/ -e "core/[crypto,dev]"
+      - name: Run devnet tests
+        env:
+          DEVNET_BUYER_PRIVATE_KEY: ${{ secrets.DEVNET_BUYER_PRIVATE_KEY }}
+          DEVNET_SELLER_PUBKEY: ${{ secrets.DEVNET_SELLER_PUBKEY }}
+        run: cd core && pytest tests/ -m devnet -v -s --timeout=180
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test-protocol, test-core, test-adapters, test-client-mcp, test-localnet]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: cd protocol && python -m build
+      - run: cd core && python -m build
+      - run: cd adapters/mcp && python -m build
+      - run: cd adapters/client_mcp && python -m build

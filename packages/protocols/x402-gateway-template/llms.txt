@@ -1,0 +1,297 @@
+# x402 Payment Gateway Template
+
+> A self-hosted, multi-chain payment gateway implementing the x402 protocol (HTTP 402 Payment Required). Accepts USDC micropayments per API request with on-chain settlement. No API keys, no subscriptions, no intermediaries.
+
+## What This Is
+
+This is a production-ready Express.js gateway that sits in front of any backend API and adds per-request USDC payments via the x402 protocol. The backend never knows x402 exists — it just receives authenticated requests.
+
+## How x402 Works
+
+```
+1. Agent calls your API
+2. Gateway returns HTTP 402 with payment requirements (chain, amount, token, payTo address)
+3. Agent signs a USDC transfer authorization (EIP-712 for EVM, partial tx for Solana)
+4. Agent retries with signed payment in Payment-Signature header (base64 JSON)
+5. Gateway verifies signature → settles on-chain → proxies to backend with internal API key
+6. Agent gets API response + Payment-Response header with tx hash
+```
+
+## Supported Chains (14 total)
+
+### EVM Chains (13) — Local Settlement via viem
+All use native Circle USDC with EIP-3009 (transferWithAuthorization).
+
+| Chain | CAIP-2 | Chain ID | USDC Address | EIP-712 Domain Name |
+|-------|--------|----------|--------------|---------------------|
+| Base | eip155:8453 | 8453 | 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 | USD Coin |
+| Ethereum | eip155:1 | 1 | 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 | USD Coin |
+| Arbitrum | eip155:42161 | 42161 | 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 | USD Coin |
+| Optimism | eip155:10 | 10 | 0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85 | USD Coin |
+| Polygon | eip155:137 | 137 | 0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359 | USD Coin |
+| Avalanche | eip155:43114 | 43114 | 0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E | USD Coin |
+| Unichain | eip155:130 | 130 | 0x078D782b760474a361dDA0AF3839290b0EF57AD6 | USD Coin |
+| Linea | eip155:59144 | 59144 | 0x176211869cA2b568f2A7D4EE941E073a821EE1ff | USD Coin |
+| Sonic | eip155:146 | 146 | 0x29219dd400f2Bf60E5a23d13Be72B486D4038894 | USDC |
+| HyperEVM | eip155:999 | 999 | 0xb88339CB7199b77E23DB6E890353E22632Ba630f | USDC |
+| Ink | eip155:57073 | 57073 | 0x2D270e6886d130D724215A266106e6832161EAEd | USDC |
+| Monad | eip155:143 | 143 | 0x754704Bc059F8C67012fEd69BC8a327a5aafb603 | USDC |
+| MegaETH | eip155:4326 | 4326 | 0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7 | MegaUSD (18 decimals, via Meridian facilitator) |
+
+IMPORTANT: Some newer chains use "USDC" as the EIP-712 domain name instead of "USD Coin". Always verify by calling name() on the USDC contract. Using the wrong domain name causes "FiatTokenV2: invalid signature" errors at settlement time. All contracts use version: "2".
+
+### SVM Chain (1) — Settlement via @x402/svm
+| Chain | CAIP-2 | USDC Mint |
+|-------|--------|-----------|
+| Solana | solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp | EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v |
+
+## File Structure
+
+```
+src/
+├── index.js              # Express app, route registration, discovery endpoints
+├── proxy.js              # Backend proxy — injects internal API key, hides x402
+├── middleware/
+│   └── x402.js           # Core: payment verification, on-chain settlement, credit system
+├── config/
+│   └── routes.js         # Route definitions, network registry, pricing, credit config
+└── utils/
+    └── redis.js          # Nonce tracking, idempotency cache, credit operations
+public/
+└── index.html            # Optional landing page
+docs/
+├── deploy-gcp.md         # GCP Cloud Run deployment guide
+├── deploy-aws.md         # AWS ECS/Fargate deployment guide
+└── deploy-paas.md        # Railway, Fly.io, Render deployment guide
+.env.example              # All configuration variables with descriptions
+cloudbuild.yaml           # GCP Cloud Build CI/CD config
+Dockerfile                # Production container (non-root user)
+```
+
+## Key Files Explained
+
+### src/config/routes.js
+Defines everything about your paid API: routes, pricing, backend URLs, network registry, and credit config. This is the primary file users customize.
+
+- `usdc(address)` helper — creates token config with standard EIP-712 domain (name: "USD Coin", version: "2", decimals: 6)
+- Network constants (BASE, ETHEREUM, etc.) — each has vm, caip2, chainId, rpcEnvVar, token
+- `ALL_NETWORKS` — registry of all supported networks
+- `getActiveNetworks()` — filters to only networks with configured RPC URLs
+- `SUPPORTED_NETWORKS` — lazy Proxy that resolves after dotenv loads
+- `ROUTE_CONFIG` — route definitions with pricing, backend config, credit overrides
+- `CREDIT_DEFAULTS` — global defaults for the credit system
+
+### src/middleware/x402.js
+The core payment middleware. Handles the full lifecycle: verify → credit check → settle → proxy.
+
+Three settlement paths:
+1. **EVM local** — verifies EIP-712 signature, calls transferWithAuthorization via viem
+2. **EVM facilitator** — delegates verify/settle to an external service (e.g. Meridian for MegaETH)
+3. **SVM** — uses @x402/svm ExactSvmScheme, gateway co-signs as feePayer
+
+Key functions:
+- `x402PaymentMiddleware(routeKey)` — Express middleware factory, the main entry point
+- `verifyPaymentEvm()` — EIP-712 signature verification + balance check
+- `settlePaymentEvm()` — on-chain transferWithAuthorization via viem
+- `verifyPaymentSvm()` / `settlePaymentSvm()` — Solana facilitator pattern
+- `verifyPaymentViaFacilitator()` / `settlePaymentViaFacilitator()` — external facilitator delegation
+- `buildPaymentRequired()` — constructs 402 response with all supported networks
+- `isCreditSystemEnabled()` / `getCreditConfig()` — credit system helpers
+
+### src/utils/redis.js
+All Redis operations with consistent error handling patterns.
+
+- Nonce operations: `getNonce`, `setNoncePending`, `setNonceConfirmed`, `deleteNonce`
+- Idempotency: `getIdempotencyCache`, `setIdempotencyCache`
+- Credits: `getCreditCount`, `decrementCredit`, `incrementCredit` (Lua scripts for atomicity)
+- Fail-open on reads (settlement still checks on-chain), fail-closed on writes (rejects to be safe)
+
+### src/proxy.js
+Proxies authenticated requests to your backend. Injects the internal API key header. Your backend never sees x402 headers or payment data.
+
+### src/index.js
+Express app setup, route registration, and discovery endpoints:
+- `GET /health` — gateway + backend status
+- `GET /accepted` — agent discovery with pricing, networks, schemas
+- `GET /.well-known/x402` — x402 discovery document
+- `ALL /v1/{route}/*` — paid routes (wrapped with x402PaymentMiddleware)
+
+## How to Customize
+
+### Adding a New Paid Route
+
+1. In `src/config/routes.js`, add to `ROUTE_CONFIG`:
+```js
+myapi: {
+  path: '/v1/myapi/*',
+  backendName: 'My API',
+  get backendUrl() { return process.env.MY_BACKEND_URL; },
+  backendApiKeyEnv: 'MY_BACKEND_API_KEY',
+  backendApiKeyHeader: 'x-api-key',
+  get price() { return process.env.MY_PRICE || '$0.05'; },
+  get priceAtomic() { return process.env.MY_PRICE_ATOMIC || '50000'; },
+  get payTo() { return process.env.MY_PAY_TO_ADDRESS || process.env.PAY_TO_ADDRESS; },
+  description: 'What your API does',
+  mimeType: 'application/json',
+}
+```
+
+2. In `src/index.js`, register the route:
+```js
+app.all('/v1/myapi/{*path}', x402PaymentMiddleware('myapi'), async (req, res) => {
+  const subpath = getSubpath(req.params);
+  await proxyToBackend({ req, res, targetBase: ROUTE_CONFIG.myapi.backendUrl, targetPath: '/api/' + subpath, apiKey: process.env[ROUTE_CONFIG.myapi.backendApiKeyEnv], apiKeyHeader: ROUTE_CONFIG.myapi.backendApiKeyHeader });
+});
+```
+
+3. Add env vars to `.env`: `MY_BACKEND_URL`, `MY_BACKEND_API_KEY`
+
+### Adding a New EVM Chain
+
+1. Verify the chain's USDC contract has `transferWithAuthorization` (EIP-3009)
+2. Check `name()` on-chain — use "USD Coin" or "USDC" accordingly
+3. Add network config in `routes.js`:
+```js
+const MY_CHAIN = {
+  vm: 'evm',
+  caip2: 'eip155:CHAIN_ID',
+  chainId: CHAIN_ID,
+  rpcEnvVar: 'MY_CHAIN_RPC_URL',
+  token: usdc('0xCONTRACT_ADDRESS'),  // or explicit object if name differs
+};
+```
+4. Add to `ALL_NETWORKS`: `'eip155:CHAIN_ID': MY_CHAIN`
+5. In `x402.js`, add viem chain import and register in `VIEM_CHAINS` map
+6. Add `MY_CHAIN_RPC_URL` to `.env`
+7. Fund settlement wallet with gas on that chain
+
+### Changing Pricing
+
+Prices are in USDC atomic units (6 decimals):
+- $0.01 = 10000
+- $0.05 = 50000
+- $0.10 = 100000
+- $1.00 = 1000000
+
+Set via env vars (`MY_PRICE_ATOMIC`) or directly in route config.
+
+MegaETH USDM uses 18 decimals — the gateway auto-scales pricing automatically.
+
+## Credit System
+
+Optional feature that compensates payers when the backend fails after on-chain settlement.
+
+### How It Works
+1. Agent pays → gateway settles on-chain → backend returns 5xx
+2. Gateway issues a credit asynchronously (res.on('finish') — zero response delay)
+3. Next request: agent signs new payment (proves identity) → gateway finds credit → skips settlement
+4. Response includes `X-x402-Credit: consumed` header
+
+### Configuration
+Enable globally: `ENABLE_CREDIT_SYSTEM=true`
+
+Per-route overrides in `ROUTE_CONFIG`:
+```js
+creditOnStatusCodes: [500, 502, 503, 504],  // Which errors earn credits
+maxCreditsPerPayer: 10,                       // Cap per payer per route
+creditTtl: 86400,                             // 24 hours
+```
+
+Falls back to `CREDIT_DEFAULTS` if not specified on the route.
+
+### Security Properties
+- Payer identity from cryptographically verified signature — cannot be spoofed
+- Credits scoped per payer address per route — no cross-route usage
+- Atomic Redis Lua scripts — no race conditions on concurrent requests
+- Capped per payer — prevents unlimited accumulation from degraded backend
+- Graceful degradation — Redis failures silently disable credits, normal flow continues
+
+## Settlement Architecture
+
+### Settlement Wallet
+- Only pays gas fees to submit transactions — never holds or receives stablecoins
+- Same private key works across all EVM chains
+- Fund with small amounts of native gas tokens per chain (~$2-5 each)
+- Payment flow: Payer → (USDC) → Your payTo wallet (direct on-chain transfer)
+
+### Three Settlement Paths
+1. **EVM Local** — Gateway calls transferWithAuthorization via viem. Direct, no intermediary.
+2. **EVM Facilitator** — Delegates to external service (e.g. Meridian). Used when token doesn't support EIP-3009 natively.
+3. **SVM (Solana)** — Client partially signs, gateway co-signs as feePayer via @x402/svm.
+
+### Replay Protection
+- Redis nonce tracking with atomic NX (set-if-not-exists)
+- Pending TTL (1 hour) auto-cleans if settlement crashes
+- Nonce deleted on settlement failure for immediate retry
+- Confirmed nonce stored 7 days for audit trail
+
+### Idempotency
+- payment-identifier extension in the x402 payload
+- Cached responses returned on duplicate submissions
+- Prevents double-charging on network retries
+
+## Environment Variables Reference
+
+### Required
+- `SETTLEMENT_PRIVATE_KEY` — 0x hex private key for gas-paying wallet
+- `PAY_TO_ADDRESS` — EVM address that receives USDC payments
+- `BASE_RPC_URL` — at least one RPC endpoint
+- `MY_BACKEND_URL` — your API base URL
+- `MY_BACKEND_API_KEY` — internal auth for your backend
+- `UPSTASH_REDIS_REST_URL` — Redis REST URL
+- `UPSTASH_REDIS_REST_TOKEN` — Redis REST token
+
+### RPC URLs (chain auto-enabled when set)
+- `BASE_RPC_URL`, `ETHEREUM_RPC_URL`, `ARBITRUM_RPC_URL`, `OPTIMISM_RPC_URL`
+- `POLYGON_RPC_URL`, `AVALANCHE_RPC_URL`, `UNICHAIN_RPC_URL`, `LINEA_RPC_URL`
+- `SONIC_RPC_URL`, `HYPEREVM_RPC_URL`, `INK_RPC_URL`, `MONAD_RPC_URL`
+- `MEGAETH_RPC_URL` + `MERIDIAN_API_KEY` (facilitator)
+- `SOLANA_RPC_URL` + `SOLANA_FACILITATOR_PRIVATE_KEY`
+
+### Optional
+- `ENABLE_CREDIT_SYSTEM` — "true" to enable credit system (default: "false")
+- `PORT` — server port (default: 8080)
+- `MY_PRICE` — display price string
+- `MY_PRICE_ATOMIC` — price in USDC atomic units (6 decimals)
+- Route-specific: `MY_PAY_TO_ADDRESS`, `MY_PAY_TO_ADDRESS_SOL`
+
+## Design Decisions
+
+- **Backend isolation** — Backend never sees x402. Gateway injects internal API key. Any existing API works without modification.
+- **Fail-open reads, fail-closed writes** — Redis read failures don't block payments (on-chain settlement still validates). Write failures reject payment to prevent replays.
+- **No fund custody** — Settlement wallet only pays gas. USDC flows directly payer → payTo. No withdrawal step, no intermediary holding funds.
+- **Lazy initialization** — Redis client, SVM facilitator, and network registry all initialize on first use. Prevents startup crashes from slow services.
+- **Per-chain auto-discovery** — Only chains with configured RPC URLs appear in 402 responses. No dead payment paths.
+- **Credit system is async** — Credit issuance fires on res.on('finish'), never delays the response to the client.
+- **Atomic nonce locking** — Redis NX ensures exactly-once settlement even with concurrent requests.
+
+## Dependencies
+
+- `express` ^5.2.1 — HTTP server
+- `viem` ^2.45.2 — EVM transaction signing and settlement
+- `@x402/svm` ^2.3.0 — Solana facilitator pattern
+- `@solana/kit` ^6.1.0 — Solana keypair management
+- `@upstash/redis` ^1.36.2 — Redis for nonce tracking, idempotency, credits
+- `dotenv` ^17.2.4 — Environment configuration
+- `cors` ^2.8.6 — CORS headers
+
+## API Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/health` | Free | Gateway health + backend connectivity |
+| GET | `/accepted` | Free | Agent discovery — pricing, networks, schemas |
+| GET | `/.well-known/x402` | Free | x402 protocol discovery document |
+| ALL | `/v1/{route}/*` | x402 | Paid routes — requires Payment-Signature header |
+
+## Deployment
+
+Supports Docker-based deployment on any platform:
+- GCP Cloud Run (cloudbuild.yaml + Secret Manager) — see docs/deploy-gcp.md
+- AWS ECS/Fargate (Secrets Manager + ECR) — see docs/deploy-aws.md
+- Railway, Fly.io, Render — see docs/deploy-paas.md
+- Any Docker host with reverse proxy (nginx/Caddy)
+
+## License
+
+MIT

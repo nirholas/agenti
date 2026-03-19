@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Circuit files (large, should be downloaded from CDN)
+*.wasm
+*.zkey
+*.r1cs
+*.sym
+*.ptau
+
+# Test files
+test-*.js
+test-*.ts
+*.test.js
+*.test.ts
+
+# Internal tooling (separate deployment)
+bundler-api/
+
+# Package artifacts
+*.tgz

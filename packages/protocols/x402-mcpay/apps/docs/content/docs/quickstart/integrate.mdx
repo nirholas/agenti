@@ -1,0 +1,93 @@
+---
+title: "Clients"
+description: "Connect MCPay-protected servers to MCP clients (ChatGPT, Claude Desktop, Windsurf, etc.) or integrate programmatically with the SDK/CLI."
+---
+
+When browsing the **[Registry](https://mcpay.tech/servers)** you can explore all public MCPay-enabled servers.
+Each server entry includes an Integration tab — your starting point for connecting, testing, and calling its tools.
+
+The Integration tab shows how to connect to that server from different environments — including predefined clients like ChatGPT, Cursor, and others, or through a JSON connection or code snippet using the MCPay SDK and CLI.
+
+<img src="/integration-tab-screenshot.png" width="200" alt="Integration tab screenshot" style={{display: 'block', margin: '0 auto'}} />
+
+---
+
+## Programmatic Integration
+
+Build custom apps that call tools programmatically. Pick one of two transports:
+
+* **Wallet (x402 payments):** automatic `402` pay → retry flow using an on-chain wallet.
+* **HTTP + API key (no wallet):** simple auth with an API key.
+
+Find a MCP URL for any MCP server from the **[Registry](https://mcpay.tech/servers)**.
+
+### Option 1 — Wallet payment via SDK (x402)
+
+Handles `HTTP 402` automatically: receives price metadata → pays on-chain → retries.
+
+```ts
+import { Client } from '@modelcontextprotocol/sdk/client/index'
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/transport/streamable-http'
+import { withX402Client } from 'mcpay/client'
+import { createSigner } from 'x402/types'
+
+// Initialize MCP client
+const client = new Client({ name: 'my-mcp-client', version: '1.0.0' })
+
+// Connect over HTTP transport
+const MCP_SERVER_URL = 'https://mcp.mcpay.tech/mcp?target-url=<ID>'
+const url = new URL(MCP_SERVER_URL)
+const transport = new StreamableHTTPClientTransport(url.toString())
+await client.connect(transport)
+
+// Create EVM signer (example network)
+const evmSigner = await createSigner('base-sepolia', process.env.EVM_PRIVATE_KEY as `0x${string}`)
+
+// Wrap client with X402 payment capabilities
+const paymentClient = withX402Client(client, {
+  wallet: { evm: evmSigner },
+  // Optional confirmation hook
+  confirmationCallback: async () => true,
+})
+
+const tools = await paymentClient.listTools()
+console.log('Available tools:', tools)
+```
+---
+
+### Option 2 — HTTP transport with API key (no wallet)
+
+MCPay servers accept multiple auth mechanisms:
+
+- **Query param**: `api_key` (preferred). Alias `apiKey` is also accepted.
+- **Header**: `x-api-key` for server-to-server calls.
+
+Minimal examples:
+
+```ts
+import { Client } from '@modelcontextprotocol/sdk/client/index'
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/transport/streamable-http'
+
+// 1) Query param (api_key)
+const url1 = new URL('https://mcp.mcpay.tech/mcp?target-url=<ID>')
+url1.searchParams.set('api_key', process.env.MCPAY_API_KEY as string)
+const t1 = new StreamableHTTPClientTransport(url1.toString())
+
+// 2) Header (x-api-key)
+const url2 = new URL('https://mcp.mcpay.tech/mcp?target-url=<ID>')
+const t2 = new StreamableHTTPClientTransport(url2, {
+  requestInit: {
+    headers: { 'x-api-key': process.env.MCPAY_API_KEY as string },
+  },
+})
+
+const client = new Client({ name: 'my-mcp-client', version: '1.0.0' })
+await client.connect(t1) // or t2 / t3
+```
+
+
+### Grab an API key
+
+You can grab an API Key in the [Developer Tab](https://mcpay.tech/#account-developer).
+
+<img src="/account-modal-api-keys.png" width="500" alt="Account modal API keys" style={{display: 'block', margin: '0 auto'}} />

@@ -1,0 +1,26 @@
+# ChaosChain x402 - Decentralized Facilitator Project Configuration
+# This file defines targets (environments) for deploying CRE workflows
+
+local-simulation:
+  rpc-urls:
+    # These are placeholders for simulation mode
+    # The simulator will use mock RPC responses
+    ethereum-testnet-sepolia: "https://rpc.ankr.com/eth_sepolia"
+    base-testnet-sepolia: "https://sepolia.base.org"
+
+staging:
+  rpc-urls:
+    # TODO: Add your production RPC URLs when deploying to real CRE
+    # ethereum-testnet-sepolia: ${ETHEREUM_SEPOLIA_RPC_URL}
+    # base-testnet-sepolia: ${BASE_SEPOLIA_RPC_URL}
+    ethereum-testnet-sepolia: "https://rpc.ankr.com/eth_sepolia"
+    base-testnet-sepolia: "https://sepolia.base.org"
+
+production:
+  rpc-urls:
+    # TODO: Configure production RPC endpoints
+    # ethereum-mainnet: ${ETHEREUM_MAINNET_RPC_URL}
+    # base-mainnet: ${BASE_MAINNET_RPC_URL}
+    ethereum-mainnet: "https://rpc.ankr.com/eth"
+    base-mainnet: "https://mainnet.base.org"
+

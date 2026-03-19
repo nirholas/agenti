@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402 TON Facilitator</title>
+  <meta name="description" content="x402 payment facilitator for the TON blockchain. Verify and settle HTTP 402 payments with TON and USDT.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #09090b;
+      --text: #e4e4e7;
+      --text-muted: #71717a;
+      --accent: #93c5fd;
+      --green: #86efac;
+      --purple: #c4b5fd;
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-hover: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-border-hover: rgba(255, 255, 255, 0.12);
+      --radius: 12px;
+      --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      font-size: 14px;
+      background: var(--bg);
+      background-image: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
+      background-attachment: fixed;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      padding: 48px 0 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #0a1628;
+      flex-shrink: 0;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .version-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 1px 6px;
+      display: none;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 400;
+      margin-top: 6px;
+      letter-spacing: 0.01em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      flex-shrink: 0;
+      background: #86efac;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0a2618;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #0a2618;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Main */
+    main { flex: 1; padding: 32px 0; }
+
+    section { margin-bottom: 36px; }
+
+    h2 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* Steps */
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      position: relative;
+    }
+
+    .step {
+      padding: 16px;
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .step-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #c4b5fd;
+      border: none;
+      color: #1e1028;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .step-connector {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Endpoints (details) */
+    .endpoints {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .endpoint-details {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .endpoint-details:hover {
+      background: var(--glass-hover);
+      border-color: var(--glass-border-hover);
+    }
+
+    .endpoint-details[open] {
+      background: var(--glass-hover);
+      border-color: var(--glass-border-hover);
+    }
+
+    .endpoint-details summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 14px;
+      list-style: none;
+      user-select: none;
+    }
+
+    .endpoint-details summary::-webkit-details-marker { display: none; }
+
+    .endpoint-details summary::after {
+      content: '+';
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 300;
+      transition: transform 0.15s;
+    }
+
+    .endpoint-details[open] summary::after {
+      content: '-';
+    }
+
+    .method {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 6px;
+      min-width: 48px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .method-get {
+      background: #93c5fd;
+      color: #1e2a3a;
+    }
+
+    .method-post {
+      background: #c4b5fd;
+      color: #1e1028;
+    }
+
+    .endpoint-path { font-family: var(--mono); }
+
+    .endpoint-desc {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .endpoint-body {
+      padding: 0 16px 16px;
+      border-left: 2px solid rgba(147, 197, 253, 0.25);
+      margin-left: 16px;
+      margin-right: 16px;
+      margin-bottom: 16px;
+    }
+
+    .endpoint-body p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .endpoint-body .label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    .endpoint-body .label:first-child {
+      margin-top: 0;
+    }
+
+    .endpoint-body .note {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    /* Code block */
+    .code-block {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-block-inner {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: var(--text-muted); }
+    .code-block .string { color: var(--green); }
+    .code-block .keyword { color: var(--accent); }
+
+    /* Install block */
+    .install-block {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .install-prompt {
+      color: var(--accent);
+      user-select: none;
+    }
+
+    .peer-deps {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+
+    .info-card {
+      padding: 14px 16px;
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-family: var(--mono);
+      font-size: 14px;
+      word-break: break-all;
+    }
+
+    /* Address blocks */
+    .address-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .address-block {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      padding: 14px 16px;
+    }
+
+    .address-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .address-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      word-break: break-all;
+      line-height: 1.5;
+    }
+
+    /* Links */
+    .link-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .link-list a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      font-size: 14px;
+      transition: background 0.2s, border-color 0.2s;
+      will-change: backdrop-filter;
+    }
+
+    .link-list a:hover {
+      background: var(--glass-hover);
+      border-color: var(--glass-border-hover);
+      text-decoration: none;
+    }
+
+    .link-arrow {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 24px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-row">
+      <div>
+        <div class="logo">
+          <div class="logo-icon">402</div>
+          <div class="title-row">
+            <h1>x402 TON Facilitator</h1>
+            <span class="version-tag" id="version-tag"></span>
+          </div>
+        </div>
+        <p class="subtitle">HTTP 402 payment verification and settlement on TON</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="https://github.com/TONresistor/x402-ton" target="_blank" rel="noopener" title="GitHub" style="color:var(--text-muted);transition:color 0.15s;display:flex;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <div class="badge" id="status-badge">
+          <span class="badge-dot"></span>
+          <span id="status-text">Checking...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <section>
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-header">
+            <div class="step-number">1</div>
+            <span class="step-title">Sign</span>
+          </div>
+          <p class="step-desc">Client signs a W5 transfer (TON or USDT) directly to the vendor</p>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step">
+          <div class="step-header">
+            <div class="step-number">2</div>
+            <span class="step-title">Verify</span>
+          </div>
+          <p class="step-desc">Facilitator validates signature, amount, recipient, seqno</p>
+          <div class="step-connector"></div>
+        </div>
+        <div class="step">
+          <div class="step-header">
+            <div class="step-number">3</div>
+            <span class="step-title">Settle</span>
+          </div>
+          <p class="step-desc">Facilitator broadcasts via TONAPI gasless (USDT) or direct (TON)</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Endpoints</h2>
+      <div class="endpoints">
+
+        <details class="endpoint-details">
+          <summary>
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/supported</span>
+            <span class="endpoint-desc">Facilitator capabilities</span>
+          </summary>
+          <div class="endpoint-body">
+            <p>Returns supported payment schemes, network, asset configuration, and signer addresses.</p>
+            <div class="label">Response</div>
+            <div class="code-block-inner">{
+  "kinds": [{
+    "x402Version": 2,
+    "scheme": "exact",
+    "network": "tvm:-239",
+    "extra": {
+      "relayAddress": "0:7ae5...",
+      "maxRelayCommission": "500000",
+      "assetDecimals": 6,
+      "assetSymbol": "USDT"
+    }
+  }],
+  "extensions": [],
+  "signers": { "tvm:*": ["0:8165..."] }
+}</div>
+          </div>
+        </details>
+
+        <details class="endpoint-details">
+          <summary>
+            <span class="method method-get">GET</span>
+            <span class="endpoint-path">/health</span>
+            <span class="endpoint-desc">Server health and TON connectivity</span>
+          </summary>
+          <div class="endpoint-body">
+            <p>Returns server status, version, uptime, and TON node connectivity.</p>
+            <div class="label">Response</div>
+            <div class="code-block-inner">{
+  "status": "healthy",
+  "version": "1.0.0",
+  "uptime": 3600,
+  "ton": {
+    "connected": true,
+    "network": "tvm:-239",
+    "latestBlock": 58310477
+  }
+}</div>
+          </div>
+        </details>
+
+        <details class="endpoint-details">
+          <summary>
+            <span class="method method-post">POST</span>
+            <span class="endpoint-path">/verify</span>
+            <span class="endpoint-desc">Validate a signed payment</span>
+          </summary>
+          <div class="endpoint-body">
+            <p>Validates a signed payment BOC without broadcasting. Checks signature, amount, recipient, seqno, and expiry.</p>
+            <div class="label">Request body</div>
+            <div class="code-block-inner">{
+  "paymentPayload": {
+    "x402Version": 2,
+    "payload": {
+      "signedBoc": "base64...",
+      "walletPublicKey": "hex64...",
+      "walletAddress": "0:...",
+      "seqno": 1,
+      "validUntil": 1773502200
+    }
+  },
+  "paymentRequirements": {
+    "scheme": "exact",
+    "network": "tvm:-239",
+    "asset": "native",
+    "amount": "1000000000",
+    "payTo": "0:...",
+    "maxTimeoutSeconds": 120
+  }
+}</div>
+            <div class="label">Response</div>
+            <div class="code-block-inner">{
+  "isValid": true,
+  "payer": "0:82ee..."
+}</div>
+          </div>
+        </details>
+
+        <details class="endpoint-details">
+          <summary>
+            <span class="method method-post">POST</span>
+            <span class="endpoint-path">/settle</span>
+            <span class="endpoint-desc">Verify and broadcast payment</span>
+          </summary>
+          <div class="endpoint-body">
+            <p>Verifies the payment then broadcasts the BOC to the TON network. Requires <code style="font-family:var(--mono);font-size:12px;background:var(--surface-deep);padding:1px 5px;border-radius:3px;">Idempotency-Key</code> header.</p>
+            <div class="label">Request body</div>
+            <p class="note">Same structure as /verify</p>
+            <div class="label">Response</div>
+            <div class="code-block-inner">{
+  "success": true,
+  "payer": "0:82ee...",
+  "transaction": "a4609b3f...",
+  "network": "tvm:-239"
+}</div>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <section>
+      <h2>Network</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-label">Blockchain</div>
+          <div class="info-value">TON Mainnet</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Network</div>
+          <div class="info-value">tvm:-239</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Assets</div>
+          <div class="info-value">TON (native), USDT (gasless)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Wallet</div>
+          <div class="info-value">W5 v5r1</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">x402 Version</div>
+          <div class="info-value">2</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Relay Commission</div>
+          <div class="info-value" id="relay-commission">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Addresses</h2>
+      <div class="address-list">
+        <div class="address-block">
+          <div class="address-label">Facilitator</div>
+          <div class="address-value" id="facilitator-address">Loading...</div>
+        </div>
+        <div class="address-block">
+          <div class="address-label">TONAPI Relay</div>
+          <div class="address-value" id="relay-address">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>SDK</h2>
+      <div class="install-block">
+        <span class="install-prompt">$</span>
+        <span>npm install x402ton</span>
+      </div>
+      <p class="peer-deps">Peer deps: @ton/core @ton/crypto @ton/ton</p>
+    </section>
+
+    <section>
+      <h2>Links</h2>
+      <div class="link-list">
+        <a href="https://github.com/coinbase/x402" target="_blank" rel="noopener">
+          x402 Protocol (Coinbase)
+          <span class="link-arrow">&rarr;</span>
+        </a>
+        <a href="https://github.com/TONresistor/x402-ton" target="_blank" rel="noopener">
+          x402ton SDK
+          <span class="link-arrow">&rarr;</span>
+        </a>
+        <a href="https://www.npmjs.com/package/x402ton" target="_blank" rel="noopener">
+          npm package
+          <span class="link-arrow">&rarr;</span>
+        </a>
+        <a href="https://docs.ton.org/" target="_blank" rel="noopener">
+          TON Documentation
+          <span class="link-arrow">&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    x402 is an open standard by <a href="https://github.com/coinbase/x402">Coinbase</a>.
+    TON integration by <a href="https://resistance.dog">resistance.dog</a>.
+  </div>
+</footer>
+
+<script>
+  async function init() {
+    try {
+      const [health, supported] = await Promise.all([
+        fetch('/health').then(r => r.json()),
+        fetch('/supported').then(r => r.json()),
+      ]);
+
+      // Status badge
+      var badge = document.getElementById('status-badge');
+      var statusText = document.getElementById('status-text');
+      if (health.status === 'healthy') {
+        statusText.textContent = 'Healthy \u00b7 Block ' + health.ton.latestBlock.toLocaleString();
+      } else {
+        statusText.textContent = 'Degraded';
+        badge.style.background = '#f59e0b22';
+        badge.style.borderColor = '#f59e0b44';
+        badge.style.color = '#f59e0b';
+        badge.querySelector('.badge-dot').style.background = '#f59e0b';
+      }
+
+      // Version tag
+      if (health.version) {
+        var versionTag = document.getElementById('version-tag');
+        versionTag.textContent = 'v' + health.version;
+        versionTag.style.display = 'inline';
+      }
+
+      // Facilitator address from signers
+      var addr = supported.signers && supported.signers['tvm:*'] && supported.signers['tvm:*'][0];
+      if (addr) {
+        document.getElementById('facilitator-address').textContent = addr;
+      } else {
+        document.getElementById('facilitator-address').textContent = 'Unavailable';
+      }
+
+      // Relay address
+      var kind = supported.kinds && supported.kinds[0];
+      var relay = kind && kind.extra && kind.extra.relayAddress;
+      if (relay) {
+        document.getElementById('relay-address').textContent = relay;
+      } else {
+        document.getElementById('relay-address').textContent = 'Unavailable';
+      }
+
+      // Relay commission
+      var maxCommission = kind && kind.extra && kind.extra.maxRelayCommission;
+      var decimals = kind && kind.extra && kind.extra.assetDecimals;
+      var symbol = kind && kind.extra && kind.extra.assetSymbol;
+      if (maxCommission && decimals != null) {
+        var raw = BigInt(maxCommission);
+        var divisor = BigInt(Math.pow(10, decimals));
+        var whole = raw / divisor;
+        var frac = raw % divisor;
+        var fracStr = frac.toString().padStart(decimals, '0').replace(/0+$/, '');
+        var human = fracStr ? whole.toString() + '.' + fracStr : whole.toString();
+        document.getElementById('relay-commission').textContent = human + ' ' + (symbol || 'USDT');
+      } else {
+        document.getElementById('relay-commission').textContent = 'N/A';
+      }
+
+    } catch (e) {
+      document.getElementById('status-text').textContent = 'Offline';
+      var badge = document.getElementById('status-badge');
+      badge.style.background = '#ef444422';
+      badge.style.borderColor = '#ef444444';
+      badge.style.color = '#ef4444';
+      badge.querySelector('.badge-dot').style.background = '#ef4444';
+      document.getElementById('facilitator-address').textContent = 'Unavailable';
+      document.getElementById('relay-address').textContent = 'Unavailable';
+      document.getElementById('relay-commission').textContent = 'N/A';
+    }
+  }
+  init();
+</script>
+
+</body>
+</html>

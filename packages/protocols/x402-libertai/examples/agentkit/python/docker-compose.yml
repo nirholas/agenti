@@ -1,0 +1,9 @@
+services:
+  agent:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - path: .env.prod
+        required: false
+      - path: .env
+        required: false

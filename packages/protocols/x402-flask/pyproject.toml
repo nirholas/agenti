@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openclaw-x402"
+version = "0.1.0"
+description = "Drop-in x402 payment middleware for Flask APIs. Machine-to-machine payments on Base chain."
+readme = "README.md"
+license = "MIT"
+authors = [{name = "Elyan Labs", email = "scott@elyanlabs.ai"}]
+requires-python = ">=3.8"
+dependencies = ["flask>=2.0"]
+
+keywords = ["x402", "openclaw", "payments", "flask", "coinbase", "base-chain", "usdc", "wrtc", "ai-agent", "machine-to-machine"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Framework :: Flask",
+]
+
+[project.optional-dependencies]
+coinbase = ["x402[flask]", "coinbase-agentkit>=0.1.0"]
+
+[project.urls]
+Homepage = "https://rustchain.org/wallets.html"
+Repository = "https://github.com/Scottcjn/Rustchain"
+
+[tool.setuptools.packages.find]
+include = ["openclaw_x402*"]

@@ -1,0 +1,89 @@
+{
+  "name": "@libertai/agentkit-plugin",
+  "version": "0.1.1",
+  "description": "Build autonomous agents that pay for their own compute and inference — powered by AgentKit, Aleph Cloud, and LibertAI",
+  "type": "module",
+  "license": "MIT",
+  "author": "LibertAI",
+  "homepage": "https://github.com/Libertai/libertai-agents/tree/main/packages/agentkit-plugin/typescript#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Libertai/libertai-agents.git",
+    "directory": "packages/agentkit-plugin/typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/Libertai/libertai-agents/issues"
+  },
+  "keywords": [
+    "agentkit",
+    "coinbase",
+    "base",
+    "blockchain",
+    "agent",
+    "aleph",
+    "libertai"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./tools": {
+      "types": "./dist/tools.d.ts",
+      "import": "./dist/tools.js"
+    },
+    "./actions": {
+      "types": "./dist/actions/index.d.ts",
+      "import": "./dist/actions/index.js"
+    },
+    "./actions/aleph": {
+      "types": "./dist/actions/aleph.d.ts",
+      "import": "./dist/actions/aleph.js"
+    },
+    "./wallet": {
+      "types": "./dist/wallet.d.ts",
+      "import": "./dist/wallet.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --max-warnings 0 src/ tests/",
+    "lint:fix": "eslint --fix src/ tests/",
+    "format": "prettier --write src/ tests/",
+    "format:check": "prettier --check src/ tests/",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@coinbase/agentkit": "^0.10.4",
+    "openai": "^4.0.0",
+    "viem": "^2.0.0"
+  },
+  "dependencies": {
+    "@libertai/x402": "^0.1.0",
+    "zod": "^3.0.0",
+    "zod-to-json-schema": "^3.25.0"
+  },
+  "devDependencies": {
+    "@coinbase/agentkit": "^0.10.4",
+    "@eslint/js": "^9.0.0",
+    "openai": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0",
+    "viem": "^2.45.3",
+    "vitest": "^4.0.18"
+  }
+}

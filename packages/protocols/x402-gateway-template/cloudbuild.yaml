@@ -1,0 +1,94 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/x402-gateway:$COMMIT_SHA', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/x402-gateway:$COMMIT_SHA']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'x402-gateway'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/x402-gateway:$COMMIT_SHA'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '3'
+      - '--concurrency'
+      - '80'
+      - '--timeout'
+      - '120'
+      # Uncomment if you use a VPC connector:
+      # - '--vpc-connector'
+      # - '${_VPC_CONNECTOR}'
+      # - '--vpc-egress'
+      # - 'private-ranges-only'
+      - '--set-env-vars'
+      - >-
+        NODE_ENV=production,
+        PAY_TO_ADDRESS=${_PAY_TO_ADDRESS},
+        MY_BACKEND_URL=${_MY_BACKEND_URL},
+        MY_BACKEND_API_KEY=${_MY_BACKEND_API_KEY},
+        BASE_RPC_URL=${_BASE_RPC_URL},
+        ETHEREUM_RPC_URL=${_ETHEREUM_RPC_URL},
+        ARBITRUM_RPC_URL=${_ARBITRUM_RPC_URL},
+        OPTIMISM_RPC_URL=${_OPTIMISM_RPC_URL},
+        POLYGON_RPC_URL=${_POLYGON_RPC_URL},
+        AVALANCHE_RPC_URL=${_AVALANCHE_RPC_URL},
+        MEGAETH_RPC_URL=${_MEGAETH_RPC_URL},
+        SONIC_RPC_URL=${_SONIC_RPC_URL},
+        HYPEREVM_RPC_URL=${_HYPEREVM_RPC_URL},
+        INK_RPC_URL=${_INK_RPC_URL},
+        MONAD_RPC_URL=${_MONAD_RPC_URL},
+        MERIDIAN_API_KEY=${_MERIDIAN_API_KEY},
+        SOLANA_RPC_URL=${_SOLANA_RPC_URL},
+        UPSTASH_REDIS_REST_URL=${_UPSTASH_REDIS_REST_URL},
+        UPSTASH_REDIS_REST_TOKEN=${_UPSTASH_REDIS_REST_TOKEN},
+        ENABLE_CREDIT_SYSTEM=${_ENABLE_CREDIT_SYSTEM},
+      - '--set-secrets'
+      - 'SETTLEMENT_PRIVATE_KEY=x402-settlement-key:latest'
+      # Add Solana secret if using SVM:
+      # - ',SOLANA_FACILITATOR_PRIVATE_KEY=x402-solana-facilitator-key:latest'
+
+images:
+  - 'gcr.io/$PROJECT_ID/x402-gateway:$COMMIT_SHA'
+
+substitutions:
+  _REGION: us-east1
+  # _VPC_CONNECTOR: my-vpc-connector
+  _PAY_TO_ADDRESS: ''
+  _MY_BACKEND_URL: ''
+  _MY_BACKEND_API_KEY: ''
+  _BASE_RPC_URL: ''
+  _ETHEREUM_RPC_URL: ''
+  _ARBITRUM_RPC_URL: ''
+  _OPTIMISM_RPC_URL: ''
+  _POLYGON_RPC_URL: ''
+  _AVALANCHE_RPC_URL: ''
+  _MEGAETH_RPC_URL: ''
+  _SONIC_RPC_URL: ''
+  _HYPEREVM_RPC_URL: ''
+  _INK_RPC_URL: ''
+  _MONAD_RPC_URL: ''
+  _MERIDIAN_API_KEY: ''
+  _SOLANA_RPC_URL: ''
+  _UPSTASH_REDIS_REST_URL: ''
+  _UPSTASH_REDIS_REST_TOKEN: ''
+  _ENABLE_CREDIT_SYSTEM: 'false'
+
+timeout: '900s'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

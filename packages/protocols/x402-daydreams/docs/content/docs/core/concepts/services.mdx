@@ -1,0 +1,315 @@
+---
+title: Services
+description: Infrastructure management with dependency injection.
+---
+
+## What Are Services?
+
+Services manage **infrastructure** - database connections, API clients, utilities. They handle the "how" of connecting to external systems so actions can focus on business logic.
+
+## Service Structure
+
+```typescript title="service-example.ts"
+const databaseService = service({
+  name: "database",
+  
+  // Register: Define HOW to create dependencies
+  register: (container) => {
+    container.singleton("db", () => new MongoDB(process.env.DB_URI));
+    container.singleton("userRepo", (c) => new UserRepository(c.resolve("db")));
+  },
+  
+  // Boot: WHEN to initialize (agent startup)
+  boot: async (container) => {
+    const db = container.resolve("db");
+    await db.connect();
+    console.log("✅ Database connected");
+  },
+});
+```
+
+## The Container
+
+Services use a **dependency injection container** for shared resource management:
+
+```typescript title="container-methods.ts"
+const container = createContainer();
+
+// singleton() - Create once, reuse everywhere
+container.singleton("apiClient", () => new ApiClient());
+
+// register() - Create new instance each time  
+container.register("requestId", () => crypto.randomUUID());
+
+// instance() - Store pre-created object
+container.instance("config", { apiKey: "secret123" });
+
+// Usage in actions
+const client = ctx.container.resolve("apiClient");
+```
+
+## Without Services: Connection Chaos
+
+```typescript title="without-services.ts"
+// ❌ Actions manage their own connections (slow, repetitive)
+const sendMessageAction = action({
+  handler: async ({ channelId, message }) => {
+    // Create new client every time!
+    const client = new Discord.Client({ token: process.env.DISCORD_TOKEN });
+    await client.login(); // Slow connection each time
+    await client.channels.get(channelId).send(message);
+    await client.destroy();
+  },
+});
+```
+
+## With Services: Shared Infrastructure
+
+```typescript title="with-services.ts"
+// ✅ Service manages connection once, actions reuse it
+const discordService = service({
+  name: "discord",
+  register: (container) => {
+    container.singleton("discordClient", () => new Discord.Client({ token: process.env.DISCORD_TOKEN }));
+  },
+  boot: async (container) => {
+    await container.resolve("discordClient").login(); // Connect once at startup
+  },
+});
+
+const sendMessageAction = action({
+  handler: async ({ channelId, message }, ctx) => {
+    const client = ctx.container.resolve("discordClient"); // Already connected!
+    await client.channels.get(channelId).send(message);
+  },
+});
+```
+
+
+## Service Lifecycle
+
+```typescript title="service-lifecycle.ts"
+const redisService = service({
+  name: "redis",
+  
+  // Phase 1: REGISTER - Define factory functions
+  register: (container) => {
+    container.singleton("redisConfig", () => ({
+      host: process.env.REDIS_HOST || "localhost",
+      port: process.env.REDIS_PORT || 6379,
+    }));
+    container.singleton("redisClient", (c) => new Redis(c.resolve("redisConfig")));
+  },
+  
+  // Phase 2: BOOT - Actually connect/initialize
+  boot: async (container) => {
+    const client = container.resolve("redisClient");
+    await client.connect();
+    console.log("✅ Redis connected");
+  },
+});
+
+// Execution order:
+// 1. All services register() (define dependencies)
+// 2. All services boot() (initialize connections)
+// 3. Ensures dependencies available when needed
+```
+
+## Service Examples
+
+### Multi-Component Service
+
+```typescript title="trading-service.ts"
+const tradingService = service({
+  name: "trading",
+  register: (container) => {
+    container.singleton("alpacaClient", () => new Alpaca({
+      key: process.env.ALPACA_KEY,
+      secret: process.env.ALPACA_SECRET,
+    }));
+    container.singleton("portfolio", (c) => new PortfolioTracker(c.resolve("alpacaClient")));
+    container.singleton("riskManager", () => new RiskManager({ maxPosition: 0.1 }));
+  },
+  boot: async (container) => {
+    await container.resolve("alpacaClient").authenticate();
+    await container.resolve("portfolio").sync();
+    console.log("💰 Trading ready");
+  },
+});
+
+// Actions use all components
+const buyStock = action({
+  handler: async ({ symbol, quantity }, ctx) => {
+    const client = ctx.container.resolve("alpacaClient");
+    const riskManager = ctx.container.resolve("riskManager");
+    
+    if (riskManager.canBuy(symbol, quantity)) {
+      return await client.createOrder({ symbol, qty: quantity, side: "buy" });
+    }
+    throw new Error("Risk limits exceeded");
+  },
+});
+```
+
+### Environment-Based Configuration
+
+```typescript title="storage-service.ts"
+const storageService = service({
+  name: "storage",
+  register: (container) => {
+    if (process.env.NODE_ENV === "production") {
+      container.singleton("storage", () => new S3Storage({ bucket: process.env.S3_BUCKET }));
+    } else {
+      container.singleton("storage", () => new LocalStorage({ path: "./uploads" }));
+    }
+  },
+  boot: async (container) => {
+    await container.resolve("storage").initialize();
+    console.log(`📁 ${process.env.NODE_ENV === "production" ? "S3" : "Local"} storage ready`);
+  },
+});
+```
+
+## Service Dependencies
+
+```typescript title="service-dependencies.ts"
+// Base service
+const databaseService = service({
+  name: "database",
+  register: (container) => {
+    container.singleton("db", () => new MongoDB(process.env.DB_URI));
+  },
+  boot: async (container) => {
+    await container.resolve("db").connect();
+  },
+});
+
+// Dependent service
+const cacheService = service({
+  name: "cache",
+  register: (container) => {
+    container.singleton("redis", () => new Redis(process.env.REDIS_URL));
+    container.singleton("cacheManager", (c) => new CacheManager({
+      fastCache: c.resolve("redis"),
+      slowCache: c.resolve("db"), // From databaseService
+    }));
+  },
+  boot: async (container) => {
+    await container.resolve("redis").connect();
+    await container.resolve("cacheManager").initialize();
+  },
+});
+
+// Extension using both services
+const dataExtension = extension({
+  name: "data",
+  services: [databaseService, cacheService],
+  actions: [
+    action({
+      name: "get-user",
+      handler: async ({ userId }, ctx) => {
+        const cache = ctx.container.resolve("cacheManager");
+        return await cache.getOrFetch(`user:${userId}`, () =>
+          ctx.container.resolve("db").collection("users").findOne({ _id: userId })
+        );
+      },
+    }),
+  ],
+});
+```
+
+
+## Best Practices
+
+### Single Responsibility
+```typescript
+// ✅ Good - focused on one domain
+const databaseService = service({ name: "database" /* only DB connection */ });
+const cacheService = service({ name: "cache" /* only caching */ });
+
+// ❌ Bad - mixed responsibilities
+const everythingService = service({ name: "everything" /* DB + cache + API + logging */ });
+```
+
+### Graceful Error Handling
+```typescript
+const apiService = service({
+  name: "external-api",
+  boot: async (container) => {
+    try {
+      await container.resolve("apiClient").healthCheck();
+      console.log("✅ External API ready");
+    } catch (error) {
+      console.warn("⚠️ API unavailable, features limited");
+      // Don't crash agent - let actions handle gracefully
+    }
+  },
+});
+```
+
+### Resource Cleanup
+```typescript
+const databaseService = service({
+  register: (container) => {
+    container.singleton("db", () => {
+      const db = new MongoDB(process.env.DB_URI);
+      process.on("SIGINT", async () => {
+        await db.close();
+        process.exit(0);
+      });
+      return db;
+    });
+  },
+});
+```
+
+## Common Issues
+
+### Missing Dependencies
+```typescript
+// Error: "Token 'databaseClient' not found"
+
+// ❌ Problem
+const action = action({
+  handler: async (args, ctx) => {
+    const db = ctx.container.resolve("databaseClient"); // Not registered!
+  },
+});
+
+// ✅ Solution
+const service = service({
+  register: (container) => {
+    container.singleton("databaseClient", () => new Database());
+    //                  ^^^^^^^^^^^^^^ Must match resolve token
+  },
+});
+```
+
+### Circular Dependencies
+```typescript
+// ✅ Solution - break cycles with coordinator pattern
+const coordinatorService = service({
+  register: (container) => {
+    container.singleton("a", () => new A());
+    container.singleton("b", () => new B());
+  },
+  boot: async (container) => {
+    // Wire relationships after creation
+    const coordinator = new Coordinator(container.resolve("a"), container.resolve("b"));
+    coordinator.wireComponents();
+  },
+});
+```
+
+## Key Takeaways
+
+- **Services manage infrastructure** - API clients, databases, utilities
+- **Dependency injection container** - Shared resources across all actions
+- **Two-phase lifecycle** - Register (define) then boot (initialize)
+- **Separation of concerns** - Infrastructure separate from business logic
+- **Resource efficiency** - One connection shared across all actions
+
+## See Also
+
+- [Extensions](/docs/core/concepts/extensions) - Feature package layer
+- [Extensions vs Services](/docs/core/concepts/extensions-vs-services) - Decision guide

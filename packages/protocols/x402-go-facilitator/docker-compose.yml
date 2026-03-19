@@ -1,0 +1,19 @@
+services:
+  facilitator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dreamcacao/x402-facilitator:latest
+    container_name: x402-facilitator
+    command: "/app/facilitator"
+    volumes:
+      - ./config.toml:/app/config.toml
+    ports:
+      - "9090:9090"
+    networks:
+      - x402-network
+
+networks:
+  x402-network:
+    name: x402-network
+    driver: bridge

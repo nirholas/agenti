@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ag402-core"
+version = "0.1.20"
+description = "Payment engine for AI Agents — automatic HTTP 402 payment with Solana USDC"
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Ag402 Team" }]
+keywords = ["ai-agent", "payment", "x402", "solana", "usdc"]
+dependencies = [
+    "open402>=0.1.0,<1.0.0",
+    "httpx>=0.27.0,<1.0.0",
+    "aiosqlite>=0.19.0,<1.0.0",
+    "cryptography>=44.0.1,<47.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/AetherCore-Dev/ag402"
+Documentation = "https://github.com/AetherCore-Dev/ag402#readme"
+Repository = "https://github.com/AetherCore-Dev/ag402"
+Issues = "https://github.com/AetherCore-Dev/ag402/issues"
+Changelog = "https://github.com/AetherCore-Dev/ag402/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+crypto = ["solana>=0.34.0,<1.0.0", "solders>=0.21.0,<1.0.0", "base58>=2.1.0,<3.0.0"]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-timeout>=2.2.0",
+    "pytest-rerunfailures>=14.0",
+    "ruff>=0.3.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+ag402 = "ag402_core.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ag402_core"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "devnet: marks tests that require Solana devnet access (deselect with '-m \"not devnet\"')",
+    "localnet: marks tests that require solana-test-validator (deselect with '-m \"not localnet\"')",
+    "mainnet: marks tests that require Solana mainnet access and funded wallet (manual only)",
+    "flaky: marks tests known to be flaky due to network conditions",
+]
+timeout = 120

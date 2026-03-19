@@ -1,0 +1,54 @@
+{
+  "name": "x402-rust-server",
+  "version": "1.0.0",
+  "description": "x402 payment server template for Solana with Rust",
+  "bin": {
+    "create-x402": "./create.js"
+  },
+  "keywords": [
+    "solana",
+    "x402",
+    "rust",
+    "payments",
+    "api",
+    "axum",
+    "actix",
+    "rocket"
+  ],
+  "create-solana-dapp": {
+    "instructions": [
+      "Rust x402 Payment Server Template",
+      "",
+      "Your x402 server is ready!",
+      "",
+      "Next steps:",
+      "+cd {{name}}",
+      "+cp .env.example .env",
+      "Edit .env and add your Solana wallet address",
+      "+cargo run",
+      "",
+      "Test your API:",
+      "+curl http://localhost:3000/api/health",
+      "+curl http://localhost:3000/api/free",
+      "+curl http://localhost:3000/api/paid",
+      "",
+      "The paid endpoint will return 402 Payment Required",
+      "",
+      "Learn more:",
+      "- x402 Protocol: https://x402.org",
+      "- Solana x402 Guide: https://solana.com/developers/guides/getstarted/intro-to-x402",
+      "- Documentation: README.md"
+    ],
+    "rename": {
+      "x402-rust-server": {
+        "to": "{{name}}",
+        "paths": ["Cargo.toml", "README.md", "src"]
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crypto-priest/x402-solana-rust"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,186 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.MD"
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.gif"
+      - "**/*.svg"
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.MD"
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.gif"
+      - "**/*.svg"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality_checks:
+    name: Code Quality & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build packages
+        run: cd packages/core && bun run build
+
+      - name: Typecheck all packages
+        run: |
+          (cd packages/core && bun run typecheck) & pid1=$!
+          (cd examples && npx tsc --noEmit) & pid2=$!
+          (cd examples/facilitator-server && bun run typecheck) & pid3=$!
+          wait $pid1 $pid2 $pid3
+
+      - name: Run tests with coverage
+        run: cd packages/core && bun test --coverage
+
+  facilitator_e2e:
+    name: Facilitator Server E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: facilitator
+          POSTGRES_USER: facilitator
+          POSTGRES_PASSWORD: facilitator
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U facilitator -d facilitator"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build core package
+        run: cd packages/core && bun run build
+
+      - name: Build facilitator-server
+        run: cd examples/facilitator-server && bun run build
+
+      - name: Run facilitator-server e2e
+        env:
+          DATABASE_URL: postgresql://facilitator:facilitator@localhost:5432/facilitator
+          PORT: "18090"
+          EVM_PRIVATE_KEY: "0x0000000000000000000000000000000000000000000000000000000000000001"
+          EVM_NETWORKS: base-sepolia
+          BEARER_TOKEN: e2e-test-token
+          TRACKING_ALLOW_IN_MEMORY_FALLBACK: "false"
+          OTEL_SDK_DISABLED: "true"
+        run: cd examples/facilitator-server && bun run test:e2e
+
+  docker_build:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+    # Run in parallel with quality_checks for faster feedback
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          load: true
+          tags: facilitator:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Docker image starts
+        # Uses well-known test private key (0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf)
+        # This is intentionally a publicly known key for CI testing - never use with real funds
+        run: |
+          set -euo pipefail
+
+          cleanup() {
+            docker stop test-facilitator >/dev/null 2>&1 || true
+            docker rm test-facilitator >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker run -d --name test-facilitator \
+            -e EVM_PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000001 \
+            -e EVM_NETWORKS=base-sepolia \
+            -e BEARER_TOKEN=ci-test-token \
+            -p 8090:8090 \
+            facilitator:test
+
+          ready="false"
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:8090/supported >/dev/null; then
+              ready="true"
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            echo "Container did not become ready. Dumping logs:"
+            docker logs test-facilitator || true
+            exit 1
+          fi
+
+          curl -fsS http://localhost:8090/supported >/dev/null

@@ -1,0 +1,111 @@
+---
+title: Memory
+description: How Daydreams stores and retrieves information, from working memory and logs to persistent memories and episodes.
+---
+
+## Overview
+
+Daydreams provides a unified memory system that lets agents remember, recall, and organize information over time. It combines:
+- Persistent storage (key–value, vector, and graph)
+- Per-context working memory that holds the current session’s logs
+- Episodic memory that captures conversation “episodes” for later retrieval and export (see [Episodes](/docs/core/concepts/episodes))
+
+At runtime, agents write logs into working memory (inputs, outputs, actions, etc.). As conversations progress, Daydreams can form episodes and index them for search and analysis.
+
+## Storage Layers
+
+The `MemorySystem` wires together multiple providers and exposes simple APIs:
+- Key–Value: `memory.kv` for structured state under string keys.
+- Vector: `memory.vector` for similarity search over text (with optional embeddings/metadata).
+- Graph: `memory.graph` for entities and relationships.
+- Episodic: `memory.episodes` for creating and retrieving conversation episodes.
+
+Common operations:
+
+```ts title="remember-and-recall.ts"
+// Store a simple text snippet (auto-indexed in vector memory)
+await agent.memory.remember("User likes Neapolitan pizza", {
+  scope: "context",       // or "global"
+  contextId: ctx.id,
+  type: "preference",
+  metadata: { salience: 0.8 },
+});
+
+// Recall similar content later
+const results = await agent.memory.recall("pizza preferences", {
+  contextId: ctx.id,
+  topK: 5,
+  include: { content: true, metadata: true },
+});
+
+// Or get just the top match
+const best = await agent.memory.recallOne("neapolitan", { contextId: ctx.id });
+```
+
+Notes on storage behavior:
+- Scoping and keys: when storing strings, Daydreams creates IDs like `memory:context:<contextId>:<timestamp>-<rand>` (or `memory:global:...`). When passing structured records to `rememberRecord`, you can provide your own `id`, `namespace`, and `metadata`.
+- Metadata: for vector documents, Daydreams stores `scope`, `contextId`, `type`, `timestamp`, and any custom metadata you provide.
+- Search weighting: recall supports salience and recency boosts via `weighting`, plus grouping/deduping via `groupBy` and `dedupeBy`.
+- Batch ingest: use `rememberBatch(records, { chunk })` for naive chunking of large text.
+
+## Working Memory
+
+Working memory is per-context, short‑term state that holds the live log stream:
+- Stored under `working-memory:<contextId>` in key–value storage.
+- Automatically created and updated by the agent runtime.
+- Useful for prompt construction, short‑term reasoning, and UI inspection.
+
+Structure (arrays of timestamped refs):
+- `inputs`, `outputs`, `thoughts`
+- `calls` (action calls), `results` (action results)
+- `events`, `steps`, `runs`
+
+Utilities:
+- `getContextWorkingMemory(agent, contextId)` and `saveContextWorkingMemory(...)` to read/write the whole structure.
+- `getWorkingMemoryLogs(memory, includeThoughts?)` to get sorted logs used for prompts.
+- `getWorkingMemoryAllLogs(memory, includeThoughts?)` to include `steps`/`runs` as well.
+
+Summarization hooks and pruning policies can be layered on top via a `MemoryManager` (e.g., compress long histories, keep the most recent N inputs/outputs, etc.).
+
+## Logs
+
+Each entry in working memory is a strongly typed “ref” with `ref`, `id`, `timestamp`, and relevant fields:
+- `input`: inbound messages/events captured by inputs
+- `output`: agent responses produced by outputs
+- `thought`: internal reasoning traces
+- `action_call` and `action_result`: tool invocations and their results
+- `event`: domain events
+- `step` and `run`: orchestration milestones
+
+These references are pushed in order and can be formatted for display or prompt inclusion. You generally won’t push them manually—agent execution collects and stores them as it runs.
+
+## Episodes
+
+Episodes are coherent spans of interaction (e.g., “user asks X → agent reasons → calls tools → replies”). Daydreams can collect logs into an episode, generate a summary, and persist it.
+
+Key points:
+- Creation: episodes are formed from working-memory logs via default heuristics or custom hooks (`EpisodeHooks`) for when to start/end and how to summarize.
+- Storage: episodes are saved in key–value storage and indexed into vector memory for retrieval. By default, Daydreams indexes the summary and (optionally chunked) conversation logs under `namespace = episodes:<contextId>`.
+- Retrieval: use `memory.episodes.get(id)`, `getByContext(contextId)`, and `findSimilar(contextId, query)`.
+- Export: export episodes to JSON/JSONL or Markdown via the export manager.
+
+Learn more:
+- Conceptual: [Episodes](/docs/core/concepts/episodes)
+- Conceptual: [Episode export and formats](/docs/core/concepts/episode-export)
+- API: [Episodic Memory](/docs/api/EpisodicMemory) and [Episode Hooks](/docs/api/EpisodeHooks)
+
+## Housekeeping
+
+Remove old or unwanted data as needed:
+
+```ts title="cleanup.ts"
+// Delete by key pattern, context, or time
+await agent.memory.forget({ pattern: "memory:global:*" });
+await agent.memory.forget({ context: ctx.id });
+await agent.memory.forget({ olderThan: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) });
+
+// Clear episodic data for a context
+await agent.memory.episodes.clearContext(ctx.id);
+```
+
+That’s the core: working memory for the live run, persistent stores for long‑term recall, and episodes to capture complete interactions you can search and export.

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Machinepal",
+  "version": "1.0",
+  "description": "Machinepal x402 wallet",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Machinepal Wallet"
+  }
+}

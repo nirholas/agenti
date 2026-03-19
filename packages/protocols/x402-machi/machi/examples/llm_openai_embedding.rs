@@ -1,0 +1,52 @@
+//! Embedding example using `OpenAI`.
+//!
+//! ```bash
+//! export OPENAI_API_KEY=sk-...
+//! cargo run --example llm_openai_embedding
+//! ```
+
+#![allow(clippy::print_stdout)]
+
+use machi::embedding::{EmbeddingProvider, EmbeddingRequest};
+use machi::prelude::*;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let client = OpenAI::from_env()?;
+
+    // Single text embedding
+    let request = EmbeddingRequest::new("text-embedding-3-small", vec!["Hello, world!".to_owned()]);
+
+    let response = client.embed(&request).await?;
+    println!("Single embedding:");
+    println!("  Dimension: {}", response.embeddings[0].vector.len());
+    println!(
+        "  First 5 values: {:?}",
+        &response.embeddings[0].vector[..5]
+    );
+
+    // Batch embeddings for similarity comparison
+    let texts = vec![
+        "The cat sat on the mat.".to_owned(),
+        "A feline rested on the rug.".to_owned(),
+        "The stock market crashed today.".to_owned(),
+    ];
+
+    let request = EmbeddingRequest::new("text-embedding-3-small", texts);
+    let response = client.embed(&request).await?;
+
+    println!("\nBatch embeddings ({} texts):", response.embeddings.len());
+
+    // Calculate cosine similarity between embeddings
+    let sim_0_1 = response.embeddings[0].cosine_similarity(&response.embeddings[1]);
+    let sim_0_2 = response.embeddings[0].cosine_similarity(&response.embeddings[2]);
+
+    println!("  Similarity (cat/feline sentences): {sim_0_1:.4}");
+    println!("  Similarity (cat/stock sentences):  {sim_0_2:.4}");
+
+    if let Some(usage) = &response.usage {
+        println!("\nTokens used: {}", usage.total_tokens);
+    }
+
+    Ok(())
+}

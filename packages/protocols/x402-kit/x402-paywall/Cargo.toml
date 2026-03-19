@@ -1,0 +1,23 @@
+[package]
+name = "x402-paywall"
+version.workspace = true
+edition = "2024"
+repository = "https://github.com/AIMOverse/x402-kit"
+authors = ["Archer <archer@aimo.network>"]
+license = "MIT"
+description = "(V2 Supported) A fully modular SDK for building complex X402 payment integrations."
+
+[features]
+default = ["tracing", "axum", "actix-web"]
+tracing = ["dep:tracing"]
+axum = ["dep:axum"]
+actix-web = ["dep:actix-web"]
+
+[dependencies]
+x402-core = { version = "2.5.0", path = "../x402-core" }
+http = { version = "1.4" }
+bon = { version = "3.8" }
+tracing = { version = "0.1", optional = true }
+serde_json = { version = "1.0" }
+axum = { version = "0.8", optional = true }
+actix-web = { version = "4", optional = true, default-features = false }

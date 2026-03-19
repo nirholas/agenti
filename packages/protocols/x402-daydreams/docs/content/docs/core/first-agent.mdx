@@ -1,0 +1,397 @@
+---
+title: Your first agent
+description:
+  Build your first Daydreams agent and discover the power of contexts.
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+## What Makes Daydreams Different?
+
+Most AI frameworks treat conversations as stateless - every interaction starts
+from scratch. But real conversations aren't like that. **Daydreams changes
+everything with contexts.**
+
+### The Magic of Contexts
+
+Imagine you're building a customer support agent. With traditional frameworks:
+
+```text title="traditional-stateless-approach.txt"
+User: "I need help with my order"
+Agent: "What's your order number?"
+User: "12345"
+Agent: "What's your order number?" // 😕 Already forgot!
+```
+
+With Daydreams contexts:
+
+```text title="daydreams-stateful-approach.txt"
+User: "I need help with my order"
+Agent: "What's your order number?"
+User: "12345"
+Agent: "I see order #12345. It was shipped yesterday!" // 🎉 Remembers!
+```
+
+**Contexts are isolated workspaces** that:
+
+- 🧠 **Remember** - Each conversation has its own memory
+- 🔒 **Isolate** - Different users never see each other's data
+- 🎯 **Focus** - Specialized behaviors for different situations
+- 🔄 **Persist** - Memory survives between conversations
+
+## How Daydreams Works
+
+An agent in Daydreams follows this cycle:
+
+1. **Listen** - Receives input (message, event, API call)
+2. **Think** - Uses an LLM to understand and decide
+3. **Act** - Performs actions or sends responses
+4. **Remember** - Saves important information in context
+
+This happens continuously, with the context providing memory and state
+throughout.
+
+## Installation
+
+Let's build your first stateful agent! Start by installing Daydreams:
+
+<Tabs groupId="language" items={["pnpm", "npm", "bun", "yarn"]} persist>
+  <Tab value="pnpm">
+    pnpm add @daydreamsai/core @daydreamsai/cli @ai-sdk/openai zod
+  </Tab>
+  <Tab value="npm">
+    npm install @daydreamsai/core @daydreamsai/cli @ai-sdk/openai zod
+  </Tab>
+  <Tab value="bun">
+    bun add @daydreamsai/core @daydreamsai/cli @ai-sdk/openai zod
+  </Tab>
+  <Tab value="yarn">
+    yarn add @daydreamsai/core @daydreamsai/cli @ai-sdk/openai zod
+  </Tab>
+</Tabs>
+
+**Important:** Set your `OPENAI_API_KEY` environment variable before continuing.
+
+## Your First Context-Aware Agent
+
+Let's build a personal assistant that remembers you - your name, preferences,
+and conversation history. This showcases the true power of contexts.
+
+### Step 1: Create your project
+
+```bash title="setup.sh"
+mkdir my-first-agent && cd my-first-agent
+touch agent.ts
+```
+
+### Step 2: Build a stateful agent
+
+```typescript title="agent.ts"
+import { createDreams, context, action } from "@daydreamsai/core";
+import { cliExtension } from "@daydreamsai/cli";
+import { openai } from "@ai-sdk/openai";
+import * as z from "zod";
+
+// Create a context - this is where the magic happens!
+const assistantContext = context({
+  type: "personal-assistant",
+
+  // Each user gets their own context instance
+  schema: z.object({
+    userId: z.string().describe("Unique identifier for the user"),
+  }),
+
+  // Initialize memory for new users
+  create: () => ({
+    userName: "",
+    lastTopic: "",
+    preferences: {},
+    conversationCount: 0,
+  }),
+
+  // Define what the LLM sees about this context
+  render: (state) => {
+    const { userName, conversationCount, lastTopic, preferences } =
+      state.memory;
+
+    return `
+Personal Assistant for User: ${state.args.userId}
+${userName ? `Name: ${userName}` : "Name: Unknown (ask for their name!)"}
+Conversations: ${conversationCount}
+${lastTopic ? `Last topic: ${lastTopic}` : ""}
+${
+  Object.keys(preferences).length > 0
+    ? `Preferences: ${JSON.stringify(preferences, null, 2)}`
+    : "No preferences saved yet"
+}
+    `.trim();
+  },
+
+  // Instructions that guide the assistant's behavior
+  instructions: `You are a personal assistant with memory. You should:
+- Remember information about the user across conversations
+- Ask for their name if you don't know it
+- Learn their preferences over time
+- Reference previous conversations when relevant
+- Be helpful and personalized based on what you know`,
+
+  // Track conversation count
+  onRun: async (ctx) => {
+    ctx.memory.conversationCount++;
+  },
+});
+
+// Add actions the assistant can perform
+assistantContext.setActions([
+  action({
+    name: "remember-name",
+    description: "Remember the user's name",
+    schema: z.object({
+      name: z.string().describe("The user's name"),
+    }),
+    handler: async ({ name }, ctx) => {
+      ctx.memory.userName = name;
+      return {
+        remembered: true,
+        message: `I'll remember your name is ${name}`,
+      };
+    },
+  }),
+
+  action({
+    name: "update-topic",
+    description: "Remember what we're discussing",
+    schema: z.object({
+      topic: z.string().describe("Current conversation topic"),
+    }),
+    handler: async ({ topic }, ctx) => {
+      ctx.memory.lastTopic = topic;
+      return { updated: true };
+    },
+  }),
+]);
+
+// Create the agent
+const agent = createDreams({
+  model: openai("gpt-4o-mini"),
+  extensions: [cliExtension],
+  contexts: [assistantContext],
+});
+
+// Start the interactive CLI
+async function main() {
+  await agent.start();
+
+  console.log("\n🤖 Personal Assistant Started!");
+  console.log("💡 Try telling me your name or preferences.");
+  console.log("💡 Exit and restart - I'll still remember you!\n");
+
+  // Simulate different users with different context instances
+  const userId = process.argv[2] || "default-user";
+  console.log(`Starting session for user: ${userId}\n`);
+
+  // Run the assistant for this specific user
+  await agent.run({
+    context: assistantContext,
+    args: { userId }, // This creates/loads a unique context instance
+  });
+
+  console.log("\n👋 See you next time!");
+}
+
+main().catch(console.error);
+```
+
+### Step 3: Experience the magic of contexts
+
+Run your agent:
+
+```bash title="run.sh"
+# Start as the default user
+node agent.ts
+
+# Or start as a specific user
+node agent.ts alice
+node agent.ts bob
+```
+
+Try this conversation flow:
+
+```text title="example-conversation.txt"
+You: Hi there!
+Assistant: Hello! I don't think we've been properly introduced. What's your name?
+
+You: I'm Alice
+Assistant: Nice to meet you, Alice! I'll remember that for next time.
+
+You: I love coffee and hate mornings
+Assistant: I've noted your preferences! You love coffee and hate mornings.
+
+You: What do you know about me?
+Assistant: I know your name is Alice, you love coffee, and you hate mornings.
+          We've had 1 conversation so far.
+
+[Exit and restart the agent with 'node agent.ts alice']
+
+You: Do you remember me?
+Assistant: Of course, Alice! I remember you love coffee and hate mornings.
+          This is our 2nd conversation together.
+```
+
+### What Just Happened?
+
+1. **Context Creation** - When you started with user "alice", Daydreams created
+   a unique context instance
+2. **Memory Persistence** - The context saved Alice's name and preferences
+3. **Isolation** - If you run `node agent.ts bob`, Bob gets a completely
+   separate context
+4. **Stateful Behavior** - The agent's responses are personalized based on
+   context memory
+
+## Understanding Context Power
+
+Let's see how contexts solve real problems:
+
+### Problem 1: Multi-User Support
+
+```typescript title="multi-user-contexts.ts"
+// Each user automatically gets their own isolated context
+await agent.run({
+  context: assistantContext,
+  args: { userId: "alice" }, // Alice's personal workspace
+});
+
+await agent.run({
+  context: assistantContext,
+  args: { userId: "bob" }, // Bob's separate workspace
+});
+
+// Alice and Bob never see each other's data!
+```
+
+### Problem 2: Different Behaviors for Different Situations
+
+```typescript title="multiple-context-types.ts"
+// Different contexts for different purposes
+const casualChatContext = context({
+  type: "casual-chat",
+  instructions: "Be friendly and conversational",
+});
+
+const technicalSupportContext = context({
+  type: "tech-support",
+  instructions: "Be precise and solution-focused",
+});
+
+const salesContext = context({
+  type: "sales",
+  instructions: "Be helpful but also mention relevant products",
+});
+
+// Same agent, different personalities based on context!
+```
+
+### Problem 3: Complex State Management
+
+```typescript title="complex-state.ts"
+interface GameMemory {
+  level: number;
+  score: number;
+  inventory: string[];
+  currentRoom: string;
+}
+
+const gameContext = context<GameMemory>({
+  type: "adventure-game",
+  create: () => ({
+    level: 1,
+    score: 0,
+    inventory: ["torch"],
+    currentRoom: "entrance",
+  }),
+  // Game state persists between sessions!
+});
+```
+
+## What You Built
+
+Your customer service agent demonstrates the three key Daydreams concepts:
+
+### 1. **Context Isolation**
+
+Each customer gets their own workspace:
+
+```typescript
+// Different customers = different context instances
+args: {
+  customerId: "CUST001";
+} // Alice's data
+args: {
+  customerId: "CUST002";
+} // Bob's data (completely separate)
+```
+
+### 2. **Context Composition**
+
+Combine contexts with `.use()`:
+
+```typescript
+use: (state) => [
+  {
+    context: accountContext,
+    args: { customerId: state.args.customerId }, // Share customer ID
+  },
+];
+```
+
+The LLM automatically sees both customer support AND account data.
+
+### 3. **Action Scoping**
+
+Actions are available based on active contexts:
+
+- `save-customer-info`, `create-ticket` → Only in customer context
+- `link-account`, `check-balance` → Only in account context
+- Global actions → Available everywhere
+
+## Test the Complete Flow
+
+```bash
+node agent.ts
+```
+
+Try this conversation:
+
+```text
+You: Hi, my name is Sarah Johnson, email sarah@email.com
+Agent: [Uses save-customer-info action]
+
+You: I need help with billing. My account is ACC12345
+Agent: [Uses link-account action, then can use check-balance]
+
+You: Create a ticket for my billing issue
+Agent: [Uses create-ticket action]
+
+You: Thanks, that's resolved now
+Agent: [Uses resolve-ticket action]
+```
+
+## Key Concepts Learned
+
+- **Contexts** provide isolated, stateful workspaces
+- **`.use()`** composes contexts for modular functionality
+- **`.setActions()`** scopes actions to specific contexts
+- **Memory persists** between conversations for the same context args
+- **LLM sees all** active context data and available actions
+
+## Next Steps
+
+- [Contexts](/docs/core/concepts/contexts) - Deep dive into context patterns
+- [Building Blocks](/docs/core/concepts/building-blocks) - Understand actions,
+  inputs, outputs
+- [Extensions](/docs/core/concepts/extensions) - Package functionality for reuse
+- [Building Block Operations](/docs/core/concepts/building-block-operations) -
+  Common patterns
+
+**Challenge:** Add a third context for order management using `.use()` and give
+it order-specific actions!

@@ -1,0 +1,54 @@
+{
+  "name": "@faremeter/test-harness",
+  "version": "0.17.1",
+  "description": "In-process test harness for x402 protocol testing",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "testing",
+    "x402"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/tsx": "catalog:",
+    "@types/web": "catalog:",
+    "@typescript/lib-dom": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/facilitator": "workspace:^",
+    "@faremeter/fetch": "workspace:^",
+    "@faremeter/info": "workspace:^",
+    "@faremeter/middleware": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "arktype": "catalog:",
+    "hono": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "!@tapjs/typescript",
+      "@tapjs/tsx"
+    ]
+  }
+}

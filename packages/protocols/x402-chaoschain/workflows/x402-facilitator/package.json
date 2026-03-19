@@ -1,0 +1,16 @@
+{
+  "name": "x402-facilitator-workflow",
+  "version": "0.1.0",
+  "description": "Decentralized x402 facilitator workflow for Chainlink CRE",
+  "type": "module",
+  "scripts": {
+    "postinstall": "bunx cre-setup"
+  },
+  "dependencies": {
+    "@chainlink/cre-sdk": "^0.0.8-alpha"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.21"
+  }
+}
+

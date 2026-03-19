@@ -1,0 +1,56 @@
+name: AgentKit Plugin CI
+
+on:
+  push:
+    paths:
+      - packages/agentkit-plugin/**
+  pull_request:
+    paths:
+      - packages/agentkit-plugin/**
+
+jobs:
+  agentkit-plugin-ts-ci:
+    name: TypeScript - Build, Lint & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/agentkit-plugin/typescript
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: packages/agentkit-plugin/typescript/.nvmrc
+          cache: npm
+          cache-dependency-path: packages/agentkit-plugin/typescript/package-lock.json
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Check formatting
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+
+  agentkit-plugin-python-ci:
+    name: Python - Lint, Type Check & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/agentkit-plugin/python
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pipx install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Lint
+        run: poetry run ruff check .
+      - name: Type check
+        run: poetry run mypy libertai_agentkit_plugin/
+      - name: Test
+        run: poetry run pytest

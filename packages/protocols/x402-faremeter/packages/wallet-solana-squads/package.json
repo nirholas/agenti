@@ -1,0 +1,41 @@
+{
+  "name": "@faremeter/wallet-solana-squads",
+  "version": "0.17.1",
+  "description": "Solana Squads Protocol multisig wallet integration for DAO and shared treasury payments",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@faremeter/fetch": "workspace:^",
+    "@tapjs/asserts": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/logs": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "@solana/web3.js": "catalog:",
+    "@sqds/multisig": "^2.1.4",
+    "bs58": "catalog:",
+    "fastestsmallesttextencoderdecoder": "^1.0.22"
+  }
+}

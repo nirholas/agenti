@@ -1,0 +1,27 @@
+{
+  "name": "x402-sovereign",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun run --filter './packages/*' build",
+    "clean": "bun run --filter './packages/*' clean",
+    "publish": "bun run --filter './packages/*' publish",
+    "test": "bun run --filter './packages/*' test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0",
+    "viem": "^2.38.4"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "hono": "^4.10.3",
+    "x402": "^0.6.6",
+    "x402-fetch": "^0.6.6",
+    "x402-hono": "^0.6.5"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "x402-ts-demo",
+  "version": "0.1.0",
+  "description": "TypeScript demo for ChaosChain x402 decentralized facilitator",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run index.ts"
+  },
+  "dependencies": {
+    "@chaoschain/x402-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.21"
+  }
+}
+

@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project information ======================================================================================= -->
+    <groupId>tech.mogami.spring</groupId>
+    <artifactId>mogami-x402-spring-boot-starter-project</artifactId>
+    <version>2.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Mogami Java x402 server SDK - Spring boot starter - x402 v2</name>
+    <description>Protect your APIs with pay-per-call logic using a single Spring Boot annotation.</description>
+    <url>https://github.com/mogami-tech/x402-spring-boot-starter</url>
+    <licenses>
+        <license>
+            <name>Apache-2.0 license</name>
+            <url>https://github.com/mogami-tech/x402-spring-boot-starter/blob/development/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- Developers ================================================================================================ -->
+    <developers>
+        <developer>
+            <id>straumat</id>
+            <email>mogami.unsheathe942@passmail.net</email>
+            <name>Stéphane Traumat</name>
+            <url>https://github.com/straumat</url>
+        </developer>
+    </developers>
+
+    <!-- Source Code Management ==================================================================================== -->
+    <scm>
+        <url>https://github.com/mogami-tech/x402-spring-boot-starter</url>
+        <connection>scm:git:git://github.com/mogami-tech/x402-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:git@github.com:mogami-tech/x402-spring-boot-starter.git</developerConnection>
+    </scm>
+
+    <!-- Issue management ========================================================================================== -->
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/mogami-tech/x402-spring-boot-starter/issues</url>
+    </issueManagement>
+
+    <!-- Project configuration ===================================================================================== -->
+    <properties>
+        <!-- Java build configuration -->
+        <java.version>21</java.version>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Test skips -->
+        <skip.unit.tests>false</skip.unit.tests>
+        <skip.integration.tests>true</skip.integration.tests>
+
+        <!-- Mogami -->
+        <mogami.commons.version>2.0.1-SNAPSHOT</mogami.commons.version>
+        <mogami.java-client.version>2.0.1-SNAPSHOT</mogami.java-client.version>
+
+        <!-- Spring -->
+        <spring-boot.version>3.5.11</spring-boot.version>
+
+        <!-- Core utils -->
+        <lombok.version>1.18.44</lombok.version>
+        <lombok.mapstruct.version>0.2.0</lombok.mapstruct.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <jspecify.version>1.0.0</jspecify.version>
+
+        <!-- Tests -->
+        <awaitility.version>4.3.0</awaitility.version>
+        <mockserver.version>5.15.0</mockserver.version>
+        <okhttp.version>4.12.0</okhttp.version>
+
+        <!-- Maven -->
+        <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
+        <maven.puppycrawl.checkstyle.version>13.3.0</maven.puppycrawl.checkstyle.version>
+        <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
+        <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.5.5</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>3.5.5</maven.failsafe.plugin.version>
+        <maven.surefire-junit5-tree-reporter.version>1.5.1</maven.surefire-junit5-tree-reporter.version>
+        <maven.jar.plugin.version>3.5.0</maven.jar.plugin.version>
+        <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
+        <maven.build-helper-maven-plugin.version>3.6.1</maven.build-helper-maven-plugin.version>
+        <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
+        <maven.archetype-packaging.version>3.2.1</maven.archetype-packaging.version>
+        <maven.gitflow-maven-plugin.version>1.21.0</maven.gitflow-maven-plugin.version>
+        <maven.gpg-plugin.version>3.2.8</maven.gpg-plugin.version>
+        <maven.deploy-plugin.version>3.1.4</maven.deploy-plugin.version>
+        <maven.central-publishing-maven-plugin.version>0.10.0</maven.central-publishing-maven-plugin.version>
+    </properties>
+
+    <!-- Dependency management ===================================================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>apache-client</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- Modules =================================================================================================== -->
+    <modules>
+        <module>src/spring-boot-autoconfigure</module>
+        <module>src/spring-boot-starter</module>
+    </modules>
+
+    <!-- Build configuration ======================================================================================= -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                    <proc>full</proc>
+                </configuration>
+            </plugin>
+            <!-- Unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>me.fabriciorby</groupId>
+                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                        <version>${maven.surefire-junit5-tree-reporter.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <excludes>
+                        <include>**/integration/**.java</include>
+                    </excludes>
+                    <skipTests>${skip.unit.tests}</skipTests>
+                    <reportFormat>plain</reportFormat>
+                    <consoleOutputReporter>
+                        <disable>true</disable>
+                    </consoleOutputReporter>
+                    <statelessTestsetInfoReporter
+                            implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                    </statelessTestsetInfoReporter>
+                </configuration>
+            </plugin>
+            <!-- Integration tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.failsafe.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>me.fabriciorby</groupId>
+                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                        <version>${maven.surefire-junit5-tree-reporter.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/integration/**.java</include>
+                    </includes>
+                    <skipITs>${skip.integration.tests}</skipITs>
+                    <reportFormat>plain</reportFormat>
+                    <consoleOutputReporter>
+                        <disable>true</disable>
+                    </consoleOutputReporter>
+                    <statelessTestsetInfoReporter
+                            implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                    </statelessTestsetInfoReporter>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>${maven.gitflow-maven-plugin.version}</version>
+                <configuration>
+                    <skipTestProject>true</skipTestProject>
+                    <gitFlowConfig>
+                        <productionBranch>production</productionBranch>
+                        <developmentBranch>development</developmentBranch>
+                    </gitFlowConfig>
+                    <commitMessages>
+                        <featureStartMessage>Update versions for feature branch</featureStartMessage>
+                        <featureFinishMessage>Update versions for development branch</featureFinishMessage>
+                        <hotfixStartMessage>Update versions for hotfix</hotfixStartMessage>
+                        <hotfixFinishMessage>Update for next development version</hotfixFinishMessage>
+                        <releaseStartMessage>Update versions for release</releaseStartMessage>
+                        <releaseFinishMessage>Update for next development version</releaseFinishMessage>
+                        <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
+                        <tagReleaseMessage>Tag release</tagReleaseMessage>
+                    </commitMessages>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Profiles ================================================================================================== -->
+    <profiles>
+        <profile>
+            <id>integration-tests</id>
+            <properties>
+                <skip.unit.tests>false</skip.unit.tests>
+                <skip.integration.tests>false</skip.integration.tests>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <gpg.keyname>E0DD5818315C8CF0DD4B20532DEEE03FA733B1CE</gpg.keyname>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-release</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Prevent `gpg` from using pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${maven.central-publishing-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!-- Repositories ============================================================================================== -->
+    <repositories>
+        <repository>
+            <id>central-snapshots</id>
+            <name>Maven Central Snapshots</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <!-- Distribution management =================================================================================== -->
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <url>https://central.sonatype.com/</url>
+        </repository>
+        <snapshotRepository>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>

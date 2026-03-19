@@ -1,0 +1,80 @@
+{
+  "name": "x402-openai",
+  "version": "0.3.0",
+  "description": "Drop-in OpenAI TypeScript client with transparent x402 payment support.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./wallets": "./src/wallets/index.ts"
+  },
+  "scripts": {
+    "lint": "bunx @biomejs/biome check src/ tests/ examples/",
+    "format": "bunx @biomejs/biome check --write src/ tests/ examples/",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "check": "bun run lint && bun run typecheck"
+  },
+  "keywords": [
+    "openai",
+    "x402",
+    "payment",
+    "crypto",
+    "usdc",
+    "llm",
+    "ai",
+    "wallet",
+    "evm",
+    "solana"
+  ],
+  "author": "QNTX <x@qntx.fun>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qntx/x402-openai-typescript"
+  },
+  "dependencies": {
+    "@x402/fetch": "^2.5.0",
+    "openai": "^6.25.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3",
+    "@x402/evm": "^2.3.0",
+    "@x402/svm": "^2.3.0",
+    "viem": "^2.0.0",
+    "@solana/kit": "^2.0.0",
+    "@scure/base": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@x402/evm": {
+      "optional": true
+    },
+    "@x402/svm": {
+      "optional": true
+    },
+    "viem": {
+      "optional": true
+    },
+    "@solana/kit": {
+      "optional": true
+    },
+    "@scure/base": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@scure/base": "^2.0.0",
+    "@solana/kit": "^6.1.0",
+    "@types/bun": "latest",
+    "@x402/evm": "^2.5.0",
+    "@x402/svm": "^2.5.0",
+    "viem": "^2.46.3"
+  }
+}

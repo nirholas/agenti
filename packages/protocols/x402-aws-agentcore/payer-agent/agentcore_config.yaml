@@ -1,0 +1,56 @@
+# Bedrock AgentCore Runtime Configuration
+# This file defines the configuration for deploying the x402 payer agent to AgentCore
+
+runtime:
+  name: x402-payer-agent-runtime
+  description: "x402 Payer Agent - AI agent for autonomous payment decisions"
+  
+  # Agent entry point
+  handler: agent.main.create_payer_agent
+  
+  # Python runtime configuration
+  runtime_type: python
+  python_version: "3.10"
+  
+  # Resource configuration
+  memory_size_mb: 1024
+  timeout_seconds: 300
+  max_concurrent_sessions: 10
+  
+  # IAM role (created by CDK stack)
+  role_arn: "${X402_PAYER_AGENT_RUNTIME_ROLE_ARN}"
+  
+  # Environment variables
+  environment:
+    BEDROCK_MODEL_ID: "anthropic.claude-sonnet-4-20250514-v1:0"
+    AWS_REGION: "us-west-2"
+    NETWORK_ID: "base-sepolia"
+    # CDP credentials loaded from Secrets Manager
+    CDP_SECRET_ARN: "${X402_PAYER_AGENT_CDP_SECRET_ARN}"
+
+  # Secrets configuration
+  secrets:
+    - secret_arn: "${X402_PAYER_AGENT_CDP_SECRET_ARN}"
+      env_mapping:
+        CDP_API_KEY_ID: "CDP_API_KEY_NAME"
+        CDP_API_KEY_SECRET: "CDP_API_KEY_PRIVATE_KEY"
+
+  # Logging configuration
+  logging:
+    level: INFO
+    log_group: "/aws/bedrock-agentcore/x402-payer-agent"
+    retention_days: 30
+
+  # Tracing configuration
+  tracing:
+    enabled: true
+    sampling_rate: 1.0
+
+# Agent metadata
+metadata:
+  version: "0.1.0"
+  author: "x402 Demo"
+  tags:
+    project: "x402-demo"
+    component: "payer-agent"
+    environment: "development"

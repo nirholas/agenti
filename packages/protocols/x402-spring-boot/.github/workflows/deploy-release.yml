@@ -1,0 +1,30 @@
+name: Deploy release to Maven Central
+
+on:
+  push:
+    tags: [ '*' ]
+
+jobs:
+
+  release:
+    name: Deploy release to Maven Central
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+
+      - name: Retrieve the sources
+        uses: actions/checkout@v6
+
+      - name: Set up environment
+        uses: ./.github/actions/setup
+        with:
+          central-username: ${{ secrets.CENTRAL_USERNAME }}
+          central-token: ${{ secrets.CENTRAL_TOKEN }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Deploy release
+        run: |
+          just run_deploy_release

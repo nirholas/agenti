@@ -1,0 +1,197 @@
+---
+title: "Agent and Tools"
+description: "Define agents with Vercel AI SDK and create tools for A2A and MCP"
+---
+
+import { FileTree } from "/snippets/FileTree.jsx";
+
+## Agent (`app/agent.ts`)
+
+Your agent is defined using [Vercel AI SDK](https://ai-sdk.dev) (`ai@^6`). The file exports a default `ToolLoopAgent` and an optional `accepts` for payment pricing.
+
+```typescript title="app/agent.ts"
+import { openai } from "@ai-sdk/openai";
+import { stepCountIs, ToolLoopAgent } from "ai";
+import type { Accepts } from "aixyz/accepts";
+import weather from "./tools/weather";
+
+export const accepts: Accepts = {
+  scheme: "exact",
+  price: "$0.005",
+};
+
+export default new ToolLoopAgent({
+  model: openai("gpt-4o-mini"),
+  instructions: "You are a helpful weather assistant.",
+  tools: { weather },
+  stopWhen: stepCountIs(10),
+});
+```
+
+### `ToolLoopAgent`
+
+The `ToolLoopAgent` from Vercel AI SDK handles multi-step tool execution loops automatically. It:
+
+- Takes a model, instructions, and a set of tools
+- Executes tool calls in a loop until the stop condition is met
+- Returns the final response
+
+### `accepts` Export
+
+The optional `accepts` named export controls [x402 payment](/getting-started/payments) gating on the A2A `/agent` endpoint:
+
+- Agents **with** `accepts` are registered on payment-gated A2A endpoints
+- Agents **without** `accepts` are not registered
+
+### `capabilities` Export
+
+The optional `capabilities` named export configures the A2A agent card's capabilities and controls how the executor runs your agent:
+
+```typescript title="app/agent.ts"
+import type { Capabilities } from "aixyz/app/plugins/a2a";
+
+export const capabilities: Capabilities = {
+  streaming: false,
+  pushNotifications: false,
+};
+```
+
+- `streaming` (default: `true`) — When `false`, the executor uses `generate()` instead of `stream()`, returning the full response as a single artifact
+- `pushNotifications` (default: `false`) — Advertises push notification support in the agent card
+- `stateTransitionHistory` — Advertises state transition history support in the agent card
+
+If omitted, the agent defaults to `{ streaming: true, pushNotifications: false }`. See the [agent.ts reference](/api-reference/agent#capabilities) for details.
+
+## Sub-Agents (`app/agents/*.ts`)
+
+Place additional agent files in `app/agents/` to expose multiple A2A endpoints from a single deployment. Each file follows the same format as `app/agent.ts` and is automatically registered on its own path.
+
+```typescript title="app/agents/research.ts"
+// → /research/agent
+import { openai } from "@ai-sdk/openai";
+import { stepCountIs, ToolLoopAgent } from "ai";
+import type { Accepts } from "aixyz/accepts";
+
+export const accepts: Accepts = {
+  scheme: "exact",
+  price: "$0.005",
+};
+
+export default new ToolLoopAgent({
+  model: openai("gpt-4o-mini"),
+  instructions: "You are a research assistant.",
+  stopWhen: stepCountIs(10),
+});
+```
+
+With the layout below, the build auto-generates three independent A2A endpoints:
+
+<FileTree
+  structure={[
+    {
+      name: "app/",
+      children: [
+        { name: "agent.ts", description: "→ /agent" },
+        {
+          name: "agents/",
+          children: [
+            { name: "research.ts", description: "→ /research/agent" },
+            { name: "implement.ts", description: "→ /implement/agent" },
+          ],
+        },
+      ],
+    },
+  ]}
+/>
+
+<Note>
+  Files starting with `_` (e.g., `_helpers.ts`) are ignored by the build pipeline. Use this convention for shared
+  utilities.
+</Note>
+
+## Tools (`app/tools/*.ts`)
+
+Each `.ts` file in `app/tools/` exports a Vercel AI SDK `tool` and an optional `accepts` for MCP payment gating. Tools are automatically discovered and registered on both A2A and MCP endpoints.
+
+```typescript title="app/tools/weather.ts"
+import { tool } from "ai";
+import { z } from "zod";
+import type { Accepts } from "aixyz/accepts";
+
+export const accepts: Accepts = {
+  scheme: "exact",
+  price: "$0.0001",
+};
+
+export default tool({
+  description: "Get current weather conditions for a city.",
+  inputSchema: z.object({
+    location: z.string().describe("City name"),
+  }),
+  execute: async ({ location }) => {
+    // your implementation
+  },
+});
+```
+
+### Tool Discovery
+
+The build pipeline automatically discovers all `.ts` files in `app/tools/`:
+
+- Each file is registered as an MCP tool
+- Tools with `accepts` are payment-gated on the `/mcp` endpoint
+- Tools without `accepts` are not registered on MCP
+
+<Note>
+  Files starting with `_` (e.g., `_helpers.ts`) are ignored by the build pipeline. Use this convention for shared
+  utilities.
+</Note>
+
+### Per-Tool Pricing
+
+Each tool can declare its own price, enabling granular pricing across your agent:
+
+```typescript
+// app/tools/basic-search.ts — free tool (no accepts)
+export default tool({ ... });
+
+// app/tools/premium-search.ts — paid tool
+export const accepts: Accepts = { scheme: "exact", price: "$0.001" };
+export default tool({ ... });
+```
+
+## Custom Server
+
+For full control over endpoint registration and middleware, create `app/server.ts`. This overrides auto-generation entirely:
+
+```typescript title="app/server.ts"
+import { AixyzApp } from "aixyz/app";
+import { IndexPagePlugin } from "aixyz/app/plugins/index-page";
+import { A2APlugin } from "aixyz/app/plugins/a2a";
+import { MCPPlugin } from "aixyz/app/plugins/mcp";
+
+import * as agent from "./agent";
+import * as lookup from "./tools/lookup";
+
+const server = new AixyzApp();
+
+await server.withPlugin(new IndexPagePlugin());
+await server.withPlugin(new A2APlugin(agent));
+await server.withPlugin(
+  new MCPPlugin([
+    {
+      name: "lookup",
+      exports: {
+        default: lookup.default,
+        accepts: { scheme: "exact", price: "$0.001" },
+      },
+    },
+  ]),
+);
+
+await server.initialize();
+
+export default server;
+```
+
+See the [Custom Server template](/templates/advanced/with-custom-server) for a working example.

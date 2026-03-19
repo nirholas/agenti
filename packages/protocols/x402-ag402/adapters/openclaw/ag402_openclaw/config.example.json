@@ -1,0 +1,15 @@
+{
+  "mode": "test",
+  "host": "127.0.0.1",
+  "port": 14022,
+  "daily_limit": 10.0,
+  "single_tx_limit": 5.0,
+  "per_minute_limit": 2.0,
+  "max_retries": 3,
+  "retry_delay": 1.0,
+  "timeout": 30.0,
+  "enable_audit_log": true,
+  "audit_log_path": "~/.ag402/audit.log",
+  "require_payment_confirmation": false,
+  "enable_budget_check": true
+}

@@ -1,0 +1,20 @@
+{
+  "name": "create-x402",
+  "version": "0.0.4",
+  "main": "index.js",
+  "bin": { "create-x402": "./bin.js" },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["x402", "payments", "http-402", "coinbase"],
+  "author": "",
+  "license": "MIT",
+  "description": "Scaffold x402 projects from official Coinbase examples",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "giget": "^1.2.3",
+    "ora": "^8.2.0",
+    "prompts": "^2.4.2"
+  }
+}

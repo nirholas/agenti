@@ -1,0 +1,73 @@
+<PageHeader title="Fee Payer" description="Get the fee payer address for Solana networks." />
+
+Fee payers are wallet addresses that pay transaction fees when settling payments. This is currently only relevant for Solana networks, where the facilitator sponsors the transaction fee.
+
+## getFeePayer()
+
+Get the fee payer address for a specific network.
+
+```typescript
+const feePayer = await facilitator.getFeePayer('solana');
+```
+
+### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `network` | `string` | Network identifier (e.g., `"solana"`, `"solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"`) |
+
+### Response
+
+```typescript
+string | undefined
+```
+
+Returns the fee payer address, or `undefined` if the network has no fee payer configured.
+
+## getFeePayerMap()
+
+Get all fee payers mapped by network in a single call.
+
+```typescript
+const feePayerMap = await facilitator.getFeePayerMap();
+```
+
+### Response
+
+```typescript
+Record<string, string>
+```
+
+Returns an object mapping network identifiers to fee payer addresses.
+
+## Example
+
+```typescript
+import { OpenFacilitator } from '@openfacilitator/sdk';
+
+const facilitator = new OpenFacilitator();
+
+// Get fee payer for Solana
+const feePayer = await facilitator.getFeePayer('solana');
+
+// Use in x402 response
+const paymentRequirements = {
+  scheme: 'exact',
+  network: 'solana',
+  maxAmountRequired: '1000000',
+  asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  payTo: recipientAddress,
+  extra: {
+    feePayer, // Include for x402jobs registry
+  },
+};
+```
+
+## Caching
+
+The SDK caches the response from `supported()` to avoid redundant API calls. Use `clearCache()` if you need to refresh:
+
+```typescript
+facilitator.clearCache();
+const freshFeePayer = await facilitator.getFeePayer('solana');
+```

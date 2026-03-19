@@ -1,0 +1,18 @@
+[submodule "external/vcpkg"]
+	path = external/vcpkg
+	url = https://github.com/microsoft/vcpkg.git
+[submodule "json-schema-validator"]
+	path = external/json-schema-validator
+	url = https://github.com/pboettch/json-schema-validator.git
+[submodule "yaml-cpp"]
+	path = external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "external/x402"]
+	path = external/x402
+	url = https://github.com/coinbase/x402.git
+[submodule "external/secp256k1"]
+	path = external/secp256k1
+	url = https://github.com/bitcoin-core/secp256k1
+[submodule "external/soci"]
+	path = external/soci
+	url = https://github.com/SOCI/soci.git

@@ -1,0 +1,95 @@
+{
+  "name": "x402-starknet",
+  "version": "1.0.0",
+  "description": "Starknet implementation of the x402 payment protocol",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun run build:ts",
+    "build:ts": "tsc -p tsconfig.json",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:docs": "vitest run tests/docs/",
+    "typecheck": "tsc --noEmit",
+    "typecheck:examples": "tsc -p tsconfig.examples.json --noEmit",
+    "validate:examples": "bun run build && bun run typecheck:examples && bun run test:docs",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . -w",
+    "format:check": "prettier . -c",
+    "check": "bun run format:check && bun run typecheck && bun run lint",
+    "dev": "bun run --watch src/index.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "x402",
+    "starknet",
+    "payments",
+    "micropayments",
+    "http",
+    "blockchain",
+    "cairo"
+  ],
+  "author": "Nethermind",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NethermindEth/x402-starknet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NethermindEth/x402-starknet/issues"
+  },
+  "homepage": "https://github.com/NethermindEth/x402-starknet/blob/main/README.md",
+  "dependencies": {
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.3",
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.50.0",
+    "@typescript-eslint/parser": "^8.50.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "eslint": "^9.39.2",
+    "eslint-plugin-sonarjs": "^3.0.5",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.4",
+    "starknet": "^9.2.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0",
+    "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "starknet": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": [
+      "eslint --fix",
+      "prettier -w"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier -w"
+    ]
+  }
+}

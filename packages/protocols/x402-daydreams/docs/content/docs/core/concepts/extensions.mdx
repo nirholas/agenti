@@ -1,0 +1,196 @@
+---
+title: Extensions
+description: Building modular feature packages for Daydreams agents.
+---
+
+## What Are Extensions?
+
+Extensions are **feature packages** that bundle everything needed for a specific capability. Like installing an app on your phone, extensions add complete functionality with one import.
+
+## Extension Architecture
+
+Extensions bundle four types of components:
+
+```typescript title="extension-structure.ts"
+const weatherExtension = extension({
+  name: "weather",
+  
+  services: [weatherService],     // Infrastructure (API clients, DB connections)
+  contexts: [weatherContext],     // Stateful workspaces 
+  actions: [getWeatherAction],    // What agent can do
+  inputs: [weatherAlertInput],    // How to listen for events
+  outputs: [weatherNotifyOutput], // How to send responses
+});
+```
+
+## Usage Example
+
+```typescript title="using-extensions.ts"
+import { createDreams } from "@daydreamsai/core";
+import { discord, weather, trading } from "./extensions";
+
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  extensions: [discord, weather, trading],
+});
+
+// Agent now has:
+// - Discord messaging (inputs/outputs/contexts)
+// - Weather data (actions/contexts)
+// - Trading capabilities (actions/contexts/services)
+```
+
+## Building an Extension
+
+```typescript title="complete-weather-extension.ts"
+// 1. Service for API management
+const weatherService = service({
+  name: "weather",
+  register: (container) => {
+    container.singleton("weatherClient", () => new WeatherAPI({
+      apiKey: process.env.WEATHER_API_KEY,
+      baseUrl: "https://api.openweathermap.org/data/2.5"
+    }));
+  },
+  boot: async (container) => {
+    await container.resolve("weatherClient").connect();
+  },
+});
+
+// 2. Context for user preferences  
+const weatherContext = context({
+  type: "weather-prefs",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ defaultLocation: null, units: "metric" }),
+});
+
+// 3. Actions for functionality
+const getWeatherAction = action({
+  name: "get-weather",
+  description: "Get current weather for a location",
+  schema: z.object({ location: z.string() }),
+  handler: async ({ location }, ctx) => {
+    const client = ctx.container.resolve("weatherClient");
+    const weather = await client.getCurrentWeather(location);
+    ctx.memory.lastChecked = Date.now();
+    return { temperature: weather.temp, condition: weather.condition };
+  },
+});
+
+// 4. Bundle into extension
+export const weather = extension({
+  name: "weather",
+  services: [weatherService],
+  contexts: [weatherContext], 
+  actions: [getWeatherAction],
+});
+```
+
+## Extension Lifecycle
+
+```text title="extension-lifecycle.txt"
+1. Agent Creation → Extensions registered
+2. agent.start() called:
+   ├── Services registered (define dependencies)
+   ├── Services booted (connect to APIs/DBs) 
+   ├── Components merged (actions, contexts, inputs, outputs)
+   ├── extension.install() called for setup
+   └── Inputs start listening
+3. Agent Ready → All features available to LLM
+```
+
+## Advanced Features
+
+### Extension Dependencies
+
+```typescript title="extension-dependencies.ts"
+// Extensions can build on each other
+const weatherDiscordBot = extension({
+  name: "weather-discord-bot",
+  // Assumes discord and weather extensions are also loaded
+  actions: [
+    action({
+      name: "send-weather-to-discord",
+      handler: async ({ channelId, location }, ctx) => {
+        const weatherClient = ctx.container.resolve("weatherClient");
+        const discordClient = ctx.container.resolve("discordClient");
+        
+        const weather = await weatherClient.getCurrentWeather(location);
+        const channel = await discordClient.channels.fetch(channelId);
+        
+        await channel.send(`🌤️ ${location}: ${weather.temp}°C`);
+        return { sent: true };
+      },
+    }),
+  ],
+});
+
+// Use together
+const agent = createDreams({
+  model: openai("gpt-4o"),
+  extensions: [discord, weather, weatherDiscordBot],
+});
+```
+
+
+## Best Practices
+
+### Single Domain Focus
+```typescript
+// ✅ Good - cohesive feature set
+const discord = extension({ name: "discord" /* Discord-only features */ });
+
+// ❌ Bad - mixed responsibilities  
+const everything = extension({ name: "mixed" /* Discord + weather + trading */ });
+```
+
+### Complete Functionality
+```typescript
+// ✅ Good - everything needed for the domain
+const weather = extension({
+  services: [weatherService],    // API management
+  contexts: [weatherContext],    // User preferences
+  actions: [getWeather],         // Core functionality
+  inputs: [weatherAlerts],       // Event listening
+  outputs: [weatherNotify],      // Notifications
+});
+```
+
+## Publishing Extensions
+
+```text title="extension-package-structure.txt"
+my-extension/
+├── src/
+│   ├── index.ts          # Export extension
+│   ├── services/         # Infrastructure components  
+│   ├── contexts/         # Stateful workspaces
+│   ├── actions/          # Agent capabilities
+│   └── types.ts          # TypeScript definitions
+├── package.json
+└── README.md
+```
+
+```json title="package.json"
+{
+  "name": "@yourorg/daydreams-weather",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "@daydreamsai/core": "^1.0.0"
+  }
+}
+```
+
+## Key Takeaways
+
+- **Extensions are feature packages** - Bundle everything needed for a capability
+- **Automatic lifecycle management** - Services boot, features register seamlessly  
+- **Modular composition** - Combine extensions like building blocks
+- **Clean agent configuration** - Add complex features with single imports
+- **Reusable across projects** - Build once, share everywhere
+
+## See Also
+
+- [Services](/docs/core/concepts/services) - Infrastructure management layer
+- [Extensions vs Services](/docs/core/concepts/extensions-vs-services) - Decision guide

@@ -1,0 +1,26 @@
+name = "events-concierge"
+main = "src/server.ts"
+compatibility_date = "2024-11-27"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+binding = "ASSETS"
+directory = "./dist/client"
+
+[[kv_namespaces]]
+binding = "SECRETS"
+id = "6575d01c4b65455d8478f41fe7caf7a3"        # production (title: calendar_slots)
+preview_id = "227ef9ad1ac64bea8ab9982e3edb1dea"
+
+[durable_objects]
+bindings = [
+  { class_name = "Host", name = "Host" },
+  { class_name = "Guest", name = "Guest" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Host", "Guest"]
+
+# Use .dev.vars for local development
+# Use wrangler secret put for production

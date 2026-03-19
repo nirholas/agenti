@@ -1,0 +1,109 @@
+---
+title: Episodes
+description: How Daydreams captures, stores, indexes, and retrieves conversational episodes, plus how to customize episode boundaries and metadata.
+---
+
+## Overview
+
+Episodes are coherent spans of interaction that bundle the important parts of a conversation cycle: inputs, internal thoughts, tool calls/results, and outputs. They provide a compact, searchable record of what happened and why.
+
+Daydreams collects logs from working memory into episodes, stores them in key–value storage, and indexes summaries (and optionally the logs) into vector memory for retrieval.
+
+## When Episodes Form
+
+By default, Daydreams starts an episode when a meaningful interaction begins and ends it once the agent responds or completes a significant step.
+
+You can customize boundaries with `EpisodeHooks`:
+- `shouldStartEpisode(ref, workingMemory, contextState, agent)`
+- `shouldEndEpisode(ref, workingMemory, contextState, agent)`
+
+This lets you define domain‑specific rules, e.g., start on the first `input`, end after the final `output` or an `action_result` threshold.
+
+## What Gets Stored
+
+Each episode contains:
+- `id`, `contextId`, `type`, `timestamp`, `startTime`, `endTime`, `duration`
+- `summary`: a concise natural‑language description of the episode
+- `logs`: the included working‑memory refs (e.g., `input`, `output`, `action_*`, `event`)
+- `metadata`: any additional fields you derive
+- Optional `input`/`output` fields if you extract them in `createEpisode`
+
+The set of included refs can be controlled via `EpisodeHooks.includeRefs`.
+
+## Indexing and Retrieval
+
+Episodes are indexed for similarity search under the namespace `episodes:<contextId>`.
+
+Indexing policy (configurable via `EpisodicMemoryOptions.indexing`):
+- `enabled`: turn indexing on/off (default: on)
+- `contentMode`: `summary` | `logs` | `summary+logs` (default: `summary+logs`)
+- `chunk`: naive chunking for long logs (size/overlap)
+- `aggregateNamespaces`: also index into extra namespaces (e.g., org/global)
+- `salience` and `tags`: compute and store helpful metadata
+
+Retrieval APIs:
+
+```ts title="episode-retrieval.ts"
+// Get most recent episodes for a context
+const recent = await agent.memory.episodes.getByContext(ctx.id, 20);
+
+// Fetch a specific episode
+const ep = await agent.memory.episodes.get("<episodeId>");
+
+// Find similar episodes via vector search
+const similar = await agent.memory.episodes.findSimilar(ctx.id, "refund policy", 5);
+```
+
+## Customizing Episode Content
+
+Use hooks to shape episode data:
+- `createEpisode(logs, contextState, agent)`: build the episode payload. You can return a `CreateEpisodeResult` to specify `summary`, `logs`, `input`, `output`, and additional `metadata`.
+- `classifyEpisode(episodeData)`: set a `type` label (e.g., `conversation`, `action`, `task`).
+- `extractMetadata(episodeData, logs)`: attach custom metadata (IDs, tags, scores).
+
+Example:
+
+```ts title="episode-hooks.ts"
+const hooks: EpisodeHooks = {
+  shouldStartEpisode: (ref) => ref.ref === "input",
+  shouldEndEpisode: (ref) => ref.ref === "output" || ref.ref === "action_result",
+  createEpisode: (logs) => ({
+    summary: "User asked for pricing; agent explained tiers",
+    metadata: { product: "pro" },
+  }),
+  classifyEpisode: () => "conversation",
+  includeRefs: ["input", "output", "action_call", "action_result", "event"],
+};
+
+// Configure episodic memory when creating the agent
+const agent = createDreams({
+  // ...
+  contexts: [/* ... */],
+  // Episodic memory options can be passed where you construct MemorySystem
+});
+```
+
+## Size, Retention, and Cleanup
+
+Control growth with:
+- `maxEpisodesPerContext`: cap stored episodes per context (oldest are pruned)
+- `minEpisodeGap`: avoid storing near‑duplicate episodes in rapid succession
+- `memory.forget(...)`: remove vector/KV entries by pattern, context, or age
+- `memory.episodes.clearContext(contextId)`: drop all episodes for a context
+
+## Exporting Episodes
+
+Use the export manager to produce JSON/JSONL or Markdown for analysis, backups, or dataset generation.
+
+```ts title="export-episodes.ts"
+const episodes = await agent.memory.episodes.getByContext(ctx.id);
+const result = await agent.exports.export({ episodes, exporter: "json", options: { pretty: true } });
+```
+
+See concept guide: [Episode Export](/docs/core/concepts/episode-export)
+
+## Further Reading
+
+- API reference: [Episodic Memory](/docs/api/EpisodicMemory)
+- Hooks reference: [Episode Hooks](/docs/api/EpisodeHooks)
+- Export manager: [ExportManager](/docs/api/ExportManager)

@@ -1,0 +1,101 @@
+---
+title: "aixyz"
+description: "CLI for building and running aixyz agents"
+---
+
+The `aixyz` package includes the CLI for developing and building agents. Install it to get the `aixyz` command.
+
+```bash
+bun add aixyz
+```
+
+## Commands
+
+### `aixyz dev`
+
+Starts a local development server with hot reload. Watches `app/` and `aixyz.config.ts` for changes and restarts automatically (100ms debounce).
+
+```bash
+aixyz dev
+aixyz dev --port 4000
+```
+
+| Flag         | Default | Description       |
+| ------------ | ------- | ----------------- |
+| `-p, --port` | `3000`  | Port to listen on |
+
+On startup, the dev server prints the A2A and MCP endpoints:
+
+```
+⟡ aixyz.sh v0.0.0
+
+- A2A:          http://localhost:3000/.well-known/agent-card.json
+- MCP:          http://localhost:3000/mcp
+- Environments: .env, .env.local
+```
+
+If no `app/server.ts` exists, one is auto-generated from `app/agent.ts` and `app/tools/*.ts`.
+
+### `aixyz build`
+
+Bundles your agent for deployment.
+
+```bash
+aixyz build                       # Standalone (default)
+aixyz build --output standalone   # Explicit standalone
+aixyz build --output vercel       # Vercel Build Output API v3
+aixyz build --output executable   # Self-contained binary
+```
+
+| Flag       | Default      | Description                                            |
+| ---------- | ------------ | ------------------------------------------------------ |
+| `--output` | `standalone` | Output format: `standalone`, `vercel`, or `executable` |
+
+**Standalone** output goes to `.aixyz/output/server.js` — run it with `bun .aixyz/output/server.js`.
+
+**Vercel** output goes to `.vercel/output/` using Build Output API v3. Automatically detected when `VERCEL=1` is set or configured in `aixyz.config.ts`.
+
+The build process:
+
+1. Loads environment variables from `.env` files
+2. Reads and validates `aixyz.config.ts`
+3. Detects or auto-generates the server entrypoint
+4. Bundles with `Bun.build()`, [materializing the config](/api-reference/aixyz-config) into the bundle
+5. Copies static assets from `public/` and `app/icon.png`
+
+### `aixyz erc-8004 register`
+
+Registers a new agent on the ERC-8004 IdentityRegistry. Creates `app/erc-8004.ts` if it doesn't exist (prompting for supported trust mechanisms), asks for your agent's deployment URL, and derives the on-chain URI as `<url>/_aixyz/erc-8004.json`. After a successful registration, the entry is written back to `app/erc-8004.ts`.
+
+```bash
+aixyz erc-8004 register --url "https://my-agent.example.com" --chain sepolia --broadcast
+```
+
+| Flag          | Description                                       |
+| ------------- | ------------------------------------------------- |
+| `--url`       | Agent deployment URL (prompted if omitted)        |
+| `--chain`     | `mainnet`, `sepolia`, `base-sepolia`, `localhost` |
+| `--rpc-url`   | Custom RPC endpoint                               |
+| `--keystore`  | Encrypted keystore file                           |
+| `--browser`   | Use browser wallet (EIP-6963)                     |
+| `--broadcast` | Send transaction (default is dry-run)             |
+| `--out-dir`   | Write result JSON to directory                    |
+
+### `aixyz erc-8004 update`
+
+Updates the metadata URI of a registered agent. Reads existing registrations from `app/erc-8004.ts`, lets you select which one to update (if multiple), and derives the new URI from the provided URL.
+
+```bash
+aixyz erc-8004 update --url "https://new-domain.example.com" --broadcast
+```
+
+| Flag          | Description                                    |
+| ------------- | ---------------------------------------------- |
+| `--url`       | New agent deployment URL (prompted if omitted) |
+| `--rpc-url`   | Custom RPC endpoint                            |
+| `--keystore`  | Encrypted keystore file                        |
+| `--browser`   | Use browser wallet (EIP-6963)                  |
+| `--broadcast` | Send transaction (default is dry-run)          |
+| `--out-dir`   | Write result JSON to directory                 |
+
+See [ERC-8004 Identity](/protocols/erc-8004) for the full protocol documentation.

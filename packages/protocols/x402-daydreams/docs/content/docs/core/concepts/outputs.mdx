@@ -1,0 +1,274 @@
+---
+title: Outputs
+description: How Daydreams agents send information and responses.
+---
+
+## What is an Output?
+
+An output is how your agent **sends** information to the outside world. Outputs are the final communication step - they don't return data to the LLM for further reasoning.
+
+For common patterns like schema validation, error handling, and external service integration, see [Building Block Operations](/docs/core/concepts/building-block-operations).
+
+## Outputs vs Actions/Inputs
+
+Understanding when to use each:
+
+| Building Block | Purpose | LLM Uses When | Returns Data |
+|---------------|---------|---------------|--------------|
+| **Outputs** | Communicate final results | Wants to respond/notify | ❌ No - final step |
+| **Actions** | Get data, perform operations | Needs info for reasoning | ✅ Yes - for next steps |
+| **Inputs** | Listen for external events | Never - triggers agent | ❌ No - starts conversation |
+
+### Output Decision Matrix
+
+```typescript title="when-to-use-outputs.ts"
+// ✅ Use OUTPUT for final communication
+<output type="discord:message" channelId="123">
+  Weather: 72°F, sunny. Have a great day!
+</output>
+
+// ✅ Use ACTION to get data for reasoning
+<action_call name="get-weather">{"city": "Boston"}</action_call>
+// LLM gets result and can use it in next step
+
+// ✅ Common pattern: Action → Output  
+<action_call name="get-weather">{"city": "NYC"}</action_call>
+<output type="email:send" to="user@example.com" subject="Weather Update">
+  Current weather in NYC: {{calls[0].temperature}}, {{calls[0].condition}}
+</output>
+```
+
+## Creating Your First Output
+
+Here's a simple file output with attributes:
+
+```typescript title="file-output.ts"
+import { output } from "@daydreamsai/core";
+import * as z from "zod";
+import fs from "fs/promises";
+
+export const saveToFile = output({
+  type: "file:save",
+  description: "Saves a message to a text file",
+  
+  // Content schema - what goes inside the output tag
+  schema: z.string().describe("The message to save"),
+
+  // Attributes schema - extra parameters on the tag
+  attributes: z.object({
+    filename: z.string().describe("Name of the file to save to"),
+  }),
+
+  handler: async (message, ctx) => {
+    const { filename } = ctx.outputRef.params;
+    await fs.writeFile(filename, message + "\n", { flag: "a" });
+    return { saved: true, filename };
+  },
+});
+
+// LLM uses it like this:
+// <output type="file:save" filename="log.txt">This is my message</output>
+```
+
+## Output Features
+
+### Attributes for Extra Parameters
+
+Outputs support attributes for additional configuration:
+
+```typescript title="discord-output.ts"
+const discordOutput = output({
+  type: "discord:message",
+  description: "Sends a message to Discord",
+  schema: z.string(), // Message content
+  
+  // Attributes appear as XML attributes  
+  attributes: z.object({
+    channelId: z.string(),
+    threadId: z.string().optional(),
+  }),
+  
+  handler: async (message, ctx) => {
+    const { channelId, threadId } = ctx.outputRef.params;
+    await discord.send(channelId, message, { threadId });
+    return { sent: true };
+  },
+});
+
+// LLM uses it like:
+// <output type="discord:message" channelId="123" threadId="456">
+//   Hello Discord!
+// </output>
+```
+
+### Memory Access in Outputs
+
+Outputs can read and update context memory for tracking:
+
+```typescript title="notification-with-memory.ts"
+const notificationOutput = output({
+  type: "notification:send",
+  schema: z.string(),
+  attributes: z.object({ priority: z.enum(["low", "high"]) }),
+  
+  handler: async (message, ctx) => {
+    // Track notifications in memory
+    if (!ctx.memory.notificationsSent) {
+      ctx.memory.notificationsSent = 0;
+    }
+    ctx.memory.notificationsSent++;
+    
+    const { priority } = ctx.outputRef.params;
+    await notificationService.send({ message, priority });
+    
+    return {
+      sent: true,
+      totalSent: ctx.memory.notificationsSent,
+    };
+  },
+});
+```
+
+### Multiple Outputs
+
+Agents can send multiple outputs in one response:
+
+```xml title="multiple-outputs.xml"
+<response>
+  <reasoning>I'll notify both Discord and email about this alert</reasoning>
+
+  <output type="discord:message" channelId="123">
+    🚨 Server maintenance starting in 10 minutes!
+  </output>
+
+  <output type="email:send" to="admin@company.com" subject="Alert">
+    Server maintenance beginning. Discord users notified.
+  </output>
+</response>
+```
+
+## External Service Integration
+
+Outputs are perfect for integrating with external services:
+
+```typescript title="slack-output.ts"
+const slackMessage = output({
+  type: "slack:message",
+  description: "Sends a message to Slack",
+  schema: z.string(),
+  attributes: z.object({
+    channel: z.string().describe("Slack channel name"),
+    threadId: z.string().optional().describe("Thread ID for replies"),
+  }),
+  handler: async (message, ctx) => {
+    try {
+      const { channel, threadId } = ctx.outputRef.params;
+
+      const result = await slackClient.chat.postMessage({
+        channel,
+        text: message,
+        thread_ts: threadId,
+      });
+
+      return {
+        success: true,
+        messageId: result.ts,
+        channel: result.channel,
+        message: `Message sent to #${channel}`,
+      };
+    } catch (error) {
+      console.error("Failed to send Slack message:", error);
+
+      return {
+        success: false,
+        error: error.message,
+        message: "Failed to send Slack message",
+      };
+    }
+  },
+});
+```
+
+## Best Practices
+
+### 1. Use Clear Types and Descriptions
+
+```typescript title="good-naming.ts"
+// ✅ Good - clear what it does
+const userNotification = output({
+  type: "user:notification",
+  description:
+    "Sends a notification directly to the user via their preferred channel",
+  // ...
+});
+
+// ❌ Bad - unclear purpose
+const sendStuff = output({
+  type: "send",
+  description: "Sends something",
+  // ...
+});
+```
+
+### 2. Validate Content with Schemas
+
+Use proper Zod validation to ensure your outputs receive correct data. See [Schema Validation Best Practices](/docs/core/concepts/building-blocks#schema-validation-best-practices) for complete patterns and examples.
+
+### 3. Handle Errors Gracefully
+
+```typescript title="error-handling.ts"
+handler: async (message, ctx) => {
+  try {
+    await sendMessage(message);
+    return { sent: true };
+  } catch (error) {
+    // Log for debugging
+    console.error("Failed to send message:", error);
+
+    // Return structured error info
+    return {
+      sent: false,
+      error: error.message,
+      message: "Failed to send message - will retry later",
+    };
+  }
+};
+```
+
+### 4. Use Async/Await for External Services
+
+```typescript title="async-best-practice.ts"
+// ✅ Good - properly handles async
+handler: async (message, ctx) => {
+  const result = await emailService.send(message);
+  return { emailId: result.id };
+};
+
+// ❌ Bad - doesn't wait for async operations
+handler: (message, ctx) => {
+  emailService.send(message); // This returns a Promise that's ignored!
+  return { status: "sent" }; // Completes before email actually sends
+};
+```
+
+### 5. Provide Good Examples
+
+```typescript title="good-examples.ts"
+examples: [
+  '<output type="discord:message" channelId="123456789">Hello everyone!</output>',
+  '<output type="discord:message" channelId="987654321" replyToUserId="user123">Thanks for the question!</output>',
+];
+```
+
+## Key Takeaways
+
+- **Outputs enable communication** - Without them, agents can think but not
+  respond
+- **LLM chooses when to use them** - Based on types and descriptions you provide
+- **Different from actions** - Outputs communicate results, actions get data
+- **Content and attributes validated** - Zod schemas ensure correct format
+- **Memory can be updated** - Track what was sent for future reference
+- **Error handling is crucial** - External services can fail, handle gracefully
+
+Outputs complete the conversation loop - they're how your intelligent agent
+becomes a helpful communicator that users can actually interact with.

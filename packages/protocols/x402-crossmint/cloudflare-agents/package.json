@@ -1,0 +1,25 @@
+{
+  "name": "crossmint-x402",
+  "version": "1.0.0",
+  "description": "Payment-enabled AI agent using x402 protocol with Crossmint",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types --include-runtime false"
+  },
+  "dependencies": {
+    "@crossmint/wallets-sdk": "^0.14.3",
+    "agents": "^0.2.7",
+    "hono": "^4.9.9",
+    "viem": "^2.21.54",
+    "x402-fetch": "^0.6.0",
+    "x402-hono": "^0.6.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250927.0",
+    "wrangler": "^4.40.2"
+  }
+}

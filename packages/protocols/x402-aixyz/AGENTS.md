@@ -1,0 +1,195 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+> **When working on a new feature, always consult [`skills/aixyz/SKILL.md`](./skills/aixyz/SKILL.md) first.**
+> It is the canonical reference for how the project is designed and what conventions to follow.
+> Available externally at [`skills.sh/agentlyhq/aixyz`](https://skills.sh/agentlyhq/aixyz).
+
+## Project overview
+
+Monorepo for aixyz — a framework for bundling AI agents from any framework into deployable services with A2A, MCP, x402 payments, and ERC-8004 identity protocols. Managed with Bun workspaces and Turbo. Runtime: Bun 1.3.9+.
+
+## Commands
+
+```bash
+bun install                          # Setup
+bun run build                        # Build all packages (turbo run build)
+bun run test                         # Test all packages (turbo run test)
+bun run lint                         # Lint all packages with --fix
+bun run format                       # Format with Prettier (printWidth: 120)
+bun run clean                        # Clean build artifacts
+```
+
+### Package-specific commands
+
+```bash
+bun run build --filter=aixyz         # Build a specific package
+bun run test --filter=@aixyz/erc-8004  # Test a specific package
+```
+
+Or navigate directly:
+
+```bash
+cd packages/aixyz && bun run build
+cd examples/flight-search && bun run dev
+```
+
+### Running a single test
+
+Tests use Bun's built-in test runner (`.test.ts` files):
+
+```bash
+bun test packages/aixyz-erc-8004/src/schemas/registration.test.ts
+```
+
+### Example agent dev/build
+
+```bash
+cd examples/flight-search
+bun run dev    # → aixyz dev (hot reload, watches app/ and aixyz.config.ts)
+bun run build  # → aixyz build (bundles for deployment)
+```
+
+## Repo layout
+
+### Packages (`packages/*`)
+
+| Package            | npm name           | Description                                                                |
+| ------------------ | ------------------ | -------------------------------------------------------------------------- |
+| `aixyz`            | `aixyz`            | Main framework: server, plugins (A2A, MCP), x402 integration, web-standard |
+| `aixyz-cli`        | `@aixyz/cli`       | CLI: `dev`, `build`, `erc-8004 register`, `erc-8004 update`                |
+| `aixyz-config`     | `@aixyz/config`    | Zod-validated config loading from `aixyz.config.ts` + .env files           |
+| `aixyz-stripe`     | `@aixyz/stripe`    | Experimental Stripe payment adapter                                        |
+| `create-aixyz-app` | `create-aixyz-app` | Project scaffolding (`bunx create-aixyz-app`)                              |
+| `aixyz-erc-8004`   | `@aixyz/erc-8004`  | ERC-8004 contract ABIs, addresses, Zod schemas                             |
+
+### Examples (`examples/*`)
+
+Working agents demonstrating patterns. All share the same structure:
+
+```
+examples/*/
+  aixyz.config.ts     # Agent metadata and config (required)
+  app/
+    agent.ts          # Agent definition (required if no server.ts)
+    server.ts         # Custom server (optional, overrides auto-generation)
+    accepts.ts        # Custom x402 facilitator (optional)
+    tools/*.ts        # Tool implementations (files starting with _ ignored)
+    icon.png          # Agent icon (served as static asset)
+  vercel.json
+```
+
+### Documentation (`docs/`)
+
+Mintlify documentation site (`mint dev` to preview locally). Structure:
+
+- `docs/getting-started/` — Installation, project structure, why Bun, agent and tools, payments (x402), deploying, testing
+- `docs/config/` — aixyz.config.ts reference, environment variables
+- `docs/api-reference/` — File-system conventions (agent.ts, agent.test.ts, tools/) and Functions (AixyzApp, A2APlugin, MCPPlugin, loadEnv, Accepts)
+- `docs/protocols/` — A2A, MCP, x402, ERC-8004 (collapsed under Documentation tab)
+- `docs/packages/` — Package reference docs (collapsed under Documentation tab)
+- `docs/templates/` — Individual pages for each example template (separate Templates tab)
+- `docs/docs.json` — Mintlify navigation configuration
+
+Protocols and Packages are groups within the Documentation tab (not separate tabs).
+Templates have their own tab with one page per example.
+
+Each `docs/templates/<name>.mdx` documents the corresponding `examples/*/` example.
+
+### Other
+
+- `CLAUDE.md` symlinks to `AGENTS.md`
+
+## Architecture
+
+### How the build pipeline works (`@aixyz/cli`)
+
+The `aixyz build` command in `packages/aixyz-cli/build/index.ts`:
+
+1. Loads config from `aixyz.config.ts` via `@aixyz/config`
+2. Uses two Bun build plugins:
+   - **`AixyzConfigPlugin`** — Materializes resolved config into the bundle (replaces `aixyz/config` imports)
+   - **`AixyzServerPlugin`** — Auto-generates `server.ts` from `app/` structure if no `app/server.ts` exists. Scans
+     `app/agent.ts` and `app/tools/*.ts`, wires up A2A + MCP + x402 middleware
+3. Bundles with `Bun.build()` targeting Node.js
+4. Output format:
+   - **Vercel** (when `VERCEL=1` or `--output vercel`): `.vercel/output/` Build Output API v3
+   - **Standalone** (default): `.aixyz/output/server.js`
+   - **Executable** (`--output executable`): `.aixyz/output/server` self-contained binary
+
+The `aixyz dev` command spawns a Bun worker process with file watching on `app/` and `aixyz.config.ts` (100ms debounce).
+
+### Server architecture
+
+`AixyzApp` is a framework-agnostic server built on web-standard `Request`/`Response`. It uses a `PaymentGateway` for x402 payment verification (composition, not inheritance). Key methods:
+
+- `route()` — Register a route with an optional x402 payment requirement
+- `fetch()` — Dispatch a web-standard Request through payment verification, middleware, and route handler
+- `withPlugin()` — Register plugins (A2APlugin, MCPPlugin, IndexPagePlugin, etc.)
+- `use()` — Append middleware to the chain
+
+### Protocol adapters (`packages/aixyz/app/plugins/`)
+
+- **`a2a.ts`** — `A2APlugin`: Generates agent card at `/.well-known/agent-card.json`, JSON-RPC endpoint at
+  `/agent`
+- **`mcp.ts`** — `MCPPlugin`: Exposes tools at `/mcp` via `WebStandardStreamableHTTPServerTransport`
+- **`index-page.ts`** — `IndexPagePlugin`: Human-readable agent info page
+- **`erc-8004.ts`** — `ERC8004Plugin`: Serves ERC-8004 identity at `/.well-known/erc-8004.json` and `/_aixyz/erc-8004.json`
+
+### Config loading (`@aixyz/config`)
+
+- `getAixyzConfig()` — Full config for build-time use
+- `getAixyzConfigRuntime()` — Subset safe for runtime bundles
+- Environment files loaded in Next.js order: `.env`, `.env.local`, `.env.$(NODE_ENV)`, `.env.$(NODE_ENV).local`
+
+### Agent executor pattern
+
+Agents are wrapped into `AgentExecutor` interface. The primary adapter is
+`ToolLoopAgentExecutor` for Vercel AI SDK agents (imported from `ai`). Agents export a default `ToolLoopAgent`, an
+optional `accepts` object for payment config, and an optional `capabilities` object for A2A agent card configuration
+(streaming, pushNotifications, stateTransitionHistory). When `capabilities.streaming` is `false`, the executor uses
+`generate()` instead of `stream()`.
+
+### Payment model
+
+Each agent and tool declares an `accepts` export controlling x402 payment:
+
+```ts
+export const accepts: Accepts = { scheme: "exact", price: "$0.005" };
+```
+
+Agents/tools without `accepts` are not registered on payment-gated endpoints.
+
+## Dependency graph
+
+```
+aixyz → @aixyz/cli → @aixyz/config
+     → @a2a-js/sdk, @modelcontextprotocol/sdk, @x402/*, zod
+     → ai (optional peer dep, Vercel AI SDK v6)
+```
+
+## Working conventions
+
+- Packages ship raw `.ts` files (`"files": ["**/*.ts"]`), not compiled JS (except `erc-8004` which compiles to CJS)
+- Prettier: printWidth 120, plugin `prettier-plugin-packagejson`
+- Pre-commit hook via Husky runs `lint-staged` (Prettier on staged files)
+- Examples use `app/` directory structure (not `src/`)
+- CI runs: build, lint, test, format check (`.github/workflows/ci.yml`)
+- Publishing: triggered by GitHub releases, uses npm OIDC provenance
+
+## CLI non-TTY design (AI/CI-friendly)
+
+Both CLIs (`aixyz` and `create-aixyz-app`) are designed for non-interactive use by AI agents and CI pipelines:
+
+- **Every interactive prompt has a CLI flag equivalent.** If a value is normally prompted in TTY, a `--flag` must exist
+  so the same value can be passed non-interactively.
+- **Non-TTY detection:** When `process.stdin.isTTY` is false, prompts are skipped — the CLI either uses the flag value,
+  falls back to a sensible default, or exits with a clear error message telling the user which flag to provide.
+- **`--help` on every command.** `create-aixyz-app --help`, `aixyz --help`, `aixyz build --help`,
+  `aixyz erc-8004 register --help`, etc. all print full usage with examples.
+- **`create-aixyz-app`**: Supports `--yes`/`-y` for all defaults, plus `--erc-8004`, `--openai-api-key <key>`,
+  `--pay-to <address>`, and `--no-install` for granular control.
+- **`aixyz erc-8004 register`**: All interactive prompts (URL, chain, trust mechanisms, wallet) have CLI flag
+  equivalents. See `aixyz erc-8004 register --help`.
+- **`aixyz erc-8004 update`**: Supports `--agent-id <id>` to select a registration without prompts.

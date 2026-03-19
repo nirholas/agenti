@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Identity Agent Template Schema",
+  "description": "Configuration schema for the ERC-8004 identity-enabled agent template",
+  "type": "object",
+  "properties": {
+    "AGENT_NAME": {
+      "type": "string",
+      "description": "Agent name (set automatically from project directory name)",
+      "examples": ["my-identity-agent", "verified-agent"]
+    },
+    "AGENT_DESCRIPTION": {
+      "type": "string",
+      "description": "Human-readable description of the agent",
+      "default": "Verifiable agent with on-chain identity"
+    },
+    "AGENT_VERSION": {
+      "type": "string",
+      "description": "Semantic version number for the agent",
+      "default": "0.1.0",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "AGENT_DOMAIN": {
+      "type": "string",
+      "description": "Domain that will host the agent (used for ERC-8004 registration)",
+      "default": "agent.example.com",
+      "examples": ["agent.example.com", "ai.mydomain.com"]
+    },
+    "IDENTITY_INCLUDE_A2A": {
+      "type": "boolean",
+      "description": "Include A2A service in registration services[]",
+      "default": true
+    },
+    "IDENTITY_A2A_ENDPOINT": {
+      "type": "string",
+      "description": "A2A service endpoint",
+      "default": "https://agent.example.com/.well-known/agent-card.json"
+    },
+    "IDENTITY_A2A_VERSION": {
+      "type": "string",
+      "description": "A2A protocol version",
+      "default": "0.3.0"
+    },
+    "IDENTITY_INCLUDE_WEB": {
+      "type": "boolean",
+      "description": "Include web service in registration services[]",
+      "default": true
+    },
+    "IDENTITY_WEBSITE": {
+      "type": "string",
+      "description": "Website service endpoint",
+      "default": "https://agent.example.com/",
+      "format": "uri"
+    },
+    "IDENTITY_INCLUDE_OASF": {
+      "type": "boolean",
+      "description": "Include OASF service in registration services[]",
+      "default": false
+    },
+    "IDENTITY_OASF_ENDPOINT": {
+      "type": "string",
+      "description": "OASF service endpoint",
+      "default": "https://agent.example.com/.well-known/oasf-record.json"
+    },
+    "IDENTITY_OASF_VERSION": {
+      "type": "string",
+      "description": "OASF schema/version",
+      "default": "0.8.0"
+    },
+    "IDENTITY_OASF_AUTHORS_JSON": {
+      "type": "string",
+      "description": "JSON array string for OASF authors",
+      "default": "[\"ops@agent.example.com\"]",
+      "examples": ["[\"ops@agent.example.com\"]", "[]"]
+    },
+    "IDENTITY_OASF_SKILLS_JSON": {
+      "type": "string",
+      "description": "JSON array string for OASF skills",
+      "default": "[\"reasoning\"]",
+      "examples": ["[\"reasoning\",\"planning\"]", "[]"]
+    },
+    "IDENTITY_OASF_DOMAINS_JSON": {
+      "type": "string",
+      "description": "JSON array string for OASF domains",
+      "default": "[\"assistant\"]",
+      "examples": ["[\"finance\",\"support\"]", "[]"]
+    },
+    "IDENTITY_OASF_MODULES_JSON": {
+      "type": "string",
+      "description": "JSON array string for OASF module URIs",
+      "default": "[\"https://agent.example.com/modules/core\"]",
+      "examples": ["[\"https://agent.example.com/modules/core\"]", "[]"]
+    },
+    "IDENTITY_OASF_LOCATORS_JSON": {
+      "type": "string",
+      "description": "JSON array string for OASF locator URIs",
+      "default": "[\"https://agent.example.com/.well-known/oasf-record.json\"]",
+      "examples": [
+        "[\"https://agent.example.com/.well-known/oasf-record.json\"]",
+        "[]"
+      ]
+    },
+    "IDENTITY_INCLUDE_TWITTER": {
+      "type": "boolean",
+      "description": "Include Twitter service in registration services[]",
+      "default": false
+    },
+    "IDENTITY_TWITTER": {
+      "type": "string",
+      "description": "Twitter handle or URL for service endpoint",
+      "default": ""
+    },
+    "IDENTITY_INCLUDE_EMAIL": {
+      "type": "boolean",
+      "description": "Include email service in registration services[]",
+      "default": false
+    },
+    "IDENTITY_EMAIL": {
+      "type": "string",
+      "description": "Support email for service endpoint",
+      "default": ""
+    },
+    "PAYMENTS_FACILITATOR_URL": {
+      "type": "string",
+      "description": "x402 facilitator endpoint URL for payment processing",
+      "default": "https://facilitator.daydreams.systems",
+      "format": "uri"
+    },
+    "PAYMENTS_FACILITATOR_AUTH": {
+      "type": "string",
+      "description": "Optional bearer token for facilitator requests. If empty, runtime falls back to DREAMS_AUTH_TOKEN when available.",
+      "default": ""
+    },
+    "PAYMENTS_NETWORK": {
+      "type": "string",
+      "description": "Payment network (EVM or Solana)",
+      "default": "ethereum",
+      "enum": [
+        "ethereum",
+        "base",
+        "base-sepolia",
+        "sepolia",
+        "solana",
+        "solana-devnet"
+      ]
+    },
+    "PAYMENTS_DESTINATION": {
+      "type": "string",
+      "description": "Payment destination mode",
+      "default": "static",
+      "enum": ["static", "stripe"]
+    },
+    "PAYMENTS_RECEIVABLE_ADDRESS": {
+      "type": "string",
+      "description": "Payment address for static destination mode - Ethereum (0x...) or Solana (Base58) format depending on network. Separate from PRIVATE_KEY which is used for EVM identity registration. Can be shared across multiple agents.",
+      "default": "",
+      "examples": [
+        "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0",
+        "9yPGxVrYi7C5JLMGjEZhK8qQ4tn7SzMWwQHvz3vGJCKz",
+        ""
+      ]
+    },
+    "STRIPE_SECRET_KEY": {
+      "type": "string",
+      "description": "Stripe secret key used for dynamic destination mode (Base mainnet only)",
+      "default": "",
+      "examples": ["sk_live_...", "sk_test_...", ""]
+    },
+    "RPC_URL": {
+      "type": "string",
+      "description": "Blockchain RPC endpoint URL for on-chain operations",
+      "default": "https://eth.llamarpc.com",
+      "format": "uri",
+      "examples": [
+        "https://eth.llamarpc.com",
+        "https://mainnet.base.org",
+        "https://sepolia.base.org"
+      ]
+    },
+    "CHAIN_ID": {
+      "type": "string",
+      "description": "Blockchain network chain ID",
+      "default": "1",
+      "examples": ["1", "8453", "84532"]
+    },
+    "IDENTITY_AUTO_REGISTER": {
+      "type": "boolean",
+      "description": "Auto-register agent on ERC-8004 identity registry at startup",
+      "default": true
+    },
+    "PRIVATE_KEY": {
+      "type": "string",
+      "description": "Wallet private key for signing transactions (required for identity registration)",
+      "default": "",
+      "examples": ["0x...", ""]
+    }
+  },
+  "required": [
+    "AGENT_NAME",
+    "AGENT_DESCRIPTION",
+    "AGENT_VERSION",
+    "AGENT_DOMAIN",
+    "RPC_URL",
+    "CHAIN_ID"
+  ],
+  "notes": "This template requires a PRIVATE_KEY for on-chain identity registration. Ensure the wallet has sufficient gas for the target network."
+}

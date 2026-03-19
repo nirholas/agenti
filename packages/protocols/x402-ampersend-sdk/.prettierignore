@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.venv/
+**/node_modules/
+**/.venv/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+__pycache__/
+
+# Cache directories
+.pytest_cache/
+
+# Temporary files
+tmp/
+
+# Lock files
+pnpm-lock.yaml
+uv.lock
+
+# Solidity submodules (have their own prettier configs)
+solidity/**/lib/

@@ -1,0 +1,29 @@
+name: Build and run tests
+
+on:
+  push:
+    tags-ignore:
+      - '*'
+    branches-ignore:
+      - development
+      - production
+
+jobs:
+
+  build_and_run_tests:
+    name: Build and run tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+
+      - name: Retrieve the sources
+        uses: actions/checkout@v6
+
+      - name: Set up environment
+        uses: ./.github/actions/setup
+
+      - name: build and run tests
+        run: |
+          just run_tests

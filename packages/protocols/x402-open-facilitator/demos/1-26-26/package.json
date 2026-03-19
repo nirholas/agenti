@@ -1,0 +1,22 @@
+{
+  "name": "openfacilitator-hype-video-v2",
+  "version": "1.0.0",
+  "description": "OpenFacilitator hype video v2 - Product demo style",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion render OpenFacilitatorHypeV2 out/openfacilitator-hype-v2.mp4",
+    "build:vertical": "remotion render OpenFacilitatorHypeV2-Vertical out/openfacilitator-hype-v2-vertical.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/google-fonts": "^4.0.0",
+    "@remotion/transitions": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}

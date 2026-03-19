@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.base.jsonc",
+  "include": ["src"],
+  "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "rootDir": "src",
+    "types": ["node"]
+  }
+}

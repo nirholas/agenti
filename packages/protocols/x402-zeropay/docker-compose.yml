@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zeropay-postgres
+    restart: unless-stopped
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: zeropay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - .data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: zeropay-redis
+    restart: unless-stopped
+    expose:
+      - 6379
+    volumes:
+      - .data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  zeropay:
+    image: zeropaydev/zeropay:latest
+    container_name: zeropay-api
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./config.toml:/app/config.toml
+    environment:
+      - PORT=9000
+      - DATABASE_URL=postgres://postgres:postgres@zeropay-postgres:5432/zeropay
+      - REDIS_URL=redis://zeropay-redis:6379
+      - SCANNER_CONFIG=config.toml
+      - MNEMONICS="12/24 words" # your mnemonics code for generate accounts
+      - WALLET=0x00xxx00        # your received money account
+      - APIKEY=thisisapikey     # your service apikey when create/query sessions
+      - WEBHOOK=https://xx.com  # your webhook url
+
+networks:
+  default:
+    name: zeropay

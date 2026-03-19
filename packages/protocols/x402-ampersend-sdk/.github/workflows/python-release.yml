@@ -1,0 +1,76 @@
+name: Python Release
+
+on:
+  push:
+    tags:
+      - "py-v*.*.*"
+      - "py-v*.*.*a*"
+      - "py-v*.*.*b*"
+      - "py-v*.*.*rc*"
+
+permissions:
+  contents: read
+  id-token: write # Required for PyPI trusted publishing
+
+jobs:
+  verify-version:
+    name: "py: verify version"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install Python 3.13
+        run: uv python install 3.13
+
+      - name: Extract version from tag
+        id: tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/py-v}
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          echo "Tagged version: $TAG"
+
+      - name: Read pyproject.toml version
+        id: package
+        run: |
+          VERSION=$(uv run python -c "import tomllib; print(tomllib.load(open('python/ampersend-sdk/pyproject.toml', 'rb'))['project']['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Package version: $VERSION"
+
+      - name: Compare versions
+        run: |
+          if [ "${{ steps.tag.outputs.version }}" != "${{ steps.package.outputs.version }}" ]; then
+            echo "ERROR: Tag version (${{ steps.tag.outputs.version }}) does not match pyproject.toml version (${{ steps.package.outputs.version }})"
+            exit 1
+          fi
+          echo "✓ Versions match: ${{ steps.tag.outputs.version }}"
+
+  publish:
+    name: "py: publish to PyPI"
+    runs-on: ubuntu-latest
+    needs: verify-version
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ampersend-sdk
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install Python 3.13
+        run: uv python install 3.13
+
+      - name: Build package
+        run: uv build --package ampersend-sdk
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/

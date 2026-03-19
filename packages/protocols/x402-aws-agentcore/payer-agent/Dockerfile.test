@@ -1,0 +1,33 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir fastapi uvicorn
+
+COPY <<EOF main_test.py
+from fastapi import FastAPI
+import sys
+
+print("Starting minimal test server...", file=sys.stdout, flush=True)
+
+app = FastAPI()
+
+@app.get("/ping")
+async def ping():
+    print("Ping received", file=sys.stdout, flush=True)
+    return {"status": "Healthy", "time_of_last_update": 0}
+
+@app.post("/invocations")
+async def invocations(request: dict):
+    print(f"Invocation received: {request}", file=sys.stdout, flush=True)
+    return {"response": f"Echo: {request}", "status": "success"}
+
+if __name__ == "__main__":
+    import uvicorn
+    print("Starting uvicorn...", file=sys.stdout, flush=True)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
+EOF
+
+EXPOSE 8080
+
+CMD ["python", "main_test.py"]

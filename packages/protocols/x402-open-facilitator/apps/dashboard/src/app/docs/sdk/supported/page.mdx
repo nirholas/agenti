@@ -1,0 +1,64 @@
+<PageHeader title="supported()" description="Get the list of supported networks and payment kinds." />
+
+## Usage
+
+```typescript
+const result = await facilitator.supported();
+```
+
+## Response
+
+```typescript
+interface SupportedResponse {
+  kinds: PaymentKind[];
+  signers: Record<string, string[]>;
+  extensions: string[];
+}
+
+interface PaymentKind {
+  x402Version: 1 | 2;
+  scheme: string;
+  network: string;
+  extra?: {
+    feePayer?: string;
+  };
+}
+```
+
+## Example
+
+```typescript
+const supported = await facilitator.supported();
+
+// List all supported networks
+supported.kinds.forEach(kind => {
+  console.log(`${kind.network} (v${kind.x402Version})`);
+});
+
+// Check if a specific network is supported
+const supportsBase = supported.kinds.some(
+  k => k.network === 'base' || k.network === 'eip155:8453'
+);
+
+// Get signer addresses
+console.log('EVM signers:', supported.signers['eip155:*']);
+console.log('Solana signers:', supported.signers['solana:*']);
+```
+
+## Response Example
+
+```json
+{
+  "kinds": [
+    { "x402Version": 1, "scheme": "exact", "network": "base" },
+    { "x402Version": 2, "scheme": "exact", "network": "eip155:8453" },
+    { "x402Version": 1, "scheme": "exact", "network": "solana", "extra": { "feePayer": "..." } },
+    { "x402Version": 2, "scheme": "exact", "network": "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp", "extra": { "feePayer": "..." } }
+  ],
+  "signers": {
+    "eip155:*": ["0x..."],
+    "solana:*": ["..."]
+  },
+  "extensions": []
+}
+```

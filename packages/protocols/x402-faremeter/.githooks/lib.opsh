@@ -1,0 +1,40 @@
+# shellcheck shell=bash
+lib::import git step-runner
+
+: "${GIT_HOOK_KEEP_STAGING:=false}"
+: "${GIT_SKIP_HOOKS:=false}"
+
+if $GIT_SKIP_HOOKS; then
+	log::warn "skipping git hooks"
+	exit 0
+fi
+
+if [[ ! -v _GIT_HOOK_STAGING_DIR ]]; then
+	_GIT_HOOK_STAGING_DIR="$(git rev-parse --show-toplevel)/git-hook-staging"
+	export _GIT_HOOK_STAGING_DIR
+	exit::trigger staging-cleanup
+fi
+
+staging-cleanup() {
+	if $GIT_HOOK_KEEP_STAGING; then
+		return 0
+	fi
+
+	if [[ ! -d $_GIT_HOOK_STAGING_DIR ]]; then
+		return 0
+	fi
+
+	log::info "cleaning up staging directories"
+	rm -rf "$_GIT_HOOK_STAGING_DIR"
+}
+
+checkout-staging() {
+	local dir hookname
+	hookname=$1
+	shift
+
+	dir="$_GIT_HOOK_STAGING_DIR/$hookname-$$"
+	git checkout-index -a --prefix="$dir/"
+	ln -s "$(realpath "$SCRIPTDIR/../node_modules")" "$dir/node_modules"
+	echo "$dir"
+}

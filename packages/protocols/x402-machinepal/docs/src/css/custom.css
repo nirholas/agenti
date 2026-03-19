@@ -1,0 +1,30 @@
+:root {
+    --ifm-color-primary: #00bfa5;
+    --ifm-color-primary-dark: #009b8a;
+    --ifm-color-primary-darker: #008c7d;
+    --ifm-color-primary-light: #25c3ad;
+    --ifm-color-primary-lighter: #4dd8c3;
+    --ifm-font-family-base: "Inter", system-ui, sans-serif;
+    --ifm-heading-font-family: "Poppins", sans-serif;
+    scroll-behavior: smooth;
+}
+
+html[data-theme='dark'] {
+    --ifm-background-color: #0a0f14;
+    --ifm-color-primary: #4dd8c3;
+    --ifm-color-primary-light: #25c3ad;
+}
+
+.hero__title {
+    background: linear-gradient(90deg, #00bfa5, #25c3ad, #4dd8c3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: shine 5s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}

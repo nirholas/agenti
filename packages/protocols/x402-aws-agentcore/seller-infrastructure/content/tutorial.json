@@ -1,0 +1,91 @@
+{
+  "title": "Advanced Smart Contract Development Tutorial",
+  "author": "x402 Developer Education",
+  "version": "1.0",
+  "difficulty": "Advanced",
+  "estimatedTime": "4 hours",
+  "prerequisites": [
+    "Solidity fundamentals",
+    "Understanding of ERC-20 and ERC-721 standards",
+    "Basic knowledge of DeFi concepts"
+  ],
+  "description": "Learn to build production-ready smart contracts with advanced patterns including upgradability, gas optimization, and security best practices.",
+  "modules": [
+    {
+      "id": 1,
+      "title": "Upgradeable Contract Patterns",
+      "duration": "45 minutes",
+      "content": "Learn the proxy pattern and UUPS upgradeable contracts to safely upgrade your smart contracts without losing state.",
+      "codeExample": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\nimport \"@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol\";\n\ncontract MyUpgradeableContract is UUPSUpgradeable {\n    uint256 public value;\n    \n    function initialize(uint256 _value) public initializer {\n        value = _value;\n    }\n    \n    function _authorizeUpgrade(address) internal override {}\n}",
+      "exercises": [
+        "Implement a basic UUPS proxy",
+        "Add access control to upgrade function",
+        "Test upgrade path with state preservation"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Gas Optimization Techniques",
+      "duration": "60 minutes",
+      "content": "Master gas optimization strategies including storage packing, calldata usage, and efficient loop patterns.",
+      "tips": [
+        "Use uint256 instead of smaller uints when possible",
+        "Pack storage variables to minimize slots",
+        "Use calldata for read-only function parameters",
+        "Cache storage variables in memory for loops",
+        "Use unchecked blocks for safe arithmetic"
+      ],
+      "codeExample": "// Gas-optimized storage packing\nstruct User {\n    uint128 balance;    // Slot 0 (16 bytes)\n    uint64 lastUpdate;  // Slot 0 (8 bytes)\n    uint64 nonce;       // Slot 0 (8 bytes) - fits in same slot!\n    address wallet;     // Slot 1 (20 bytes)\n}"
+    },
+    {
+      "id": 3,
+      "title": "Security Best Practices",
+      "duration": "75 minutes",
+      "content": "Implement robust security patterns to protect against common vulnerabilities including reentrancy, front-running, and access control issues.",
+      "vulnerabilities": [
+        {
+          "name": "Reentrancy",
+          "mitigation": "Use ReentrancyGuard or checks-effects-interactions pattern"
+        },
+        {
+          "name": "Front-running",
+          "mitigation": "Implement commit-reveal schemes or use private mempools"
+        },
+        {
+          "name": "Integer Overflow",
+          "mitigation": "Use Solidity 0.8+ built-in checks or SafeMath"
+        }
+      ],
+      "codeExample": "// Checks-Effects-Interactions pattern\nfunction withdraw(uint256 amount) external {\n    // Checks\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    \n    // Effects\n    balances[msg.sender] -= amount;\n    \n    // Interactions\n    (bool success, ) = msg.sender.call{value: amount}(\"\");\n    require(success, \"Transfer failed\");\n}"
+    },
+    {
+      "id": 4,
+      "title": "Testing and Deployment",
+      "duration": "60 minutes",
+      "content": "Set up comprehensive testing with Foundry, including fuzz testing and invariant testing for maximum coverage.",
+      "tools": ["Foundry", "Hardhat", "Slither", "Mythril"],
+      "testingStrategies": [
+        "Unit tests for individual functions",
+        "Integration tests for contract interactions",
+        "Fuzz testing for edge cases",
+        "Invariant testing for protocol properties"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "title": "OpenZeppelin Contracts",
+      "url": "https://docs.openzeppelin.com/contracts"
+    },
+    {
+      "title": "Foundry Book",
+      "url": "https://book.getfoundry.sh"
+    },
+    {
+      "title": "Solidity Documentation",
+      "url": "https://docs.soliditylang.org"
+    }
+  ],
+  "premium": true,
+  "source": "x402-education-service"
+}

@@ -1,0 +1,147 @@
+// Agenti Hosting Platform - Database Schema
+// Default: SQLite for development. Swap to PostgreSQL for production by changing
+// the provider and DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// User
+// ---------------------------------------------------------------------------
+
+model User {
+  id                   String   @id @default(uuid())
+  email                String   @unique
+  username             String   @unique
+  tier                 String   @default("free") // free | pro | business | enterprise
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  servers   HostedServer[]
+  usageLogs UsageLog[]
+}
+
+// ---------------------------------------------------------------------------
+// Hosted MCP Server
+// ---------------------------------------------------------------------------
+
+model HostedServer {
+  id            String   @id @default(uuid())
+  userId        String
+  name          String
+  description   String   @default("")
+  subdomain     String   @unique
+  customDomain  String?
+  status        String   @default("active") // active | paused | suspended
+  totalCalls    Int      @default(0)
+  totalRevenue  Float    @default(0)
+  callsThisMonth Int     @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id])
+  tools     Tool[]
+  prompts   Prompt[]
+  resources Resource[]
+  usageLogs UsageLog[]
+
+  @@index([userId])
+  @@index([subdomain])
+}
+
+// ---------------------------------------------------------------------------
+// Tool
+// ---------------------------------------------------------------------------
+
+model Tool {
+  id                String  @id @default(uuid())
+  serverId          String
+  name              String
+  description       String  @default("")
+  inputSchema       String  @default("{}") // JSON stored as text (SQLite has no native Json)
+  type              String  @default("http") // http | code | proxy
+  endpoint          String?
+  code              String?
+  proxyTarget       String?
+  price             Float   @default(0)
+  rateLimitRequests Int?
+  rateLimitWindow   Int?
+  enabled           Boolean @default(true)
+
+  server HostedServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId])
+}
+
+// ---------------------------------------------------------------------------
+// Prompt
+// ---------------------------------------------------------------------------
+
+model Prompt {
+  id          String  @id @default(uuid())
+  serverId    String
+  name        String
+  description String  @default("")
+  template    String
+  arguments   String  @default("[]") // JSON stored as text
+  price       Float   @default(0)
+  enabled     Boolean @default(true)
+
+  server HostedServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId])
+}
+
+// ---------------------------------------------------------------------------
+// Resource
+// ---------------------------------------------------------------------------
+
+model Resource {
+  id          String  @id @default(uuid())
+  serverId    String
+  uri         String
+  name        String
+  description String  @default("")
+  mimeType    String  @default("application/octet-stream")
+  type        String  @default("static") // static | dynamic | proxy
+  content     String?
+  endpoint    String?
+  price       Float   @default(0)
+  enabled     Boolean @default(true)
+
+  server HostedServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId])
+}
+
+// ---------------------------------------------------------------------------
+// Usage Log
+// ---------------------------------------------------------------------------
+
+model UsageLog {
+  id            String   @id @default(uuid())
+  serverId      String
+  userId        String
+  toolName      String
+  timestamp     DateTime @default(now())
+  responseTime  Int      @default(0)
+  success       Boolean  @default(true)
+  paymentAmount Float?
+  paymentTxHash String?
+  error         String?
+
+  server HostedServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [id])
+
+  @@index([serverId])
+  @@index([userId])
+  @@index([timestamp])
+}

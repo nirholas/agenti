@@ -1,0 +1,29 @@
+# ChaosChain x402 Facilitator Demo - Environment Variables
+# Copy these to your environment or create a .env file
+
+# ============================================
+# x402 Facilitator Configuration
+# ============================================
+X402_FACILITATOR_URL=http://localhost:8402
+
+# ============================================
+# RPC Endpoints (optional - for real SDK usage)
+# ============================================
+# Get free RPC keys from:
+# - Alchemy: https://www.alchemy.com
+# - Infura: https://www.infura.io
+# - QuickNode: https://www.quicknode.com
+
+# Base Sepolia (testnet) - Public RPC (may be rate-limited)
+BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
+
+# Alternative with API key (recommended):
+# BASE_SEPOLIA_RPC_URL=https://base-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+
+# ============================================
+# Demo Mode
+# ============================================
+# Set to 'true' to use mock agent (no RPC connection needed)
+# Set to 'false' to use real ChaosChain SDK (requires RPC access)
+DEMO_MODE_NO_SDK=true
+

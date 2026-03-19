@@ -1,0 +1,65 @@
+# Machinepal server configuration. May be overridden by environment variables.
+server:
+  hostname: localhost
+  http:
+    enable: false
+    port: 8080
+  https:
+    enable: false
+    port: 8443
+    cert_file: certs/insecure_test_localhost.crt
+    key_file: secrets/insecure_test_localhost.key
+
+
+
+network:
+  name: base-sepolia
+  payment_address: 0x209693Bc6afc0C5328bA36FaF03C514EF312287C
+  facilitator:
+    # Facilitator type. Override: FACILITATOR_TYPE
+    # Facilitator types:
+    # cdp - Coinbase Developer Platform. You need to set base_url and api_key_file.
+    # x402 - generic x402-compatible API. You need to set base_url
+    type: cdp
+    # Facilitator base URL. Override: FACILITATOR_BASE_URL
+    base_url: https://api.coinbase.com/v2
+    # Facilitator API key file. Override: FACILITATOR_API_KEY_FILE
+    api_key_file: secrets/coinbase_api_key.txt
+
+  payment_tokens:
+    - name: USDC
+      address: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
+
+
+log:
+  # Optional Log verbosity level — one of: trace, debug, info, warn, error, fatal
+  # Default: info
+  level: trace
+  # Format for logs (default or json)  Default: default
+  type: default
+
+
+resources:
+  - name: hello_world
+    type: local_file
+    location: resources/hello_world.txt
+    price: 1.545
+    token: USDC
+
+  - name: hello_world_api
+    type: api-jsonrpc
+    location: https://google.com/resources/hello_world.txt
+    price: 1.545
+    token: USDC
+
+  - name: hello_world_api_json_rpc
+    type: api-jsonrpc
+    location: https://google.com/resources/hello_world.txt
+    price: 1.545
+    token: USDC
+
+  - name: hello_world_api_rest
+    type: api-rest
+    location: https://jsonplaceholder.typicode.com/posts/1
+    price: 12
+    token: USDC

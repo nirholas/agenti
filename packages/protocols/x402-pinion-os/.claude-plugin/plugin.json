@@ -1,0 +1,19 @@
+{
+  "name": "pinion-os",
+  "description": "On-chain AI skills via x402 micropayments on Base",
+  "version": "0.3.2",
+  "author": {
+    "name": "chu2bard"
+  },
+  "homepage": "https://github.com/chu2bard/pinion-os",
+  "repository": "https://github.com/chu2bard/pinion-os",
+  "mcpServers": {
+    "pinion": {
+      "command": "npx",
+      "args": ["pinion-os"],
+      "env": {
+        "PINION_PRIVATE_KEY": ""
+      }
+    }
+  }
+}

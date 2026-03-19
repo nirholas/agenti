@@ -1,0 +1,92 @@
+name: PR Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  label-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Analyze PR and apply labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              per_page: 100,
+            });
+
+            let goFiles = 0, jsFiles = 0, tsFiles = 0, mdFiles = 0, otherFiles = 0;
+            let additions = 0, deletions = 0;
+
+            for (const file of files) {
+              const name = file.filename.toLowerCase();
+              additions += file.additions || 0;
+              deletions += file.deletions || 0;
+              if (name.endsWith('.go')) goFiles++;
+              else if (name.endsWith('.js') || name.endsWith('.jsx')) jsFiles++;
+              else if (name.endsWith('.ts') || name.endsWith('.tsx') || name.endsWith('.vue')) tsFiles++;
+              else if (name.endsWith('.md')) mdFiles++;
+              else otherFiles++;
+            }
+
+            const totalFiles = goFiles + jsFiles + tsFiles + mdFiles + otherFiles;
+            if (totalFiles === 0) return;
+
+            // --- Scope label ---
+            const labels = [];
+            if (goFiles / totalFiles > 0.5) labels.push('backend');
+            else if ((jsFiles + tsFiles) / totalFiles > 0.5) labels.push('frontend');
+            else if (mdFiles / totalFiles > 0.7) labels.push('documentation');
+            else labels.push('fullstack');
+
+            // --- Size label (like OpenClaw) ---
+            const totalChanged = additions + deletions;
+            const sizeLabels = ['size: XS', 'size: S', 'size: M', 'size: L', 'size: XL'];
+            let sizeLabel = 'size: XL';
+            if (totalChanged < 50) sizeLabel = 'size: XS';
+            else if (totalChanged < 200) sizeLabel = 'size: S';
+            else if (totalChanged < 500) sizeLabel = 'size: M';
+            else if (totalChanged < 1000) sizeLabel = 'size: L';
+            labels.push(sizeLabel);
+
+            // Ensure size labels exist
+            for (const sl of sizeLabels) {
+              try {
+                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name: sl });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name: sl, color: 'b76e79' });
+                }
+              }
+            }
+
+            // Remove stale size labels
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number,
+            });
+            for (const cl of currentLabels) {
+              if (sizeLabels.includes(cl.name) && cl.name !== sizeLabel) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, name: cl.name,
+                }).catch(() => {});
+              }
+            }
+
+            // Apply labels
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: labels,
+            });
+
+            console.log(`Applied labels: ${labels.join(', ')} (${totalChanged} lines changed)`);

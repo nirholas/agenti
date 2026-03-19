@@ -1,0 +1,49 @@
+{
+  "name": "@chaoschain/x402-client",
+  "version": "0.1.0",
+  "description": "TypeScript client for ChaosChain x402 decentralized facilitator",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "x402",
+    "chaoschain",
+    "cre",
+    "chainlink",
+    "payments",
+    "facilitator",
+    "decentralized"
+  ],
+  "author": "ChaosChain Labs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChaosChain/chaoschain-x402.git",
+    "directory": "clients/ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.21",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3"
+  }
+}
+

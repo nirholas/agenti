@@ -1,0 +1,644 @@
+---
+title: Advanced Context Composition
+description: Master complex composition patterns for enterprise-grade agent systems.
+---
+
+## Advanced Context Composition
+
+This guide covers sophisticated composition patterns for building complex, production-ready agent systems. For basic composition concepts, see [Contexts](/docs/core/concepts/contexts#composed-contexts---the-power-pattern).
+
+## When You Need Advanced Composition
+
+Advanced composition patterns are essential when you're building:
+- **Enterprise applications** with complex business logic
+- **Multi-tenant systems** with user-specific features  
+- **Workflow engines** that adapt based on state
+- **Platform integrations** with conditional functionality
+
+## Key Advanced Concepts
+
+**Composer Functions**: Complex logic for determining context inclusion
+**State-Driven Composition**: Contexts change based on runtime conditions  
+**Error-Resilient Patterns**: Graceful handling of context failures
+**Performance Optimization**: Lazy loading and conditional inclusion
+
+## Advanced Composition Patterns
+
+### 1. State-Driven Dynamic Composition
+
+Contexts that change based on complex runtime state:
+
+```typescript title="state-driven-composition.ts"
+import { context, action } from "@daydreamsai/core";
+import * as z from "zod";
+
+const workflowContext = context({
+  type: "workflow",
+  schema: z.object({ 
+    workflowId: z.string(),
+    currentStage: z.string(),
+    permissions: z.array(z.string()),
+  }),
+  create: () => ({ 
+    completedSteps: [], 
+    nextSteps: [],
+    approvalRequired: false,
+  }),
+})
+  .use((state) => {
+    const contexts = [];
+    
+    // Always include audit logging
+    contexts.push({ 
+      context: auditContext, 
+      args: { workflowId: state.args.workflowId } 
+    });
+    
+    // Stage-specific contexts
+    switch (state.args.currentStage) {
+      case "draft":
+        contexts.push({ context: editingContext, args: {} });
+        break;
+        
+      case "review":
+        contexts.push({ context: reviewContext, args: {} });
+        if (state.args.permissions.includes("approve")) {
+          contexts.push({ context: approvalContext, args: {} });
+        }
+        break;
+        
+      case "approved":
+        contexts.push({ context: executionContext, args: {} });
+        if (state.memory.approvalRequired) {
+          contexts.push({ context: notificationContext, args: {} });
+        }
+        break;
+    }
+    
+    return contexts;
+  });
+```
+
+### 2. Multi-Tenant Feature Composition  
+
+Dynamically enable features based on tenant configuration:
+
+```typescript title="multi-tenant-composition.ts"
+interface TenantConfig {
+  features: string[];
+  limits: Record<string, number>;
+  integrations: string[];
+}
+
+const tenantContext = context({
+  type: "tenant",
+  schema: z.object({ 
+    tenantId: z.string(),
+    userId: z.string(),
+  }),
+  create: () => ({ sessions: 0, usage: {} }),
+})
+  .use(async (state) => {
+    // Fetch tenant configuration
+    const config: TenantConfig = await getTenantConfig(state.args.tenantId);
+    const contexts = [
+      // Core functionality for all tenants
+      { context: coreContext, args: { userId: state.args.userId } },
+    ];
+    
+    // Feature-based context inclusion
+    if (config.features.includes("analytics")) {
+      contexts.push({ 
+        context: analyticsContext, 
+        args: { tenantId: state.args.tenantId } 
+      });
+    }
+    
+    if (config.features.includes("ai-assistant")) {
+      contexts.push({ context: aiContext, args: {} });
+    }
+    
+    if (config.features.includes("advanced-reporting")) {
+      contexts.push({ context: reportingContext, args: {} });
+    }
+    
+    // Integration-based contexts
+    for (const integration of config.integrations) {
+      if (integration === "salesforce") {
+        contexts.push({ context: salesforceContext, args: {} });
+      } else if (integration === "slack") {
+        contexts.push({ context: slackContext, args: {} });
+      }
+    }
+    
+    return contexts;
+  });
+```
+
+### 3. Layered Architecture with Chaining
+
+Build complex systems with multiple composition layers:
+
+```typescript title="layered-composition.ts"
+const enterpriseAppContext = context({
+  type: "enterprise-app",
+  schema: z.object({ 
+    userId: z.string(), 
+    orgId: z.string(),
+    role: z.string(),
+  }),
+})
+  // Layer 1: Core foundation
+  .use((state) => [
+    { context: authContext, args: { userId: state.args.userId } },
+    { context: auditContext, args: { orgId: state.args.orgId } },
+  ])
+  
+  // Layer 2: Role-based features
+  .use((state) => {
+    const contexts = [];
+    
+    // Role-based context inclusion
+    switch (state.args.role) {
+      case "admin":
+        contexts.push({ context: adminContext, args: {} });
+        contexts.push({ context: settingsContext, args: {} });
+        break;
+        
+      case "manager":
+        contexts.push({ context: teamContext, args: {} });
+        contexts.push({ context: reportingContext, args: {} });
+        break;
+        
+      case "user":
+        contexts.push({ context: userWorkspaceContext, args: {} });
+        break;
+    }
+    
+    return contexts;
+  })
+  
+  // Layer 3: Organization-specific features  
+  .use(async (state) => {
+    const orgConfig = await getOrgConfig(state.args.orgId);
+    const contexts = [];
+    
+    if (orgConfig.features.customWorkflows) {
+      contexts.push({ context: workflowContext, args: {} });
+    }
+    
+    if (orgConfig.features.advancedSecurity) {
+      contexts.push({ context: securityContext, args: {} });
+    }
+    
+    return contexts;
+  });
+```
+
+## Real-World Examples
+
+### E-commerce Shopping Assistant
+
+```typescript title="ecommerce-agent.ts"
+import { context, action } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Product search context
+const catalogContext = context({
+  type: "catalog",
+  schema: z.object({ storeId: z.string() }),
+  create: () => ({ recentSearches: [] }),
+}).setActions([
+  action({
+    name: "searchProducts",
+    description: "Search for products",
+    schema: z.object({ query: z.string() }),
+    handler: async ({ query }, ctx) => {
+      ctx.memory.recentSearches.push(query);
+      return { products: await mockProductSearch(query) };
+    },
+  }),
+]);
+
+// Shopping cart management
+const cartContext = context({
+  type: "cart", 
+  schema: z.object({ sessionId: z.string() }),
+  create: () => ({ items: [], total: 0 }),
+}).setActions([
+  action({
+    name: "addToCart",
+    description: "Add item to shopping cart",
+    schema: z.object({ productId: z.string(), quantity: z.number() }),
+    handler: async ({ productId, quantity }, ctx) => {
+      ctx.memory.items.push({ productId, quantity });
+      ctx.memory.total += 29.99 * quantity; // Mock price
+      return { success: true, cartTotal: ctx.memory.total };
+    },
+  }),
+]);
+
+// User preferences and history
+const customerContext = context({
+  type: "customer",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ tier: "basic", preferences: [], orderHistory: [] }),
+});
+
+// Main shopping assistant that combines all contexts
+const shoppingAssistant = context({
+  type: "shopping-assistant",
+  schema: z.object({ 
+    userId: z.string(), 
+    sessionId: z.string(),
+    storeId: z.string() 
+  }),
+  create: () => ({ conversationCount: 0 }),
+})
+  .use((state) => [
+    // Always include catalog and cart
+    { context: catalogContext, args: { storeId: state.args.storeId } },
+    { context: cartContext, args: { sessionId: state.args.sessionId } },
+    
+    // Include customer context for logged-in users
+    state.args.userId !== "anonymous" 
+      ? { context: customerContext, args: { userId: state.args.userId } }
+      : null,
+  ].filter(Boolean))
+  
+  .render((state) => `
+    Shopping Assistant for Store ${state.args.storeId}
+    Session: ${state.args.sessionId}
+    User: ${state.args.userId}
+  `)
+  
+  .instructions(`You are a helpful shopping assistant. You can:
+    - Search for products using searchProducts
+    - Add items to cart using addToCart
+    - Help customers find what they need
+    
+    Be friendly and make personalized recommendations when possible.`);
+
+// This assistant can now:
+// ✅ Search products across the store catalog
+// ✅ Manage shopping cart items and totals
+// ✅ Access customer preferences (when logged in)
+// ✅ All actions are available in one unified context
+```
+
+### Smart Meeting Assistant
+
+```typescript title="meeting-assistant.ts"
+import { context, action } from "@daydreamsai/core";
+import * as z from "zod";
+
+// Meeting transcription context
+const transcriptionContext = context({
+  type: "transcription", 
+  schema: z.object({ meetingId: z.string() }),
+  create: () => ({ transcript: [], speakers: [] }),
+}).setActions([
+  action({
+    name: "transcribeAudio",
+    description: "Convert speech to text",
+    schema: z.object({ audioUrl: z.string() }),
+    handler: async ({ audioUrl }, ctx) => {
+      const text = "Mock transcript of the meeting";
+      ctx.memory.transcript.push({ text, timestamp: Date.now() });
+      return { success: true, text };
+    },
+  }),
+]);
+
+// Action items tracking context
+const actionItemsContext = context({
+  type: "action-items",
+  schema: z.object({ meetingId: z.string() }),
+  create: () => ({ items: [], assignments: [] }),
+}).setActions([
+  action({
+    name: "addActionItem",
+    description: "Add action item with assignee",
+    schema: z.object({ 
+      task: z.string(), 
+      assignee: z.string(),
+      dueDate: z.string().optional() 
+    }),
+    handler: async ({ task, assignee, dueDate }, ctx) => {
+      ctx.memory.items.push({ task, assignee, dueDate, status: "pending" });
+      return { added: true, totalItems: ctx.memory.items.length };
+    },
+  }),
+]);
+
+// Calendar integration context
+const calendarContext = context({
+  type: "calendar",
+  schema: z.object({ userId: z.string() }),
+  create: () => ({ upcomingMeetings: [], preferences: {} }),
+});
+
+// Smart meeting assistant that adapts to different meeting types
+const meetingAssistant = context({
+  type: "meeting-assistant", 
+  schema: z.object({
+    meetingId: z.string(),
+    meetingType: z.enum(["standup", "planning", "review", "general"]),
+    userId: z.string(),
+  }),
+  create: () => ({ startTime: Date.now() }),
+})
+  .use((state) => {
+    const contexts = [
+      // Always include transcription for all meetings
+      { context: transcriptionContext, args: { meetingId: state.args.meetingId } },
+      // Include calendar for scheduling follow-ups
+      { context: calendarContext, args: { userId: state.args.userId } },
+    ];
+    
+    // Add action items context for meetings that need follow-up
+    if (["planning", "review"].includes(state.args.meetingType)) {
+      contexts.push({
+        context: actionItemsContext,
+        args: { meetingId: state.args.meetingId }
+      });
+    }
+    
+    return contexts;
+  })
+  
+  .render((state) => `
+    Meeting Assistant for ${state.args.meetingType} meeting
+    Meeting ID: ${state.args.meetingId}
+    Host: ${state.args.userId}
+  `)
+  
+  .instructions((state) => {
+    const baseInstructions = `You are a meeting assistant. You can transcribe audio and help manage meetings.`;
+    
+    if (["planning", "review"].includes(state.args.meetingType)) {
+      return baseInstructions + ` Focus on capturing action items and assigning them to team members.`;
+    }
+    
+    return baseInstructions + ` Focus on capturing key discussion points.`;
+  });
+
+// Features available based on meeting type:
+// All meetings: ✅ Audio transcription, calendar integration  
+// Planning/Review: ✅ + Action item tracking and assignment
+// Standup/General: ✅ Transcription only (streamlined experience)
+```
+
+## Advanced Patterns
+
+### Error Handling in Composition
+
+```typescript title="error-handling.ts"
+const robustContext = context({ type: "robust" })
+  .use((state) => {
+    const contexts = [];
+    
+    try {
+      // Always try to include core functionality
+      contexts.push({ context: coreContext, args: {} });
+      
+      // Optional enhanced features
+      if (state.memory.featureEnabled) {
+        contexts.push({ context: enhancedContext, args: {} });
+      }
+    } catch (error) {
+      console.warn("Error in context composition:", error);
+      // Fall back to minimal context
+      contexts.push({ context: minimalContext, args: {} });
+    }
+    
+    return contexts;
+  });
+```
+
+### Dynamic Context Loading
+
+```typescript title="dynamic-loading.ts"
+const adaptiveContext = context({ 
+  type: "adaptive",
+  schema: z.object({ features: z.array(z.string()) })
+})
+  .use(async (state) => {
+    const contexts = [];
+    
+    // Load different contexts based on requested features
+    for (const feature of state.args.features) {
+      switch (feature) {
+        case "analytics":
+          contexts.push({ context: analyticsContext, args: {} });
+          break;
+        case "ai-assistant":
+          contexts.push({ context: aiContext, args: {} });
+          break;
+        case "notifications":
+          contexts.push({ context: notificationContext, args: {} });
+          break;
+      }
+    }
+    
+    return contexts;
+  });
+```
+
+## Best Practices
+
+### 1. Keep Contexts Single-Purpose
+
+Each context should have one clear responsibility:
+
+```typescript title="single-purpose.ts"
+// ✅ Good - focused contexts
+const authContext = context({ 
+  type: "auth",
+  // Only handles user authentication
+});
+
+const profileContext = context({ 
+  type: "profile", 
+  // Only manages user profile data
+});
+
+const preferencesContext = context({ 
+  type: "preferences",
+  // Only handles user settings
+});
+
+// ❌ Bad - mixed concerns
+const userEverythingContext = context({
+  type: "user-everything",
+  // Handles auth + profile + preferences + notifications + billing...
+});
+```
+
+### 2. Use Meaningful Context Arguments
+
+Pass the minimum required data to composed contexts:
+
+```typescript title="meaningful-args.ts"
+// ✅ Good - clear, minimal arguments
+const orderContext = context({ type: "order" })
+  .use((state) => [
+    { context: inventoryContext, args: { storeId: state.args.storeId } },
+    { context: paymentContext, args: { customerId: state.args.customerId } },
+    { context: shippingContext, args: { 
+      customerId: state.args.customerId,
+      storeId: state.args.storeId 
+    }},
+  ]);
+
+// ❌ Bad - passing entire state objects
+const orderContext = context({ type: "order" })
+  .use((state) => [
+    { context: inventoryContext, args: state }, // Too much data
+    { context: paymentContext, args: { ...state.args, ...state.memory } }, // Confusing
+  ]);
+```
+
+### 3. Handle Optional Contexts Gracefully
+
+Use conditional composition for optional features:
+
+```typescript title="optional-contexts.ts"
+// ✅ Good - graceful optional composition
+const appContext = context({ type: "app" })
+  .use((state) => {
+    const contexts = [
+      // Core contexts always included
+      { context: coreContext, args: {} },
+    ];
+    
+    // Optional features based on user tier
+    if (state.memory.userTier === "premium") {
+      contexts.push({ context: premiumContext, args: {} });
+    }
+    
+    // Optional contexts based on feature flags
+    if (state.memory.betaFeatures?.includes("ai-assistant")) {
+      contexts.push({ context: aiContext, args: {} });
+    }
+    
+    return contexts;
+  });
+
+// ❌ Bad - unclear optional logic  
+const appContext = context({ type: "app" })
+  .use((state) => [
+    { context: coreContext, args: {} },
+    state.memory.userTier === "premium" ? { context: premiumContext, args: {} } : null,
+    // What happens with null? Unclear!
+  ]);
+```
+
+### 4. Plan for Context Dependencies
+
+Document and manage context relationships:
+
+```typescript title="context-dependencies.ts"
+/**
+ * E-commerce checkout flow
+ * 
+ * Dependencies:
+ * - cartContext: Manages items and quantities
+ * - inventoryContext: Validates item availability  
+ * - paymentContext: Processes transactions
+ * - shippingContext: Calculates delivery options
+ * 
+ * This context orchestrates the complete checkout process
+ */
+const checkoutContext = context({
+  type: "checkout",
+  schema: z.object({
+    sessionId: z.string(),
+    customerId: z.string(),
+  }),
+})
+  .use((state) => [
+    { context: cartContext, args: { sessionId: state.args.sessionId } },
+    { context: inventoryContext, args: {} },
+    { context: paymentContext, args: { customerId: state.args.customerId } },
+    { context: shippingContext, args: { customerId: state.args.customerId } },
+  ])
+  .instructions(`You handle checkout by:
+    1. Validating cart contents with inventory
+    2. Processing payment 
+    3. Arranging shipping
+    4. Confirming the order
+  `);
+```
+
+### 5. Use Composition for Feature Flags
+
+Enable/disable functionality through composition:
+
+```typescript title="feature-flags.ts"
+const featureFlags = {
+  aiRecommendations: true,
+  advancedAnalytics: false,
+  betaFeatures: true,
+};
+
+const dynamicContext = context({ type: "dynamic" })
+  .use(() => {
+    const contexts = [
+      { context: baseContext, args: {} }, // Always include base
+    ];
+    
+    if (featureFlags.aiRecommendations) {
+      contexts.push({ context: aiContext, args: {} });
+    }
+    
+    if (featureFlags.advancedAnalytics) {
+      contexts.push({ context: analyticsContext, args: {} });
+    }
+    
+    return contexts;
+  });
+```
+
+## Common Pitfalls
+
+### ❌ Circular Dependencies
+```typescript
+// Don't create circular references
+const contextA = context({ type: "a" }).use(() => [{ context: contextB, args: {} }]);
+const contextB = context({ type: "b" }).use(() => [{ context: contextA, args: {} }]); // ❌ Circular!
+```
+
+### ❌ Over-Composition  
+```typescript
+// Don't compose too many contexts unnecessarily
+const bloatedContext = context({ type: "bloated" })
+  .use(() => [
+    { context: context1, args: {} },
+    { context: context2, args: {} },
+    { context: context3, args: {} },
+    // ... 20 more contexts - probably too many!
+  ]);
+```
+
+### ❌ Forgetting to Filter Nulls
+```typescript
+// Remember to filter out null/undefined contexts
+const buggyContext = context({ type: "buggy" })
+  .use((state) => [
+    { context: baseContext, args: {} },
+    state.condition ? { context: conditionalContext, args: {} } : null, // ❌ Can be null!
+  ]); // Should use .filter(Boolean)
+```
+
+## Key Takeaways
+
+- **Composer functions** receive context state and return `{ context, args }` arrays
+- **Conditional composition** lets you adapt behavior based on runtime conditions  
+- **Filter pattern** use `.filter(Boolean)` to remove null/undefined contexts
+- **Keep contexts focused** on single responsibilities for better maintainability
+- **Document dependencies** to help other developers understand relationships
+- **Handle errors gracefully** with try/catch and fallback contexts
+- **Use meaningful arguments** pass only what each context actually needs
+
+Context composition enables sophisticated agent behaviors while maintaining clean, modular code. Start with simple contexts and compose them to create powerful, adaptive systems.

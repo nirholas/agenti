@@ -1,0 +1,28 @@
+name: Publish AgentKit Plugin to npm
+
+on:
+  workflow_dispatch:
+
+jobs:
+  agentkit-plugin-npm-publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: packages/agentkit-plugin/typescript
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: packages/agentkit-plugin/typescript/.nvmrc
+          cache: npm
+          cache-dependency-path: packages/agentkit-plugin/typescript/package-lock.json
+          registry-url: https://registry.npmjs.org
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Build
+        run: npm run build
+      - run: npm publish --provenance --access public

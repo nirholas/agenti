@@ -1,0 +1,201 @@
+import { getCDPNetworks, type UnifiedNetwork } from "../cdp/wallet/networks.js";
+import { createSignerFromViemAccount } from "mcpay/utils";
+import { getCDPAccount } from "../cdp/wallet/index.js";
+import { txOperations, Wallet } from "../../db/actions.js";
+import type { PaymentSigningContext, PaymentSigningResult, PaymentSigningStrategy } from "./index.js";
+import { x402Version } from "../x402.js";
+import { type CDPNetwork, type CDPWalletMetadata } from "../cdp/types.js";
+import { createPaymentHeader } from "x402/client";
+import { PaymentRequirements } from "x402/types";
+export type { Wallet } from "../../db/actions.js";
+import { toAccount } from "viem/accounts";
+
+export class CDPSigningStrategy implements PaymentSigningStrategy {
+    name = "CDP";
+    priority = 100; // High priority - prefer managed wallets
+
+    async canSign(context: PaymentSigningContext): Promise<boolean> {
+        try {
+            if (!context.user?.id) {
+                return false;
+            }
+
+            const paymentRequirement = context.paymentRequirement
+            const network = paymentRequirement.network as CDPNetwork;
+
+            const cdpWallets = await txOperations.getCDPWalletsByUser(context.user!.id);
+            const activeWallets = cdpWallets.filter(w => w.isActive);
+            const compatibleWallets = activeWallets.filter(wallet => {
+                const walletNetwork = (wallet.walletMetadata as unknown as CDPWalletMetadata)?.cdpNetwork;
+                return walletNetwork === network || this.isNetworkCompatible(walletNetwork, network);
+            });
+
+            console.log(`[CDP Strategy] Found ${compatibleWallets.length} compatible wallets for user ${context.user!.id}`);
+
+            const canSign = compatibleWallets.length > 0 || activeWallets.length > 0;
+            console.log(`[CDP Strategy] Can sign: ${canSign} (compatible: ${compatibleWallets.length}, active: ${activeWallets.length})`);
+            return canSign;
+        } catch (error) {
+            console.error('[CDP Strategy] Error checking if can sign:', error);
+            return false;
+        }
+    }
+
+    async signPayment(context: PaymentSigningContext): Promise<PaymentSigningResult> {
+        try {
+            if (!context.user?.id) {
+                return {
+                    success: false,
+                    error: 'No user ID provided'
+                };
+            }
+
+            const paymentRequirement = context.paymentRequirement
+            const network = paymentRequirement.network as CDPNetwork;
+            if (!paymentRequirement) {
+                return {
+                    success: false,
+                    error: 'No payment requirements provided'
+                };
+            }
+
+            const pickedPaymentRequirement = paymentRequirement;
+
+            const cdpWallets = await txOperations.getCDPWalletsByUser(context.user!.id);
+            const activeWallets = cdpWallets.filter(w => w.isActive);
+            const compatibleWallets = activeWallets.filter(wallet => {
+                const walletNetwork = (wallet.walletMetadata as unknown as CDPWalletMetadata)?.cdpNetwork;
+                return walletNetwork === network || this.isNetworkCompatible(walletNetwork, network);
+            });
+
+            // If none are compatible by family, fall back to any active CDP wallet
+            const candidateWallets = compatibleWallets.length > 0 ? compatibleWallets : activeWallets;
+
+            if (candidateWallets.length === 0) {
+                return {
+                    success: false,
+                    error: `No active CDP wallets available for user`
+                };
+            }
+
+            // Prefer smart accounts (gas-sponsored) over regular accounts
+            const smartWallets = candidateWallets.filter(w => (w.walletMetadata as unknown as CDPWalletMetadata)?.isSmartAccount);
+            const regularWallets = candidateWallets.filter(w => !(w.walletMetadata as unknown as CDPWalletMetadata)?.isSmartAccount);
+
+            const walletsToTry = [...smartWallets, ...regularWallets];
+
+            console.log(`[CDP Strategy] Found ${smartWallets.length} smart wallets and ${regularWallets.length} regular wallets`);
+
+            // Try each wallet until one succeeds
+            for (const wallet of walletsToTry) {
+                try {
+                    console.log(`[CDP Strategy] Trying to sign with wallet: ${wallet.walletAddress}`);
+                    const result = await this.signWithCDPWallet(wallet, pickedPaymentRequirement, network);
+
+                    if (result.success) {
+                        console.log(`[CDP Strategy] Successfully signed with wallet: ${wallet.walletAddress}`);
+                        return {
+                            ...result,
+                            walletAddress: wallet.walletAddress
+                        };
+                    } else {
+                        console.log(`[CDP Strategy] Failed to sign with wallet ${wallet.walletAddress}: ${result.error}`);
+                    }
+                } catch (walletError) {
+                    console.error(`[CDP Strategy] Error signing with wallet ${wallet.walletAddress}:`, walletError);
+                }
+            }
+
+            return {
+                success: false,
+                error: `Failed to sign with any of ${walletsToTry.length} available CDP wallets`
+            };
+
+        } catch (error) {
+            console.error('[CDP Strategy] Error during payment signing:', error);
+            return {
+                success: false,
+                error: `CDP signing failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            };
+        }
+    }
+
+    private isNetworkCompatible(walletNetwork: string | undefined, targetNetwork: UnifiedNetwork): boolean {
+        if (!walletNetwork) return false;
+
+        // Normalize to unified network names if possible
+        const cdpNetworks = getCDPNetworks();
+        const normalizedWallet = cdpNetworks.includes(walletNetwork as CDPNetwork)
+            ? (walletNetwork as UnifiedNetwork)
+            : (walletNetwork as unknown as UnifiedNetwork);
+
+        // Direct match
+        if (normalizedWallet === targetNetwork) return true;
+
+        // Family pairing: treat testnets as compatible with their mainnet family
+        const family = (n: UnifiedNetwork | string) => {
+            switch (n) {
+                case 'polygon':
+                case 'polygon-amoy':
+                    return 'polygon';
+                case 'base':
+                case 'base-sepolia':
+                    return 'base';
+                case 'ethereum':
+                case 'ethereum-sepolia':
+                    return 'ethereum';
+                case 'arbitrum':
+                    return 'arbitrum';
+                case 'sei-testnet':
+                    return 'sei';
+                default:
+                    return String(n);
+            }
+        };
+
+        return family(normalizedWallet) === family(targetNetwork);
+    }
+
+    private async signWithCDPWallet(
+        wallet: Wallet,
+        paymentRequirement: PaymentRequirements,
+        network: CDPNetwork
+    ): Promise<PaymentSigningResult> {
+        try {
+            const walletMetadata = wallet.walletMetadata as unknown as CDPWalletMetadata;
+            const isSmartAccount = walletMetadata?.isSmartAccount || false;
+            const accountId = wallet.externalWalletId; // CDP account ID
+
+            if (!accountId) {
+                return {
+                    success: false,
+                    error: 'No CDP account ID found'
+                };
+            }
+
+            console.log(`[CDP Strategy] Getting CDP account: ${accountId} (smart: ${isSmartAccount})`);
+
+            // Get the CDP account instance
+            const cdpAccount = await getCDPAccount(accountId, network);
+
+            const signer = createSignerFromViemAccount(network, toAccount(cdpAccount))
+            
+            const signedPayment = await createPaymentHeader(signer, x402Version, paymentRequirement);
+
+            console.log(`[CDP Strategy] Signed payment:`, JSON.stringify(signedPayment, null, 2));
+            console.log(`[CDP Strategy] Encoded payment:`, signedPayment);
+
+            return {
+                success: true,
+                signedPaymentHeader: signedPayment
+            };
+
+        } catch (error) {
+            console.error('[CDP Strategy] Error in signWithCDPWallet:', error);
+            return {
+                success: false,
+                error: `CDP wallet signing failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            };
+        }
+    }
+} 

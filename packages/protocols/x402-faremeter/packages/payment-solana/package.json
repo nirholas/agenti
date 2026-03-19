@@ -1,0 +1,68 @@
+{
+  "name": "@faremeter/payment-solana",
+  "version": "0.17.1",
+  "description": "Solana payment scheme implementations for x402 protocol (SPL token transfers)",
+  "keywords": [
+    "faremeter",
+    "typescript",
+    "sdk",
+    "api",
+    "x402",
+    "ai"
+  ],
+  "license": "LGPL-3.0-only",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./exact": {
+      "require": "./dist/src/exact/index.js",
+      "import": "./dist/src/exact/index.js",
+      "types": "./dist/src/exact/index.d.ts"
+    },
+    "./splToken": {
+      "require": "./dist/src/splToken.js",
+      "import": "./dist/src/splToken.js",
+      "types": "./dist/src/splToken.d.ts"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@tapjs/asserts": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tap": "catalog:",
+    "tsc-esm-fix": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typescript-language-server": "catalog:"
+  },
+  "dependencies": {
+    "@faremeter/info": "workspace:^",
+    "@faremeter/logs": "workspace:^",
+    "@faremeter/types": "workspace:^",
+    "@solana-program/compute-budget": "catalog:",
+    "@solana-program/memo": "catalog:",
+    "@solana-program/token": "catalog:",
+    "@solana/addresses": "catalog:",
+    "@solana/kit": "catalog:",
+    "@solana/rpc": "catalog:",
+    "@solana/rpc-api": "catalog:",
+    "@solana/rpc-types": "catalog:",
+    "@solana/spl-token": "catalog:",
+    "@solana/transactions": "catalog:",
+    "@solana/web3.js": "catalog:",
+    "arktype": "catalog:"
+  },
+  "tap": {
+    "plugin": [
+      "@tapjs/tsx",
+      "!@tapjs/typescript"
+    ]
+  }
+}

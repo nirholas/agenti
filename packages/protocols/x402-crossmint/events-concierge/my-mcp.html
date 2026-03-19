@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Event Host Setup</title>
+    <script type="module" src="/@vite/client"></script>
+    <script type="module">
+      import RefreshRuntime from '/@react-refresh';
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      import React from "react";
+      import { createRoot } from "react-dom/client";
+      import MyMcp from "/src/pages/MyMcp.tsx";
+      const root = document.getElementById("root");
+      if (root) createRoot(root).render(React.createElement(MyMcp));
+    </script>
+  </body>
+  </html>
+
+

@@ -1,0 +1,111 @@
+---
+title: "aixyz/model/fake"
+description: "Deterministic fake language model for testing and development"
+---
+
+A drop-in `LanguageModelV3` implementation that maps user messages through a transform function — no API key, no network calls, fully deterministic.
+
+```typescript
+import { fake, type Prompt } from "aixyz/model";
+```
+
+## `fake(transform)`
+
+Creates a fake language model conforming to the Vercel AI SDK `LanguageModelV3` specification. The returned model can be passed directly to `ToolLoopAgent` or any AI SDK function that accepts a `LanguageModel`.
+
+```typescript
+function fake(transform: (lastMessage: string, prompt: Prompt) => string): LanguageModelV3;
+```
+
+### Parameters
+
+| Parameter   | Type                                              | Description                                                                                                |
+| ----------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `transform` | `(lastMessage: string, prompt: Prompt) => string` | Function that receives the last user message text and the full prompt, and returns the model output string |
+
+The `transform` function receives two arguments:
+
+- **`lastMessage`** — the text content of the most recent user message (empty string if none)
+- **`prompt`** — the full `LanguageModelV3Prompt` conversation history, useful for tracking turn count or prior context
+
+### Return value
+
+A `LanguageModelV3` object with:
+
+- `specificationVersion: "v3"`
+- `provider: "aixyz/fake"`
+- `modelId: "aixyz/fake"`
+- `doGenerate()` and `doStream()` that call your transform and report zero token usage
+
+### Examples
+
+Simple echo:
+
+```typescript
+import { fake } from "aixyz/model";
+
+const model = fake((input) => `You said: ${input}`);
+```
+
+Using full prompt context:
+
+```typescript
+import { fake } from "aixyz/model";
+
+const model = fake((input, prompt) => {
+  const turn = prompt.filter((m) => m.role === "user").length;
+  return `Turn ${turn}: ${input}`;
+});
+```
+
+Wiring into an agent:
+
+```typescript title="app/agent.ts"
+import { fake } from "aixyz/model";
+import { ToolLoopAgent } from "ai";
+
+export const model = fake((input) => `Echo: ${input}`);
+
+export default new ToolLoopAgent({
+  model,
+  instructions: "You echo back whatever the user says.",
+});
+```
+
+## `Prompt`
+
+Type alias for `LanguageModelV3Prompt` from `@ai-sdk/provider`. This is an array of messages where each message has a `role` and `content`:
+
+```typescript
+import type { Prompt } from "aixyz/model";
+```
+
+Use this type when you need to reference the prompt shape in your transform function or tests:
+
+```typescript
+import { fake, type Prompt } from "aixyz/model";
+
+const model = fake((_input: string, prompt: Prompt) => {
+  return `${prompt.length} messages in history`;
+});
+```
+
+## Testing with `fake()`
+
+The fake model makes every test deterministic and CI-safe. Export the model from your agent file so tests can call `doGenerate()` directly:
+
+```typescript title="app/agent.test.ts"
+import { describe, expect, test } from "bun:test";
+import { model } from "./agent";
+import type { Prompt } from "aixyz/model";
+
+describe("agent (fake model)", () => {
+  test("echoes the user message", async () => {
+    const prompt: Prompt = [{ role: "user", content: [{ type: "text", text: "hello" }] }];
+    const result = await model.doGenerate({ prompt });
+    expect(result.content).toEqual([{ type: "text", text: "Echo: hello" }]);
+  });
+});
+```
+
+See the [Testing guide](/getting-started/testing#fully-offline-tests-with-fake) and the [Fake Model Agent template](/templates/advanced/fake-llm) for complete examples.

@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+wallet.json
+
+# Editor & IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+
+# Temporary files
+*.tmp
+.cache/
+
+# OS
+Thumbs.db
+
+*.md 
+!README.md
+!CONTRIBUTING.md
+!docs/MERCHANT_GUIDE.md
+!docs/0G_WOG_GUIDE.md
+
+A2AX402Extension.ts
+a2a_x402_extension.py
+
+test_eip3009_formats.sh
+test_ready_for_genesis.sh
+test_verify.sh

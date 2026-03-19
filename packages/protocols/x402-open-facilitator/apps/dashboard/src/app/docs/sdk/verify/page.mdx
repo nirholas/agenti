@@ -1,0 +1,116 @@
+<PageHeader title="verify()" description="Verify that a payment is valid before settling." />
+
+## Usage
+
+```typescript
+const result = await facilitator.verify(payment, requirements);
+```
+
+## Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `payment` | `PaymentPayload` | The payment to verify |
+| `requirements` | `PaymentRequirements` | The payment requirements |
+
+### PaymentPayload
+
+```typescript
+interface PaymentPayload {
+  x402Version: 1 | 2;
+  scheme: string;
+  network: string;
+  payload: {
+    signature: string;
+    authorization: {
+      from: string;
+      to: string;
+      amount: string;
+      asset: string;
+      // ... additional fields
+    };
+  };
+}
+```
+
+### PaymentRequirements
+
+```typescript
+interface PaymentRequirements {
+  scheme: string;
+  network: string;
+  maxAmountRequired: string;
+  asset: string;
+  payTo?: string;
+  resource?: string;
+  description?: string;
+  maxTimeoutSeconds?: number;
+}
+```
+
+## Response
+
+```typescript
+interface VerifyResponse {
+  isValid: boolean;
+  invalidReason?: string;
+  payer?: string;
+  details?: {
+    amount?: string;
+    recipient?: string;
+    scheme?: string;
+  };
+}
+```
+
+## Example
+
+```typescript
+const payment = {
+  x402Version: 1,
+  scheme: 'exact',
+  network: 'base',
+  payload: {
+    signature: '0x...',
+    authorization: {
+      from: '0xSender',
+      to: '0xRecipient',
+      amount: '1000000',
+      asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    },
+  },
+};
+
+const requirements = {
+  scheme: 'exact',
+  network: 'base',
+  maxAmountRequired: '1000000',
+  asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+  payTo: '0xRecipient',
+};
+
+const result = await facilitator.verify(payment, requirements);
+
+if (result.isValid) {
+  // Payment is valid, proceed to settle
+  await facilitator.settle(payment, requirements);
+} else {
+  console.error('Invalid payment:', result.invalidReason);
+}
+```
+
+## Errors
+
+Throws `VerificationError` if the request fails.
+
+```typescript
+import { VerificationError } from '@openfacilitator/sdk';
+
+try {
+  await facilitator.verify(payment, requirements);
+} catch (error) {
+  if (error instanceof VerificationError) {
+    console.error('Verification failed:', error.message);
+  }
+}
+```

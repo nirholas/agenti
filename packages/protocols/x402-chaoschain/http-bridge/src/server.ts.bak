@@ -1,0 +1,563 @@
+import Fastify from "fastify";
+import cors from "@fastify/cors";
+import { config as dotenvConfig } from 'dotenv';
+import { parseUnits } from 'viem';
+import {
+  type VerifyRequest,
+  type VerifyResponse,
+  type SettleRequest,
+  type SettleResponse,
+  type ErrorResponse,
+  type BridgeConfig,
+  VerifyRequestSchema,
+  SettleRequestSchema,
+} from "./types";
+import { verifyPaymentManaged, settlePaymentManaged } from './managed/settlement';
+import { calculateFee } from './managed/fees';
+import { checkIdempotency, storeIdempotencyResponse, generateIdempotencyHash, rateLimitMiddleware } from './middleware';
+import { linkAgentIdentity } from './chaoschain/identity';
+import { checkHealth } from './monitoring/health';
+import { startConfirmer } from './jobs/confirmer';
+
+// Load environment variables
+dotenvConfig();
+
+// Helper to parse payment header
+function parsePaymentHeader(header: string | { sender: string; nonce: string; validAfter?: string; validBefore?: string; signature?: string }) {
+  if (typeof header === 'string') {
+    return JSON.parse(Buffer.from(header, 'base64').toString());
+  }
+  return header;
+}
+
+/**
+ * ChaosChain x402 HTTP Bridge
+ * 
+ * This service provides a REST API for the decentralized x402 facilitator.
+ * It acts as a bridge between clients and the CRE workflow.
+ * 
+ * Current Mode: SIMULATE
+ * - Returns mock verification and settlement responses
+ * - Does not call real CRE workflows
+ * 
+ * Production Mode (TODO):
+ * - Forward requests to deployed CRE workflow endpoints
+ * - Return real consensus-verified responses
+ */
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+const config: BridgeConfig = {
+  port: Number(process.env.PORT || 8402),
+  mode: (process.env.FACILITATOR_MODE as 'managed' | 'decentralized') || 'managed',
+  creMode: (process.env.CRE_MODE as "simulate" | "remote") || "simulate",
+  creWorkflowUrl: process.env.CRE_WORKFLOW_URL,
+  logLevel: (process.env.LOG_LEVEL as "debug" | "info" | "warn" | "error") || "info",
+  defaultChain: process.env.DEFAULT_CHAIN || 'base-sepolia',
+  chaoschainEnabled: process.env.CHAOSCHAIN_ENABLED === 'true',
+};
+
+// ============================================================================
+// FASTIFY SERVER SETUP
+// ============================================================================
+
+const server = Fastify({
+  logger: {
+    level: config.logLevel,
+  },
+});
+
+// Enable CORS for cross-origin requests
+await server.register(cors, {
+  origin: true, // Allow all origins in development
+  methods: ["GET", "POST", "OPTIONS"],
+});
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Mock verification logic for simulate mode
+ * Returns a consensus-verified response
+ */
+function simulateVerify(request: VerifyRequest): VerifyResponse {
+  server.log.info(`[VERIFY] Network: ${request.paymentRequirements.network}`);
+  server.log.info(`[VERIFY] Scheme: ${request.paymentRequirements.scheme}`);
+  server.log.info(`[VERIFY] PayTo: ${request.paymentRequirements.payTo}`);
+
+  // Generate realistic-looking consensus proof hash
+  const timestamp = Date.now();
+  const proofData = `${request.paymentRequirements.payTo}${timestamp}`;
+  const proofHash = `0x${Buffer.from(proofData).toString('hex').slice(0, 64)}`;
+  
+  return {
+    isValid: true,
+    invalidReason: null,
+    consensusProof: proofHash,
+    reportId: `rep_${timestamp}`,
+    timestamp: timestamp,
+  };
+}
+
+/**
+ * Mock settlement logic for simulate mode
+ * Returns a consensus-verified transaction
+ */
+function simulateSettle(request: SettleRequest): SettleResponse {
+  server.log.info(`[SETTLE] Network: ${request.paymentRequirements.network}`);
+  server.log.info(`[SETTLE] Asset: ${request.paymentRequirements.asset}`);
+  server.log.info(`[SETTLE] PayTo: ${request.paymentRequirements.payTo}`);
+
+  // Map network names to chain IDs
+  const chainIdMap: Record<string, number> = {
+    "base-sepolia": 84532,
+    "ethereum-sepolia": 11155111,
+    "base-mainnet": 8453,
+    "ethereum-mainnet": 1,
+  };
+
+  const chainId = chainIdMap[request.paymentRequirements.network] || 84532;
+
+  // Generate realistic-looking transaction hash
+  const timestamp = Date.now();
+  const txData = `${request.paymentRequirements.payTo}${request.paymentRequirements.asset}${timestamp}`;
+  const txHash = `0x${Buffer.from(txData).toString('hex').slice(0, 64)}`;
+  const proofData = `${txData}consensus`;
+  const proofHash = `0x${Buffer.from(proofData).toString('hex').slice(0, 64)}`;
+  
+  return {
+    success: true,
+    error: null,
+    txHash: txHash,
+    networkId: request.paymentRequirements.network,
+    consensusProof: proofHash,
+    timestamp: timestamp,
+  };
+}
+
+/**
+ * Forward verify request to real CRE workflow
+ * TODO: Implement when CRE is deployed
+ */
+async function forwardVerifyToCRE(request: VerifyRequest): Promise<VerifyResponse> {
+  if (!config.creWorkflowUrl) {
+    throw new Error("CRE_WORKFLOW_URL not configured for remote mode");
+  }
+
+  // TODO: Make HTTP request to CRE workflow endpoint
+  // const response = await fetch(`${config.creWorkflowUrl}/verify`, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(request)
+  // });
+  // return await response.json();
+
+  throw new Error("Remote CRE mode not yet implemented");
+}
+
+/**
+ * Forward settle request to real CRE workflow
+ * TODO: Implement when CRE is deployed
+ */
+async function forwardSettleToCRE(request: SettleRequest): Promise<SettleResponse> {
+  if (!config.creWorkflowUrl) {
+    throw new Error("CRE_WORKFLOW_URL not configured for remote mode");
+  }
+
+  // TODO: Make HTTP request to CRE workflow endpoint
+  // const response = await fetch(`${config.creWorkflowUrl}/settle`, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(request)
+  // });
+  // return await response.json();
+
+  throw new Error("Remote CRE mode not yet implemented");
+}
+
+// ============================================================================
+// ROUTES
+// ============================================================================
+
+/**
+ * GET /
+ * Health check and service information
+ */
+server.get("/", async () => {
+  return {
+    service: "ChaosChain x402 Decentralized Facilitator",
+    version: "0.1.0",
+    mode: config.creMode,
+    endpoints: {
+      verify: "POST /verify",
+      settle: "POST /settle",
+      supported: "GET /supported",
+    },
+    docs: "https://github.com/ChaosChain/chaoschain-x402",
+  };
+});
+
+/**
+ * GET /health
+ * Health check with detailed status
+ */
+server.get("/health", async (request, reply) => {
+  const health = await checkHealth();
+  return reply.code(health.healthy ? 200 : 503).send(health);
+});
+
+/**
+ * GET /supported
+ * Returns supported payment schemes and networks
+ * Per x402 facilitator spec
+ */
+server.get("/supported", async () => {
+  return {
+    kinds: [
+      {
+        scheme: "exact",
+        network: "base-sepolia",
+      },
+      {
+        scheme: "exact",
+        network: "ethereum-sepolia",
+      },
+      {
+        scheme: "exact",
+        network: "base-mainnet",
+      },
+      {
+        scheme: "exact",
+        network: "ethereum-mainnet",
+      },
+    ],
+  };
+});
+
+/**
+ * POST /verify
+ * Verify an x402 payment via decentralized consensus or managed facilitator
+ * 
+ * Request Body:
+ * {
+ *   x402Version: number,
+ *   paymentHeader: { sender, nonce, validAfter?, validBefore? },
+ *   paymentRequirements: PaymentRequirements
+ * }
+ * 
+ * Response:
+ * {
+ *   isValid: boolean,
+ *   invalidReason: string | null,
+ *   consensusProof: string,
+ *   reportId: string,
+ *   timestamp: number,
+ *   feeAmount?: string,
+ *   netAmount?: string,
+ *   feeBps?: number
+ * }
+ */
+server.post<{ Body: VerifyRequest; Reply: VerifyResponse | ErrorResponse }>(
+  "/verify",
+  {
+    preHandler: [rateLimitMiddleware],
+  },
+  async (request, reply) => {
+    try {
+      // Validate request body
+      const validatedRequest = VerifyRequestSchema.parse(request.body);
+
+      // Check idempotency
+      const apiKey = request.headers['x-cc-apikey'] as string;
+      const cached = await checkIdempotency(request, reply, apiKey);
+      if (cached && cached._conflict !== true) return;
+      if (cached?._conflict) return;
+
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+      
+      server.log.info(`[VERIFY] Processing verification request`);
+      server.log.info(`[VERIFY] Mode: ${config.mode}`);
+
+      let response: VerifyResponse;
+
+      if (config.mode === 'managed') {
+        // MANAGED MODE: Real on-chain verification
+        const verification = await verifyPaymentManaged(validatedRequest);
+        
+        if (!verification.isValid) {
+          response = {
+            isValid: false,
+            invalidReason: verification.invalidReason,
+            consensusProof: null,
+            reportId: requestId,
+            timestamp: Date.now(),
+          };
+        } else {
+          // Calculate fee for this payment
+          const decimals = verification.decimals || 6;
+          const amount = parseUnits(validatedRequest.paymentRequirements.maxAmountRequired, decimals);
+          const feeCalc = await calculateFee(amount, apiKey);
+
+          response = {
+            isValid: true,
+            invalidReason: null,
+            consensusProof: `0x${Buffer.from(requestId).toString('hex').padEnd(64, '0')}`,
+            reportId: requestId,
+            timestamp: Date.now(),
+            feeAmount: feeCalc.feeAmount.toString(),
+            netAmount: feeCalc.netAmount.toString(),
+            feeBps: feeCalc.feeBps,
+          };
+        }
+      } else {
+        // DECENTRALIZED MODE: Use CRE workflow
+        response = config.creMode === "simulate"
+          ? simulateVerify(validatedRequest)
+          : await forwardVerifyToCRE(validatedRequest);
+      }
+
+      // Store idempotency response
+      const idempotencyKey = request.headers['idempotency-key'] as string;
+      if (idempotencyKey) {
+        const paymentHeader = parsePaymentHeader(validatedRequest.paymentHeader);
+        const requestHash = generateIdempotencyHash(
+          apiKey || 'anonymous',
+          '/verify',
+          validatedRequest,
+          paymentHeader.sender,
+          paymentHeader.nonce
+        );
+        await storeIdempotencyResponse(idempotencyKey, requestHash, response);
+      }
+
+      server.log.info(`[VERIFY] Result: ${response.isValid ? "VALID" : "INVALID"}`);
+
+      return reply.code(200).send(response);
+    } catch (error) {
+      server.log.error(`[VERIFY] Error: ${error}`);
+
+      if (error instanceof Error) {
+        return reply.status(400).send({
+          error: error.message,
+          code: "VERIFICATION_ERROR",
+          details: error,
+        });
+      }
+
+      return reply.status(500).send({
+        error: "Internal server error",
+        code: "INTERNAL_ERROR",
+      });
+    }
+  }
+);
+
+/**
+ * POST /settle
+ * Settle an x402 payment via managed facilitator or decentralized consensus
+ * 
+ * Request Body:
+ * {
+ *   x402Version: number,
+ *   paymentHeader: { sender, nonce },
+ *   paymentRequirements: PaymentRequirements,
+ *   agentId?: string (ERC-8004 token ID for Proof-of-Agency)
+ * }
+ * 
+ * Response:
+ * {
+ *   success: boolean,
+ *   error: string | null,
+ *   txHash: string | null,
+ *   txHashFee?: string,
+ *   networkId: string | null,
+ *   consensusProof: string,
+ *   timestamp: number,
+ *   feeAmount?: string,
+ *   netAmount?: string,
+ *   evidenceHash?: string,
+ *   proofOfAgency?: string
+ * }
+ */
+server.post<{ Body: SettleRequest; Reply: SettleResponse | ErrorResponse }>(
+  "/settle",
+  {
+    preHandler: [rateLimitMiddleware],
+  },
+  async (request, reply) => {
+    try {
+      // Validate request body
+      const validatedRequest = SettleRequestSchema.parse(request.body);
+
+      // Check idempotency
+      const apiKey = request.headers['x-cc-apikey'] as string;
+      const cached = await checkIdempotency(request, reply, apiKey);
+      if (cached && cached._conflict !== true) return;
+      if (cached?._conflict) return;
+
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
+      server.log.info(`[SETTLE] Processing settlement request`);
+      server.log.info(`[SETTLE] Mode: ${config.mode}`);
+
+      let response: SettleResponse;
+
+      if (config.mode === 'managed') {
+        // MANAGED MODE: Real on-chain settlement with non-custodial transferFrom
+        
+        // First verify and calculate fee
+        const verification = await verifyPaymentManaged(validatedRequest);
+        if (!verification.isValid) {
+          response = {
+            success: false,
+            error: verification.invalidReason,
+            txHash: null,
+            networkId: validatedRequest.paymentRequirements.network,
+            consensusProof: '',
+            timestamp: Date.now(),
+          };
+        } else {
+          const decimals = verification.decimals || 6;
+          const amount = parseUnits(validatedRequest.paymentRequirements.maxAmountRequired, decimals);
+          const feeCalc = await calculateFee(amount, apiKey);
+
+          // Execute atomic dual-transfer settlement
+          const settlement = await settlePaymentManaged(
+            validatedRequest,
+            feeCalc.feeAmount,
+            feeCalc.netAmount
+          );
+
+          // Link to ChaosChain identity if agentId provided
+          let evidenceHash: string | undefined;
+          let proofOfAgency: string | undefined;
+          
+          const agentId = (validatedRequest as any).agentId;
+          if (agentId && config.chaoschainEnabled) {
+            const identity = await linkAgentIdentity({
+              agentId,
+              txHash: settlement.txHash,
+              chain: validatedRequest.paymentRequirements.network,
+              amount,
+              paymentData: validatedRequest,
+            });
+            
+            if (identity) {
+              evidenceHash = identity.evidenceHash;
+              proofOfAgency = identity.proofOfAgency;
+              server.log.info(`[ChaosChain] Agent ${agentId} linked to tx ${settlement.txHash}`);
+            }
+          }
+
+          response = {
+            success: settlement.status === 'confirmed' || settlement.status === 'pending',
+            error: null,
+            txHash: settlement.txHash,
+            txHashFee: settlement.txHashFee,
+            networkId: validatedRequest.paymentRequirements.network,
+            consensusProof: `0x${Buffer.from(settlement.txHash).toString('hex').slice(0, 64)}`,
+            timestamp: Date.now(),
+            feeAmount: feeCalc.feeAmount.toString(),
+            netAmount: feeCalc.netAmount.toString(),
+            status: settlement.status,
+            evidenceHash,
+            proofOfAgency,
+          };
+        }
+      } else {
+        // DECENTRALIZED MODE: Use CRE workflow
+        response = config.creMode === "simulate"
+          ? simulateSettle(validatedRequest)
+          : await forwardSettleToCRE(validatedRequest);
+      }
+
+      // Store idempotency response
+      const idempotencyKey = request.headers['idempotency-key'] as string;
+      if (idempotencyKey) {
+        const paymentHeader = parsePaymentHeader(validatedRequest.paymentHeader);
+        const requestHash = generateIdempotencyHash(
+          apiKey || 'anonymous',
+          '/settle',
+          validatedRequest,
+          paymentHeader.sender,
+          paymentHeader.nonce
+        );
+        await storeIdempotencyResponse(idempotencyKey, requestHash, response);
+      }
+
+      server.log.info(`[SETTLE] Result: ${response.success ? "SUCCESS" : "FAILED"}`);
+
+      return reply.code(200).send(response);
+    } catch (error) {
+      server.log.error(`[SETTLE] Error: ${error}`);
+
+      if (error instanceof Error) {
+        return reply.status(400).send({
+          error: error.message,
+          code: "SETTLEMENT_ERROR",
+          details: error,
+        });
+      }
+
+      return reply.status(500).send({
+        error: "Internal server error",
+        code: "INTERNAL_ERROR",
+      });
+    }
+  }
+);
+
+// ============================================================================
+// SERVER START
+// ============================================================================
+
+const start = async () => {
+  try {
+    await server.listen({ port: config.port, host: "0.0.0.0" });
+    
+    // Start background finality confirmer if in managed mode
+    if (config.mode === 'managed') {
+      startConfirmer();
+      server.log.info('Background finality confirmer started');
+    }
+    
+    console.log("");
+    console.log("╔═══════════════════════════════════════════════════════════╗");
+    console.log("║   ChaosChain x402 Payment Facilitator                    ║");
+    console.log("╚═══════════════════════════════════════════════════════════╝");
+    console.log("");
+    console.log(`🚀 Server listening on http://localhost:${config.port}`);
+    console.log(`📋 Mode: ${config.mode.toUpperCase()} ${config.mode === 'decentralized' ? `(${config.creMode})` : ''}`);
+    console.log(`⛓️  Default Chain: ${config.defaultChain}`);
+    console.log(`📊 Log Level: ${config.logLevel}`);
+    console.log(`🔐 ChaosChain Integration: ${config.chaoschainEnabled ? 'ENABLED' : 'DISABLED'}`);
+    console.log("");
+    console.log("Endpoints:");
+    console.log(`  POST http://localhost:${config.port}/verify`);
+    console.log(`  POST http://localhost:${config.port}/settle`);
+    console.log(`  GET  http://localhost:${config.port}/health`);
+    console.log(`  GET  http://localhost:${config.port}/supported`);
+    console.log("");
+    if (config.mode === 'managed') {
+      console.log("Features:");
+      console.log(`  ✓ Non-custodial settlement (transferFrom)`);
+      console.log(`  ✓ Atomic fee routing`);
+      console.log(`  ✓ Finality tracking (${config.defaultChain.includes('base') ? '2' : '3'} blocks)`);
+      console.log(`  ✓ Replay protection`);
+      console.log(`  ✓ Rate limiting & idempotency`);
+      console.log("");
+    }
+    console.log("Press Ctrl+C to stop");
+    console.log("═══════════════════════════════════════════════════════════");
+    console.log("");
+  } catch (err) {
+    server.log.error(err);
+    process.exit(1);
+  }
+};
+
+start();
+

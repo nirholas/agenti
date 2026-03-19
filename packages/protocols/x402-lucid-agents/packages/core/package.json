@@ -1,0 +1,69 @@
+{
+  "name": "@lucid-agents/core",
+  "version": "2.5.0",
+  "description": "Build typed agent HTTP apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daydreamsai/lucid-agents",
+    "directory": "packages/core"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "default": "./dist/utils.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "AGENTS.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "catalog:",
+    "hono": "catalog:",
+    "@lucid-dreams/agent-auth": "latest",
+    "@lucid-dreams/client": "latest",
+    "@lucid-agents/types": "workspace:*",
+    "@lucid-agents/a2a": "workspace:*",
+    "@lucid-agents/payments": "workspace:*",
+    "@x402/core": "catalog:",
+    "@x402/fetch": "catalog:",
+    "@x402/evm": "catalog:",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "@lucid-agents/eslint-config": "workspace:*",
+    "@lucid-agents/prettier-config": "workspace:*",
+    "@lucid-agents/analytics": "workspace:*",
+    "@lucid-agents/ap2": "workspace:*",
+    "@lucid-agents/http": "workspace:*",
+    "@lucid-agents/identity": "workspace:*",
+    "@lucid-agents/scheduler": "workspace:*",
+    "@lucid-agents/wallet": "workspace:*"
+  }
+}

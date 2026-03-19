@@ -1,0 +1,49 @@
+name: Account Modules CI
+
+on:
+  pull_request:
+    paths:
+      - 'solidity/account-modules/**'
+      - '.github/workflows/account-modules-ci.yml'
+  workflow_dispatch:
+
+env:
+  FOUNDRY_PROFILE: ci
+
+jobs:
+  check:
+    name: Account Modules Foundry project
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: solidity/account-modules
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Show Forge version
+        run: |
+          forge --version
+
+      - name: Install Node dependencies
+        run: |
+          cd lib/modulekit && npm install
+
+      - name: Run Forge fmt
+        run: |
+          forge fmt --check
+        id: fmt
+
+      - name: Run Forge build
+        run: |
+          forge build --sizes src/
+        id: build
+
+      - name: Run Forge tests
+        run: |
+          ACCOUNT_TYPE=SAFE forge test -vvv
+        id: test

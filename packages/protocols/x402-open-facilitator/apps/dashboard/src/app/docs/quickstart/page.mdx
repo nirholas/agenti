@@ -1,0 +1,70 @@
+<PageHeader title="Quickstart" description="Get started with OpenFacilitator in 5 minutes." />
+
+## Installation
+
+```bash
+npm install @openfacilitator/sdk
+```
+
+## Basic Usage
+
+```typescript
+import { OpenFacilitator } from '@openfacilitator/sdk';
+
+// Uses https://pay.openfacilitator.io by default
+const facilitator = new OpenFacilitator();
+
+// Or use your own
+const myFacilitator = new OpenFacilitator({
+  url: 'https://pay.yourdomain.com',
+});
+```
+
+## Verify a Payment
+
+```typescript
+const payment = {
+  x402Version: 1,
+  scheme: 'exact',
+  network: 'base',
+  payload: {
+    signature: '0x...',
+    authorization: {
+      from: '0xSenderAddress',
+      to: '0xRecipientAddress',
+      amount: '1000000', // 1 USDC (6 decimals)
+      asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on Base
+    },
+  },
+};
+
+const requirements = {
+  scheme: 'exact',
+  network: 'base',
+  maxAmountRequired: '1000000',
+  asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+  payTo: '0xRecipientAddress',
+};
+
+const result = await facilitator.verify(payment, requirements);
+
+if (result.valid) {
+  console.log('Payment verified!');
+}
+```
+
+## Settle a Payment
+
+```typescript
+const result = await facilitator.settle(payment, requirements);
+
+if (result.success) {
+  console.log('Transaction:', result.transactionHash);
+}
+```
+
+## Next Steps
+
+- [SDK Reference](/docs/sdk) — Full API documentation
+- [Networks](/docs/networks) — See all supported chains
+- [Self-Hosting](/docs/self-hosting) — Run your own facilitator
