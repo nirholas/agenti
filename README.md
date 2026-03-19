@@ -1,10 +1,3 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/demo.svg">
-    <img alt="Agenti" src=".github/demo.svg" width="700">
-  </picture>
-</p>
-
 <h1 align="center">Agenti</h1>
 
 <p align="center">
