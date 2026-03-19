@@ -22,7 +22,9 @@ export default defineConfig({
     'zod',
     'express',
     'cors',
-    'dotenv'
+    'dotenv',
+    'ethers',
+    'siwe'
   ],
   esbuildOptions(options) {
     options.alias = {

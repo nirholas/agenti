@@ -7,7 +7,6 @@
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
-import { isStrictAllowlistMode as isStrictAllowlistModeCheck } from "../config.js"
 import type { LegacyConfig, FullConfig } from "./shared.js"
 
 export function registerSecurityTools(server: McpServer, config: LegacyConfig, fullConfig: FullConfig): void {
