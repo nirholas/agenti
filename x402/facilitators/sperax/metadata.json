@@ -1,10 +1,10 @@
 {
   "name": "Sperax Facilitator",
-  "description": "x402 payment facilitator by SperaxOS. Gasless USDC, USDs, and SPA settlement on Base, Arbitrum, and Ethereum.",
+  "description": "x402 payment facilitator by SperaxOS. Gasless USDC and USDs settlement on Base, Arbitrum, and Ethereum.",
   "facilitatorUrl": "https://x402.sperax.io",
   "networks": ["base", "base-sepolia", "arbitrum", "ethereum"],
   "schemes": ["exact"],
-  "assets": ["USDC", "USDs", "SPA"],
+  "assets": ["USDC", "USDs"],
   "settlementSchemes": ["eip3009", "eip2612"],
   "source": "https://github.com/Sperax/x402-facilitator",
   "website": "https://sperax.io",

@@ -21,7 +21,6 @@ https://x402.sperax.io
 |-------|-------|-------------------|
 | **USDC** | Base, Base Sepolia, Arbitrum, Ethereum | EIP-3009 `transferWithAuthorization` |
 | **USDs** | Arbitrum | EIP-2612 `permit` + `transferFrom` |
-| **SPA** | Arbitrum, Ethereum | EIP-2612 `permit` + `transferFrom` |
 
 ## Integration with Agenti
 
