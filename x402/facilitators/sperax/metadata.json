@@ -1,11 +1,12 @@
 {
   "name": "Sperax Facilitator",
-  "description": "x402 payment facilitator by SperaxOS. USDC settlement on Base and Base Sepolia.",
+  "description": "x402 payment facilitator by SperaxOS. Gasless USDC, USDs, and SPA settlement on Base, Arbitrum, and Ethereum.",
   "facilitatorUrl": "https://x402.sperax.io",
-  "networks": ["base", "base-sepolia"],
+  "networks": ["base", "base-sepolia", "arbitrum", "ethereum"],
   "schemes": ["exact"],
-  "assets": ["USDC"],
-  "source": "https://github.com/nirholas/x402-facilitator",
+  "assets": ["USDC", "USDs", "SPA"],
+  "settlementSchemes": ["eip3009", "eip2612"],
+  "source": "https://github.com/Sperax/x402-facilitator",
   "website": "https://sperax.io",
   "app": "https://chat.sperax.io"
 }
