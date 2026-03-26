@@ -1,0 +1,11 @@
+{
+  "name": "Sperax Facilitator",
+  "description": "x402 payment facilitator by SperaxOS. USDC settlement on Base and Base Sepolia.",
+  "facilitatorUrl": "https://x402.sperax.io",
+  "networks": ["base", "base-sepolia"],
+  "schemes": ["exact"],
+  "assets": ["USDC"],
+  "source": "https://github.com/nirholas/x402-facilitator",
+  "website": "https://sperax.io",
+  "app": "https://chat.sperax.io"
+}
