@@ -313,9 +313,9 @@ contract ToolStaking is
 
         proposal.hasVoted[msg.sender] = true;
         
-        // Weight votes by stake - @nichxbt
+        // Weight votes by stake — zero-stake members should not influence slashing decisions
         uint256 voteWeight = stakes[msg.sender].amount;
-        if (voteWeight == 0) voteWeight = 1; // Minimum weight for governance members
+        if (voteWeight == 0) revert InsufficientStake(0, 1);
 
         if (support) {
             proposal.votesFor += voteWeight;
@@ -417,6 +417,8 @@ contract ToolStaking is
         uint256 _votingDuration,
         uint256 _quorumVotes
     ) external onlyRole(ADMIN_ROLE) {
+        require(_votingDuration >= 1 hours, "Voting duration too short");
+        require(_quorumVotes >= 1, "Quorum must be at least 1");
         votingDuration = _votingDuration;
         quorumVotes = _quorumVotes;
     }
@@ -434,12 +436,16 @@ contract ToolStaking is
     // ═══════════════════════════════════════════════════════════════
 
     /**
-     * @notice Get stake amount for a user
+     * @notice Get effective stake amount for a user (excludes pending unstake)
      * @param user User address
-     * @return amount Staked amount
+     * @return amount Effective staked amount available for tool registration
      */
     function getStake(address user) external view returns (uint256) {
-        return stakes[user].amount;
+        StakeInfo storage info = stakes[user];
+        if (info.hasActiveUnstake) {
+            return info.amount - info.pendingUnstake;
+        }
+        return info.amount;
     }
 
     /**
@@ -452,12 +458,16 @@ contract ToolStaking is
     }
 
     /**
-     * @notice Check if user meets minimum stake
+     * @notice Check if user meets minimum stake (accounts for pending unstake)
      * @param user User address
-     * @return meetsMinimum True if stake >= minimum
+     * @return meetsMinimum True if effective stake >= minimum
      */
     function meetsMinimumStake(address user) external view returns (bool) {
-        return stakes[user].amount >= minimumStake;
+        StakeInfo storage info = stakes[user];
+        uint256 effectiveStake = info.hasActiveUnstake
+            ? info.amount - info.pendingUnstake
+            : info.amount;
+        return effectiveStake >= minimumStake;
     }
 
     /**
