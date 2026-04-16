@@ -1,125 +1,53 @@
 ---
 name: ag402
-description: "AI Agent Payment Protocol — auto-pay x402 APIs with Solana USDC. Commands: setup, pay <url>, balance, history, doctor, serve. Use exec to run CLI commands."
+description: "AI Agent Payment Protocol — auto-pay x402 APIs with Solana USDC via CLI. Use when an agent needs to call paid APIs (HTTP 402), check wallet balance, view transaction history, or run a payment gateway. Invoke commands via exec."
 metadata: {"openclaw": {"requires": {"bins": ["ag402"]}}}
 ---
 
 # ag402 — AI Agent Payment Protocol
 
-Use `exec` to run `ag402` CLI commands. This skill provides autonomous payment
-capabilities for AI agents via the x402 protocol on Solana (USDC).
+Use `exec` to run `ag402` CLI commands. Handles autonomous USDC payments on Solana via the x402 protocol.
 
-## When to Use
+## Workflow: First-Time Setup
 
-- Agent needs to call a paid API (HTTP 402 response)
-- Agent needs to check wallet balance or transaction history
-- Agent needs to set up payment infrastructure
-- Agent needs to start/stop a payment gateway
+1. **Install**: `pip install ag402-core`
+2. **Initialize test wallet**: `ag402 init` — creates wallet with $100 test USDC, no prompts
+3. **Verify**: `ag402 balance` — expect `$100.00`
+4. **Health check**: `ag402 doctor` — confirms RPC connectivity and wallet status
 
-## Quick Start
+## Workflow: Pay for an API Call
 
-### 1. Check if ag402 is installed
-
-```bash
-ag402 --version
-```
-
-If not installed:
+1. **Make request**: `ag402 pay <url>`
+2. ag402 detects HTTP 402 → negotiates x402 challenge → pays USDC → retries → returns response
+3. **Verify spend**: `ag402 history --limit 1` to confirm transaction
 
 ```bash
-pip install ag402-core
-```
-
-### 2. Initialize wallet (non-interactive, agent-safe)
-
-```bash
-ag402 init
-```
-
-Creates a test wallet with $100 USDC. No prompts, no human input needed.
-
-### 3. Verify setup
-
-```bash
-ag402 balance
-```
-
-Expected: `$100.00` test balance.
-
-## Commands
-
-### Pay for an API call
-
-```bash
-ag402 pay <url>
-```
-
-Sends a request to `<url>`. If the server returns `402 Payment Required` with
-an x402 challenge, ag402 automatically pays and retries. Returns the API response.
-
-Example:
-
-```bash
+# Simple GET
 ag402 pay https://api.example.com/premium/data
-```
 
-With options:
-
-```bash
+# POST with data and max spend
 ag402 pay https://api.example.com/generate \
   --method POST \
   --data '{"prompt": "hello"}' \
   --amount 2.50
 ```
 
-### Check balance
+## Commands
 
-```bash
-ag402 balance
-```
-
-### View transaction history
-
-```bash
-ag402 history
-ag402 history --limit 20 --type payment
-```
-
-### Full status dashboard
-
-```bash
-ag402 status
-```
-
-### Health check
-
-```bash
-ag402 doctor
-```
-
-### Start payment gateway (seller mode)
-
-```bash
-ag402 serve --target http://localhost:8000 --price 0.01 --port 4020 &
-```
-
-### Stop gateway
-
-Kill the background process or use Ctrl+C in the terminal.
+| Command | Description |
+|---------|-------------|
+| `ag402 init` | Create test wallet ($100 USDC) |
+| `ag402 pay <url>` | Pay-and-call an x402 API |
+| `ag402 balance` | Check wallet balance |
+| `ag402 history [--limit N] [--type payment]` | View transactions |
+| `ag402 status` | Full status dashboard |
+| `ag402 doctor` | Health check (RPC, wallet, network) |
+| `ag402 serve --target <url> --price <amt> --port <p>` | Start payment gateway (seller mode) |
+| `ag402 env set <KEY> <value>` | Configure persistent settings |
 
 ## Production Mode
 
-For real on-chain payments, set environment variables before running:
-
-```bash
-X402_MODE=production \
-X402_NETWORK=mainnet \
-SOLANA_RPC_URL=<your_rpc_url> \
-AG402_UNLOCK_PASSWORD=<wallet_password> \
-  ag402 pay <url>
-```
-
-Or configure persistently:
+Switch from test to real on-chain payments:
 
 ```bash
 ag402 env set X402_MODE production
@@ -127,25 +55,16 @@ ag402 env set X402_NETWORK mainnet
 ag402 env set SOLANA_RPC_URL <your_rpc_url>
 ```
 
-Then run `ag402 pay <url>` normally.
-
-## Environment Variables
-
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `X402_MODE` | `test` or `production` | Must be set explicitly |
 | `X402_NETWORK` | `mainnet`, `devnet`, `localnet` | `devnet` |
 | `SOLANA_RPC_URL` | Solana RPC endpoint | Public devnet |
 | `AG402_UNLOCK_PASSWORD` | Wallet unlock password | — |
-| `X402_DAILY_LIMIT` | Max spend per day (USD) | `10` |
-| `X402_PER_MINUTE_LIMIT` | Max spend per minute (USD) | `2` |
+| `X402_DAILY_LIMIT` | Max daily spend (USD) | `10` |
+| `X402_PER_MINUTE_LIMIT` | Max per-minute spend (USD) | `2` |
 
-## Security
-
-1. **Budget limits** — daily and per-minute caps prevent runaway spending
-2. **Test mode first** — always test with virtual funds before production
-3. **Wallet isolation** — use a dedicated payment wallet, not your main wallet
-4. **Transaction audit** — all payments logged via `ag402 history`
+Budget limits (`X402_DAILY_LIMIT`, `X402_PER_MINUTE_LIMIT`) prevent runaway spending. Always test with `ag402 init` before switching to production.
 
 ## Error Recovery
 
@@ -153,15 +72,6 @@ Then run `ag402 pay <url>` normally.
 |-------|-----|
 | `ag402: command not found` | `pip install ag402-core` |
 | `Insufficient balance` | `ag402 init` (test) or deposit real USDC (production) |
-| `Non-standard 402 response` | Server is not x402-compatible |
-| `On-chain payment failed` | Check network: `ag402 doctor` |
-| `Request timed out` | Retry; check RPC connectivity |
-
-## Architecture
-
-```
-Agent (exec) → ag402 CLI → x402 protocol → Solana USDC payment → API response
-```
-
-The agent uses `exec` to invoke `ag402 pay <url>`. The CLI handles the full
-402 → negotiate → pay → retry → return flow transparently.
+| `Non-standard 402 response` | Server is not x402-compatible — check server docs |
+| `On-chain payment failed` | Run `ag402 doctor` to diagnose RPC/network issues |
+| `Request timed out` | Retry; check RPC connectivity with `ag402 doctor` |

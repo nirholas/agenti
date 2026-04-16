@@ -1,6 +1,24 @@
-# Tick Data Skill
+---
+name: ticks
+description: "Query historical tick, OHLC, and orderbook spread data from TimescaleDB. Use when analyzing price history, building candle charts, checking spread dynamics, or verifying tick recorder health for prediction market and trading data."
+emoji: "📊"
+---
+
+# Tick Data
 
 Query historical tick, OHLC, and orderbook data from TimescaleDB.
+
+## Prerequisites
+
+TimescaleDB tick recorder must be enabled in `clodds.config.yaml`:
+
+```yaml
+tickRecorder:
+  enabled: true
+  connectionString: postgres://user:pass@localhost:5432/clodds
+```
+
+Verify with `/ticks stats` — check that database connection shows "connected" and active platforms are listed.
 
 ## Commands
 
@@ -11,51 +29,32 @@ Query historical tick, OHLC, and orderbook data from TimescaleDB.
 | `/ticks spread <platform> <marketId>` | Get spread history |
 | `/ticks stats` | Get tick recorder stats |
 
-## Options
+### Options
 
-| Option | Description |
-|--------|-------------|
-| `--outcome <id>` | Filter by outcome ID |
-| `--interval <int>` | OHLC interval: `1m`, `5m`, `15m`, `1h`, `4h`, `1d` |
-| `--limit <n>` | Limit number of results |
+| Option | Values | Default |
+|--------|--------|---------|
+| `--outcome <id>` | Outcome token ID | All outcomes |
+| `--interval` | `1m`, `5m`, `15m`, `1h`, `4h`, `1d` | `1h` |
+| `--limit <n>` | Number of results | 100 |
 
-## Examples
+## Workflow: Analyze Market Price Action
 
-```
-/ticks polymarket 0x1234abcd
-/ticks ohlc polymarket 0x1234 --outcome 0x5678 --interval 1h
-/ticks spread polymarket 0x1234 --limit 50
-/ticks stats
-```
+1. Check recorder is running: `/ticks stats`
+2. Pull recent ticks: `/ticks polymarket 0x1234abcd`
+3. Get OHLC for charting: `/ticks ohlc polymarket 0x1234 --outcome 0x5678 --interval 1h`
+4. Check spread dynamics: `/ticks spread polymarket 0x1234 --limit 50`
 
-## Requirements
+## Output Formats
 
-- TimescaleDB tick recorder must be enabled
-- Configure in `clodds.config.yaml`:
+- **Ticks**: Timestamped price history with price change deltas
+- **OHLC**: Candlestick data (open, high, low, close, tick count) with period change summary
+- **Spread**: Orderbook spread history with mid price, depth, and statistics (avg/min/max spread)
+- **Stats**: Recorder status — DB connection, total ticks recorded, buffer pending counts, last flush time, active platforms
 
-```yaml
-tickRecorder:
-  enabled: true
-  connectionString: postgres://user:pass@localhost:5432/clodds
-```
+## Error Recovery
 
-## Output
-
-### Ticks
-Shows price history with timestamps and price changes.
-
-### OHLC
-Shows candlestick data with open, high, low, close, and tick count.
-Includes period change summary.
-
-### Spread
-Shows orderbook spread history with mid price and depth.
-Includes spread statistics (avg, min, max).
-
-### Stats
-Shows recorder status including:
-- Database connection status
-- Total ticks/orderbooks recorded
-- Buffer pending counts
-- Last flush time
-- Active platforms
+| Issue | Fix |
+|-------|-----|
+| No data returned | Verify tick recorder is enabled and platform is active via `/ticks stats` |
+| Connection errors | Check `connectionString` in `clodds.config.yaml` and ensure TimescaleDB is running |
+| Stale data | Check "last flush time" in `/ticks stats` — if stale, recorder may need restart |
