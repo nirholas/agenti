@@ -1,0 +1,44 @@
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment (NEVER commit)
+.env
+.env.*
+!.env.example
+
+# Private keys (NEVER commit)
+*.pem
+*.key
+keystore/
+wallet.json
+
+# Cloned private repos (NEVER commit)
+/tmp/
+private/
+_private/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.turbo/
+.cache/
