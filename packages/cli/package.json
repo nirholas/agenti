@@ -1,0 +1,39 @@
+{
+  "name": "@agenti/cli",
+  "version": "0.1.0",
+  "description": "CLI for generating MCP servers from smart contract ABIs and deploying x402-gated APIs",
+  "type": "module",
+  "author": "nirholas",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/agenti"
+  },
+  "homepage": "https://agenti.cash",
+  "bugs": {
+    "url": "https://github.com/nirholas/agenti/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "agenti": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --no-dts --platform node",
+    "dev": "tsup src/index.ts --format esm --no-dts --platform node --watch",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "viem": "^2.21.0",
+    "@agenti/sdk": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.10.0",
+    "zod": "^3.23.0"
+  }
+}

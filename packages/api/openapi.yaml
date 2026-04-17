@@ -1,0 +1,1169 @@
+openapi: 3.1.0
+
+info:
+  title: Agenti API
+  version: 1.0.0
+  description: |
+    Give AI agents a crypto wallet and autonomous payment capability.
+
+    ## Authentication
+    All endpoints require an API key passed as a Bearer token:
+    ```
+    Authorization: Bearer ak_live_...
+    ```
+
+    ## Idempotency
+    All mutating endpoints (POST) accept an `Idempotency-Key` header.
+    Requests with the same key return the cached response for 24 hours.
+    Use this to safely retry failed requests without duplicate trades.
+
+    ## Errors
+    All errors return a consistent shape:
+    ```json
+    { "error": "Human-readable message", "code": "MACHINE_READABLE_CODE" }
+    ```
+
+    ## Versioning
+    All routes are prefixed with `/v1`. Breaking changes will increment the version.
+
+servers:
+  - url: https://api.agenti.xyz/v1
+    description: Production
+  - url: https://api-staging.agenti.xyz/v1
+    description: Staging
+
+# ─────────────────────────────────────────────
+# Security
+# ─────────────────────────────────────────────
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: API key prefixed with `ak_live_` or `ak_test_`
+
+  # ─── Reusable Parameters ───────────────────
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+        example: 01HV2K9Q3Z8J4X7M6N0P5R
+      description: Unique key to deduplicate requests. UUIDv4 recommended.
+
+  # ─── Reusable Schemas ──────────────────────
+  schemas:
+
+    Error:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: Insufficient balance
+        code:
+          type: string
+          description: Machine-readable error code
+          example: INSUFFICIENT_BALANCE
+      example:
+        error: Insufficient balance
+        code: INSUFFICIENT_BALANCE
+
+    Chain:
+      type: string
+      enum: [base, arbitrum, ethereum, polygon, solana]
+      description: Supported blockchain network
+
+    Wallet:
+      type: object
+      required: [id, evmAddress, solanaAddress, createdAt]
+      properties:
+        id:
+          type: string
+          example: wlt_01HV2K9Q3Z
+        evmAddress:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+          example: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        solanaAddress:
+          type: string
+          example: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV"
+        label:
+          type: string
+          description: Optional human-readable label
+          example: trading-bot-1
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Balance:
+      type: object
+      required: [token, amount, chain]
+      properties:
+        token:
+          type: string
+          example: USDC
+        amount:
+          type: string
+          description: Human-readable decimal amount
+          example: "12.50"
+        chain:
+          $ref: '#/components/schemas/Chain'
+        usdValue:
+          type: string
+          description: USD equivalent at time of query
+          example: "12.50"
+          nullable: true
+
+    Invoice:
+      type: object
+      required: [id, amount, token, chain, payTo, status, createdAt, expiresAt]
+      properties:
+        id:
+          type: string
+          example: inv_01HV2K9Q3Z
+        amount:
+          type: string
+          description: Amount in smallest token units
+          example: "1000000"
+        token:
+          type: string
+          example: USDC
+        chain:
+          $ref: '#/components/schemas/Chain'
+        payTo:
+          type: string
+          description: Address to send payment to
+          example: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        status:
+          type: string
+          enum: [pending, paid, expired]
+        txHash:
+          type: string
+          description: Settlement transaction hash (when paid)
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    TradeResult:
+      type: object
+      required: [signature, explorerUrl, action, mint]
+      properties:
+        signature:
+          type: string
+          description: Solana transaction signature
+          example: "5KtPn1LGuxhFiwjxErkxTb7XxtLVA8hHcFxAMHX7Mj9FvN..."
+        explorerUrl:
+          type: string
+          format: uri
+          example: "https://solscan.io/tx/5KtPn1..."
+        action:
+          type: string
+          enum: [buy, sell]
+        mint:
+          type: string
+          description: Token mint address
+          example: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+        solAmount:
+          type: string
+          description: SOL spent or received
+          example: "0.05"
+        tokenAmount:
+          type: string
+          description: Tokens received or spent
+          example: "125000.00"
+
+    CoinState:
+      type: object
+      required: [mint, phase, complete]
+      properties:
+        mint:
+          type: string
+          example: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+        phase:
+          type: string
+          enum: [bonding, migrating, graduated]
+          description: |
+            - `bonding`: Token is on the pump.fun bonding curve
+            - `migrating`: Graduation in progress
+            - `graduated`: Token has moved to Raydium AMM
+        complete:
+          type: boolean
+        pool:
+          type: string
+          description: AMM pool address (only present when graduated)
+          nullable: true
+        marketCapSol:
+          type: number
+          description: Current market cap in SOL
+          nullable: true
+        price:
+          type: number
+          description: Current price in SOL per token
+          nullable: true
+        graduationProgress:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Bonding curve fill percentage (0–1)
+          nullable: true
+
+    SmartWallet:
+      type: object
+      required: [address, rank]
+      properties:
+        address:
+          type: string
+          example: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV"
+        rank:
+          type: integer
+          example: 1
+        pnl7d:
+          type: string
+          description: 7-day PnL in USD
+          example: "4250.00"
+          nullable: true
+        isKol:
+          type: boolean
+          description: Known on-chain leader / influencer
+        source:
+          type: string
+          description: Where this rank was derived from
+          example: gmgn
+          nullable: true
+
+    WalletTrade:
+      type: object
+      required: [signature, action, mint, timestamp]
+      properties:
+        signature:
+          type: string
+        action:
+          type: string
+          enum: [buy, sell]
+        mint:
+          type: string
+        solAmount:
+          type: string
+          nullable: true
+        tokenAmount:
+          type: string
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+
+    PaymentRequired:
+      type: object
+      description: x402 payment requirement returned by an upstream resource
+      required: [scheme, network, amount, payTo, asset, maxTimeoutSeconds]
+      properties:
+        scheme:
+          type: string
+          enum: [exact]
+        network:
+          type: string
+          example: "eip155:8453"
+        amount:
+          type: string
+          description: Amount in smallest token units
+          example: "10000"
+        payTo:
+          type: string
+          example: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+        asset:
+          type: string
+          description: Token contract address
+          example: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+        maxTimeoutSeconds:
+          type: integer
+          example: 300
+        extra:
+          type: object
+          nullable: true
+          properties:
+            name:
+              type: string
+            version:
+              type: string
+
+    VerifyResult:
+      type: object
+      required: [valid]
+      properties:
+        valid:
+          type: boolean
+        invalidReason:
+          type: string
+          nullable: true
+          example: Nonce already used
+
+    SettleResult:
+      type: object
+      required: [success, txHash]
+      properties:
+        success:
+          type: boolean
+        txHash:
+          type: string
+          nullable: true
+          example: "0xabc123..."
+        error:
+          type: string
+          nullable: true
+
+  # ─── Reusable Responses ────────────────────
+  responses:
+    BadRequest:
+      description: Invalid request body or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "mint is required"
+            code: VALIDATION_ERROR
+
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Invalid API key
+            code: UNAUTHORIZED
+
+    InsufficientBalance:
+      description: Wallet balance too low to complete the operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Insufficient balance
+            code: INSUFFICIENT_BALANCE
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Wallet not found
+            code: NOT_FOUND
+
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until the rate limit resets
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Rate limit exceeded
+            code: RATE_LIMITED
+
+    ServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Internal server error
+            code: INTERNAL_ERROR
+
+# ─────────────────────────────────────────────
+# Tags
+# ─────────────────────────────────────────────
+tags:
+  - name: Wallets
+    description: Create and manage agent wallets (EVM + Solana keypairs)
+  - name: Balances
+    description: Query token balances across chains
+  - name: Payments
+    description: Autonomous x402 payments — agents pay for APIs automatically
+  - name: Invoices
+    description: Create payment requests for others to fulfill
+  - name: Trading
+    description: Buy and sell tokens on pump.fun
+  - name: Market
+    description: Real-time market data — smart wallets, coin state, price feeds
+  - name: Facilitator
+    description: Verify and settle x402 payments on-chain
+
+# ─────────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────────
+paths:
+
+  # ══════════════════════════════════════════
+  # WALLETS
+  # ══════════════════════════════════════════
+
+  /wallet:
+    post:
+      tags: [Wallets]
+      operationId: createWallet
+      summary: Create a new wallet
+      description: |
+        Generates a fresh EVM + Solana keypair and returns the wallet.
+        Private keys are encrypted at rest and never returned after creation.
+        Fund the returned addresses before trading.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  description: Optional human-readable label
+                  example: sniper-bot-1
+      responses:
+        '201':
+          description: Wallet created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Wallet'
+              example:
+                id: wlt_01HV2K9Q3Z
+                evmAddress: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+                solanaAddress: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV"
+                label: sniper-bot-1
+                createdAt: "2026-04-17T10:00:00Z"
+                lastUsedAt: null
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+    get:
+      tags: [Wallets]
+      operationId: listWallets
+      summary: List all wallets
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          description: Pagination cursor from previous response
+      responses:
+        '200':
+          description: List of wallets
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, hasMore]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Wallet'
+                  hasMore:
+                    type: boolean
+                  nextCursor:
+                    type: string
+                    nullable: true
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /wallet/import:
+    post:
+      tags: [Wallets]
+      operationId: importWallet
+      summary: Import an existing wallet by private key
+      description: |
+        Import a wallet you already hold. Useful for using existing funded wallets
+        or wallets that hold tokens you want to trade.
+        The private key is encrypted immediately and not stored in plaintext.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [evmPrivateKey]
+              properties:
+                evmPrivateKey:
+                  type: string
+                  description: Hex-encoded EVM private key
+                  example: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+                solanaPrivateKey:
+                  type: string
+                  description: Base58-encoded Solana private key (optional — generates new if omitted)
+                  example: "4wBqpZM9k69..."
+                label:
+                  type: string
+                  example: my-existing-wallet
+      responses:
+        '201':
+          description: Wallet imported
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /wallet/{walletId}:
+    get:
+      tags: [Wallets]
+      operationId: getWallet
+      summary: Get wallet details
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: wlt_01HV2K9Q3Z
+      responses:
+        '200':
+          description: Wallet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    delete:
+      tags: [Wallets]
+      operationId: deleteWallet
+      summary: Delete a wallet
+      description: |
+        Permanently deletes the wallet and its encrypted keys.
+        Ensure you have exported or transferred funds before deleting.
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Wallet deleted
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ══════════════════════════════════════════
+  # BALANCES
+  # ══════════════════════════════════════════
+
+  /wallet/{walletId}/balance:
+    get:
+      tags: [Balances]
+      operationId: getBalance
+      summary: Get wallet balances
+      description: Returns USDC (Base) and SOL balances for the wallet.
+      parameters:
+        - name: walletId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: chains
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Chain'
+          style: form
+          explode: false
+          description: Filter by chains. Defaults to all supported chains.
+          example: base,solana
+      responses:
+        '200':
+          description: Token balances
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Balance'
+              example:
+                data:
+                  - token: USDC
+                    amount: "12.50"
+                    chain: base
+                    usdValue: "12.50"
+                  - token: SOL
+                    amount: "1.23"
+                    chain: solana
+                    usdValue: "185.00"
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ══════════════════════════════════════════
+  # PAYMENTS (x402)
+  # ══════════════════════════════════════════
+
+  /pay:
+    post:
+      tags: [Payments]
+      operationId: pay
+      summary: Make an x402-aware HTTP request
+      description: |
+        Sends an HTTP request on behalf of a wallet. If the upstream resource
+        returns HTTP 402 (Payment Required), the agent automatically signs and
+        submits payment, then retries. You get the final response.
+
+        This is the primitive that makes agents autonomous — they can pay for
+        data, APIs, and services without human intervention.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [walletId, url]
+              properties:
+                walletId:
+                  type: string
+                  example: wlt_01HV2K9Q3Z
+                url:
+                  type: string
+                  format: uri
+                  description: URL of the x402-gated resource
+                  example: "https://data.example.com/premium/signals"
+                method:
+                  type: string
+                  enum: [GET, POST, PUT, DELETE, PATCH]
+                  default: GET
+                headers:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Additional headers to forward
+                body:
+                  description: Request body (for POST/PUT/PATCH)
+                  nullable: true
+      responses:
+        '200':
+          description: Upstream response after successful payment (or no payment required)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, headers, body, paid]
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status from the upstream resource
+                    example: 200
+                  headers:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  body:
+                    description: Upstream response body
+                  paid:
+                    type: boolean
+                    description: Whether a payment was made to access this resource
+                  paymentAmount:
+                    type: string
+                    description: Amount paid in smallest token units (if paid)
+                    nullable: true
+                    example: "10000"
+                  paymentChain:
+                    $ref: '#/components/schemas/Chain'
+                    nullable: true
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '402':
+          description: Payment required but wallet has insufficient balance
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Error'
+                  - type: object
+                    properties:
+                      paymentRequired:
+                        $ref: '#/components/schemas/PaymentRequired'
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  # ══════════════════════════════════════════
+  # INVOICES
+  # ══════════════════════════════════════════
+
+  /invoice:
+    post:
+      tags: [Invoices]
+      operationId: createInvoice
+      summary: Create a payment invoice
+      description: |
+        Generate a payment request that another wallet can fulfill.
+        Use this to monetize your own API or service with x402.
+        Invoices expire after 30 minutes.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [walletId, amount, token, chain]
+              properties:
+                walletId:
+                  type: string
+                  description: Wallet to receive payment
+                  example: wlt_01HV2K9Q3Z
+                amount:
+                  type: string
+                  description: Amount in smallest token units (e.g. "1000000" = 1 USDC)
+                  example: "1000000"
+                token:
+                  type: string
+                  example: USDC
+                chain:
+                  $ref: '#/components/schemas/Chain'
+                description:
+                  type: string
+                  description: What this payment is for
+                  example: Premium market data access
+      responses:
+        '201':
+          description: Invoice created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /invoice/{invoiceId}:
+    get:
+      tags: [Invoices]
+      operationId: getInvoice
+      summary: Get invoice status
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: inv_01HV2K9Q3Z
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ══════════════════════════════════════════
+  # TRADING
+  # ══════════════════════════════════════════
+
+  /trade:
+    post:
+      tags: [Trading]
+      operationId: trade
+      summary: Buy or sell a token on pump.fun
+      description: |
+        Execute a trade on the pump.fun bonding curve or Raydium AMM
+        (automatically detected based on coin phase).
+
+        Sell amounts support:
+        - Exact token count: `"1000000"`
+        - Percentage of holdings: `"50%"` or `"100%"`
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [walletId, action, mint, amount]
+              properties:
+                walletId:
+                  type: string
+                  example: wlt_01HV2K9Q3Z
+                action:
+                  type: string
+                  enum: [buy, sell]
+                mint:
+                  type: string
+                  description: Token mint address
+                  example: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                amount:
+                  oneOf:
+                    - type: number
+                      description: |
+                        **Buy**: SOL amount to spend (e.g. `0.1` = 0.1 SOL).
+                        **Sell**: Token amount to sell (e.g. `1000000`).
+                    - type: string
+                      description: |
+                        **Sell only**: Percentage of holdings (e.g. `"50%"`, `"100%"`).
+                  example: 0.1
+                denominatedInSol:
+                  type: boolean
+                  description: |
+                    `true` → amount is in SOL (buy mode).
+                    `false` → amount is in tokens (sell mode).
+                  default: true
+                slippage:
+                  type: number
+                  description: |
+                    Maximum acceptable price movement as a percentage.
+                    - 5–10%: Established tokens
+                    - 15–20%: Active tokens
+                    - 20–30%: New launches / sniping
+                  default: 5
+                  minimum: 0.1
+                  maximum: 50
+                priorityFee:
+                  type: number
+                  description: |
+                    Extra SOL tip to validators for faster inclusion.
+                    - `0.0005`: Normal conditions
+                    - `0.001`: Moderate congestion
+                    - `0.005+`: Competitive sniping
+                  default: 0.0005
+            examples:
+              buy:
+                summary: Buy 0.1 SOL worth of a token
+                value:
+                  walletId: wlt_01HV2K9Q3Z
+                  action: buy
+                  mint: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                  amount: 0.1
+                  denominatedInSol: true
+                  slippage: 15
+                  priorityFee: 0.0005
+              sellAll:
+                summary: Sell 100% of holdings
+                value:
+                  walletId: wlt_01HV2K9Q3Z
+                  action: sell
+                  mint: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                  amount: "100%"
+                  denominatedInSol: false
+                  slippage: 15
+              sellHalf:
+                summary: Sell 50% of holdings
+                value:
+                  walletId: wlt_01HV2K9Q3Z
+                  action: sell
+                  mint: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                  amount: "50%"
+                  denominatedInSol: false
+      responses:
+        '200':
+          description: Trade executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeResult'
+              example:
+                signature: "5KtPn1LGuxhFiwjxErkxTb7XxtLVA8hHcFxAMHX7Mj9FvN..."
+                explorerUrl: "https://solscan.io/tx/5KtPn1..."
+                action: buy
+                mint: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                solAmount: "0.1"
+                tokenAmount: "125000.00"
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '402': { $ref: '#/components/responses/InsufficientBalance' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422':
+          description: Trade failed on-chain (slippage exceeded, bad mint, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                slippage:
+                  value:
+                    error: Slippage tolerance exceeded — price moved too fast
+                    code: SLIPPAGE_EXCEEDED
+                noAccount:
+                  value:
+                    error: No token account found for this wallet
+                    code: NO_TOKEN_ACCOUNT
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+  # ══════════════════════════════════════════
+  # MARKET DATA
+  # ══════════════════════════════════════════
+
+  /market/coin/{mint}:
+    get:
+      tags: [Market]
+      operationId: getCoinState
+      summary: Get coin state and bonding curve data
+      parameters:
+        - name: mint
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Token mint address
+          example: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+      responses:
+        '200':
+          description: Coin state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoinState'
+              examples:
+                bonding:
+                  summary: Token on bonding curve
+                  value:
+                    mint: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                    phase: bonding
+                    complete: false
+                    marketCapSol: 12.5
+                    price: 0.0000001
+                    graduationProgress: 0.15
+                graduated:
+                  summary: Token graduated to Raydium
+                  value:
+                    mint: "5cRp2cAShKESQR17AgawG4KHXogkeRi5mF7Vdkek1ZSC"
+                    phase: graduated
+                    complete: true
+                    pool: "AMMpoolAddress..."
+                    marketCapSol: 850.0
+                    price: 0.0000082
+                    graduationProgress: 1.0
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /market/wallets/top:
+    get:
+      tags: [Market]
+      operationId: getTopWallets
+      summary: Get top smart wallets by PnL
+      description: Returns ranked wallets from GMGN and other on-chain sources.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: minPnl7d
+          in: query
+          schema:
+            type: number
+          description: Filter wallets with 7-day PnL above this USD threshold
+          example: 1000
+      responses:
+        '200':
+          description: Ranked smart wallets
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SmartWallet'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /market/wallets/{address}/trades:
+    get:
+      tags: [Market]
+      operationId: getWalletTrades
+      summary: Get trade history for a wallet
+      description: Useful for copy-trading — monitor a whale's recent activity.
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          description: Pagination cursor
+      responses:
+        '200':
+          description: Trade history
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, hasMore]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WalletTrade'
+                  hasMore:
+                    type: boolean
+                  nextCursor:
+                    type: string
+                    nullable: true
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ══════════════════════════════════════════
+  # FACILITATOR
+  # ══════════════════════════════════════════
+
+  /facilitator/verify:
+    post:
+      tags: [Facilitator]
+      operationId: verifyPayment
+      summary: Verify an x402 payment signature
+      description: |
+        Checks that a payment signature is valid without settling on-chain.
+        Use this for soft-gating — verify intent before committing.
+        Does not prevent replay (use `/facilitator/settle` for that).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payload, paymentRequired]
+              properties:
+                payload:
+                  type: object
+                  description: The x402 payment payload from the client's payment header
+                paymentRequired:
+                  $ref: '#/components/schemas/PaymentRequired'
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResult'
+              examples:
+                valid:
+                  value: { valid: true, invalidReason: null }
+                invalid:
+                  value: { valid: false, invalidReason: "Signature expired" }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /facilitator/settle:
+    post:
+      tags: [Facilitator]
+      operationId: settlePayment
+      summary: Verify and settle an x402 payment on-chain
+      description: |
+        Verifies the payment signature AND executes `transferWithAuthorization`
+        on-chain. Marks the nonce as used to prevent replay attacks.
+        Use this as the final gate before delivering paid content.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payload, paymentRequired]
+              properties:
+                payload:
+                  type: object
+                  description: The x402 payment payload from the client's payment header
+                paymentRequired:
+                  $ref: '#/components/schemas/PaymentRequired'
+      responses:
+        '200':
+          description: Settlement result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettleResult'
+              examples:
+                success:
+                  value:
+                    success: true
+                    txHash: "0xabc123..."
+                    error: null
+                failed:
+                  value:
+                    success: false
+                    txHash: null
+                    error: Nonce already used
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+# ─────────────────────────────────────────────
+# WebSocket API
+# ─────────────────────────────────────────────
+# Real-time feeds are served over WebSocket at:
+#   wss://api.agenti.xyz/v1/ws
+#
+# Authentication: pass API key as a query param
+#   wss://api.agenti.xyz/v1/ws?api-key=ak_live_...
+#
+# After connecting, send subscription messages:
+#
+# Subscribe to new token launches:
+#   { "method": "subscribeNewToken" }
+#
+# Subscribe to trades for specific tokens:
+#   { "method": "subscribeTokenTrade", "keys": ["mint1", "mint2"] }
+#
+# Subscribe to all trades from specific wallets (copy-trading):
+#   { "method": "subscribeWalletTrade", "keys": ["wallet1", "wallet2"] }
+#
+# Unsubscribe:
+#   { "method": "unsubscribeNewToken" }
+#   { "method": "unsubscribeTokenTrade", "keys": ["mint1"] }
+#   { "method": "unsubscribeWalletTrade", "keys": ["wallet1"] }
+#
+# Event shapes are documented in the SDK: @agenti/sdk watchPumpEvents()
