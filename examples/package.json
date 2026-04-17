@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "11": "tsx 11-crypto-thesis-loop.ts",
     "01": "tsx 01-create-wallet.ts",
     "02": "tsx 02-check-balance.ts",
     "03": "tsx 03-pay-for-api.ts",
@@ -14,8 +15,8 @@
   },
   "dependencies": {
     "@agenti/core": "workspace:*",
-    "@agenti/sdk": "workspace:*",
     "@agenti/mcp": "workspace:*",
+    "@agenti/sdk": "workspace:*",
     "@ai-sdk/anthropic": "^1.0.0",
     "@anthropic-ai/sdk": "^0.51.0",
     "@langchain/anthropic": "^0.3.0",
@@ -27,6 +28,6 @@
     "bs58": "^6.0.0",
     "express": "^4.21.0",
     "langchain": "^0.3.0",
-    "tsx": "^4.0.0"
+    "tsx": "^4.21.0"
   }
 }
