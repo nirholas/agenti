@@ -22,9 +22,9 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "main": "./dist/index.cjs",
@@ -32,11 +32,12 @@
   "types": "./dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts",
+    "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts --platform node",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "clean": "rm -rf dist *.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "start": "node dist/bin.js"
+    "start": "node dist/bin.js",
+    "test": "vitest run"
   },
   "devDependencies": {
     "tsup": "^8.0.0"
@@ -45,6 +46,7 @@
     "@agenti/sdk": "workspace:*",
     "@agenti/core": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.10.0",
+    "@solana/web3.js": "^1.98.2",
     "zod": "^3.23.0"
   }
 }
