@@ -8,7 +8,7 @@ import {
   forceCenter,
   forceCollide,
 } from 'd3-force'
-import type { GraphNode, GraphEdge } from '../types.js'
+import type { GraphNode, GraphEdge } from '../types'
 
 const NODE_COLOR: Record<GraphNode['kind'], string> = {
   wallet: '#3b82f6',

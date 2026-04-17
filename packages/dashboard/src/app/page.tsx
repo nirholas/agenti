@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useReducer, useCallback } from 'react'
-import { connectEventSource } from '../lib/events.js'
-import { AgentGraph } from '../components/AgentGraph.js'
-import { TransactionFeed } from '../components/TransactionFeed.js'
-import { WalletCard } from '../components/WalletCard.js'
+import { connectEventSource } from '../lib/events'
+import { AgentGraph } from '../components/AgentGraph'
+import { TransactionFeed } from '../components/TransactionFeed'
+import { WalletCard } from '../components/WalletCard'
 import type { AgentiEvent } from '@agenti/sdk'
-import type { FeedItem, GraphNode, GraphEdge } from '../types.js'
+import type { FeedItem, GraphNode, GraphEdge } from '../types'
 
 const MAX_FEED = 50
 

@@ -1,4 +1,4 @@
-import type { GraphNode, GraphEdge } from '../types.js'
+import type { GraphNode, GraphEdge } from '../types'
 
 export interface GraphState {
   nodes: Map<string, GraphNode>

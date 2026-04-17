@@ -44,6 +44,10 @@ coverage/
 *.log
 npm-debug.log*
 
+# Next.js
+.next/
+next-env.d.ts
+
 # Misc
 .turbo/
 .cache/

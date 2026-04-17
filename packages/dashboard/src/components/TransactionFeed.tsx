@@ -1,6 +1,6 @@
 'use client'
 
-import type { FeedItem } from '../types.js'
+import type { FeedItem } from '../types'
 
 const TYPE_COLOR: Record<FeedItem['type'], string> = {
   pay: '#22c55e',
