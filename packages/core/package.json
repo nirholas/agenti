@@ -1,0 +1,44 @@
+{
+  "name": "@agenti/core",
+  "version": "0.1.0",
+  "type": "module",
+  "author": "nirholas",
+  "license": "Apache-2.0",
+  "description": "Core wallet primitives for AI agents",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/agenti"
+  },
+  "homepage": "https://agenti.cash",
+  "bugs": {
+    "url": "https://github.com/nirholas/agenti/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0"
+  },
+  "dependencies": {
+    "viem": "^2.21.0",
+    "@solana/web3.js": "^1.95.0"
+  }
+}

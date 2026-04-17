@@ -1,0 +1,50 @@
+{
+  "name": "@agenti/mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "author": "nirholas",
+  "license": "Apache-2.0",
+  "description": "MCP server exposing agenti wallet tools to Claude and other MCP clients",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nirholas/agenti"
+  },
+  "homepage": "https://agenti.cash",
+  "bugs": {
+    "url": "https://github.com/nirholas/agenti/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "bin": {
+    "agenti-mcp": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/bin.js"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0"
+  },
+  "dependencies": {
+    "@agenti/sdk": "workspace:*",
+    "@agenti/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.10.0",
+    "zod": "^3.23.0"
+  }
+}
