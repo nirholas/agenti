@@ -2,13 +2,13 @@ import { createPublicClient, createWalletClient, http, getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { base, arbitrum, mainnet, polygon, baseSepolia } from 'viem/chains'
 import type { Chain } from 'viem'
+import { markNonce } from './nonce-store.js'
 import type { PaymentPayload, PaymentRequired, SettleResult, FacilitatorConfig } from './types.js'
-import { markNonceUsed } from './verify.js'
 
 const CHAIN_MAP: Record<string, Chain> = {
+  'eip155:1': mainnet,
   'eip155:8453': base,
   'eip155:42161': arbitrum,
-  'eip155:1': mainnet,
   'eip155:137': polygon,
   'eip155:84532': baseSepolia,
   'base-mainnet': base,
@@ -17,7 +17,6 @@ const CHAIN_MAP: Record<string, Chain> = {
   'polygon-mainnet': polygon,
 }
 
-// EIP-3009 transferWithAuthorization ABI — split v/r/s form used by USDC.
 const TRANSFER_WITH_AUTH_ABI = [
   {
     name: 'transferWithAuthorization',
@@ -52,8 +51,9 @@ export async function settlePayment(
   requirements: PaymentRequired,
   config: FacilitatorConfig,
 ): Promise<SettleResult> {
-  if (!config.settlerPrivateKey)
+  if (!config.settlerPrivateKey) {
     return { settled: false, error: 'No settler private key configured' }
+  }
 
   const { network, payload } = payment
   const { authorization, signature } = payload
@@ -89,7 +89,7 @@ export async function settlePayment(
     })
 
     await publicClient.waitForTransactionReceipt({ hash: txHash })
-    markNonceUsed(network, authorization.nonce)
+    markNonce(authorization.from, authorization.nonce, BigInt(authorization.validBefore))
     return { settled: true, txHash }
   } catch (err) {
     return { settled: false, error: String(err) }
