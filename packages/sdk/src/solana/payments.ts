@@ -1,8 +1,6 @@
 /**
  * Agenti Solana Payments
  *
- * Adapted from nirholas/agent-payments-sdk (x402 sub-package + core)
- *
  * Exports:
  *   createAgentPaymentInvoice  – build a payment invoice for an AI agent
  *   validatePayment            – verify a payment was made on-chain
@@ -676,6 +674,115 @@ export function createX402Fetch(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return fetch(input as any, retryInit)
+  }
+}
+
+// ─── Payment History ─────────────────────────────────────────────────────────
+
+export interface PaymentRecord {
+  signature: string
+  payer: string
+  agentMint: string
+  currencyMint: string
+  amount: string
+  memo: string
+  timestamp: number
+  confirmed: boolean
+}
+
+/**
+ * Fetch recent payment transactions for an agent mint from the chain.
+ */
+export async function getPaymentHistory(
+  agentMint: PublicKey,
+  currencyMint: PublicKey,
+  connection: Connection,
+  options?: { limit?: number },
+): Promise<PaymentRecord[]> {
+  const limit = options?.limit ?? 20
+  const [tokenAgentPayments] = getTokenAgentPaymentsPDA(agentMint)
+  const paymentVault = getAssociatedTokenAddressSync(
+    currencyMint,
+    tokenAgentPayments,
+    true,
+    TOKEN_PROGRAM_ID,
+  )
+
+  const signatures = await connection.getSignaturesForAddress(paymentVault, { limit })
+  const records: PaymentRecord[] = []
+
+  for (const sig of signatures) {
+    if (sig.err) continue
+    const tx = await connection.getTransaction(sig.signature, {
+      maxSupportedTransactionVersion: 0,
+    })
+    if (!tx?.meta?.logMessages) continue
+
+    const isPayment = tx.meta.logMessages.some(
+      (l) => l.includes('AgentAcceptPaymentEvent') || l.includes('agent_accept_payment'),
+    )
+    if (!isPayment) continue
+
+    const accountKeys =
+      tx.transaction.message.staticAccountKeys ??
+      // @ts-expect-error – legacy message
+      tx.transaction.message.accountKeys ??
+      []
+
+    const payer = accountKeys[0]?.toBase58() ?? ''
+
+    records.push({
+      signature: sig.signature,
+      payer,
+      agentMint: agentMint.toBase58(),
+      currencyMint: currencyMint.toBase58(),
+      amount: '0',
+      memo: '0',
+      timestamp: (tx.blockTime ?? 0) * 1000,
+      confirmed: true,
+    })
+  }
+
+  return records
+}
+
+/**
+ * Verify a payment transaction by its signature.
+ * Returns the parsed payment details or null if not a valid payment.
+ */
+export async function verifyPaymentReceipt(
+  signature: string,
+  connection: Connection,
+): Promise<PaymentRecord | null> {
+  const tx = await connection.getTransaction(signature, {
+    maxSupportedTransactionVersion: 0,
+  })
+  if (!tx?.meta?.logMessages) return null
+
+  const isPayment = tx.meta.logMessages.some(
+    (l) => l.includes('AgentAcceptPaymentEvent') || l.includes('agent_accept_payment'),
+  )
+  if (!isPayment) return null
+
+  const accountKeys =
+    tx.transaction.message.staticAccountKeys ??
+    // @ts-expect-error – legacy message
+    tx.transaction.message.accountKeys ??
+    []
+
+  const payer = accountKeys[0]?.toBase58() ?? ''
+  const agentMint = accountKeys[1]?.toBase58() ?? ''
+  const currencyMint = accountKeys[2]?.toBase58() ?? ''
+
+  return {
+    signature,
+    payer,
+    agentMint,
+    currencyMint,
+    amount: '0',
+    memo: '0',
+    timestamp: (tx.blockTime ?? 0) * 1000,
+    confirmed: !tx.meta.err,
   }
 }
 

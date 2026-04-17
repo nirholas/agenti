@@ -1,4 +1,7 @@
 import { Connection, Keypair, Transaction } from '@solana/web3.js'
+import { getBuyPriceImpact, getSellPriceImpact, getBuyTokenAmount } from './curve.js'
+import type { BondingCurveState } from './curve.js'
+import { emitEvent } from '../events.js'
 
 const PUMP_API = 'https://fun-block.pump.fun/agents'
 
@@ -20,6 +23,8 @@ export interface BuyParams {
   keypair: Keypair
   connection: Connection
   priorityFee?: number  // tip in lamports (for faster inclusion)
+  curveState?: BondingCurveState
+  maxPriceImpact?: number  // percent threshold for warning (default 5)
 }
 
 export interface SellParams {
@@ -28,6 +33,8 @@ export interface SellParams {
   slippage?: number
   keypair: Keypair
   connection: Connection
+  curveState?: BondingCurveState
+  maxPriceImpact?: number  // percent threshold for warning (default 5)
 }
 
 async function buildSignSend(
@@ -53,8 +60,16 @@ async function buildSignSend(
 }
 
 export async function buy(params: BuyParams): Promise<TradeResult> {
-  const { mint, solAmount, slippage = 5, keypair, connection, priorityFee = 0 } = params
+  const { mint, solAmount, slippage = 5, keypair, connection, priorityFee = 0,
+          curveState, maxPriceImpact = 5 } = params
   const lamports = BigInt(Math.floor(solAmount * 1e9))
+
+  if (curveState) {
+    const impact = getBuyPriceImpact(lamports, curveState)
+    if (impact > maxPriceImpact) {
+      console.warn(`[agenti] buy price impact ${impact.toFixed(2)}% exceeds ${maxPriceImpact}% threshold`)
+    }
+  }
 
   const res = await fetch(`${PUMP_API}/swap`, {
     method: 'POST',
@@ -74,13 +89,23 @@ export async function buy(params: BuyParams): Promise<TradeResult> {
 
   if (!res.ok) throw new Error(`pump.fun API ${res.status}: ${await res.text()}`)
   const { transaction } = (await res.json()) as { transaction: string }
-  return buildSignSend(transaction, keypair, connection)
+  const result = await buildSignSend(transaction, keypair, connection)
+  emitEvent({ type: 'trade', mint, side: 'buy', sol: solAmount, ts: Date.now() })
+  return result
 }
 
 export async function sell(params: SellParams): Promise<TradeResult> {
-  const { mint, tokenAmount, slippage = 5, keypair, connection } = params
+  const { mint, tokenAmount, slippage = 5, keypair, connection,
+          curveState, maxPriceImpact = 5 } = params
   // convert human units to raw (6 decimals)
   const rawAmount = BigInt(Math.round(tokenAmount * 10 ** TOKEN_DECIMALS))
+
+  if (curveState) {
+    const impact = getSellPriceImpact(rawAmount, curveState)
+    if (impact > maxPriceImpact) {
+      console.warn(`[agenti] sell price impact ${impact.toFixed(2)}% exceeds ${maxPriceImpact}% threshold`)
+    }
+  }
 
   const res = await fetch(`${PUMP_API}/swap`, {
     method: 'POST',
@@ -100,5 +125,7 @@ export async function sell(params: SellParams): Promise<TradeResult> {
 
   if (!res.ok) throw new Error(`pump.fun API ${res.status}: ${await res.text()}`)
   const { transaction } = (await res.json()) as { transaction: string }
-  return buildSignSend(transaction, keypair, connection)
+  const result = await buildSignSend(transaction, keypair, connection)
+  emitEvent({ type: 'trade', mint, side: 'sell', sol: 0, ts: Date.now() })
+  return result
 }

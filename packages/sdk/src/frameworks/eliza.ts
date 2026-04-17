@@ -28,19 +28,19 @@ const payAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    _state: State | undefined,
-    _options: Record<string, unknown>,
-    callback: HandlerCallback,
+    _state?: State,
+    _options?: { [key: string]: unknown },
+    callback?: HandlerCallback,
   ) => {
     const url = (message.content.text ?? '').match(URL_RE)?.[0]
     if (!url) {
-      await callback({ text: 'No URL found in message.' })
+      await callback?.({ text: 'No URL found in message.' })
       return
     }
 
     const privateKey = runtime.getSetting('AGENTI_EVM_PRIVATE_KEY') as `0x${string}` | undefined
     if (!privateKey) {
-      await callback({ text: 'AGENTI_EVM_PRIVATE_KEY is not configured.' })
+      await callback?.({ text: 'AGENTI_EVM_PRIVATE_KEY is not configured.' })
       return
     }
 
@@ -48,11 +48,11 @@ const payAction: Action = {
       const agent = agenti({ evm: { privateKey } })
       const response = await agent.pay(url)
       const body = await response.text().catch(() => '')
-      await callback({
+      await callback?.({
         text: `Payment complete (HTTP ${response.status})${body ? `\n\n${body.slice(0, 500)}` : ''}`,
       })
     } catch (err) {
-      await callback({ text: `Payment failed: ${(err as Error).message}` })
+      await callback?.({ text: `Payment failed: ${(err as Error).message}` })
     }
   },
 }
@@ -79,13 +79,13 @@ const balanceAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     _message: Memory,
-    _state: State | undefined,
-    _options: Record<string, unknown>,
-    callback: HandlerCallback,
+    _state?: State,
+    _options?: { [key: string]: unknown },
+    callback?: HandlerCallback,
   ) => {
     const privateKey = runtime.getSetting('AGENTI_EVM_PRIVATE_KEY') as `0x${string}` | undefined
     if (!privateKey) {
-      await callback({ text: 'AGENTI_EVM_PRIVATE_KEY is not configured.' })
+      await callback?.({ text: 'AGENTI_EVM_PRIVATE_KEY is not configured.' })
       return
     }
 
@@ -93,15 +93,15 @@ const balanceAction: Action = {
       const agent = agenti({ evm: { privateKey } })
       const balances = await agent.balance()
       if (balances.length === 0) {
-        await callback({ text: 'No balances found.' })
+        await callback?.({ text: 'No balances found.' })
         return
       }
       const text = balances
         .map((b) => `${b.token} (${b.chain}): ${b.amount}`)
         .join(' | ')
-      await callback({ text })
+      await callback?.({ text })
     } catch (err) {
-      await callback({ text: `Failed to fetch balances: ${(err as Error).message}` })
+      await callback?.({ text: `Failed to fetch balances: ${(err as Error).message}` })
     }
   },
 }
@@ -125,14 +125,14 @@ const receiveAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    _state: State | undefined,
-    _options: Record<string, unknown>,
-    callback: HandlerCallback,
+    _state?: State,
+    _options?: { [key: string]: unknown },
+    callback?: HandlerCallback,
   ) => {
     const text = message.content.text ?? ''
     const amountMatch = text.match(AMOUNT_RE)
     if (!amountMatch) {
-      await callback({ text: 'Please specify an amount and token (e.g. "10 USDC" or "0.5 SOL").' })
+      await callback?.({ text: 'Please specify an amount and token (e.g. "10 USDC" or "0.5 SOL").' })
       return
     }
 
@@ -143,7 +143,7 @@ const receiveAction: Action = {
 
     const privateKey = runtime.getSetting('AGENTI_EVM_PRIVATE_KEY') as `0x${string}` | undefined
     if (!privateKey) {
-      await callback({ text: 'AGENTI_EVM_PRIVATE_KEY is not configured.' })
+      await callback?.({ text: 'AGENTI_EVM_PRIVATE_KEY is not configured.' })
       return
     }
 
@@ -151,11 +151,11 @@ const receiveAction: Action = {
       const agent = agenti({ evm: { privateKey } })
       const invoice = await agent.receive({ amount, token, chain })
       const expiresIn = Math.round((invoice.expiresAt.getTime() - Date.now()) / 60000)
-      await callback({
+      await callback?.({
         text: `Invoice created: send ${invoice.amount} ${invoice.token} to ${invoice.address} on ${invoice.chain} (expires in ${expiresIn} min, id: ${invoice.id})`,
       })
     } catch (err) {
-      await callback({ text: `Failed to create invoice: ${(err as Error).message}` })
+      await callback?.({ text: `Failed to create invoice: ${(err as Error).message}` })
     }
   },
 }

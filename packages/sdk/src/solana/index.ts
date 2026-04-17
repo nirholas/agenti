@@ -2,9 +2,21 @@ import { Connection, Keypair, clusterApiUrl } from '@solana/web3.js'
 import { buy, sell } from './trade.js'
 import { getCoinState } from './coin.js'
 import { watchMigration, watchMigrationLogs } from './monitor.js'
+import {
+  createHeliusConnection,
+  getAssetsByOwner,
+  getEnrichedHistory,
+  getSPLTokenBalances,
+} from './helius.js'
 import type { BuyParams, SellParams, TradeResult } from './trade.js'
 import type { CoinState } from './coin.js'
 import type { MigrationEvent, WatchOptions } from './monitor.js'
+import type { TokenBalance, EnhancedTransaction } from './helius.js'
+
+export { watchPumpEvents, decodePumpLog } from './events.js'
+export type { PumpEvent, EventMonitorOptions } from './events.js'
+export { MemoryStore, FileStore } from './storage.js'
+export type { EventStore } from './storage.js'
 
 // Payments / x402
 export {
@@ -54,6 +66,8 @@ export interface SolanaConfig {
   keypair: Keypair
   rpc?: string
   connection?: Connection
+  heliusApiKey?: string
+  cluster?: 'mainnet-beta' | 'devnet'
 }
 
 export interface SolanaInstance {
@@ -67,13 +81,24 @@ export interface SolanaInstance {
     onMigrate: (event: MigrationEvent) => void | Promise<void>,
     options?: WatchOptions & { useLogs?: boolean }
   ): () => void
+  // Helius-powered methods (available when heliusApiKey is set)
+  getTokenBalances?(): Promise<TokenBalance[]>
+  getAssets?(): Promise<Awaited<ReturnType<typeof getAssetsByOwner>>>
+  getTxHistory?(limit?: number): Promise<EnhancedTransaction[]>
 }
 
 export function solana(config: SolanaConfig): SolanaInstance {
-  const connection =
-    config.connection ?? new Connection(config.rpc ?? clusterApiUrl('mainnet-beta'), 'confirmed')
+  const cluster = config.cluster ?? 'mainnet-beta'
 
-  return {
+  const connection =
+    config.connection ??
+    (config.heliusApiKey
+      ? createHeliusConnection(config.heliusApiKey, cluster)
+      : new Connection(config.rpc ?? clusterApiUrl(cluster), 'confirmed'))
+
+  const address = config.keypair.publicKey.toBase58()
+
+  const instance: SolanaInstance = {
     keypair: config.keypair,
     connection,
 
@@ -88,7 +113,56 @@ export function solana(config: SolanaConfig): SolanaInstance {
       return watchMigration(mint, onMigrate, options)
     },
   }
+
+  if (config.heliusApiKey) {
+    const apiKey = config.heliusApiKey
+    instance.getTokenBalances = () => getSPLTokenBalances(apiKey, address, cluster)
+    instance.getAssets = () => getAssetsByOwner(apiKey, address, cluster)
+    instance.getTxHistory = (limit = 20) => getEnrichedHistory(apiKey, address, cluster, limit)
+  }
+
+  return instance
 }
 
 export { buy, sell, getCoinState, watchMigration, watchMigrationLogs }
 export type { BuyParams, SellParams, TradeResult, CoinState, MigrationEvent, WatchOptions }
+export type { TokenBalance, EnhancedTransaction }
+
+// Smart wallet tracking
+export { getTopWallets, getWalletTrades, isSmartWallet, watchWallets } from './wallets.js'
+export type { WalletRank, WalletTrade } from './wallets.js'
+
+// Bonding curve math
+export {
+  getBuyTokenAmount, getSellSolAmount,
+  getBuyPriceImpact, getSellPriceImpact,
+  getTokenPrice, getGraduationProgress, estimateFee,
+} from './curve.js'
+export type { BondingCurveState } from './curve.js'
+
+// Multi-endpoint RPC failover
+export { createFallbackConnection } from './rpc.js'
+export type { RpcEndpoint } from './rpc.js'
+
+// Solana Agent Kit — 100+ Solana actions via sendaifun/solana-agent-kit
+export {
+  createSolanaAgentKit,
+  getSolanaAgentKitLangchainTools,
+  getSolanaAgentKitVercelTools,
+} from './agent-kit.js'
+export type { SolanaAgentKitConfig, SolanaAgentKit } from './agent-kit.js'
+
+// Price oracle — Pyth (primary) + CoinGecko (fallback)
+export { getPrice, usdToTokenAmount, tokenAmountToUsd, PYTH_FEEDS, COINGECKO_IDS } from './price-oracle.js'
+export type { PriceResult, PriceOracleOptions } from './price-oracle.js'
+
+// Vault — distribute and withdraw agent payment revenue
+export { buildDistributeInstructions, buildWithdrawInstructions, getVaultBalances } from './vault.js'
+export type { DistributePaymentsParams, VaultBalances } from './vault.js'
+
+// Payment history & receipt verification
+export { getPaymentHistory, verifyPaymentReceipt } from './payments.js'
+export type { PaymentRecord } from './payments.js'
+
+// Agent action schemas — Zod schemas for AI tool use
+export { AgentActionSchemas } from './agent-actions.js'

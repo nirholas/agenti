@@ -47,7 +47,8 @@
     "build": "tsup src/index.ts src/frameworks/eliza.ts src/frameworks/langchain.ts src/frameworks/vercel-ai.ts --format esm,cjs --dts --external @elizaos/core --external @langchain/core --external ai",
     "dev": "tsup src/index.ts src/frameworks/eliza.ts src/frameworks/langchain.ts src/frameworks/vercel-ai.ts --format esm,cjs --dts --watch --external @elizaos/core --external @langchain/core --external ai",
     "clean": "rm -rf dist *.tsbuildinfo",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
   },
   "devDependencies": {
     "tsup": "^8.0.0"
@@ -70,14 +71,16 @@
   },
   "dependencies": {
     "@agenti/core": "workspace:*",
+    "helius-sdk": "^2.2.2",
     "@coral-xyz/anchor": "^0.31.1",
-    "@pump-fun/agent-payments-sdk": "^3.0.3",
-    "@pump-fun/pump-sdk": "^1.32.0",
+"@pump-fun/pump-sdk": "^1.32.0",
     "@pump-fun/pump-swap-sdk": "^1.14.1",
     "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.2",
     "@types/bn.js": "^5.2.0",
     "bn.js": "^5.2.2",
+    "bs58": "^5.0.0",
+    "solana-agent-kit": "^1.0.0",
     "viem": "^2.21.0",
     "zod": "^3.23.0"
   }

@@ -8,6 +8,7 @@ export interface AgentiConfig {
   evm?: { privateKey: `0x${string}` }
   solana?: { privateKey: Uint8Array }
   wallet?: AgentiWallet
+  heliusApiKey?: string
 }
 
 export interface AgentiInstance {
@@ -32,7 +33,7 @@ export function agenti(config: AgentiConfig = {}): AgentiInstance {
     },
 
     balance() {
-      return getBalances(wallet.evm.address, wallet.solana.address)
+      return getBalances(wallet.evm.address, wallet.solana.address, config.heliusApiKey)
     },
 
     receive(params) {

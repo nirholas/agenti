@@ -2,11 +2,19 @@ import { tool } from 'ai'
 import { z } from 'zod'
 import { agenti } from '../agenti.js'
 import type { AgentiConfig } from '../agenti.js'
+import { createSolanaAgentKit, getSolanaAgentKitVercelTools } from '../solana/agent-kit.js'
+import type { SolanaAgentKitConfig } from '../solana/agent-kit.js'
 
-export function agentiTools(config: AgentiConfig): Record<string, ReturnType<typeof tool>> {
+export interface AgentiToolsConfig extends AgentiConfig {
+  /** When provided, merges 100+ Solana Agent Kit tools (Jupiter, Raydium, NFT, staking, etc.) */
+  solanaAgentKit?: SolanaAgentKitConfig
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function agentiTools(config: AgentiToolsConfig): Record<string, any> {
   const client = agenti(config)
 
-  return {
+  const baseTools = {
     agentiPay: tool({
       description:
         'Make an HTTP request and automatically pay if the server requires x402 cryptocurrency payment (HTTP 402)',
@@ -46,4 +54,12 @@ export function agentiTools(config: AgentiConfig): Record<string, ReturnType<typ
       },
     }),
   }
+
+  if (config.solanaAgentKit) {
+    const kit = createSolanaAgentKit(config.solanaAgentKit)
+    const sakTools = getSolanaAgentKitVercelTools(kit)
+    return { ...baseTools, ...sakTools }
+  }
+
+  return baseTools
 }

@@ -56,10 +56,23 @@ export interface PaymentConfig {
 // ---------------------------------------------------------------------------
 
 const DEFAULT_FACILITATOR = 'https://x402.org/facilitator'
+
+/** Points to a locally-running agenti-facilitator instance (default port 3402). */
+export const LOCAL_FACILITATOR = 'http://localhost:3402'
+
 const DEFAULT_NETWORK = 'eip155:8453'
 const DEFAULT_USDC_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
 const DEFAULT_USDC_NAME = 'USD Coin'
 const DEFAULT_USDC_VERSION = '2'
+
+/** Well-known token contract addresses across supported chains. */
+export const TOKENS = {
+  USDC_BASE: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+  USDC_ARB: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  USDC_ETH: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  USDT_BSC: '0x55d398326f99059fF775485246999027B3197955',
+  BUSD_BSC: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+} as const
 
 /**
  * Builds the JSON body for a 402 response.

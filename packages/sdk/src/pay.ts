@@ -1,5 +1,6 @@
+import { emitEvent } from './events.js'
 import { createWalletClient, getAddress, http, toHex } from 'viem'
-import { base, arbitrum, mainnet, polygon, baseSepolia } from 'viem/chains'
+import { base, arbitrum, mainnet, polygon, baseSepolia, bsc, bscTestnet } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
 import type { EVMWallet, SolanaWallet } from '@agenti/core'
 
@@ -7,18 +8,21 @@ import type { EVMWallet, SolanaWallet } from '@agenti/core'
 // Network map — CAIP-2 chain IDs (eip155:<chainId>) as used by x402 v2, plus
 // the legacy plain-name keys used by x402 v1 for backwards compatibility.
 // ---------------------------------------------------------------------------
-const EVM_NETWORKS: Record<string, typeof base | typeof arbitrum | typeof mainnet | typeof polygon | typeof baseSepolia> = {
+const EVM_NETWORKS: Record<string, typeof base | typeof arbitrum | typeof mainnet | typeof polygon | typeof baseSepolia | typeof bsc | typeof bscTestnet> = {
   // x402 v2 CAIP-2 format
   'eip155:8453': base,
   'eip155:42161': arbitrum,
   'eip155:1': mainnet,
   'eip155:137': polygon,
   'eip155:84532': baseSepolia,
+  'eip155:56': bsc,
+  'eip155:97': bscTestnet,
   // x402 v1 legacy plain-name format
   'base-mainnet': base,
   'arbitrum-mainnet': arbitrum,
   'ethereum-mainnet': mainnet,
   'polygon-mainnet': polygon,
+  'bsc-mainnet': bsc,
 } as const
 
 // ---------------------------------------------------------------------------
@@ -208,7 +212,7 @@ async function signEVMPayment(
  * Supports both x402 protocol v1 (X-Payment header, body-based requirements)
  * and v2 (PAYMENT-SIGNATURE header, PAYMENT-REQUIRED header).
  *
- * For Solana networks, delegates to @pump-fun/agent-payments-sdk.
+ * For Solana networks, delegates to the agenti Solana payments module.
  */
 export async function pay(
   url: string,
@@ -276,16 +280,12 @@ export async function pay(
   // Route to the correct payment implementation.
   // ------------------------------------------------------------------
   if (accept.network.toLowerCase().includes('solana')) {
-    try {
-      const { createX402Fetch } = await import('@pump-fun/agent-payments-sdk/x402' as string)
-      const { Keypair, Connection, clusterApiUrl } = await import('@solana/web3.js')
-      const keypair = Keypair.fromSecretKey(solanaWallet.privateKey)
-      const connection = new Connection(clusterApiUrl('mainnet-beta'))
-      const solFetch = (createX402Fetch as CallableFunction)(keypair, connection) as typeof fetch
-      return solFetch(url, options)
-    } catch {
-      throw new Error('Solana payment requires @pump-fun/agent-payments-sdk')
-    }
+    const { createX402Fetch } = await import('./solana/payments.js')
+    const { Keypair, Connection, clusterApiUrl } = await import('@solana/web3.js')
+    const keypair = Keypair.fromSecretKey(solanaWallet.privateKey)
+    const connection = new Connection(clusterApiUrl('mainnet-beta'))
+    const solFetch = createX402Fetch(keypair, connection)
+    return solFetch(url, options)
   }
 
   // EVM: build EIP-3009 TransferWithAuthorization signature
@@ -308,7 +308,7 @@ export async function pay(
   // ------------------------------------------------------------------
   const headerName = version >= 2 ? 'PAYMENT-SIGNATURE' : 'X-Payment'
 
-  return fetch(url, {
+  const result = await fetch(url, {
     ...options,
     headers: {
       ...(options?.headers ?? {}),
@@ -317,4 +317,8 @@ export async function pay(
       'X-Payment': paymentHeader,
     },
   })
+
+  emitEvent({ type: 'pay', url, amount, network: accept.network, ts: Date.now() })
+
+  return result
 }

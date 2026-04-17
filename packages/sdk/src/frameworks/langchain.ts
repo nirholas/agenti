@@ -1,11 +1,17 @@
-// LangChain tool adapter for agenti
-// Wraps agenti pay/balance/receive as DynamicStructuredTool objects
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { z } from 'zod'
 import { agenti } from '../agenti.js'
 import type { AgentiConfig } from '../agenti.js'
+import { createSolanaAgentKit, getSolanaAgentKitLangchainTools } from '../solana/agent-kit.js'
+import type { SolanaAgentKitConfig } from '../solana/agent-kit.js'
 
-export function agentiLangChainTools(config: AgentiConfig): DynamicStructuredTool[] {
+export interface AgentiLangChainConfig extends AgentiConfig {
+  /** When provided, merges 100+ Solana Agent Kit tools (Jupiter, Raydium, NFT, staking, etc.) */
+  solanaAgentKit?: SolanaAgentKitConfig
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function agentiLangChainTools(config: AgentiLangChainConfig): DynamicStructuredTool<any>[] {
   const client = agenti(config)
 
   const payTool = new DynamicStructuredTool({
@@ -50,5 +56,13 @@ export function agentiLangChainTools(config: AgentiConfig): DynamicStructuredToo
     },
   })
 
-  return [payTool, balanceTool, receiveTool]
+  const baseTools = [payTool, balanceTool, receiveTool]
+
+  if (config.solanaAgentKit) {
+    const kit = createSolanaAgentKit(config.solanaAgentKit)
+    const sakTools = getSolanaAgentKitLangchainTools(kit)
+    return [...baseTools, ...sakTools] as DynamicStructuredTool<any>[]
+  }
+
+  return baseTools
 }
