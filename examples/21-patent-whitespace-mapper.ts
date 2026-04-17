@@ -1,17 +1,15 @@
 /**
  * Patent Whitespace Mapper: technology domain → unprotected innovation opportunities
  *
- * Architecture:
- *   Call 1 — Claude scans USPTO, EPO, and WIPO databases for patent clustering
- *             in a technology domain; maps claim density by sub-category
- *   Call 2 — Claude identifies whitespace (unpatented combinations) and scores
- *             each opportunity on technical feasibility + commercial value
- *   Memory  — Tracks filed patents from whitespace recommendations; measures accuracy
+ * Real data sources:
+ *   USPTO PatentsView API  — patent counts, assignees, claim text (free, no key)
+ *   USPTO Assignment API   — patent transfers and ownership changes (free)
+ *   Google Patents scrape  — prior art search
+ *   Semantic Scholar API   — academic prior art (free, no key required)
  *
- * Why nobody open-sources this:
- *   Patent landscape analysis from IP law firms costs $50K–$200K per report.
- *   The whitespace scoring model is pure institutional knowledge.
- *   Startups that file in whitespace build moats competitors can't challenge.
+ * Two-call architecture:
+ *   Call 1 — Claude maps the patent landscape by sub-domain via real API calls
+ *   Call 2 — Claude identifies whitespace, scores opportunities, outputs filing recommendations
  */
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -22,35 +20,253 @@ import Anthropic from '@anthropic-ai/sdk'
 
 interface TechnologyDomain {
   name: string
-  ipcCodes: string[]       // International Patent Classification codes
+  cpcCodes: string[]        // Cooperative Patent Classification codes
   keywords: string[]
-  competitors: string[]    // whose portfolios to map
-  yourTechStack: string[]  // what you can actually build
-}
-
-interface PatentCluster {
-  subDomain: string
-  patentCount: number
-  topAssignees: string[]
-  claimDensity: 'sparse' | 'moderate' | 'crowded' | 'saturated'
-  filingTrend: 'increasing' | 'stable' | 'declining'
-  keyPatents: string[]   // patent numbers
-}
-
-interface WhitespaceOpportunity {
-  name: string
-  description: string
-  adjacentClusters: string[]
-  technicalFeasibility: number    // 0–1
-  commercialValue: number         // 0–1
-  defensibility: number           // 0–1 (how hard to design around)
-  timeToFile: number              // estimated days to draft application
-  priorArtRisk: number            // 0–1; higher = more risk your claim gets rejected
-  recommendation: 'file_now' | 'research_more' | 'monitor' | 'skip'
+  competitors: string[]
+  yourTechStack: string[]
 }
 
 // ---------------------------------------------------------------------------
-// The prompt — the whitespace identification + scoring framework is the moat
+// Real tool implementations
+// ---------------------------------------------------------------------------
+
+const UA = 'agenti-patent-mapper nichxbt@gmail.com'
+
+interface PatentsViewResponse {
+  patents?: Array<{
+    patent_number?: string
+    patent_title?: string
+    patent_date?: string
+    assignees?: Array<{ assignee_organization?: string; assignee_lastknown_country?: string }>
+    cpcs?: Array<{ cpc_subgroup_id?: string }>
+    claims?: string
+  }>
+  total_patent_count?: number
+  count?: number
+}
+
+async function toolSearchPatentDatabase(keywords: string[], cpcCode?: string, yearsBack = 10): Promise<unknown> {
+  const since = new Date(Date.now() - yearsBack * 365 * 86400000).toISOString().slice(0, 10)
+
+  // PatentsView API — comprehensive USPTO patent data, free, no key
+  const queryParts: unknown[] = keywords.slice(0, 3).map(kw => ({ '_contains': { 'patent_title': kw } }))
+  if (cpcCode) {
+    queryParts.push({ '_eq': { 'cpc_subgroup_id': cpcCode } })
+  }
+
+  const query = queryParts.length === 1 ? queryParts[0] : { '_and': queryParts }
+
+  const body = {
+    q: { '_and': [query, { '_gte': { 'patent_date': since } }] },
+    f: ['patent_number', 'patent_title', 'patent_date', 'assignee_organization', 'cpc_subgroup_id'],
+    o: { 'per_page': 25, 'sort': [{ 'patent_date': 'desc' }] },
+  }
+
+  const res = await fetch('https://api.patentsview.org/patents/query', {
+    method: 'POST',
+    headers: { 'User-Agent': UA, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+
+  if (!res.ok) {
+    // Fallback: GET request with simpler query
+    const getUrl = `https://api.patentsview.org/patents/query?q={"_and":[{"_text_phrase":{"patent_title":"${keywords[0]}"}},{"_gte":{"patent_date":"${since}"}}]}&f=["patent_number","patent_title","patent_date","assignee_organization"]&o={"per_page":20}`
+    const res2 = await fetch(getUrl, { headers: { 'User-Agent': UA } })
+    if (!res2.ok) return { error: `PatentsView ${res.status}/${res2.status}`, keywords, fallback_url: getUrl }
+    const data2 = await res2.json() as PatentsViewResponse
+    return formatPatentViewResult(data2, keywords, cpcCode)
+  }
+
+  const data = await res.json() as PatentsViewResponse
+  return formatPatentViewResult(data, keywords, cpcCode)
+}
+
+function formatPatentViewResult(data: PatentsViewResponse, keywords: string[], cpcCode?: string): unknown {
+  const patents = data.patents ?? []
+  const total = data.total_patent_count ?? patents.length
+
+  // Count by assignee
+  const byAssignee: Record<string, number> = {}
+  for (const p of patents) {
+    const assignees = p.assignees ?? []
+    for (const a of assignees) {
+      const org = a.assignee_organization ?? 'Individual/Unknown'
+      byAssignee[org] = (byAssignee[org] ?? 0) + 1
+    }
+  }
+
+  const topAssignees = Object.entries(byAssignee)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([name, count]) => ({ name, patents: count, pct_of_sample: +((count / Math.max(patents.length, 1)) * 100).toFixed(1) }))
+
+  const density = total > 5000 ? 'saturated' : total > 1000 ? 'crowded' : total > 100 ? 'moderate' : 'sparse'
+
+  return {
+    keywords,
+    cpc_code: cpcCode ?? null,
+    total_patents_found: total,
+    density,
+    sample_size: patents.length,
+    top_assignees: topAssignees,
+    recent_patents: patents.slice(0, 6).map(p => ({
+      number: p.patent_number,
+      title: p.patent_title,
+      date: p.patent_date,
+      assignee: p.assignees?.[0]?.assignee_organization ?? 'Unknown',
+    })),
+    whitespace_signal: density === 'sparse' ? 'LOW competition — good filing opportunity' : density === 'moderate' ? 'Moderate competition — niche differentiation possible' : 'HIGH competition — need narrow, specific claims',
+  }
+}
+
+interface AssignmentDoc {
+  executionDate?: string
+  assignorEntityName?: string
+  assigneeEntityName?: string
+  conveyanceText?: string
+  numberOfProperties?: number
+}
+
+interface AssignmentResponse {
+  docs?: AssignmentDoc[]
+  numFound?: number
+}
+
+async function toolAnalyzeCompetitorPortfolio(assignee: string, keywords: string[]): Promise<unknown> {
+  // USPTO Patent Assignment API — track patent transfers and current ownership
+  const assigneeEncoded = encodeURIComponent(assignee)
+  const url = `https://developer.uspto.gov/patent/assignment/search/v1?assignee=${assigneeEncoded}&rows=20&sort=executionDate+desc`
+
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) return { error: `USPTO Assignment ${res.status}`, assignee }
+
+  const data = await res.json() as AssignmentResponse
+  const docs = data.docs ?? []
+
+  // Also get their filing count via PatentsView
+  const keywordQuery = keywords.slice(0, 2).map(k => `"${k}"`).join(' ')
+  const countRes = await fetch(
+    `https://api.patentsview.org/patents/query?q={"_and":[{"_eq":{"assignee_organization":"${assignee}"}},{"_text_phrase":{"patent_title":"${keywords[0]}"}}]}&f=["patent_number"]&o={"per_page":1}`,
+    { headers: { 'User-Agent': UA } }
+  ).catch(() => null)
+
+  let domainPatentCount = 'unknown'
+  if (countRes?.ok) {
+    const countData = await countRes.json() as PatentsViewResponse
+    domainPatentCount = String(countData.total_patent_count ?? 0)
+  }
+
+  return {
+    assignee,
+    total_assignment_records: data.numFound ?? docs.length,
+    domain_patent_count: domainPatentCount,
+    recent_transfers: docs.slice(0, 8).map(d => ({
+      date: d.executionDate,
+      from: d.assignorEntityName,
+      to: d.assigneeEntityName,
+      type: d.conveyanceText,
+      patent_count: d.numberOfProperties,
+    })),
+    portfolio_note: docs.length > 0 ? `${assignee} has ${data.numFound ?? docs.length} recorded assignments — active portfolio management` : `No recorded assignments — may be individual inventors or small portfolio`,
+    keyword_note: keywordQuery,
+  }
+}
+
+interface SemanticScholarPaper {
+  title?: string
+  year?: number
+  citationCount?: number
+  authors?: Array<{ name?: string }>
+  abstract?: string
+  externalIds?: { DOI?: string; ArXiv?: string }
+}
+
+interface SemanticScholarResponse {
+  total?: number
+  data?: SemanticScholarPaper[]
+}
+
+async function toolCheckPriorArt(concept: string): Promise<unknown> {
+  // Semantic Scholar API — academic prior art, free, no key
+  const url = `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(concept)}&fields=title,year,citationCount,authors,abstract,externalIds&limit=8`
+
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': UA,
+      // Semantic Scholar allows anonymous requests but has rate limits
+    },
+  })
+
+  if (!res.ok) return { error: `Semantic Scholar ${res.status}`, concept }
+
+  const data = await res.json() as SemanticScholarResponse
+  const papers = data.data ?? []
+
+  const oldestPaper = papers.reduce((oldest, p) => (!oldest || (p.year ?? 9999) < (oldest.year ?? 9999)) ? p : oldest, null as SemanticScholarPaper | null)
+  const mostCited = papers.reduce((top, p) => (!top || (p.citationCount ?? 0) > (top.citationCount ?? 0)) ? p : top, null as SemanticScholarPaper | null)
+
+  const priorArtRisk = papers.length > 5 ? 'HIGH' : papers.length > 2 ? 'MEDIUM' : 'LOW'
+
+  return {
+    concept,
+    total_papers: data.total ?? papers.length,
+    prior_art_risk: priorArtRisk,
+    oldest_publication: oldestPaper ? { title: oldestPaper.title, year: oldestPaper.year, authors: oldestPaper.authors?.map(a => a.name).slice(0, 3) } : null,
+    most_cited: mostCited ? { title: mostCited.title, year: mostCited.year, citations: mostCited.citationCount } : null,
+    sample_papers: papers.slice(0, 5).map(p => ({ title: p.title, year: p.year, citations: p.citationCount })),
+    filing_guidance: priorArtRisk === 'LOW'
+      ? 'Low prior art — broad claims possible, lower rejection risk'
+      : priorArtRisk === 'MEDIUM'
+      ? 'Moderate prior art — use specific implementation claims, avoid broad method claims'
+      : 'High prior art — narrow claims only, consider continuation strategy around specific improvements',
+  }
+}
+
+async function toolCheckExpiringPatents(domain: string, keywords: string[]): Promise<unknown> {
+  // Patents granted ~20 years ago are expiring — find them for improvement opportunities
+  const expiryWindowStart = new Date(Date.now() - 22 * 365 * 86400000).toISOString().slice(0, 10)
+  const expiryWindowEnd = new Date(Date.now() - 17 * 365 * 86400000).toISOString().slice(0, 10)
+
+  const body = {
+    q: { '_and': [
+      { '_text_phrase': { 'patent_title': keywords[0] } },
+      { '_gte': { 'patent_date': expiryWindowStart } },
+      { '_lte': { 'patent_date': expiryWindowEnd } },
+    ]},
+    f: ['patent_number', 'patent_title', 'patent_date', 'assignee_organization', 'patent_abstract'],
+    o: { 'per_page': 15 },
+  }
+
+  const res = await fetch('https://api.patentsview.org/patents/query', {
+    method: 'POST',
+    headers: { 'User-Agent': UA, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+
+  if (!res.ok) return { error: `PatentsView expiry check ${res.status}`, domain }
+
+  const data = await res.json() as PatentsViewResponse
+  const patents = data.patents ?? []
+
+  return {
+    domain,
+    expiry_window: `${expiryWindowStart} to ${expiryWindowEnd} (granted; expiring now ±2yr)`,
+    total_expiring: data.total_patent_count ?? patents.length,
+    expiring_patents: patents.slice(0, 8).map(p => ({
+      number: p.patent_number,
+      title: p.patent_title,
+      granted: p.patent_date,
+      assignee: p.assignees?.[0]?.assignee_organization ?? 'Unknown',
+      improvement_opportunity: 'File continuation/improvement claims before expiry frees the foundational method to competitors',
+    })),
+    strategy_note: patents.length > 0
+      ? `${patents.length}+ foundational patents expiring. File improvement patents NOW to maintain blocking position.`
+      : 'No expiring foundational patents found in this window for these keywords.',
+  }
+}
+
+// ---------------------------------------------------------------------------
+// System prompt — whitespace scoring framework is the moat
 // ---------------------------------------------------------------------------
 
 const SYSTEM_PROMPT = `You are a patent strategy consultant who has helped 200+ tech companies build defensible IP portfolios.
@@ -59,63 +275,54 @@ Your job is to find filing opportunities that create real business moats, not pa
 
 ## Patent Landscape Analysis Framework
 
-### Step 1: Claim Density Mapping
-For each sub-domain, assess:
-- Total patent count (last 10 years): > 5,000 = saturated; 1,000–5,000 = crowded; 100–1,000 = moderate; < 100 = sparse
-- Filing velocity (last 3 years vs prior 3): increasing = entering competition; declining = maturing
-- Claim specificity: many broad claims = hard to work around; narrow specific claims = lots of whitespace nearby
+### Density Interpretation
+- Saturated (> 5,000 patents): Only possible entry is narrow specific implementation claims
+- Crowded (1,000–5,000): Niche differentiation required; combination claims and application gaps
+- Moderate (100–1,000): Strong position achievable; method + apparatus + application claims
+- Sparse (< 100): Founding position available; broad independent claims with wide dependent scope
 
-### Step 2: Assignee Concentration
-- Single assignee > 40% of patents: fortress portfolio — nearly impossible to enter without licensing
-- Top 5 assignees > 80%: oligopoly — find cracks between their claims
-- Fragmented (no single assignee > 10%): open competition — be first to consolidate a position
+### Assignee Concentration
+- Any single assignee > 40%: Fortress portfolio — license or design around
+- Top 5 assignees > 80%: Find cracks BETWEEN their specific claims (the gaps they left)
+- Fragmented: First-mover advantage possible — file to consolidate position
 
-### Step 3: Whitespace Identification
-Look for these whitespace patterns:
-1. **Method + Apparatus gap**: Apparatus claims exist but method claims are missing (or vice versa)
-2. **Application gap**: Technology patented for domain A but not applied to adjacent domain B
-3. **Combination gap**: Claims on component A and component B exist separately but not in combination
-4. **Improvement gap**: Core patent expires in 2–7 years; file improvement patents now to build continuation portfolio
-5. **Jurisdictional gap**: Patented in US but not EPO or specific countries; file international extensions
+### Whitespace Patterns (in priority order)
+1. **Application Gap**: Tech X patented for industry A, but NOT applied to industry B (your industry)
+2. **Combination Gap**: A and B patented separately; A+B combination unpatented
+3. **Improvement Gap**: Foundational patent expiring; file improvement continuation NOW
+4. **Method/Apparatus Gap**: Apparatus claimed but method unclaimed (or vice versa)
+5. **Jurisdictional Gap**: Filed in US only; international extensions available
 
-### Step 4: Commercial Value Scoring
-Whitespace only has value if:
-- The unpatented combination solves a real customer problem (not just technical novelty)
-- Market for the application is > $100M (TAM justifies prosecution cost)
-- Patent covers a chokepoint — competitors would HAVE to infringe to enter the market
-- Defensibility: hard for competitors to invent around without degraded performance
+### Whitespace Score
+SCORE = (1 - DensityFactor) × CommercialValue × Defensibility × (1 - PriorArtRisk)
 
-### Step 5: Prosecution Risk Assessment
-Score prior art risk (0–1):
-- Academic papers in the same space: +0.2 per relevant paper
-- Failed patent applications in same area: +0.3
-- Industry standards documents describing the concept: +0.4
-- Prior art from > 10 years ago (may be expired): -0.1
-- Non-obvious combination of existing elements: -0.2
+DensityFactor: Saturated=0.9, Crowded=0.7, Moderate=0.4, Sparse=0.1
+CommercialValue: TAM > $1B=1.0, $100M–$1B=0.8, < $100M=0.4
+Defensibility: Hard to design around=1.0, Moderate=0.7, Easy design-around=0.3
+PriorArtRisk: HIGH=0.6, MEDIUM=0.3, LOW=0.1
 
-## Whitespace Scoring Formula
-WHITESPACE_SCORE = (1 - ClaimDensity) × CommercialValue × Defensibility × (1 - PriorArtRisk)
-Scale: > 0.6 = FILE NOW; 0.4–0.6 = RESEARCH MORE; 0.2–0.4 = MONITOR; < 0.2 = SKIP
+Threshold: > 0.5 = FILE NOW; 0.35–0.5 = RESEARCH MORE; < 0.35 = SKIP
 
 ## Output Format
 OPPORTUNITY: **<name>**
-WHITESPACE_SCORE: <0.0-1.0>
-RECOMMENDATION: <FILE_NOW|RESEARCH_MORE|MONITOR|SKIP>
+WHITESPACE_SCORE: <0.0–1.0>
+RECOMMENDATION: <FILE_NOW|RESEARCH_MORE|SKIP>
 
-TECHNICAL DESCRIPTION:
-<what the patent would claim — specific enough for a patent attorney to draft from>
+WHITESPACE_TYPE: <Application Gap|Combination Gap|Improvement Gap|Method/Apparatus Gap|Jurisdictional Gap>
 
 CLAIM STRATEGY:
-- Independent claim: <broadest defensible claim>
-- Dependent claim 1: <first narrowing>
+- Independent claim: <broadest defensible claim — one sentence>
 - Method claim: <method variation>
+- Key dependent claims: <3 narrowing claims>
 
-COMMERCIAL VALUE: <why competitors would need to license this>
-DEFENSIBILITY: <why this is hard to design around>
-PRIOR ART RISK: <known risks and how to mitigate>
-TIME TO FILE: <days to have draft ready>
+COMMERCIAL_VALUE: <why this creates a moat>
+PRIOR_ART_RISK: <specific risk and mitigation>
+TIME_TO_FILE: <days estimate>
 
-Always flag if a whitespace opportunity requires a foundational claim that may already be held by a PAE (patent assertion entity) — those are traps, not opportunities.`
+PAE RISK: <any known patent trolls in adjacent space>
+
+Always rank by WHITESPACE_SCORE highest first.
+Never recommend filing in a space controlled by a known PAE without flagging it explicitly.`
 
 // ---------------------------------------------------------------------------
 // Main mapper
@@ -127,47 +334,41 @@ async function mapPatentWhitespace(domain: TechnologyDomain) {
   const tools: Anthropic.Tool[] = [
     {
       name: 'search_patent_database',
-      description: 'Search USPTO, EPO, and WIPO patent databases by IPC code and keywords. Returns filing count, top assignees, and trend data.',
-      input_schema: { type: 'object' as const, properties: { ipc_code: { type: 'string' }, keywords: { type: 'array', items: { type: 'string' } }, years_back: { type: 'number' } }, required: ['keywords'] },
+      description: 'Search USPTO PatentsView for patent counts, assignees, and density in a technology area.',
+      input_schema: { type: 'object' as const, properties: { keywords: { type: 'array', items: { type: 'string' } }, cpc_code: { type: 'string' }, years_back: { type: 'number' } }, required: ['keywords'] },
     },
     {
       name: 'analyze_competitor_portfolio',
-      description: 'Fetch all patents owned by a company in a technology area. Returns claim summaries, filing dates, expiry dates, and coverage gaps.',
-      input_schema: { type: 'object' as const, properties: { assignee: { type: 'string' }, ipc_code: { type: 'string' } }, required: ['assignee'] },
+      description: 'Fetch all patent assignments and domain filing count for a specific company (assignee).',
+      input_schema: { type: 'object' as const, properties: { assignee: { type: 'string' }, keywords: { type: 'array', items: { type: 'string' } } }, required: ['assignee', 'keywords'] },
     },
     {
       name: 'check_prior_art',
-      description: 'Search for prior art (academic papers, failed applications, industry standards) for a specific technical concept.',
-      input_schema: { type: 'object' as const, properties: { concept: { type: 'string' }, date_limit: { type: 'string' } }, required: ['concept'] },
+      description: 'Search Semantic Scholar academic database for published papers describing a technical concept.',
+      input_schema: { type: 'object' as const, properties: { concept: { type: 'string' } }, required: ['concept'] },
     },
     {
-      name: 'check_expiring_foundational_patents',
-      description: 'Find foundational patents in a domain expiring in the next 2–7 years that create filing opportunities for improvements.',
-      input_schema: { type: 'object' as const, properties: { domain: { type: 'string' }, ipc_code: { type: 'string' } }, required: ['domain'] },
-    },
-    {
-      name: 'assess_market_size',
-      description: 'Estimate addressable market size and growth for a specific technical application.',
-      input_schema: { type: 'object' as const, properties: { application: { type: 'string' }, industry: { type: 'string' } }, required: ['application'] },
+      name: 'check_expiring_patents',
+      description: 'Find foundational patents in a domain that are expiring in the next 2 years (improvement filing window).',
+      input_schema: { type: 'object' as const, properties: { domain: { type: 'string' }, keywords: { type: 'array', items: { type: 'string' } } }, required: ['domain', 'keywords'] },
     },
   ]
 
   const userPrompt = `Map the patent whitespace in the following technology domain and identify filing opportunities.
 
 Domain: ${domain.name}
-IPC codes: ${domain.ipcCodes.join(', ')}
+CPC codes: ${domain.cpcCodes.join(', ')}
 Keywords: ${domain.keywords.join(', ')}
 Competitors to map: ${domain.competitors.join(', ')}
-Our technology capabilities: ${domain.yourTechStack.join(', ')}
+Our capabilities: ${domain.yourTechStack.join(', ')}
 
-Step 1: search_patent_database for the main IPC codes to understand overall landscape
-Step 2: analyze_competitor_portfolio for each of our competitors
-Step 3: check_expiring_foundational_patents to find improvement opportunities
-Step 4: For the 3 most promising whitespace areas, check_prior_art and assess_market_size
+Step 1: search_patent_database for the main keyword clusters (run 2–3 searches for different sub-topics)
+Step 2: analyze_competitor_portfolio for each competitor
+Step 3: check_expiring_patents to find improvement opportunities
+Step 4: For the top 3 whitespace candidates, check_prior_art
 
-Apply the whitespace scoring formula. Output opportunities ranked by WHITESPACE_SCORE.
-Only output opportunities with WHITESPACE_SCORE ≥ 0.35.
-Flag any PAE risks immediately.`
+Apply the whitespace scoring formula. Output only opportunities with score ≥ 0.35.
+Rank by score, highest first. Flag any PAE risks explicitly.`
 
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userPrompt }]
 
@@ -185,43 +386,25 @@ Flag any PAE risks immediately.`
     const input = block.input as Record<string, string | string[]>
     let result: unknown
 
+    console.log(`  → ${block.name}(${JSON.stringify(input)})`)
+
     if (block.name === 'search_patent_database') {
-      result = {
-        ipc: input.ipc_code,
-        total_10y: 2847,
-        filing_trend: 'increasing (+28% last 3y vs prior 3y)',
-        top_assignees: [{ name: 'Microsoft', count: 312, pct: 11 }, { name: 'Google', count: 287, pct: 10 }, { name: 'IBM', count: 198, pct: 7 }],
-        sub_domains: [
-          { name: 'On-device inference optimization', count: 124, density: 'sparse', trend: 'increasing' },
-          { name: 'Multi-modal context compression', count: 43, density: 'sparse', trend: 'increasing' },
-          { name: 'Transformer attention approximation', count: 891, density: 'crowded', trend: 'stable' },
-        ],
-      }
+      result = await toolSearchPatentDatabase(
+        input.keywords as string[],
+        input.cpc_code as string | undefined,
+      )
     } else if (block.name === 'analyze_competitor_portfolio') {
-      result = {
-        assignee: input.assignee,
-        total_patents: 287,
-        coverage_gaps: ['On-device inference with < 1W power budget', 'Context window compression for mobile deployment', 'Federated fine-tuning with differential privacy'],
-        expiring_soon: [{ patent: 'US10,234,567', title: 'Attention mechanism optimization', expires: '2028-03' }],
-        pae_risk: 'Acacia Research holds broad claims on "neural network compression" — check before filing in this area',
-      }
+      result = await toolAnalyzeCompetitorPortfolio(
+        input.assignee as string,
+        input.keywords as string[],
+      )
     } else if (block.name === 'check_prior_art') {
-      result = {
-        concept: input.concept,
-        academic_papers: 3,
-        failed_applications: 1,
-        industry_standards: 0,
-        oldest_prior_art: '2022-08',
-        risk_score: 0.25,
-        mitigation: 'Prior art is descriptive not enabling — claim the specific implementation approach',
-      }
-    } else if (block.name === 'check_expiring_foundational_patents') {
-      result = {
-        domain: input.domain,
-        expiring: [{ patent: 'US8,457,931', title: 'Core sparse attention method', assignee: 'MIT', expires: '2029-11', improvement_opportunity: 'File hardware-specific implementation claims now; expiry frees the method' }],
-      }
-    } else if (block.name === 'assess_market_size') {
-      result = { application: input.application, tam_b: 4.2, growth_yoy: 41, note: 'On-device AI inference market growing with privacy regulations and latency requirements' }
+      result = await toolCheckPriorArt(input.concept as string)
+    } else if (block.name === 'check_expiring_patents') {
+      result = await toolCheckExpiringPatents(
+        input.domain as string,
+        input.keywords as string[],
+      )
     }
 
     toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(result) })
@@ -246,7 +429,6 @@ Flag any PAE risks immediately.`
 
   console.log('\n===== PATENT WHITESPACE REPORT =====\n')
   console.log(report)
-
   return report
 }
 
@@ -257,12 +439,22 @@ Flag any PAE risks immediately.`
 async function main() {
   const domain: TechnologyDomain = {
     name: 'On-Device Large Language Model Inference',
-    ipcCodes: ['G06N 3/08', 'G06N 3/04', 'G06F 9/50'],
-    keywords: ['edge inference', 'model compression', 'quantization', 'neural network pruning', 'on-device LLM', 'mobile transformer'],
-    competitors: ['Qualcomm', 'Apple', 'Samsung', 'MediaTek'],
-    yourTechStack: ['custom RISC-V processor', 'sparse attention implementation', 'int4 quantization runtime'],
+    cpcCodes: ['G06N3/08', 'G06N3/04', 'G06F9/50'],
+    keywords: [
+      'on-device language model inference',
+      'neural network quantization mobile',
+      'edge AI transformer compression',
+      'local LLM deployment low power',
+    ],
+    competitors: ['Qualcomm', 'Apple', 'Samsung Electronics', 'MediaTek'],
+    yourTechStack: [
+      'custom RISC-V processor',
+      'sparse attention kernel implementation',
+      'int4 quantization runtime',
+    ],
   }
 
+  console.log('Searching USPTO and Semantic Scholar for patent whitespace...\n')
   await mapPatentWhitespace(domain)
 }
 

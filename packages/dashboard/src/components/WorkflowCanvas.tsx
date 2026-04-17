@@ -13,266 +13,154 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
-// ── SVG icons ──────────────────────────────────────────────────────────────
+// ── Category colors ────────────────────────────────────────────────────────
 
-const Icons = {
-  chain: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-    </svg>
-  ),
-  wallet: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
-      <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
-      <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
-    </svg>
-  ),
-  pay: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m5 12 7-7 7 7"/>
-      <path d="M12 19V5"/>
-    </svg>
-  ),
-  balance: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3v18M3 9l9-6 9 6M3 9h18M5 15l7 4 7-4"/>
-    </svg>
-  ),
-  receive: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 5v14M5 12l7 7 7-7"/>
-    </svg>
-  ),
-  market: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-    </svg>
-  ),
-  trading: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
-    </svg>
-  ),
-  api: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-      <path d="M2 12h20"/>
-    </svg>
-  ),
-  mcp: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="16" height="10" x="4" y="9" rx="2"/>
-      <path d="M8 9V5a2 2 0 1 1 4 0v4M12 9V5a2 2 0 1 1 4 0v4"/>
-      <path d="M8 14h.01M12 14h.01M16 14h.01"/>
-    </svg>
-  ),
-  code: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-    </svg>
-  ),
+const CAT: Record<string, { accent: string; dim: string }> = {
+  chain:   { accent: '#6366f1', dim: '#1a1a3a' },
+  wallet:  { accent: '#00ffcc', dim: '#001a18' },
+  payment: { accent: '#00ff6a', dim: '#001a0d' },
+  market:  { accent: '#b668ff', dim: '#160020' },
+  solana:  { accent: '#ff9500', dim: '#1a0d00' },
+  service: { accent: '#06b6d4', dim: '#001418' },
 }
 
-// ── Theme per node category ────────────────────────────────────────────────
+// ── Terminal-style node ────────────────────────────────────────────────────
 
-interface Theme { color: string; bg: string; border: string; glow: string }
-
-const THEMES: Record<string, Theme> = {
-  chain:   { color: '#6366f1', bg: 'rgba(99,102,241,0.08)',  border: 'rgba(99,102,241,0.3)',  glow: 'rgba(99,102,241,0.4)' },
-  wallet:  { color: '#3b82f6', bg: 'rgba(59,130,246,0.08)',  border: 'rgba(59,130,246,0.3)',  glow: 'rgba(59,130,246,0.4)' },
-  payment: { color: '#22c55e', bg: 'rgba(34,197,94,0.08)',   border: 'rgba(34,197,94,0.3)',   glow: 'rgba(34,197,94,0.4)'  },
-  market:  { color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)',  border: 'rgba(139,92,246,0.3)',  glow: 'rgba(139,92,246,0.4)' },
-  solana:  { color: '#f97316', bg: 'rgba(249,115,22,0.08)',  border: 'rgba(249,115,22,0.3)',  glow: 'rgba(249,115,22,0.4)' },
-  service: { color: '#06b6d4', bg: 'rgba(6,182,212,0.08)',   border: 'rgba(6,182,212,0.3)',   glow: 'rgba(6,182,212,0.4)'  },
-}
-
-const ICONS: Record<string, JSX.Element> = {
-  chain: Icons.chain,
-  wallet: Icons.wallet,
-  payment_pay: Icons.pay,
-  payment_balance: Icons.balance,
-  payment_receive: Icons.receive,
-  market: Icons.market,
-  solana: Icons.trading,
-  service_x402scan: Icons.api,
-  service_mcp: Icons.mcp,
-  service_langchain: Icons.code,
-  service_vercel: Icons.code,
-}
-
-// ── Custom ReactFlow node ──────────────────────────────────────────────────
-
-function WorkflowNode({ data }: NodeProps) {
-  const category = data.category as string
-  const iconKey = (data.iconKey as string) ?? category
-  const theme = THEMES[category] ?? THEMES.service
+function TermNode({ data }: NodeProps) {
+  const cat = (data.category as string) ?? 'service'
+  const { accent, dim } = CAT[cat] ?? CAT.service
   const count = Number(data.count ?? 0)
-  const active = data.active as boolean || count > 0
-  const icon = ICONS[iconKey] ?? ICONS[category] ?? Icons.chain
+  const active = (data.active as boolean) || count > 0
 
   return (
     <div style={{
-      position: 'relative',
-      background: active
-        ? `linear-gradient(135deg, ${theme.bg}, rgba(0,0,0,0.2))`
-        : 'rgba(255,255,255,0.02)',
-      border: `1px solid ${active ? theme.border : 'rgba(255,255,255,0.06)'}`,
-      borderRadius: 11,
-      padding: '11px 14px',
-      minWidth: 138,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 5,
-      boxShadow: active ? `0 4px 24px ${theme.glow}, 0 0 0 1px ${theme.border}` : '0 1px 3px rgba(0,0,0,0.4)',
-      transition: 'all 0.35s ease',
+      background: active ? dim : '#04040a',
+      border: `1px solid ${active ? accent + '55' : 'rgba(0,255,204,0.08)'}`,
+      borderRadius: 3,
+      minWidth: 148,
+      fontFamily: 'var(--mono)',
+      boxShadow: active ? `0 0 12px ${accent}22, inset 0 0 20px ${accent}08` : 'none',
+      transition: 'all 0.4s ease',
+      overflow: 'hidden',
     }}>
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{ background: theme.color, width: 6, height: 6, border: 'none', opacity: 0.7 }}
-      />
-
-      {/* Icon circle + label */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-        <div style={{
-          width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-          background: active ? theme.bg : 'rgba(255,255,255,0.03)',
-          border: `1px solid ${active ? theme.border : 'rgba(255,255,255,0.06)'}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: active ? theme.color : '#334155',
-          transition: 'all 0.3s ease',
-        }}>
-          {icon}
-        </div>
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: active ? '#f1f5f9' : '#475569',
-            whiteSpace: 'nowrap', transition: 'color 0.3s ease', letterSpacing: '-0.01em' }}>
-            {data.label as string}
-          </div>
-          {data.sub ? (
-            <div style={{ fontSize: 9, color: active ? '#334155' : '#1e293b',
-              fontFamily: 'var(--mono)', letterSpacing: '0.01em', marginTop: 1, transition: 'color 0.3s ease' }}>
-              {String(data.sub)}
-            </div>
-          ) : null}
-        </div>
+      {/* Header bar */}
+      <div style={{
+        background: active ? accent + '18' : 'rgba(0,255,204,0.02)',
+        borderBottom: `1px solid ${active ? accent + '30' : 'rgba(0,255,204,0.06)'}`,
+        padding: '3px 8px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 6,
+      }}>
+        <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: active ? accent : '#3a5555' }}>
+          {cat}
+        </span>
         {count > 0 && (
-          <span style={{ marginLeft: 'auto', paddingLeft: 6, fontSize: 13, fontWeight: 700,
-            color: theme.color, fontFamily: 'var(--mono)', letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: 9, fontWeight: 700, color: accent, fontVariantNumeric: 'tabular-nums' }}>
             {count}
           </span>
         )}
       </div>
 
-      {/* Active bottom glow line */}
+      {/* Body */}
+      <div style={{ padding: '6px 8px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: active ? '#e8f8f8' : '#3a5555', letterSpacing: '-0.01em', marginBottom: 2 }}>
+          {data.label as string}
+        </div>
+        {data.sub ? (
+          <div style={{ fontSize: 9, color: active ? '#3a5555' : '#1a2a2a', letterSpacing: '0.02em' }}>
+            {String(data.sub)}
+          </div>
+        ) : null}
+      </div>
+
+      {/* Active bottom accent */}
       {active && (
-        <div style={{ position: 'absolute', bottom: 0, left: '15%', right: '15%', height: 1,
-          background: `linear-gradient(90deg, transparent, ${theme.color}88, transparent)`,
-          borderRadius: '0 0 11px 11px' }} />
+        <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${accent}88, transparent)` }} />
       )}
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{ background: theme.color, width: 6, height: 6, border: 'none', opacity: 0.7 }}
-      />
+      <Handle type="target" position={Position.Left}
+        style={{ background: active ? accent : '#1a3030', width: 5, height: 5, border: 'none', borderRadius: 1 }} />
+      <Handle type="source" position={Position.Right}
+        style={{ background: active ? accent : '#1a3030', width: 5, height: 5, border: 'none', borderRadius: 1 }} />
     </div>
   )
 }
 
-const nodeTypes = { workflow: WorkflowNode }
+const nodeTypes = { term: TermNode }
 
-// ── Edge colors ────────────────────────────────────────────────────────────
+// ── Component ──────────────────────────────────────────────────────────────
 
-const EC = {
-  chain:   '#6366f1',
-  payment: '#22c55e',
-  trade:   '#f97316',
-  neutral: 'rgba(255,255,255,0.08)',
-}
-
-// ── Canvas component ───────────────────────────────────────────────────────
-
-interface Props {
-  payCount: number
-  tradeCount: number
-  walletAddress: string
-}
+interface Props { payCount: number; tradeCount: number; walletAddress: string }
 
 export function WorkflowCanvas({ payCount, tradeCount, walletAddress }: Props) {
-  const nodes: Node[] = useMemo(() => {
-    const addr = walletAddress
-      ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}`
-      : 'no key'
+  const addr = walletAddress
+    ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}`
+    : 'no key set'
 
-    return [
-      // Col 1 — Chains
-      { id: 'base',      type: 'workflow', position: { x: 0,   y: 0   }, data: { label: 'Base',      category: 'chain',   iconKey: 'chain',            sub: 'eip155:8453',    count: 0,          active: payCount > 0   } },
-      { id: 'arb',       type: 'workflow', position: { x: 0,   y: 82  }, data: { label: 'Arbitrum',  category: 'chain',   iconKey: 'chain',            sub: 'eip155:42161',   count: 0,          active: false          } },
-      { id: 'sol-chain', type: 'workflow', position: { x: 0,   y: 164 }, data: { label: 'Solana',    category: 'chain',   iconKey: 'chain',            sub: 'mainnet-beta',   count: 0,          active: tradeCount > 0 } },
+  const nodes: Node[] = useMemo(() => [
+    mk('base',      'chain',   { x: 0,   y: 0   }, 'Base',       'eip155:8453',      0,          payCount > 0),
+    mk('arb',       'chain',   { x: 0,   y: 80  }, 'Arbitrum',   'eip155:42161',     0,          false),
+    mk('sol-chain', 'chain',   { x: 0,   y: 160 }, 'Solana',     'mainnet-beta',     0,          tradeCount > 0),
 
-      { id: 'wallet',    type: 'workflow', position: { x: 210, y: 64  }, data: { label: 'Wallet',    category: 'wallet',  iconKey: 'wallet',           sub: addr,             count: 0,          active: !!walletAddress} },
+    mk('wallet',    'wallet',  { x: 210, y: 64  }, 'Wallet',     addr,               0,          !!walletAddress),
 
-      { id: 'pay',       type: 'workflow', position: { x: 420, y: 0   }, data: { label: 'Pay',       category: 'payment', iconKey: 'payment_pay',      sub: 'x402 auto-pay',  count: payCount,   active: payCount > 0   } },
-      { id: 'balance',   type: 'workflow', position: { x: 420, y: 82  }, data: { label: 'Balance',   category: 'payment', iconKey: 'payment_balance',  sub: 'USDC · SOL',     count: 0,          active: !!walletAddress} },
-      { id: 'receive',   type: 'workflow', position: { x: 420, y: 164 }, data: { label: 'Receive',   category: 'payment', iconKey: 'payment_receive',  sub: 'invoice 30m',    count: 0,          active: false          } },
+    mk('pay',       'payment', { x: 420, y: 0   }, 'Pay',        'x402 auto-pay',    payCount,   payCount > 0),
+    mk('balance',   'payment', { x: 420, y: 80  }, 'Balance',    'USDC · SOL',       0,          !!walletAddress),
+    mk('receive',   'payment', { x: 420, y: 160 }, 'Receive',    'invoice 30m',      0,          false),
 
-      { id: 'market',    type: 'workflow', position: { x: 630, y: 0   }, data: { label: 'Market',    category: 'market',  iconKey: 'market',           sub: 'CoinGecko · DL', count: 0,          active: false          } },
-      { id: 'trading',   type: 'workflow', position: { x: 630, y: 82  }, data: { label: 'Trading',   category: 'solana',  iconKey: 'solana',           sub: 'pump.fun · Ray', count: tradeCount, active: tradeCount > 0 } },
-      { id: 'x402scan',  type: 'workflow', position: { x: 630, y: 164 }, data: { label: 'x402scan',  category: 'service', iconKey: 'service_x402scan', sub: 'API discovery',  count: 0,          active: false          } },
+    mk('market',    'market',  { x: 630, y: 0   }, 'Market',     'CoinGecko · DL',   0,          false),
+    mk('trading',   'solana',  { x: 630, y: 80  }, 'Trading',    'pump · raydium',   tradeCount, tradeCount > 0),
+    mk('x402scan',  'service', { x: 630, y: 160 }, 'x402scan',   'API registry',     0,          false),
 
-      { id: 'mcp',       type: 'workflow', position: { x: 840, y: 0   }, data: { label: 'MCP',       category: 'service', iconKey: 'service_mcp',      sub: 'Claude · Cursor',count: 0,          active: false          } },
-      { id: 'langchain', type: 'workflow', position: { x: 840, y: 82  }, data: { label: 'LangChain', category: 'service', iconKey: 'service_langchain', sub: 'agent tools',   count: 0,          active: false          } },
-      { id: 'vercel',    type: 'workflow', position: { x: 840, y: 164 }, data: { label: 'Vercel AI', category: 'service', iconKey: 'service_vercel',   sub: 'useTools()',     count: 0,          active: false          } },
-    ]
-  }, [payCount, tradeCount, walletAddress])
+    mk('mcp',       'service', { x: 840, y: 0   }, 'MCP',        'claude · cursor',  0,          false),
+    mk('langchain', 'service', { x: 840, y: 80  }, 'LangChain',  'agent tools',      0,          false),
+    mk('vercel',    'service', { x: 840, y: 160 }, 'Vercel AI',  'useTools()',       0,          false),
+  ], [payCount, tradeCount, walletAddress, addr])
 
   const edges: Edge[] = useMemo(() => [
-    // Chains → Wallet
-    edge('base-w',   'base',     'wallet',   EC.chain,   false),
-    edge('arb-w',    'arb',      'wallet',   EC.chain,   false),
-    edge('sol-w',    'sol-chain','wallet',   EC.chain,   false),
-    // Wallet → Tools
-    edge('w-pay',    'wallet',   'pay',      EC.payment, payCount > 0),
-    edge('w-bal',    'wallet',   'balance',  EC.chain,   !!walletAddress),
-    edge('w-rec',    'wallet',   'receive',  EC.neutral, false),
-    // Tools → Services
-    edge('pay-mkt',  'pay',      'market',   EC.neutral, false),
-    edge('pay-trd',  'pay',      'trading',  EC.trade,   tradeCount > 0),
-    edge('pay-x402', 'pay',      'x402scan', EC.payment, payCount > 0),
-    // Services → Frameworks
-    edge('mkt-mcp',  'market',   'mcp',      EC.neutral, false),
-    edge('trd-lc',   'trading',  'langchain',EC.neutral, false),
-    edge('x402-v',   'x402scan', 'vercel',   EC.neutral, false),
+    e('base-w',   'base',     'wallet',    '#6366f1', false),
+    e('arb-w',    'arb',      'wallet',    '#6366f1', false),
+    e('sol-w',    'sol-chain','wallet',    '#6366f1', false),
+    e('w-pay',    'wallet',   'pay',       '#00ff6a', payCount > 0),
+    e('w-bal',    'wallet',   'balance',   '#00ffcc', !!walletAddress),
+    e('w-rec',    'wallet',   'receive',   '#1a3030', false),
+    e('pay-mkt',  'pay',      'market',    '#1a3030', false),
+    e('pay-trd',  'pay',      'trading',   '#ff9500', tradeCount > 0),
+    e('pay-x402', 'pay',      'x402scan',  '#00ff6a', payCount > 0),
+    e('mkt-mcp',  'market',   'mcp',       '#1a3030', false),
+    e('trd-lc',   'trading',  'langchain', '#1a3030', false),
+    e('x402-v',   'x402scan', 'vercel',    '#1a3030', false),
   ], [payCount, tradeCount, walletAddress])
 
   return (
-    <div style={{ width: '100%', height: '100%', borderRadius: 12, overflow: 'hidden', background: '#04060f' }}>
+    <div style={{ width: '100%', height: '100%', background: '#000' }}>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={nodes} edges={edges}
         nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.18 }}
+        fitView fitViewOptions={{ padding: 0.15 }}
         colorMode="dark"
-        nodesDraggable={false}
-        nodesConnectable={false}
-        elementsSelectable={false}
+        nodesDraggable={false} nodesConnectable={false} elementsSelectable={false}
         proOptions={{ hideAttribution: true }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="rgba(255,255,255,0.04)" />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={24} size={1}
+          color="rgba(0,255,204,0.07)"
+        />
       </ReactFlow>
     </div>
   )
 }
 
-function edge(id: string, source: string, target: string, color: string, animated: boolean): Edge {
+function mk(id: string, category: string, position: { x: number; y: number }, label: string, sub: string, count: number, active: boolean): Node {
+  return { id, type: 'term', position, data: { label, category, sub, count, active } }
+}
+
+function e(id: string, source: string, target: string, color: string, animated: boolean): Edge {
   return {
     id, source, target, animated,
-    style: { stroke: color, strokeWidth: animated ? 1.5 : 1, opacity: animated ? 0.7 : 0.3 },
-    type: 'default',
+    style: { stroke: color, strokeWidth: animated ? 1.5 : 1, opacity: animated ? 0.6 : 0.2 },
   }
 }

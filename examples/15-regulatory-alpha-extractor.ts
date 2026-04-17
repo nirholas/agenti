@@ -1,16 +1,15 @@
 /**
  * Regulatory Alpha Extractor: FDA/SEC/FCC/EPA filings → pre-market intelligence
  *
- * Architecture:
- *   Call 1 — Claude scans public regulatory databases for filings with material
- *             information not yet absorbed by the market via tool use
- *   Call 2 — Claude scores each finding for alpha decay (how fast will market price this?)
- *             and outputs an actionable catalyst calendar
- *   Memory  — Tracks which catalysts played out vs fizzled; improves decay model
+ * Real data sources:
+ *   openFDA     — drug approvals, PDUFA actions, NDAs (free, no key for basic use)
+ *   SEC EDGAR   — Form 4 clusters, novel structure filings (free)
+ *   FCC ECFS    — electronic comment filing system (free public API)
+ *   EPA ECHO    — enforcement and compliance (free public API)
  *
- * Why nobody open-sources this:
- *   The materiality filter + decay model requires deep domain knowledge across
- *   4 regulatory agencies. Consultants charge $200K/yr for manual versions of this.
+ * Two-call architecture:
+ *   Call 1 — Claude scans databases via real HTTP tool calls
+ *   Call 2 — Claude applies materiality filter + alpha decay model, outputs catalyst calendar
  */
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -20,34 +19,14 @@ import { readFile, writeFile } from 'fs/promises'
 // Types
 // ---------------------------------------------------------------------------
 
-type Agency = 'FDA' | 'SEC' | 'FCC' | 'EPA' | 'USPTO' | 'FERC' | 'CFPB'
-type ActionType = 'approval' | 'rejection' | 'warning_letter' | 'comment_period' | 'rule_change' | 'investigation' | 'settlement'
-
-interface RegFiling {
-  agency: Agency
-  actionType: ActionType
-  entity: string
-  ticker?: string
-  filingDate: string
-  summary: string
-  publiclyReported: boolean
-  estimatedMarketImpact: 'none' | 'minor' | 'moderate' | 'major' | 'transformative'
-}
-
-interface AlphaCatalyst {
-  filing: RegFiling
-  alphaScore: number          // 0–100; higher = more alpha remaining
-  decayDays: number           // estimated days until market fully prices
-  direction: 'long' | 'short' | 'neutral'
-  magnitudeEstimatePct: number
-  playType: 'pre-announcement' | 'reaction_fade' | 'ripple_effect' | 'sector_read-through'
-  relatedTickers: string[]
-  actionRequired: string
-}
+type Agency = 'FDA' | 'SEC' | 'FCC' | 'EPA'
 
 interface CatalystRecord {
   date: string
-  catalyst: AlphaCatalyst
+  entity: string
+  agency: Agency
+  alphaScore: number
+  direction: 'long' | 'short' | 'neutral'
   outcome?: { ticker: string; move_pct: number; days_to_move: number }
 }
 
@@ -65,63 +44,310 @@ class CatalystJournal {
 }
 
 // ---------------------------------------------------------------------------
-// The prompt — materiality filter is the moat
+// Real tool implementations
+// ---------------------------------------------------------------------------
+
+const UA = 'agenti-regulatory-alpha nichxbt@gmail.com'
+
+interface FdaProduct {
+  application_number?: string
+  sponsor_name?: string
+  brand_name?: string
+  generic_name?: string
+  action_date?: string
+  action_type?: string
+  drug_name?: string
+  marketing_status?: string
+}
+
+interface FdaApiResponse {
+  results?: FdaProduct[]
+  meta?: { results?: { total?: number } }
+}
+
+async function toolScanFdaApprovals(daysBack = 90, limit = 20): Promise<unknown> {
+  const since = new Date(Date.now() - daysBack * 86400000).toISOString().slice(0, 10).replace(/-/g, '')
+
+  // openFDA drug approval actions — no API key required for < 1000 req/day
+  const url = `https://api.fda.gov/drug/nda.json?search=action_date:[${since}+TO+99999999]&sort=action_date:desc&limit=${limit}`
+
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) {
+    // Try the simpler drugsfda endpoint
+    const fallback = `https://api.fda.gov/drug/drugsfda.json?search=submissions.action_date:[${since}+TO+99999999]&sort=submissions.action_date:desc&limit=${limit}`
+    const res2 = await fetch(fallback, { headers: { 'User-Agent': UA } })
+    if (!res2.ok) throw new Error(`openFDA both endpoints failed: ${res.status}, ${res2.status}`)
+    const data2 = await res2.json() as FdaApiResponse
+    const results = data2.results ?? []
+    return {
+      source: 'openFDA drugsfda',
+      total_found: data2.meta?.results?.total ?? results.length,
+      recent_actions: results.slice(0, 10).map(r => ({
+        sponsor: r.sponsor_name,
+        brand: r.brand_name,
+        drug: r.generic_name,
+        application: r.application_number,
+        action_date: r.action_date,
+        action_type: r.action_type,
+      })),
+    }
+  }
+
+  const data = await res.json() as FdaApiResponse
+  const results = data.results ?? []
+
+  return {
+    source: 'openFDA nda',
+    total_found: data.meta?.results?.total ?? results.length,
+    recent_actions: results.map(r => ({
+      drug_name: r.drug_name,
+      marketing_status: r.marketing_status,
+      application: r.application_number,
+      sponsor: r.sponsor_name,
+    })),
+  }
+}
+
+interface FdaWarning {
+  company_name?: string
+  product_description?: string
+  posted_date?: string
+  subject?: string
+}
+
+interface FdaWarningResponse {
+  results?: FdaWarning[]
+  meta?: { results?: { total?: number } }
+}
+
+async function toolScanFdaWarnings(daysBack = 60): Promise<unknown> {
+  const since = new Date(Date.now() - daysBack * 86400000).toISOString().slice(0, 10)
+  const url = `https://api.fda.gov/food/enforcement.json?search=report_date:[${since.replace(/-/g, '')}+TO+99999999]&sort=report_date:desc&limit=15`
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+
+  // Also scan drug warning letters via EDGAR
+  const edgarUrl = `https://efts.sec.gov/LATEST/search-index?q=%22warning+letter%22+%22FDA%22&forms=8-K&dateRange=custom&startdt=${since}`
+  const edgarRes = await fetch(edgarUrl, { headers: { 'User-Agent': UA } })
+
+  const results: unknown[] = []
+
+  if (res.ok) {
+    const data = await res.json() as FdaWarningResponse
+    for (const r of (data.results ?? []).slice(0, 8)) {
+      results.push({ type: 'enforcement_recall', company: r.company_name, product: r.product_description, date: r.posted_date, subject: r.subject })
+    }
+  }
+
+  if (edgarRes.ok) {
+    const edgarData = await edgarRes.json() as { hits?: { hits?: Array<{ _source?: { entity_name?: string; file_date?: string } }> } }
+    for (const h of (edgarData.hits?.hits ?? []).slice(0, 6)) {
+      results.push({ type: '8K_fda_warning', company: h._source?.entity_name, filed: h._source?.file_date })
+    }
+  }
+
+  return { findings: results, total: results.length }
+}
+
+interface EdgarForm4Hit {
+  _source?: {
+    entity_name?: string
+    file_date?: string
+    period_of_report?: string
+  }
+}
+
+interface EdgarSearchResult {
+  hits?: { hits?: EdgarForm4Hit[]; total?: { value?: number } }
+}
+
+async function toolScanForm4Clusters(sector: string, daysBack = 30): Promise<unknown> {
+  const since = new Date(Date.now() - daysBack * 86400000).toISOString().slice(0, 10)
+
+  // Form 4 = insider transactions; look for clusters by searching filings
+  const sectorTerms: Record<string, string> = {
+    biotech: 'pharmaceutical+biotechnology+drug',
+    'ai/software': 'artificial+intelligence+software+platform',
+    energy: 'energy+oil+gas+renewable',
+    fintech: 'financial+technology+payments+banking',
+    semiconductor: 'semiconductor+chip+silicon',
+  }
+
+  const terms = sectorTerms[sector.toLowerCase()] ?? encodeURIComponent(sector)
+  const url = `https://efts.sec.gov/LATEST/search-index?q=${terms}&forms=4&dateRange=custom&startdt=${since}&_source=entity_name,file_date,period_of_report`
+
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) throw new Error(`SEC Form4 ${res.status}`)
+
+  const data = await res.json() as EdgarSearchResult
+  const hits = data.hits?.hits ?? []
+
+  // Group by entity to find clusters (multiple insiders same company)
+  const byCompany: Record<string, number> = {}
+  for (const h of hits) {
+    const name = h._source?.entity_name ?? 'unknown'
+    byCompany[name] = (byCompany[name] ?? 0) + 1
+  }
+
+  const clusters = Object.entries(byCompany)
+    .filter(([, count]) => count >= 3)
+    .sort((a, b) => b[1] - a[1])
+    .map(([company, count]) => ({ company, insider_transactions: count }))
+
+  return {
+    sector,
+    total_form4_filings: data.hits?.total?.value ?? hits.length,
+    cluster_detections: clusters.slice(0, 10),
+    note: clusters.length > 0 ? 'Clusters = 3+ insider transactions at same company = potential buy signal' : 'No meaningful clusters detected in this window',
+  }
+}
+
+interface FccFiling {
+  id_submission?: string
+  applicant_name?: string
+  date_submission?: string
+  bureaus?: string[]
+  proceedings?: string[]
+  text_data?: string
+  submittions_type?: string
+}
+
+interface FccApiResponse {
+  filing?: FccFiling[]
+  total_record_count?: number
+}
+
+async function toolScanFccFilings(query: string, daysBack = 60): Promise<unknown> {
+  const since = new Date(Date.now() - daysBack * 86400000).toISOString().slice(0, 10)
+
+  // FCC ECFS API — electronic comment filing system
+  const url = `https://efts.fcc.gov/easy-search/public/search?query=${encodeURIComponent(query)}&date_received=[${since}+TO+*]&limit=15&sort=date_received,DESC`
+
+  const res = await fetch(url, {
+    headers: { 'User-Agent': UA, Accept: 'application/json' },
+  })
+
+  if (!res.ok) {
+    // Fallback to ECFS search endpoint
+    const fallback = `https://www.fcc.gov/ecfs/api/filings?q.filers.name=${encodeURIComponent(query)}&limit=10&sort=date_received,DESC`
+    const res2 = await fetch(fallback, { headers: { 'User-Agent': UA, Accept: 'application/json' } })
+    if (!res2.ok) return { error: `FCC ECFS both endpoints failed: ${res.status}, ${res2.status}`, query }
+    const data2 = await res2.json() as FccApiResponse
+    return {
+      source: 'FCC ECFS fallback',
+      total: data2.total_record_count ?? 0,
+      filings: (data2.filing ?? []).slice(0, 8).map(f => ({
+        id: f.id_submission,
+        filer: f.applicant_name,
+        date: f.date_submission,
+        bureau: f.bureaus?.join(', '),
+        proceeding: f.proceedings?.join(', '),
+      })),
+    }
+  }
+
+  const data = await res.json() as { hits?: { total?: number; hits?: Array<{ _source?: FccFiling }> } }
+  const hits = data.hits?.hits ?? []
+
+  return {
+    source: 'FCC ECFS',
+    query,
+    total: data.hits?.total ?? 0,
+    filings: hits.slice(0, 8).map(h => ({
+      filer: h._source?.applicant_name,
+      date: h._source?.date_submission,
+      type: h._source?.submittions_type,
+      bureaus: h._source?.bureaus?.join(', '),
+    })),
+  }
+}
+
+interface EpaFacility {
+  REGISTRY_ID?: string
+  FAC_NAME?: string
+  FAC_STREET?: string
+  FAC_CITY?: string
+  FAC_STATE?: string
+  DERIVED_VIOLATIONS?: string
+  DERIVED_INSPECTION_COUNT?: string
+}
+
+interface EpaApiResponse {
+  Results?: { Facilities?: EpaFacility[] }
+}
+
+async function toolScanEpaEnforcement(query: string): Promise<unknown> {
+  // EPA ECHO (Enforcement and Compliance History Online) — free REST API
+  const url = `https://echo.epa.gov/api/getFacilities?output=JSON&p_fn=${encodeURIComponent(query)}&p_st=&responseset=20&qcolumns=1,3,4,5,9,23`
+
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) return { error: `EPA ECHO ${res.status}`, query }
+
+  const data = await res.json() as EpaApiResponse
+  const facilities = data?.Results?.Facilities ?? []
+
+  return {
+    source: 'EPA ECHO',
+    query,
+    total_facilities: facilities.length,
+    facilities_with_violations: facilities
+      .filter(f => parseInt(f.DERIVED_VIOLATIONS ?? '0') > 0)
+      .map(f => ({
+        name: f.FAC_NAME,
+        location: `${f.FAC_CITY}, ${f.FAC_STATE}`,
+        violations: f.DERIVED_VIOLATIONS,
+        inspections: f.DERIVED_INSPECTION_COUNT,
+      }))
+      .slice(0, 8),
+    clean_record_count: facilities.filter(f => parseInt(f.DERIVED_VIOLATIONS ?? '0') === 0).length,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// System prompt
 // ---------------------------------------------------------------------------
 
 const SYSTEM_PROMPT = `You are a regulatory intelligence analyst who spent 12 years at the SEC and 5 years at a healthcare-focused hedge fund.
 You know which regulatory filings contain market-moving information that the market hasn't priced yet,
-and which are bureaucratic noise that journalists sensationalize.
+and which are bureaucratic noise.
 
-## Materiality Filter — Apply Rigorously
+## Materiality Filter
 
 ### FDA Alpha Signals (HIGH signal-to-noise)
-- PDUFA date within 30 days: huge binary event; market prices 60% of expected move before decision
-- Complete Response Letter (CRL) → appeal filed within 60 days: market often oversells rejection
-- Advisory committee meeting scheduled (not announced widely): institutional edge window 2–3 weeks
-- Accelerated Approval → Full Approval conversion pending: often underpriced 3–6 months out
-- Breakthrough Therapy Designation granted to small-cap: massive rerating catalyst
+- Novel drug approval in small-cap sponsor: massive rerating catalyst, market often slow to price
+- FDA enforcement action / warning letter against public company: short signal, often unreported for days
+- CRL (Complete Response Letter) 8-K: market oversells rejection; look for appeal plays 30–60 days later
 
 ### SEC Alpha Signals
-- Wells Notice received but not yet 8-K'd (check EDGAR comment letters): short setup
-- Form 4 cluster: 3+ insiders buying within 5 trading days — NOT sales, ONLY buys
-- S-1/S-11 confidential filing indicator (EDGAR upcoming IPO): sector comps move
-- No-Action Letter granted for novel product structure: first-mover regulatory moat
+- Form 4 cluster: 3+ insider transactions at same company in 30 days = informed buy signal
+- Novel corporate structure filing (EX-10 with unusual terms): potential strategic transaction
 
 ### FCC Alpha Signals
-- Spectrum auction application filed by non-telecom company: strategic pivot signal
-- License transfer pending for regional carrier: acquisition precursor
-- New satellite license application from known PE-backed entity: sector consolidation
+- License transfer application by non-obvious entity: acquisition precursor
+- New spectrum application from PE-backed company: strategic pivot signal
 
-### EPA / FERC / Other
-- Section 404 permit granted for contested infrastructure project: removes overhang
-- FERC certificate for interstate pipeline: rate-base expansion read-through
-- State attorney general pre-empted by federal agency: removes litigation overhang
+### EPA Alpha Signals
+- Enforcement action removal or clean bill: removes project overhang for infrastructure companies
+- New major facility permit: greenfield expansion signal for industrial companies
 
 ## Alpha Decay Model
-Not all regulatory alpha is equal. Decay depends on:
-- **Obscurity**: How many analysts cover this agency/sector? (Inverse relationship)
-- **Complexity**: How many steps between filing and financial impact? (More steps = slower decay)
-- **Precedent**: Has this exact scenario played out before? (Yes → faster decay; novel → slower)
-- **Coverage**: Did any major financial media cover it? (Yes → 80% decayed already)
-
-Decay rate estimates:
-- FDA PDUFA (covered extensively): 85% of alpha already priced → LOW
-- EPA permit for small-cap infrastructure: 20% priced → HIGH
-- SEC Form 4 cluster (small-cap): 40% priced → MEDIUM-HIGH
-- FCC license transfer: 30% priced → HIGH
+How fast will the market price this?
+- Covered by 3+ analyst firms in same week: 90% decayed — SKIP
+- Mentioned in one trade publication: 50% decayed — LOW
+- Only in regulatory database, no coverage: 10% decayed — HIGH
+- Novel/unprecedented action: 5% decayed — EXTREME
 
 ## Output Format
-CATALYST: **<entity/ticker>**
-AGENCY: <FDA|SEC|FCC|etc>
+CATALYST: **<entity>**
+AGENCY: <FDA|SEC|FCC|EPA>
 ALPHA_SCORE: <0-100>
 DIRECTION: <LONG|SHORT|NEUTRAL>
 DECAY_DAYS: <number>
 MAGNITUDE: <pct>%
-PLAY_TYPE: <pre-announcement|reaction_fade|ripple_effect|sector_read-through>
-RELATED_TICKERS: <comma-separated>
 ACTION: <exactly what to monitor or do>
 
-Always flag when a catalyst is likely to be diluted by broader market conditions.
+SKIP: <any finding with alpha score < 40>
+
+Always explain WHY this hasn't been priced by the market.
 Prioritize small/mid-cap situations where institutional coverage is sparse.`
 
 // ---------------------------------------------------------------------------
@@ -135,54 +361,63 @@ async function extractRegulatoryAlpha(agencies: Agency[], sectorFocus: string[])
 
   const pastCatalysts = journal.getPast(5)
   const trackRecord = pastCatalysts.length > 0
-    ? `Recent catalyst track record:\n${pastCatalysts.map(c =>
-        `${c.catalyst.filing.entity}: score ${c.catalyst.alphaScore}, direction ${c.catalyst.direction}${c.outcome ? `, outcome: ${c.outcome.move_pct.toFixed(1)}% in ${c.outcome.days_to_move}d` : ', pending'}`
-      ).join('\n')}`
-    : 'No historical data — first run.'
+    ? `Recent catalysts:\n${pastCatalysts.map(c => `${c.entity}: score ${c.alphaScore}${c.outcome ? `, outcome: ${c.outcome.move_pct.toFixed(1)}%` : ', pending'}`).join('\n')}`
+    : 'No historical data.'
 
   const tools: Anthropic.Tool[] = [
     {
-      name: 'scan_fda_edgar',
-      description: 'Scan FDA EDGAR for recent PDUFA dates, advisory committee meetings, CRLs, and approval actions for a drug/company.',
+      name: 'scan_fda_approvals',
+      description: 'Scan openFDA for recent NDA/BLA drug approval actions in the last 90 days.',
+      input_schema: { type: 'object' as const, properties: { days_back: { type: 'number' } }, required: [] },
+    },
+    {
+      name: 'scan_fda_warnings',
+      description: 'Scan openFDA enforcement actions and EDGAR 8-K filings mentioning FDA warning letters.',
+      input_schema: { type: 'object' as const, properties: { days_back: { type: 'number' } }, required: [] },
+    },
+    {
+      name: 'scan_form4_clusters',
+      description: 'Scan SEC EDGAR Form 4 filings for insider transaction clusters (3+ transactions at same company).',
+      input_schema: { type: 'object' as const, properties: { sector: { type: 'string' }, days_back: { type: 'number' } }, required: ['sector'] },
+    },
+    {
+      name: 'scan_fcc_filings',
+      description: 'Scan FCC ECFS for recent license transfer applications and spectrum filings.',
       input_schema: { type: 'object' as const, properties: { query: { type: 'string' }, days_back: { type: 'number' } }, required: ['query'] },
     },
     {
-      name: 'scan_sec_filings',
-      description: 'Scan SEC EDGAR for Form 4 clusters, comment letters, Wells Notices, and novel corporate structure filings.',
-      input_schema: { type: 'object' as const, properties: { sector: { type: 'string' }, filing_types: { type: 'array', items: { type: 'string' } } }, required: ['sector'] },
-    },
-    {
-      name: 'scan_fcc_database',
-      description: 'Scan FCC licensing database for spectrum applications, license transfers, and pending proceedings.',
+      name: 'scan_epa_enforcement',
+      description: 'Search EPA ECHO for enforcement actions and violations for companies in a sector.',
       input_schema: { type: 'object' as const, properties: { query: { type: 'string' } }, required: ['query'] },
-    },
-    {
-      name: 'scan_epa_ferc',
-      description: 'Scan EPA and FERC databases for permits granted, certificates issued, or enforcement actions taken.',
-      input_schema: { type: 'object' as const, properties: { sector: { type: 'string' } }, required: ['sector'] },
-    },
-    {
-      name: 'check_news_coverage',
-      description: 'Check if a specific regulatory filing or action has been covered by major financial media in the last 7 days.',
-      input_schema: { type: 'object' as const, properties: { entity: { type: 'string' }, action: { type: 'string' } }, required: ['entity', 'action'] },
     },
   ]
 
-  const userPrompt = `Scan the following regulatory databases for unpriced alpha catalysts.
-Focus agencies: ${agencies.join(', ')}
+  const agencyToTools: Record<Agency, string[]> = {
+    FDA: ['scan_fda_approvals', 'scan_fda_warnings'],
+    SEC: ['scan_form4_clusters'],
+    FCC: ['scan_fcc_filings'],
+    EPA: ['scan_epa_enforcement'],
+  }
+
+  const toolsToCall = agencies.flatMap(a => agencyToTools[a] ?? [])
+
+  const userPrompt = `Scan regulatory databases for unpriced alpha catalysts.
+Active agencies: ${agencies.join(', ')}
 Sector focus: ${sectorFocus.join(', ')}
 
 ${trackRecord}
 
-Scan all relevant databases. For each finding, check news coverage to assess decay.
-Apply the Materiality Filter rigorously — skip bureaucratic noise.
-Output only findings with ALPHA_SCORE ≥ 50. Rank by expected return, not score.`
+Call these tools: ${[...new Set(toolsToCall)].join(', ')}
+
+For Form 4 clusters, scan each sector separately.
+Apply the Materiality Filter. Output only catalysts with ALPHA_SCORE ≥ 40.
+Rank by expected return.`
 
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userPrompt }]
 
   const call1 = await client.messages.create({
     model: 'claude-opus-4-7-20251101',
-    max_tokens: 3500,
+    max_tokens: 4096,
     system: SYSTEM_PROMPT,
     tools,
     messages,
@@ -191,30 +426,21 @@ Output only findings with ALPHA_SCORE ≥ 50. Rank by expected return, not score
   const toolResults: Anthropic.ToolResultBlockParam[] = []
   for (const block of call1.content) {
     if (block.type !== 'tool_use') continue
-    const input = block.input as Record<string, string>
+    const input = block.input as Record<string, string | number>
     let result: unknown
 
-    if (block.name === 'scan_fda_edgar') {
-      result = {
-        findings: [
-          { entity: 'Praxis Biotech', ticker: 'PRXS', action: 'PDUFA_date', date: '2026-05-12', drug: 'PRX-001 (rare epilepsy)', note: 'No advisory committee required — FDA fast-tracked, Breakthrough Therapy', media_mentions_7d: 2 },
-          { entity: 'GenVax Inc', ticker: 'GNVX', action: 'CRL_appeal_filed', date: '2026-04-10', drug: 'mRNA vaccine candidate', note: 'Appeal filed 45 days post-CRL, CMC issues resolved per response', media_mentions_7d: 0 },
-        ],
-      }
-    } else if (block.name === 'scan_sec_filings') {
-      result = {
-        sector: input.sector,
-        findings: [
-          { entity: 'DataCore Systems', ticker: 'DCOR', filing_type: 'Form 4 cluster', detail: '4 insiders bought $2.1M in 3 days, CEO doubled position', date: '2026-04-14', media_mentions_7d: 0 },
-          { entity: 'Meridian Financial', ticker: 'MFIN', filing_type: 'Comment letter', detail: 'SEC sent comment letter on revenue recognition — company has 30 days to respond', date: '2026-04-08', media_mentions_7d: 1 },
-        ],
-      }
-    } else if (block.name === 'scan_fcc_database') {
-      result = { findings: [{ entity: 'Amazon Lab126', ticker: 'AMZN', action: 'Spectrum license application', bands: 'mmWave 26GHz', purpose: 'Private 5G network for logistics', date: '2026-04-02', media_mentions_7d: 0, read_through: ['TMUS', 'VZ'] }] }
-    } else if (block.name === 'scan_epa_ferc') {
-      result = { findings: [{ entity: 'Clearway Energy', ticker: 'CWEN', action: 'Section 401 waiver granted', project: 'Appalachian wind project (1.2GW)', note: 'Removes last regulatory overhang; COD now H2 2027 confirmed', date: '2026-04-15', media_mentions_7d: 0 }] }
-    } else if (block.name === 'check_news_coverage') {
-      result = { entity: input.entity, action: input.action, covered: false, sentiment: 'none', major_outlets: 0 }
+    console.log(`  → ${block.name}(${JSON.stringify(input)})`)
+
+    if (block.name === 'scan_fda_approvals') {
+      result = await toolScanFdaApprovals(typeof input.days_back === 'number' ? input.days_back : 90)
+    } else if (block.name === 'scan_fda_warnings') {
+      result = await toolScanFdaWarnings(typeof input.days_back === 'number' ? input.days_back : 60)
+    } else if (block.name === 'scan_form4_clusters') {
+      result = await toolScanForm4Clusters(String(input.sector), typeof input.days_back === 'number' ? input.days_back : 30)
+    } else if (block.name === 'scan_fcc_filings') {
+      result = await toolScanFccFilings(String(input.query), typeof input.days_back === 'number' ? input.days_back : 60)
+    } else if (block.name === 'scan_epa_enforcement') {
+      result = await toolScanEpaEnforcement(String(input.query))
     }
 
     toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(result) })
@@ -222,7 +448,7 @@ Output only findings with ALPHA_SCORE ≥ 50. Rank by expected return, not score
 
   const call2 = await client.messages.create({
     model: 'claude-opus-4-7-20251101',
-    max_tokens: 3500,
+    max_tokens: 4096,
     system: SYSTEM_PROMPT,
     tools,
     messages: [
@@ -240,6 +466,7 @@ Output only findings with ALPHA_SCORE ≥ 50. Rank by expected return, not score
   console.log('\n===== REGULATORY ALPHA REPORT =====\n')
   console.log(analysis)
 
+  journal.add({ date: new Date().toISOString(), entity: 'batch-run', agency: 'FDA', alphaScore: 0, direction: 'neutral' })
   await journal.save()
   return analysis
 }
@@ -249,8 +476,9 @@ Output only findings with ALPHA_SCORE ≥ 50. Rank by expected return, not score
 // ---------------------------------------------------------------------------
 
 async function main() {
+  console.log('Scanning regulatory databases for live alpha...\n')
   await extractRegulatoryAlpha(
-    ['FDA', 'SEC', 'FCC', 'EPA', 'FERC'],
+    ['FDA', 'SEC', 'FCC', 'EPA'],
     ['biotech/pharma', 'energy infrastructure', 'fintech', 'telecom'],
   )
 }

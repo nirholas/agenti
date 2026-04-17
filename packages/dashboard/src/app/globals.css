@@ -60,7 +60,8 @@ html, body {
 }
 
 /* live badge */
-.badge-live {
+.badge-live,
+.swarm-live {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 1px 5px; border-radius: 2px;
   font-size: 8px; font-weight: 700; letter-spacing: 0.1em;
@@ -68,6 +69,17 @@ html, body {
   background: rgba(0,255,106,0.07);
   border: 1px solid rgba(0,255,106,0.15);
 }
+
+.swarm-badge-error {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px 5px; border-radius: 2px;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--red);
+  background: rgba(255,59,59,0.07);
+  border: 1px solid rgba(255,59,59,0.15);
+}
+
+.swarm-text-dim { color: var(--dim); }
 
 /* row highlight */
 .row-pay   { color: var(--cyan); }

@@ -155,6 +155,14 @@ export type { GmgnToken, GmgnTokenStat, GmgnNewPair } from './solana/index.js'
 export { getJupiterQuote, executeJupiterSwap, jupiterSwap } from './solana/index.js'
 export type { JupiterQuote, JupiterQuoteParams, JupiterSwapResult } from './solana/index.js'
 
+// Hyperliquid perpetuals — read + signed order placement
+export { HyperliquidClient } from './hyperliquid.js'
+export type {
+  HlMeta, HlUniverse, HlAssetCtx, HlL2Book, HlL2Level,
+  HlPosition, HlAccountState, HlOrderResult, HlOrderStatus,
+  HlFundingInfo, HlOrderParams,
+} from './hyperliquid.js'
+
 // Execution algorithms — TWAP, VWAP, Almgren-Chriss optimal execution
 export {
   executeTwap,
