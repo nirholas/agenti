@@ -1,6 +1,6 @@
 # Build: Working Examples
 
-status: pending
+status: complete
 
 ## Goal
 Create runnable TypeScript examples in `examples/` that demonstrate agenti in real-world agent scenarios. These serve as documentation and onboarding.

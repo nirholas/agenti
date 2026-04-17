@@ -1,6 +1,6 @@
 # Build: README and Documentation
 
-status: pending
+status: complete
 
 ## Goal
 Write the top-level `README.md` for the agenti monorepo. It should be concise, code-first, and developer-facing. Think: npm package README style, not a landing page.

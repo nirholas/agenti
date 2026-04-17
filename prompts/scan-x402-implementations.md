@@ -1,6 +1,6 @@
 # Scan GitHub: x402 Protocol Implementations
 
-status: pending
+status: complete
 
 ## Goal
 Search GitHub for open-source x402 protocol implementations — both client-side (paying) and server-side (gating/facilitator). x402 is an HTTP payment protocol where a server returns 402 Payment Required, the client signs a crypto payment, then retries with proof.
