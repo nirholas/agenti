@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:           #04060f;
+  --bg-1:         #080d1a;
+  --bg-2:         rgba(255,255,255,0.03);
+  --bg-3:         rgba(255,255,255,0.05);
+  --border:       rgba(255,255,255,0.07);
+  --border-hi:    rgba(255,255,255,0.13);
+
+  --blue:         #3b82f6;
+  --blue-dim:     rgba(59,130,246,0.15);
+  --green:        #22c55e;
+  --green-dim:    rgba(34,197,94,0.15);
+  --purple:       #8b5cf6;
+  --purple-dim:   rgba(139,92,246,0.15);
+  --orange:       #f97316;
+  --orange-dim:   rgba(249,115,22,0.15);
+  --red:          #ef4444;
+  --yellow:       #eab308;
+  --cyan:         #06b6d4;
+
+  --text:         #f1f5f9;
+  --text-2:       #94a3b8;
+  --text-3:       #475569;
+  --mono:         'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* ── Animations ────────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-right {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ping {
+  0%    { transform: scale(1); opacity: 1; }
+  75%, 100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 6px 1px var(--glow-color, rgba(34,197,94,.4)); }
+  50%       { box-shadow: 0 0 14px 3px var(--glow-color, rgba(34,197,94,.2)); }
+}
+
+@keyframes count-bump {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.animate-fade  { animation: fade-in 0.25s ease forwards; }
+.animate-slide { animation: slide-right 0.2s ease forwards; }
+.animate-bump  { animation: count-bump 0.3s ease; }
+
+/* ── Glass card ────────────────────────────────────────────────────── */
+.glass {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+}
+
+.glass-hi {
+  background: var(--bg-3);
+  border: 1px solid var(--border-hi);
+  border-radius: 12px;
+}
+
+/* ── React Flow override ───────────────────────────────────────────── */
+.react-flow__renderer { border-radius: 12px; }
+.react-flow__attribution { display: none !important; }
+.react-flow__controls {
+  background: var(--bg-1) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+.react-flow__controls-button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-2) !important;
+  fill: var(--text-2) !important;
+  width: 26px !important; height: 26px !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--bg-3) !important;
+  color: var(--text) !important;
+  fill: var(--text) !important;
+}
+.react-flow__minimap {
+  background: var(--bg-1) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+.react-flow__edge-path { stroke-linecap: round; }
+
+/* ── Swarm Command Center ─────────────────────────────────────── */
+.swarm-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #040810;
+  border: 1px solid rgba(0, 255, 255, 0.08);
+}
+.swarm-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.25), transparent);
+  pointer-events: none;
+}
+.swarm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.06);
+  background: rgba(0, 255, 255, 0.02);
+  flex-shrink: 0;
+}
+.swarm-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #00ffcc;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+}
+.swarm-subtitle {
+  font-size: 9px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #4a6a6a;
+}
+.swarm-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #00ff6a;
+  background: rgba(0, 255, 106, 0.08);
+  border: 1px solid rgba(0, 255, 106, 0.15);
+}
+.swarm-badge-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff3b3b;
+  background: rgba(255, 59, 59, 0.1);
+  border: 1px solid rgba(255, 59, 59, 0.15);
+}
+.swarm-badge-running {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #00ff6a;
+  background: rgba(0, 255, 106, 0.1);
+}
+.swarm-badge-paused {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff9500;
+  background: rgba(255, 149, 0, 0.1);
+}
+.swarm-grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.swarm-text-cyan   { color: #00ffcc; }
+.swarm-text-green  { color: #00ff6a; }
+.swarm-text-red    { color: #ff3b3b; }
+.swarm-text-orange { color: #ff9500; }
+.swarm-text-yellow { color: #ffd700; }
+.swarm-text-dim    { color: #3a5555; }
+.swarm-text-muted  { color: #5a7a7a; }
+.swarm-bg { background: #000000; }
+
+@keyframes swarm-scan {
+  0%   { top: 0%; }
+  100% { top: 100%; }
+}
+.swarm-animate-in {
+  animation: fade-in 0.3s ease-out;
+}

@@ -28,9 +28,9 @@ export type { WalletRank, WalletTrade } from './solana/index.js'
 // Bonding curve math & RPC failover
 export {
   getBuyTokenAmount, getSellSolAmount, getBuyPriceImpact, getSellPriceImpact,
-  getTokenPrice, getGraduationProgress, estimateFee, createFallbackConnection,
+  getTokenPrice, getGraduationProgress, estimateFee, createFallbackConnection, getPriorityFee,
 } from './solana/index.js'
-export type { BondingCurveState, RpcEndpoint } from './solana/index.js'
+export type { BondingCurveState, RpcEndpoint, PriorityLevel } from './solana/index.js'
 
 // Helius — RPC, DAS, enriched transactions
 export {
@@ -154,3 +154,24 @@ export type { GmgnToken, GmgnTokenStat, GmgnNewPair } from './solana/index.js'
 // Jupiter v6 — quote, swap
 export { getJupiterQuote, executeJupiterSwap, jupiterSwap } from './solana/index.js'
 export type { JupiterQuote, JupiterQuoteParams, JupiterSwapResult } from './solana/index.js'
+
+// Market microstructure — L2 order book, VPIN, spread metrics, depth analysis
+export {
+  getOrderBook,
+  computeSpreadMetrics,
+  classifyTrade,
+  classifyPriceSeries,
+  computeVPIN,
+  inferBucketSize,
+  liquidityWithinBand,
+  estimateFillPrice,
+  watchOrderBook,
+} from './solana/orderbook.js'
+export type {
+  L2Level,
+  OrderBook,
+  TradeTick,
+  VPINBucket,
+  VPINResult,
+  SpreadMetrics,
+} from './solana/orderbook.js'

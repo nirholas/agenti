@@ -133,3 +133,64 @@ function isNonRetryable(err: any): boolean {
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+export type PriorityLevel = 'low' | 'medium' | 'high' | 'very-high'
+
+const HELIUS_PRIORITY_LEVEL: Record<PriorityLevel, string> = {
+  'low': 'Low',
+  'medium': 'Medium',
+  'high': 'High',
+  'very-high': 'VeryHigh',
+}
+
+const FALLBACK_PERCENTILE: Record<PriorityLevel, number> = {
+  'low': 0.25,
+  'medium': 0.5,
+  'high': 0.75,
+  'very-high': 0.9,
+}
+
+/**
+ * Estimate priority fee in microLamports for the given level.
+ * Uses Helius getPriorityFeeEstimate if rpcUrl is a Helius endpoint,
+ * otherwise falls back to getRecentPrioritizationFees percentile.
+ */
+export async function getPriorityFee(
+  rpcUrl: string,
+  level: PriorityLevel = 'medium',
+  accountKeys: string[] = [],
+): Promise<number> {
+  if (rpcUrl.includes('helius')) {
+    try {
+      const res = await fetch(rpcUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: '1',
+          method: 'getPriorityFeeEstimate',
+          params: [{ accountKeys: accountKeys.length ? accountKeys : undefined, options: { priorityLevel: HELIUS_PRIORITY_LEVEL[level] } }],
+        }),
+      })
+      const json = (await res.json()) as { result?: { priorityFeeEstimate?: number } }
+      const fee = json.result?.priorityFeeEstimate
+      if (typeof fee === 'number' && fee > 0) return fee
+    } catch {
+      // fall through to standard method
+    }
+  }
+
+  try {
+    const { Connection } = await import('@solana/web3.js')
+    const connection = new Connection(rpcUrl, 'confirmed')
+    const fees = await connection.getRecentPrioritizationFees(
+      accountKeys.length ? { lockedWritableAccounts: accountKeys.map((k) => { const { PublicKey } = require('@solana/web3.js'); return new PublicKey(k) }) } : undefined
+    )
+    if (!fees.length) return 1000
+    const sorted = fees.map((f) => f.prioritizationFee).sort((a, b) => a - b)
+    const idx = Math.floor(sorted.length * FALLBACK_PERCENTILE[level])
+    return sorted[Math.min(idx, sorted.length - 1)] ?? 1000
+  } catch {
+    return 1000
+  }
+}

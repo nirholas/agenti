@@ -69,8 +69,15 @@ export async function getJupiterQuote(params: JupiterQuoteParams): Promise<Jupit
 export async function executeJupiterSwap(
   quote: JupiterQuote,
   userPublicKey: string,
-  signAndSend: (txBase64: string) => Promise<string>
+  signAndSend: (txBase64: string) => Promise<string>,
+  priorityLevel: 'low' | 'medium' | 'high' | 'very-high' = 'medium',
 ): Promise<JupiterSwapResult> {
+  const jupiterPriorityLevel: Record<string, string> = {
+    'low': 'low',
+    'medium': 'medium',
+    'high': 'high',
+    'very-high': 'veryHigh',
+  }
   const res = await fetch(`${JUPITER_QUOTE_API}/swap`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -79,7 +86,12 @@ export async function executeJupiterSwap(
       userPublicKey,
       wrapAndUnwrapSol: true,
       dynamicComputeUnitLimit: true,
-      prioritizationFeeLamports: 'auto',
+      prioritizationFeeLamports: {
+        priorityLevelWithMaxLamports: {
+          maxLamports: 10_000_000,
+          priorityLevel: jupiterPriorityLevel[priorityLevel],
+        },
+      },
     }),
   })
 
@@ -108,6 +120,7 @@ export async function jupiterSwap(params: {
   /** Decimals of input token (9 for SOL, 6 for USDC) */
   inputDecimals?: number
   slippageBps?: number
+  priorityLevel?: 'low' | 'medium' | 'high' | 'very-high'
   keypair: import('@solana/web3.js').Keypair
   connection: import('@solana/web3.js').Connection
 }): Promise<JupiterSwapResult> {
@@ -151,5 +164,5 @@ export async function jupiterSwap(params: {
       'confirmed'
     )
     return signature
-  })
+  }, params.priorityLevel ?? 'medium')
 }

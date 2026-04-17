@@ -683,15 +683,16 @@ export function createServer(): McpServer {
       output_mint: z.string().describe('Output token mint address'),
       amount: z.number().positive().describe('Amount of input token to swap (human-readable units)'),
       slippage_bps: z.number().int().min(1).max(10000).default(100).describe('Slippage tolerance in basis points (100 = 1%)'),
+      priority_level: z.enum(['low', 'medium', 'high', 'very-high']).default('medium').describe('Transaction priority level affecting fee and inclusion speed'),
     },
-    async ({ input_mint, output_mint, amount, slippage_bps }) => {
+    async ({ input_mint, output_mint, amount, slippage_bps, priority_level }) => {
       const { Keypair } = await import('@solana/web3.js')
       const { createSolanaAgentKit } = await import('@agenti/sdk')
 
       const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
       if (!solanaKeyHex) throw new Error('AGENTI_SOLANA_PRIVATE_KEY required')
       const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
-      const kit = createSolanaAgentKit({ keypair })
+      const kit = createSolanaAgentKit({ keypair, config: { PRIORITY_LEVEL: priority_level } })
 
       const result = await kit.trade(output_mint, amount, input_mint, slippage_bps)
       return { content: [{ type: 'text', text: JSON.stringify({ signature: result, solscan: `https://solscan.io/tx/${result}` }, null, 2) }] }
@@ -705,18 +706,60 @@ export function createServer(): McpServer {
       to: z.string().describe('Recipient Solana wallet address'),
       amount: z.number().positive().describe('Amount to send (human-readable units)'),
       mint: z.string().optional().describe('SPL token mint address — omit to send native SOL'),
+      priority_level: z.enum(['low', 'medium', 'high', 'very-high']).default('medium').describe('Transaction priority level affecting fee and inclusion speed'),
     },
-    async ({ to, amount, mint }) => {
-      const { Keypair, PublicKey } = await import('@solana/web3.js')
-      const { createSolanaAgentKit } = await import('@agenti/sdk')
+    async ({ to, amount, mint, priority_level }) => {
+      const {
+        Keypair, PublicKey, Connection, Transaction, SystemProgram, LAMPORTS_PER_SOL, ComputeBudgetProgram,
+      } = await import('@solana/web3.js')
+      const { getPriorityFee } = await import('@agenti/sdk')
 
       const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
       if (!solanaKeyHex) throw new Error('AGENTI_SOLANA_PRIVATE_KEY required')
+      const rpcUrl = process.env['SOLANA_RPC_URL'] ?? 'https://api.mainnet-beta.solana.com'
       const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
-      const kit = createSolanaAgentKit({ keypair })
+      const connection = new Connection(rpcUrl, 'confirmed')
+      const toPubkey = new PublicKey(to)
 
-      const result = await kit.transfer(new PublicKey(to), amount, mint ? new PublicKey(mint) : undefined)
-      return { content: [{ type: 'text', text: JSON.stringify({ signature: result, solscan: `https://solscan.io/tx/${result}` }, null, 2) }] }
+      const microLamports = await getPriorityFee(rpcUrl, priority_level)
+
+      const tx = new Transaction()
+      tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
+      tx.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
+
+      if (!mint) {
+        tx.add(SystemProgram.transfer({
+          fromPubkey: keypair.publicKey,
+          toPubkey,
+          lamports: Math.round(amount * LAMPORTS_PER_SOL),
+        }))
+      } else {
+        const {
+          getAssociatedTokenAddress, createAssociatedTokenAccountInstruction,
+          createTransferInstruction, getAccount, getMint,
+        } = await import('@solana/spl-token')
+        const mintPubkey = new PublicKey(mint)
+        const fromAta = await getAssociatedTokenAddress(mintPubkey, keypair.publicKey)
+        const toAta = await getAssociatedTokenAddress(mintPubkey, toPubkey)
+        try {
+          await getAccount(connection, toAta)
+        } catch {
+          tx.add(createAssociatedTokenAccountInstruction(keypair.publicKey, toAta, toPubkey, mintPubkey))
+        }
+        const mintInfo = await getMint(connection, mintPubkey)
+        tx.add(createTransferInstruction(fromAta, toAta, keypair.publicKey, BigInt(Math.round(amount * 10 ** mintInfo.decimals))))
+      }
+
+      const { blockhash } = await connection.getLatestBlockhash('confirmed')
+      tx.recentBlockhash = blockhash
+      tx.feePayer = keypair.publicKey
+      tx.sign(keypair)
+
+      const signature = await connection.sendRawTransaction(tx.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' })
+      const latest = await connection.getLatestBlockhash('confirmed')
+      await connection.confirmTransaction({ signature, blockhash: latest.blockhash, lastValidBlockHeight: latest.lastValidBlockHeight }, 'confirmed')
+
+      return { content: [{ type: 'text', text: JSON.stringify({ signature, priority_fee_microlamports: microLamports, solscan: `https://solscan.io/tx/${signature}` }, null, 2) }] }
     }
   )
 
@@ -1446,8 +1489,9 @@ export function createServer(): McpServer {
       amount: z.number().positive().describe('Human-readable input amount (e.g. 0.5 for 0.5 SOL)'),
       input_decimals: z.number().int().min(0).max(18).default(9).describe('Decimals of input token (9 for SOL, 6 for USDC)'),
       slippage_bps: z.number().int().min(1).max(10000).default(50).describe('Slippage in basis points (50 = 0.5%)'),
+      priority_level: z.enum(['low', 'medium', 'high', 'very-high']).default('medium').describe('Transaction priority level affecting fee and inclusion speed'),
     },
-    async ({ input_mint, output_mint, amount, input_decimals, slippage_bps }) => {
+    async ({ input_mint, output_mint, amount, input_decimals, slippage_bps, priority_level }) => {
       const { Keypair, Connection } = await import('@solana/web3.js')
       const { jupiterSwap } = await import('@agenti/sdk')
 
@@ -1457,7 +1501,7 @@ export function createServer(): McpServer {
       const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
       const connection = new Connection(rpcUrl, 'confirmed')
 
-      const result = await jupiterSwap({ inputMint: input_mint, outputMint: output_mint, amount, inputDecimals: input_decimals, slippageBps: slippage_bps, keypair, connection })
+      const result = await jupiterSwap({ inputMint: input_mint, outputMint: output_mint, amount, inputDecimals: input_decimals, slippageBps: slippage_bps, priorityLevel: priority_level, keypair, connection })
       return {
         content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
       }

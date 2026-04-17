@@ -30,7 +30,11 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts --platform node",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
@@ -43,9 +47,10 @@
     "tsup": "^8.0.0"
   },
   "dependencies": {
-    "@agenti/sdk": "workspace:*",
     "@agenti/core": "workspace:*",
+    "@agenti/sdk": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.10.0",
+    "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.2",
     "zod": "^3.23.0"
   }

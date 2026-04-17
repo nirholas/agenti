@@ -140,9 +140,9 @@ export {
 } from './curve.js'
 export type { BondingCurveState } from './curve.js'
 
-// Multi-endpoint RPC failover
-export { createFallbackConnection } from './rpc.js'
-export type { RpcEndpoint } from './rpc.js'
+// Multi-endpoint RPC failover + priority fee estimation
+export { createFallbackConnection, getPriorityFee } from './rpc.js'
+export type { RpcEndpoint, PriorityLevel } from './rpc.js'
 
 // Solana Agent Kit — 100+ Solana actions via sendaifun/solana-agent-kit
 export {

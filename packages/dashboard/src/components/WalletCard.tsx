@@ -8,46 +8,80 @@ interface WalletInfo {
 }
 
 export function WalletCard({ wallet }: { wallet: WalletInfo }) {
+  const connected = !!wallet.address
+
   return (
-    <div
-      style={{
-        background: '#1f2937',
-        borderRadius: 10,
-        padding: '14px 18px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span
-          style={{
-            width: 10,
-            height: 10,
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 24,
+      padding: '12px 20px',
+      background: 'rgba(255,255,255,0.025)',
+      border: '1px solid rgba(255,255,255,0.07)',
+      borderRadius: 12,
+      flexWrap: 'wrap',
+    }}>
+      {/* Status + address */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 200 }}>
+        <div style={{ position: 'relative', width: 8, height: 8, flexShrink: 0 }}>
+          <span style={{
+            position: 'absolute', inset: 0,
             borderRadius: '50%',
-            background: '#22c55e',
-            display: 'inline-block',
-            boxShadow: '0 0 6px #22c55e',
-          }}
-        />
-        <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: 'monospace' }}>
-          {wallet.address ? `${wallet.address.slice(0, 8)}…${wallet.address.slice(-6)}` : 'No wallet connected'}
+            background: connected ? '#22c55e' : '#475569',
+            animation: connected ? 'glow-pulse 2s ease infinite' : 'none',
+          }} />
+          {connected && (
+            <span style={{
+              position: 'absolute', inset: 0,
+              borderRadius: '50%',
+              background: '#22c55e',
+              animation: 'ping 1.5s ease infinite',
+              opacity: 0.6,
+            }} />
+          )}
+        </div>
+        <span style={{
+          fontFamily: 'var(--mono)',
+          fontSize: 12,
+          color: connected ? '#94a3b8' : '#475569',
+          letterSpacing: '0.02em',
+        }}>
+          {connected
+            ? `${wallet.address.slice(0, 8)}…${wallet.address.slice(-6)}`
+            : 'awaiting connection'}
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 16 }}>
-        <Stat label="Payments" value={wallet.payCount} color="#22c55e" />
-        <Stat label="Trades" value={wallet.tradeCount} color="#3b82f6" />
-        <Stat label="Errors" value={wallet.errorCount} color="#ef4444" />
+
+      {/* Stats */}
+      <div style={{ display: 'flex', gap: 4 }}>
+        <StatPill label="pay" value={wallet.payCount} color="#22c55e" bg="rgba(34,197,94,0.1)" />
+        <StatPill label="trade" value={wallet.tradeCount} color="#3b82f6" bg="rgba(59,130,246,0.1)" />
+        {wallet.errorCount > 0 && (
+          <StatPill label="err" value={wallet.errorCount} color="#ef4444" bg="rgba(239,68,68,0.1)" />
+        )}
       </div>
     </div>
   )
 }
 
-function Stat({ label, value, color }: { label: string; value: number; color: string }) {
+function StatPill({ label, value, color, bg }: { label: string; value: number; color: string; bg: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <span style={{ fontSize: 20, fontWeight: 700, color }}>{value}</span>
-      <span style={{ fontSize: 11, color: '#6b7280', textTransform: 'uppercase' }}>{label}</span>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6,
+      padding: '4px 10px',
+      borderRadius: 20,
+      background: value > 0 ? bg : 'transparent',
+      border: `1px solid ${value > 0 ? color + '30' : 'transparent'}`,
+      transition: 'all 0.2s ease',
+    }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: value > 0 ? color : '#475569', fontVariantNumeric: 'tabular-nums' }}>
+        {value}
+      </span>
+      <span style={{ fontSize: 10, color: value > 0 ? color + 'aa' : '#334155', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>
+        {label}
+      </span>
     </div>
   )
 }
