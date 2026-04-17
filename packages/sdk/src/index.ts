@@ -146,3 +146,11 @@ export type { RetryOptions, CircuitBreakerOptions } from './resilience.js'
 // Anomaly detection — Modified Z-Score, EWMA, volatility, rolling Z-score
 export { detectAnomalies, ewma, getVolatility, rollingZScore } from './anomaly.js'
 export type { Anomaly, AnomalyType, PricePoint } from './anomaly.js'
+
+// GMGN token data — trending tokens, token stats, new pairs
+export { getGmgnTrending, getGmgnTokenStat, getGmgnNewPairs } from './solana/index.js'
+export type { GmgnToken, GmgnTokenStat, GmgnNewPair } from './solana/index.js'
+
+// Jupiter v6 — quote, swap
+export { getJupiterQuote, executeJupiterSwap, jupiterSwap } from './solana/index.js'
+export type { JupiterQuote, JupiterQuoteParams, JupiterSwapResult } from './solana/index.js'

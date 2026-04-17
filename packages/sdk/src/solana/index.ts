@@ -166,3 +166,11 @@ export type { PaymentRecord } from './payments.js'
 
 // Agent action schemas — Zod schemas for AI tool use
 export { AgentActionSchemas } from './agent-actions.js'
+
+// GMGN token data — trending, token stats, new pairs
+export { getGmgnTrending, getGmgnTokenStat, getGmgnNewPairs } from './gmgn-tokens.js'
+export type { GmgnToken, GmgnTokenStat, GmgnNewPair } from './gmgn-tokens.js'
+
+// Jupiter v6 — quote and swap
+export { getJupiterQuote, executeJupiterSwap, jupiterSwap } from './jupiter.js'
+export type { JupiterQuote, JupiterQuoteParams, JupiterSwapResult } from './jupiter.js'
