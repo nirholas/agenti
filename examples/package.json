@@ -1,0 +1,32 @@
+{
+  "name": "@agenti/examples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01": "tsx 01-create-wallet.ts",
+    "02": "tsx 02-check-balance.ts",
+    "03": "tsx 03-pay-for-api.ts",
+    "04": "tsx 04-receive-payment.ts",
+    "05": "tsx 05-gate-express-api.ts",
+    "06": "tsx 06-langchain-agent.ts",
+    "07": "tsx 07-vercel-ai-agent.ts",
+    "08": "tsx 08-mcp-server.ts"
+  },
+  "dependencies": {
+    "@agenti/core": "workspace:*",
+    "@agenti/sdk": "workspace:*",
+    "@agenti/mcp": "workspace:*",
+    "@ai-sdk/anthropic": "^1.0.0",
+    "@anthropic-ai/sdk": "^0.51.0",
+    "@langchain/anthropic": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "@modelcontextprotocol/sdk": "^1.10.0",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.2",
+    "ai": "^4.0.0",
+    "bs58": "^6.0.0",
+    "express": "^4.21.0",
+    "langchain": "^0.3.0",
+    "tsx": "^4.0.0"
+  }
+}
