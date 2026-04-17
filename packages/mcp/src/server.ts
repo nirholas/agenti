@@ -1214,5 +1214,255 @@ export function createServer(): McpServer {
     }
   )
 
+  // ---------------------------------------------------------------------------
+  // Pump.fun trading bot — buy, sell, token info
+  // Requires AGENTI_SOLANA_PRIVATE_KEY and SOLANA_RPC_URL
+  // ---------------------------------------------------------------------------
+
+  server.tool(
+    'pump_buy',
+    'Buy a pump.fun token with SOL. Works on bonding curve and graduated (PumpSwap AMM) tokens. Requires AGENTI_SOLANA_PRIVATE_KEY.',
+    {
+      mint: z.string().describe('Token mint address'),
+      sol_amount: z.number().positive().describe('Amount of SOL to spend (e.g. 0.1)'),
+      slippage: z.number().min(1).max(50).default(5).describe('Slippage tolerance in percent (default 5)'),
+      priority_fee: z.number().int().min(0).default(0).describe('Priority fee tip in lamports for faster inclusion'),
+    },
+    async ({ mint, sol_amount, slippage, priority_fee }) => {
+      const { Keypair, Connection } = await import('@solana/web3.js')
+      const { buy } = await import('@agenti/sdk')
+
+      const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
+      if (!solanaKeyHex) throw new Error('AGENTI_SOLANA_PRIVATE_KEY required')
+      const rpcUrl = process.env['SOLANA_RPC_URL'] ?? 'https://api.mainnet-beta.solana.com'
+
+      const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
+      const connection = new Connection(rpcUrl, 'confirmed')
+
+      const result = await buy({ mint, solAmount: sol_amount, slippage, keypair, connection, priorityFee: priority_fee })
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ status: 'confirmed', mint, sol_spent: sol_amount, ...result }, null, 2),
+        }],
+      }
+    }
+  )
+
+  server.tool(
+    'pump_sell',
+    'Sell a pump.fun token back to SOL. Works on bonding curve and graduated tokens. Requires AGENTI_SOLANA_PRIVATE_KEY.',
+    {
+      mint: z.string().describe('Token mint address'),
+      token_amount: z.number().positive().describe('Amount of tokens to sell (human-readable, e.g. 1000000)'),
+      slippage: z.number().min(1).max(50).default(5).describe('Slippage tolerance in percent (default 5)'),
+    },
+    async ({ mint, token_amount, slippage }) => {
+      const { Keypair, Connection } = await import('@solana/web3.js')
+      const { sell } = await import('@agenti/sdk')
+
+      const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
+      if (!solanaKeyHex) throw new Error('AGENTI_SOLANA_PRIVATE_KEY required')
+      const rpcUrl = process.env['SOLANA_RPC_URL'] ?? 'https://api.mainnet-beta.solana.com'
+
+      const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
+      const connection = new Connection(rpcUrl, 'confirmed')
+
+      const result = await sell({ mint, tokenAmount: token_amount, slippage, keypair, connection })
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ status: 'confirmed', mint, tokens_sold: token_amount, ...result }, null, 2),
+        }],
+      }
+    }
+  )
+
+  server.tool(
+    'pump_token_info',
+    'Get pump.fun token state: whether it is on the bonding curve, migrating, or graduated to the AMM. Also returns market cap and pool address if graduated.',
+    {
+      mint: z.string().describe('Token mint address'),
+    },
+    async ({ mint }) => {
+      const { getCoinState } = await import('@agenti/sdk')
+      const state = await getCoinState(mint)
+      return {
+        content: [{ type: 'text', text: JSON.stringify(state, null, 2) }],
+      }
+    }
+  )
+
+  // ---------------------------------------------------------------------------
+  // GMGN trading bot — trending tokens, token stats, new pairs, copy-trade
+  // ---------------------------------------------------------------------------
+
+  server.tool(
+    'gmgn_trending_tokens',
+    'Get trending Solana tokens from GMGN by swap volume. Useful for spotting momentum plays. No API key required.',
+    {
+      timeframe: z.enum(['1m', '5m', '1h', '6h', '24h']).default('1h').describe('Trending window'),
+      limit: z.number().int().min(1).max(50).default(20).describe('Number of tokens to return'),
+      pump_only: z.boolean().default(false).describe('Only show pump.fun tokens'),
+      min_liquidity_usd: z.number().min(0).default(0).describe('Minimum liquidity filter in USD'),
+    },
+    async ({ timeframe, limit, pump_only, min_liquidity_usd }) => {
+      const { getGmgnTrending } = await import('@agenti/sdk')
+      const opts: Parameters<typeof getGmgnTrending>[0] = { timeframe, limit, pumpOnly: pump_only }
+      if (min_liquidity_usd > 0) opts.minLiquidityUsd = min_liquidity_usd
+      const tokens = await getGmgnTrending(opts)
+      return {
+        content: [{ type: 'text', text: JSON.stringify({ count: tokens.length, tokens }, null, 2) }],
+      }
+    }
+  )
+
+  server.tool(
+    'gmgn_token_info',
+    'Get detailed token stats from GMGN: price, market cap, volume, holder count, dev holding, honeypot status, freeze/mint authority flags.',
+    {
+      mint: z.string().describe('Solana token mint address'),
+    },
+    async ({ mint }) => {
+      const { getGmgnTokenStat } = await import('@agenti/sdk')
+      const stat = await getGmgnTokenStat(mint)
+      return {
+        content: [{ type: 'text', text: JSON.stringify(stat, null, 2) }],
+      }
+    }
+  )
+
+  server.tool(
+    'gmgn_new_pairs',
+    'Get newly created token pairs on Solana from GMGN. Good for sniping fresh launches.',
+    {
+      limit: z.number().int().min(1).max(50).default(20).describe('Number of pairs to return'),
+      pump_only: z.boolean().default(false).describe('Only show pump.fun launches'),
+      min_liquidity_usd: z.number().min(0).default(0).describe('Minimum current liquidity filter in USD'),
+    },
+    async ({ limit, pump_only, min_liquidity_usd }) => {
+      const { getGmgnNewPairs } = await import('@agenti/sdk')
+      const opts: Parameters<typeof getGmgnNewPairs>[0] = { limit, pumpOnly: pump_only }
+      if (min_liquidity_usd > 0) opts.minLiquidityUsd = min_liquidity_usd
+      const pairs = await getGmgnNewPairs(opts)
+      return {
+        content: [{ type: 'text', text: JSON.stringify({ count: pairs.length, pairs }, null, 2) }],
+      }
+    }
+  )
+
+  server.tool(
+    'gmgn_copy_trade',
+    'Copy a smart wallet trade: looks up a wallet\'s most recent trade on GMGN then executes the same buy or sell via pump.fun. Requires AGENTI_SOLANA_PRIVATE_KEY.',
+    {
+      wallet: z.string().describe('Solana wallet address to copy'),
+      sol_amount: z.number().positive().describe('SOL amount to spend when copying a buy'),
+      sell_pct: z.number().min(1).max(100).default(100).describe('Percentage of holdings to sell when copying a sell (default 100%)'),
+      dry_run: z.boolean().default(false).describe('If true, show the trade that would be copied without executing it'),
+    },
+    async ({ wallet, sol_amount, sell_pct, dry_run }) => {
+      const { getWalletTrades, buy, sell } = await import('@agenti/sdk')
+      const { Keypair, Connection } = await import('@solana/web3.js')
+
+      const trades = await getWalletTrades(wallet, { limit: 5 })
+      const latest = trades[0]
+      if (!latest) {
+        return { content: [{ type: 'text', text: JSON.stringify({ error: 'No recent trades found for this wallet' }) }] }
+      }
+
+      if (dry_run) {
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ dry_run: true, would_copy: latest }, null, 2),
+          }],
+        }
+      }
+
+      const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
+      if (!solanaKeyHex) throw new Error('AGENTI_SOLANA_PRIVATE_KEY required')
+      const rpcUrl = process.env['SOLANA_RPC_URL'] ?? 'https://api.mainnet-beta.solana.com'
+      const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
+      const connection = new Connection(rpcUrl, 'confirmed')
+
+      let result
+      if (latest.side === 'buy') {
+        result = await buy({ mint: latest.mint, solAmount: sol_amount, keypair, connection })
+      } else {
+        const tokenAmount = latest.token_amount * (sell_pct / 100)
+        result = await sell({ mint: latest.mint, tokenAmount, keypair, connection })
+      }
+
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({ copied_from: wallet, trade: latest, executed: result }, null, 2),
+        }],
+      }
+    }
+  )
+
+  // ---------------------------------------------------------------------------
+  // Jupiter trading bot — quotes and direct swaps
+  // ---------------------------------------------------------------------------
+
+  server.tool(
+    'jupiter_quote',
+    'Get a swap quote from Jupiter v6 aggregator. Read-only — no wallet needed. Returns best route, expected output, and price impact.',
+    {
+      input_mint: z.string().describe('Input token mint (use "So11111111111111111111111111111111111111112" for SOL)'),
+      output_mint: z.string().describe('Output token mint address'),
+      amount: z.number().positive().describe('Human-readable input amount (e.g. 0.1 for 0.1 SOL)'),
+      input_decimals: z.number().int().min(0).max(18).default(9).describe('Decimals of input token (9 for SOL, 6 for USDC)'),
+      slippage_bps: z.number().int().min(1).max(10000).default(50).describe('Slippage in basis points (50 = 0.5%)'),
+    },
+    async ({ input_mint, output_mint, amount, input_decimals, slippage_bps }) => {
+      const { getJupiterQuote } = await import('@agenti/sdk')
+      const rawAmount = BigInt(Math.round(amount * 10 ** input_decimals))
+      const quote = await getJupiterQuote({ inputMint: input_mint, outputMint: output_mint, amount: rawAmount, slippageBps: slippage_bps })
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify({
+            inputMint: quote.inputMint,
+            outputMint: quote.outputMint,
+            inAmount: quote.inAmount,
+            outAmount: quote.outAmount,
+            priceImpactPct: quote.priceImpactPct,
+            slippageBps: quote.slippageBps,
+            route: quote.routePlan.map((r: { swapInfo: { label: string }; percent: number }) => ({ dex: r.swapInfo.label, pct: r.percent })),
+          }, null, 2),
+        }],
+      }
+    }
+  )
+
+  server.tool(
+    'jupiter_swap',
+    'Execute a token swap via Jupiter v6 aggregator. Best-route swap across all Solana DEXes. Requires AGENTI_SOLANA_PRIVATE_KEY.',
+    {
+      input_mint: z.string().describe('Input token mint (use "So11111111111111111111111111111111111111112" for SOL)'),
+      output_mint: z.string().describe('Output token mint address'),
+      amount: z.number().positive().describe('Human-readable input amount (e.g. 0.5 for 0.5 SOL)'),
+      input_decimals: z.number().int().min(0).max(18).default(9).describe('Decimals of input token (9 for SOL, 6 for USDC)'),
+      slippage_bps: z.number().int().min(1).max(10000).default(50).describe('Slippage in basis points (50 = 0.5%)'),
+    },
+    async ({ input_mint, output_mint, amount, input_decimals, slippage_bps }) => {
+      const { Keypair, Connection } = await import('@solana/web3.js')
+      const { jupiterSwap } = await import('@agenti/sdk')
+
+      const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
+      if (!solanaKeyHex) throw new Error('AGENTI_SOLANA_PRIVATE_KEY required')
+      const rpcUrl = process.env['SOLANA_RPC_URL'] ?? 'https://api.mainnet-beta.solana.com'
+      const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
+      const connection = new Connection(rpcUrl, 'confirmed')
+
+      const result = await jupiterSwap({ inputMint: input_mint, outputMint: output_mint, amount, inputDecimals: input_decimals, slippageBps: slippage_bps, keypair, connection })
+      return {
+        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+      }
+    }
+  )
+
   return server
 }
