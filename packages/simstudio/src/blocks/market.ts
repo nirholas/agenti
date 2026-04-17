@@ -1,0 +1,125 @@
+import type { BlockConfig } from '../types.js'
+
+export const AgentiMarketBlock: BlockConfig = {
+  type: 'agenti_market',
+  name: 'Agenti Market Data',
+  description: 'Fetch cryptocurrency prices, trending coins, DeFi TVL, and crypto news. No API key required — powered by CoinGecko, DeFiLlama, and CryptoPanic.',
+  category: 'tools',
+  bgColor: '#7c3aed',
+  tags: ['crypto', 'market-data', 'defi', 'prices', 'news'],
+  subBlocks: [
+    {
+      id: 'operation',
+      title: 'Operation',
+      type: 'dropdown',
+      required: true,
+      options: [
+        { label: 'Coin Price', value: 'price' },
+        { label: 'Trending Coins', value: 'trending' },
+        { label: 'Protocol TVL', value: 'tvl' },
+        { label: 'Crypto News', value: 'news' },
+      ],
+    },
+    {
+      id: 'coinId',
+      title: 'Coin ID',
+      type: 'short-input',
+      required: { field: 'operation', value: 'price' },
+      condition: { field: 'operation', value: 'price' },
+      placeholder: 'bitcoin, ethereum, usd-coin...',
+    },
+    {
+      id: 'currency',
+      title: 'Currency',
+      type: 'dropdown',
+      required: false,
+      condition: { field: 'operation', value: 'price' },
+      defaultValue: 'usd',
+      options: [
+        { label: 'USD', value: 'usd' },
+        { label: 'EUR', value: 'eur' },
+        { label: 'GBP', value: 'gbp' },
+        { label: 'JPY', value: 'jpy' },
+        { label: 'BTC', value: 'btc' },
+        { label: 'ETH', value: 'eth' },
+      ],
+    },
+    {
+      id: 'protocol',
+      title: 'Protocol',
+      type: 'short-input',
+      required: { field: 'operation', value: 'tvl' },
+      condition: { field: 'operation', value: 'tvl' },
+      placeholder: 'uniswap, aave, curve...',
+    },
+    {
+      id: 'limit',
+      title: 'Limit',
+      type: 'short-input',
+      required: false,
+      condition: { field: 'operation', value: ['trending', 'news'] },
+      defaultValue: 10,
+      placeholder: '10',
+    },
+    {
+      id: 'newsQuery',
+      title: 'News Query',
+      type: 'short-input',
+      required: false,
+      condition: { field: 'operation', value: 'news' },
+      placeholder: 'Optional keyword filter',
+    },
+    {
+      id: 'serverUrl',
+      title: 'Bridge Server URL',
+      type: 'short-input',
+      required: false,
+      defaultValue: 'http://localhost:3200',
+      placeholder: 'http://localhost:3200',
+    },
+  ],
+  tools: {
+    access: [
+      'agenti_coin_price',
+      'agenti_trending_coins',
+      'agenti_protocol_tvl',
+      'agenti_crypto_news',
+    ],
+    config: {
+      tool: (params) => {
+        const map: Record<string, string> = {
+          price: 'agenti_coin_price',
+          trending: 'agenti_trending_coins',
+          tvl: 'agenti_protocol_tvl',
+          news: 'agenti_crypto_news',
+        }
+        return map[params.operation as string] ?? 'agenti_coin_price'
+      },
+      params: (params) => ({
+        coinId: params.coinId,
+        currency: params.currency ?? 'usd',
+        protocol: params.protocol,
+        limit: params.limit ? Number(params.limit) : 10,
+        query: params.newsQuery,
+        serverUrl: params.serverUrl,
+      }),
+    },
+  },
+  inputs: {
+    operation: { type: 'string', description: 'Market data operation' },
+    coinId: { type: 'string', description: 'CoinGecko coin ID' },
+    currency: { type: 'string', description: 'Fiat currency' },
+    protocol: { type: 'string', description: 'DeFiLlama protocol slug' },
+    limit: { type: 'number', description: 'Result limit' },
+    newsQuery: { type: 'string', description: 'News search query' },
+    serverUrl: { type: 'string', description: 'Bridge server URL' },
+  },
+  outputs: {
+    price: { type: 'number', description: 'Token price (price operation)' },
+    change24h: { type: 'number', description: '24h price change %' },
+    marketCap: { type: 'number', description: 'Market cap' },
+    coins: { type: 'json', description: 'Trending coins array' },
+    tvl: { type: 'number', description: 'Protocol TVL in USD' },
+    articles: { type: 'json', description: 'News articles array' },
+  },
+}

@@ -1,0 +1,48 @@
+{
+  "name": "@agenti/simstudio",
+  "version": "0.1.0",
+  "description": "SimStudio tool and block definitions for agenti crypto-payment tools",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "agenti-simstudio": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./tools": {
+      "import": "./dist/tools/index.js",
+      "types": "./dist/tools/index.d.ts"
+    },
+    "./blocks": {
+      "import": "./dist/blocks/index.js",
+      "types": "./dist/blocks/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.js",
+      "types": "./dist/server.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/bin.js"
+  },
+  "dependencies": {
+    "@agenti/sdk": "workspace:*",
+    "@solana/web3.js": "^1.95.0",
+    "bs58": "^6.0.0",
+    "hono": "^4.0.0",
+    "@hono/node-server": "^1.13.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}
