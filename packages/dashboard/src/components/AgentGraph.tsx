@@ -1,24 +1,52 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import {
-  forceSimulation,
-  forceLink,
-  forceManyBody,
-  forceCenter,
-  forceCollide,
-} from 'd3-force'
-import type { GraphNode, GraphEdge } from '../types'
+import dynamic from 'next/dynamic'
+import { useRef, useMemo, useCallback } from 'react'
+import type { GraphNode, GraphEdge, NodeKind, EdgeKind } from '../types'
 
-const NODE_COLOR: Record<GraphNode['kind'], string> = {
-  wallet: '#3b82f6',
-  token: '#a855f7',
-  url: '#22c55e',
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ForceGraph3D = dynamic<any>(() => import('react-force-graph-3d'), {
+  ssr: false,
+  loading: () => (
+    <div style={{
+      background: '#111827',
+      borderRadius: 10,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#4b5563',
+      fontSize: 13,
+      fontFamily: 'monospace',
+      letterSpacing: '0.05em',
+    }}>
+      initializing 3d graph…
+    </div>
+  ),
+})
+
+export const NODE_COLOR: Record<NodeKind, string> = {
+  chain:   '#f97316',
+  service: '#06b6d4',
+  agent:   '#eab308',
+  wallet:  '#3b82f6',
+  token:   '#a855f7',
+  url:     '#22c55e',
 }
 
-const EDGE_COLOR: Record<GraphEdge['kind'], string> = {
-  pay: '#22c55e',
-  trade: '#3b82f6',
+const NODE_BASE_VAL: Record<NodeKind, number> = {
+  chain:   12,
+  service: 10,
+  agent:   7,
+  wallet:  5,
+  token:   8,
+  url:     3,
+}
+
+export const EDGE_COLOR: Record<EdgeKind, string> = {
+  pay:     '#22c55e',
+  trade:   '#a855f7',
+  balance: '#60a5fa',
+  invoice: '#f59e0b',
 }
 
 interface Props {
@@ -28,76 +56,50 @@ interface Props {
   height?: number
 }
 
-export function AgentGraph({ nodes, edges, width = 600, height = 400 }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+export function AgentGraph({ nodes, edges, width = 900, height = 520 }: Props) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fgRef = useRef<any>(null)
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+  const graphData = useMemo(() => ({
+    nodes: nodes.map(n => ({ ...n })),
+    links: edges.map(e => ({
+      source: typeof e.source === 'string' ? e.source : (e.source as GraphNode).id,
+      target: typeof e.target === 'string' ? e.target : (e.target as GraphNode).id,
+      kind: e.kind,
+    })),
+  }), [nodes, edges])
 
-    // Deep-copy so D3 can mutate positions
-    const simNodes: GraphNode[] = nodes.map((n) => ({ ...n }))
-    const nodeById = new Map(simNodes.map((n) => [n.id, n]))
+  const nodeColor    = useCallback((n: any) => NODE_COLOR[n.kind as NodeKind] ?? '#9ca3af', [])
+  const nodeVal      = useCallback((n: any) => (NODE_BASE_VAL[n.kind as NodeKind] ?? 4) + (n.hits ?? 0) * 0.3, [])
+  const linkColor    = useCallback((l: any) => EDGE_COLOR[l.kind as EdgeKind] ?? '#4b5563', [])
+  const linkParticles = useCallback((l: any) => (l.kind === 'pay' || l.kind === 'trade') ? 3 : 0, [])
+  const linkParticleColor = useCallback((l: any) => EDGE_COLOR[l.kind as EdgeKind] ?? '#ffffff', [])
 
-    const simEdges = edges
-      .map((e) => ({
-        source: nodeById.get(typeof e.source === 'string' ? e.source : e.source.id) ?? simNodes[0],
-        target: nodeById.get(typeof e.target === 'string' ? e.target : e.target.id) ?? simNodes[0],
-        kind: e.kind,
-      }))
-      .filter((e) => e.source && e.target)
-
-    const sim = forceSimulation<GraphNode>(simNodes)
-      .force('link', forceLink(simEdges).id((d) => (d as GraphNode).id).distance(80))
-      .force('charge', forceManyBody().strength(-120))
-      .force('center', forceCenter(width / 2, height / 2))
-      .force('collide', forceCollide(20))
-
-    function draw() {
-      ctx!.clearRect(0, 0, width, height)
-
-      // Edges
-      for (const e of simEdges) {
-        const s = e.source as GraphNode
-        const t = e.target as GraphNode
-        if (!s.x || !s.y || !t.x || !t.y) continue
-        ctx!.beginPath()
-        ctx!.moveTo(s.x, s.y)
-        ctx!.lineTo(t.x, t.y)
-        ctx!.strokeStyle = EDGE_COLOR[e.kind]
-        ctx!.globalAlpha = 0.5
-        ctx!.lineWidth = 1.5
-        ctx!.stroke()
-        ctx!.globalAlpha = 1
-      }
-
-      // Nodes
-      for (const n of simNodes) {
-        if (!n.x || !n.y) continue
-        ctx!.beginPath()
-        ctx!.arc(n.x, n.y, 10, 0, Math.PI * 2)
-        ctx!.fillStyle = NODE_COLOR[n.kind]
-        ctx!.fill()
-        ctx!.fillStyle = '#f9fafb'
-        ctx!.font = '10px sans-serif'
-        ctx!.textAlign = 'center'
-        ctx!.fillText(n.label.slice(0, 10), n.x, n.y + 22)
-      }
+  const onEngineStop = useCallback(() => {
+    const ctrl = fgRef.current?.controls()
+    if (ctrl) {
+      ctrl.autoRotate = true
+      ctrl.autoRotateSpeed = 0.4
     }
-
-    sim.on('tick', draw)
-
-    return () => { sim.stop() }
-  }, [nodes, edges, width, height])
+  }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
+    <ForceGraph3D
+      ref={fgRef}
+      graphData={graphData}
+      nodeLabel="label"
+      nodeColor={nodeColor}
+      nodeVal={nodeVal}
+      linkColor={linkColor}
+      linkWidth={1.5}
+      linkDirectionalParticles={linkParticles}
+      linkDirectionalParticleSpeed={0.004}
+      linkDirectionalParticleWidth={2}
+      linkDirectionalParticleColor={linkParticleColor}
+      backgroundColor="#0f172a"
       width={width}
       height={height}
-      style={{ borderRadius: 10, background: '#111827', display: 'block' }}
+      onEngineStop={onEngineStop}
     />
   )
 }
