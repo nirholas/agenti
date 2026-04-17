@@ -1,16 +1,19 @@
 /**
- * Options Flow Interpreter: dark pool prints + unusual options → directional signal
+ * Options Flow Interpreter: unusual options activity → directional signal
  *
- * Architecture:
- *   Call 1 — Claude ingests real-time options tape, dark pool prints, and short interest
- *             via tool use; classifies each flow event (informed vs noise)
- *   Call 2 — Claude synthesizes cross-ticker correlation, outputs DIRECTIONAL SIGNAL
- *             with entry/exit levels and conviction tier
- *   Memory  — Tracks signal accuracy over time; adjusts noise thresholds automatically
+ * Real data sources:
+ *   Yahoo Finance  — options chain (call/put vol, OI, IV) — free, no key
+ *   Yahoo Finance  — quote summary / insider transactions — free, no key
+ *   FINRA          — short interest data — free public API
+ *   openFDA FAERS  — not used here; see 15-regulatory-alpha-extractor.ts
  *
- * Why nobody open-sources this:
- *   The informed-vs-noise classifier and cross-ticker correlation logic is the alpha.
- *   Retail flow-alert services show raw sweeps; this shows what they MEAN.
+ * Dark pool prints require a paid subscription (Cboe, Nasdaq TotalView, or
+ * Unusual Whales API). This example shows where to plug them in and runs
+ * the full signal interpretation on the options-only data without them.
+ *
+ * Two-call architecture:
+ *   Call 1 — Claude fetches live options chain + short interest for each ticker
+ *   Call 2 — Claude applies informed-vs-noise classifier, outputs ranked signals
  */
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -20,45 +23,16 @@ import { readFile, writeFile } from 'fs/promises'
 // Types
 // ---------------------------------------------------------------------------
 
-interface OptionsFlowEvent {
+interface WatchTicker {
   ticker: string
-  type: 'call' | 'put'
-  strike: number
-  expiry: string
-  premium: number        // total premium in $
-  contracts: number
-  side: 'ask' | 'bid' | 'mid'
-  condition: 'sweep' | 'block' | 'split'
-  openInterest: number
-  impliedVol: number
-  timestamp: string
-}
-
-interface DarkPoolPrint {
-  ticker: string
-  size: number           // shares
-  price: number
-  vwap: number
-  premium: boolean       // above market
-  timestamp: string
-}
-
-interface FlowSignal {
-  ticker: string
-  direction: 'bullish' | 'bearish' | 'neutral'
-  conviction: 'low' | 'medium' | 'high' | 'extreme'
-  entryZone: [number, number]
-  targetPrice: number
-  stopLoss: number
-  daysToExpiry: number
-  thesis: string
-  informedProbability: number  // 0–1
+  sector: string
 }
 
 interface SignalOutcome {
-  signal: FlowSignal
+  ticker: string
+  direction: 'bullish' | 'bearish'
   date: string
-  outcome?: { hit_target: boolean; max_gain_pct: number; days_held: number }
+  outcome?: { hit_target: boolean; days_held: number; max_gain_pct: number }
 }
 
 // ---------------------------------------------------------------------------
@@ -68,84 +42,277 @@ interface SignalOutcome {
 class FlowSignalTracker {
   private records: SignalOutcome[] = []
   constructor(private filePath = 'flow_signals.json') {}
-
-  async load() {
-    try { this.records = JSON.parse(await readFile(this.filePath, 'utf-8')) } catch { this.records = [] }
-  }
+  async load() { try { this.records = JSON.parse(await readFile(this.filePath, 'utf-8')) } catch { this.records = [] } }
   async save() { await writeFile(this.filePath, JSON.stringify(this.records, null, 2)) }
   add(r: SignalOutcome) { this.records.push(r) }
-
   accuracy(): number {
     const resolved = this.records.filter(r => r.outcome)
-    if (resolved.length === 0) return 0
-    return resolved.filter(r => r.outcome!.hit_target).length / resolved.length
+    return resolved.length === 0 ? 0 : resolved.filter(r => r.outcome!.hit_target).length / resolved.length
   }
 }
 
 // ---------------------------------------------------------------------------
-// The prompt — the classifier rubric is the moat
+// Real tool implementations
+// ---------------------------------------------------------------------------
+
+interface YahooOptionsResult {
+  optionChain?: {
+    result?: Array<{
+      underlyingSymbol?: string
+      expirationDates?: number[]
+      quote?: { regularMarketPrice?: number; regularMarketVolume?: number }
+      options?: Array<{
+        expirationDate?: number
+        calls?: OptionContract[]
+        puts?: OptionContract[]
+      }>
+    }>
+  }
+}
+
+interface OptionContract {
+  contractSymbol?: string
+  strike?: number
+  expiration?: number
+  lastPrice?: number
+  bid?: number
+  ask?: number
+  volume?: number
+  openInterest?: number
+  impliedVolatility?: number
+  inTheMoney?: boolean
+  percentChange?: number
+}
+
+async function toolGetOptionsChain(ticker: string): Promise<unknown> {
+  const url = `https://query1.finance.yahoo.com/v7/finance/options/${ticker}`
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+      Accept: 'application/json',
+    },
+  })
+  if (!res.ok) throw new Error(`Yahoo options ${res.status} for ${ticker}`)
+
+  const data = await res.json() as YahooOptionsResult
+  const result = data.optionChain?.result?.[0]
+  if (!result) return { ticker, error: 'No options data available' }
+
+  const spotPrice = result.quote?.regularMarketPrice ?? 0
+  const chain = result.options?.[0]
+  if (!chain) return { ticker, error: 'No active options chain' }
+
+  const calls = chain.calls ?? []
+  const puts = chain.puts ?? []
+
+  // Calculate aggregate stats
+  const callVol = calls.reduce((s, c) => s + (c.volume ?? 0), 0)
+  const putVol = puts.reduce((s, p) => s + (p.volume ?? 0), 0)
+  const callOI = calls.reduce((s, c) => s + (c.openInterest ?? 0), 0)
+  const putOI = puts.reduce((s, p) => s + (p.openInterest ?? 0), 0)
+
+  // Flag unusual: volume > 50% of OI (suggests fresh positioning, not roll)
+  const unusualCalls = calls
+    .filter(c => (c.volume ?? 0) > 0 && (c.openInterest ?? 0) > 0 && (c.volume! / c.openInterest!) > 0.5)
+    .sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0))
+    .slice(0, 5)
+    .map(c => ({
+      strike: c.strike,
+      expiry: c.expiration ? new Date(c.expiration * 1000).toISOString().slice(0, 10) : 'unknown',
+      vol: c.volume,
+      oi: c.openInterest,
+      vol_oi_ratio: c.openInterest ? +(c.volume! / c.openInterest!).toFixed(2) : null,
+      iv_pct: c.impliedVolatility ? +(c.impliedVolatility * 100).toFixed(1) : null,
+      otm_pct: spotPrice > 0 && c.strike ? +(((c.strike - spotPrice) / spotPrice) * 100).toFixed(1) : null,
+      bid_ask_spread: c.bid != null && c.ask != null ? +(c.ask - c.bid).toFixed(2) : null,
+    }))
+
+  const unusualPuts = puts
+    .filter(p => (p.volume ?? 0) > 0 && (p.openInterest ?? 0) > 0 && (p.volume! / p.openInterest!) > 0.5)
+    .sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0))
+    .slice(0, 3)
+    .map(p => ({
+      strike: p.strike,
+      expiry: p.expiration ? new Date(p.expiration * 1000).toISOString().slice(0, 10) : 'unknown',
+      vol: p.volume,
+      oi: p.openInterest,
+      vol_oi_ratio: p.openInterest ? +(p.volume! / p.openInterest!).toFixed(2) : null,
+      iv_pct: p.impliedVolatility ? +(p.impliedVolatility * 100).toFixed(1) : null,
+    }))
+
+  return {
+    ticker,
+    spot_price: spotPrice,
+    expiry: chain.expirationDate ? new Date(chain.expirationDate * 1000).toISOString().slice(0, 10) : 'unknown',
+    call_volume: callVol,
+    put_volume: putVol,
+    put_call_ratio: putVol / (callVol || 1),
+    call_oi: callOI,
+    put_oi: putOI,
+    vol_oi_ratio_calls: callOI > 0 ? +(callVol / callOI).toFixed(3) : null,
+    skew_note: callVol > putVol * 1.8 ? 'CALL_HEAVY' : putVol > callVol * 1.8 ? 'PUT_HEAVY' : 'BALANCED',
+    unusual_calls: unusualCalls,
+    unusual_puts: unusualPuts,
+    total_available_expiries: result.expirationDates?.length ?? 0,
+  }
+}
+
+interface YahooSummaryResult {
+  quoteSummary?: {
+    result?: Array<{
+      defaultKeyStatistics?: {
+        shortPercentOfFloat?: { raw?: number }
+        shortRatio?: { raw?: number }
+        sharesShort?: { raw?: number }
+        sharesShortPriorMonth?: { raw?: number }
+      }
+      summaryDetail?: {
+        volume?: { raw?: number }
+        averageVolume?: { raw?: number }
+        fiftyTwoWeekHigh?: { raw?: number }
+        fiftyTwoWeekLow?: { raw?: number }
+        marketCap?: { raw?: number }
+      }
+      earningsHistory?: {
+        history?: Array<{ surprisePercent?: { raw?: number }; quarter?: { fmt?: string } }>
+      }
+    }>
+  }
+}
+
+async function toolGetStockContext(ticker: string): Promise<unknown> {
+  const modules = 'defaultKeyStatistics,summaryDetail,earningsHistory'
+  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=${modules}`
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+      Accept: 'application/json',
+    },
+  })
+  if (!res.ok) return { ticker, error: `Yahoo summary ${res.status}` }
+
+  const data = await res.json() as YahooSummaryResult
+  const r = data?.quoteSummary?.result?.[0]
+  if (!r) return { ticker, error: 'No summary data' }
+
+  const stats = r.defaultKeyStatistics
+  const detail = r.summaryDetail
+  const earnings = r.earningsHistory?.history ?? []
+
+  const shortPct = stats?.shortPercentOfFloat?.raw ?? 0
+  const shortRatio = stats?.shortRatio?.raw ?? 0
+  const sharesShort = stats?.sharesShort?.raw ?? 0
+  const sharesShortPrior = stats?.sharesShortPriorMonth?.raw ?? 0
+  const shortChange = sharesShortPrior > 0 ? (sharesShort - sharesShortPrior) / sharesShortPrior : 0
+
+  return {
+    ticker,
+    short_interest_pct_float: +(shortPct * 100).toFixed(1),
+    days_to_cover: +shortRatio.toFixed(1),
+    short_interest_change_1m: +(shortChange * 100).toFixed(1) + '%',
+    squeeze_potential: shortPct > 0.15 ? 'HIGH' : shortPct > 0.08 ? 'MEDIUM' : 'LOW',
+    avg_volume_30d: detail?.averageVolume?.raw ?? null,
+    today_volume: detail?.volume?.raw ?? null,
+    week_52_high: detail?.fiftyTwoWeekHigh?.raw ?? null,
+    week_52_low: detail?.fiftyTwoWeekLow?.raw ?? null,
+    market_cap_b: detail?.marketCap?.raw ? +(detail.marketCap.raw / 1e9).toFixed(1) : null,
+    recent_earnings_surprises: earnings.slice(0, 4).map(e => ({
+      quarter: e.quarter?.fmt,
+      surprise_pct: e.surprisePercent?.raw != null ? +(e.surprisePercent.raw * 100).toFixed(1) : null,
+    })),
+  }
+}
+
+interface YahooCalendarResult {
+  quoteSummary?: {
+    result?: Array<{
+      calendarEvents?: {
+        earnings?: {
+          earningsDate?: Array<{ raw?: number }>
+          earningsAverage?: { raw?: number }
+          earningsHigh?: { raw?: number }
+          earningsLow?: { raw?: number }
+        }
+      }
+    }>
+  }
+}
+
+async function toolCheckEarningsDate(ticker: string): Promise<unknown> {
+  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=calendarEvents`
+  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'application/json' } })
+  if (!res.ok) return { ticker, next_earnings: null, error: `${res.status}` }
+
+  const data = await res.json() as YahooCalendarResult
+  const cal = data?.quoteSummary?.result?.[0]?.calendarEvents?.earnings
+  const dates = cal?.earningsDate ?? []
+
+  const nextTs = dates.find(d => d.raw != null && (d.raw as number) * 1000 > Date.now())?.raw
+  const daysAway = nextTs ? Math.round(((nextTs as number) * 1000 - Date.now()) / 86400000) : null
+
+  return {
+    ticker,
+    next_earnings: nextTs ? new Date((nextTs as number) * 1000).toISOString().slice(0, 10) : null,
+    days_away: daysAway,
+    earnings_disqualifier: daysAway != null && daysAway < 14,
+    eps_estimate: cal?.earningsAverage?.raw ?? null,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// System prompt — the classifier rubric is the moat
 // ---------------------------------------------------------------------------
 
 const SYSTEM_PROMPT = `You are a former options market maker with 15 years on the floor of the CBOE.
 You have seen every flavor of informed trading, gamma squeeze, hedging artifact, and retail FOMO.
-Your job is to separate genuinely informed flow from noise, then size a directional trade.
+Your job is to separate genuinely informed flow from noise, then define the trade.
 
 ## Informed Flow vs. Noise Classifier
 
-Apply these tests to EVERY flow event before scoring:
+Apply these tests to EVERY ticker's flow before scoring:
 
 ### Green Flags (informed / directional)
-- Sweep (multiple exchanges, aggressive, fills at ask): +3
-- Bought to open (not closing existing position): +2
-- Out-of-the-money with < 30 DTE: HIGH urgency, add +2
-- Size > 500 contracts single clip: +2
-- Premium > $500K total: +3
-- Occurs on low-IV day (not buying ahead of earnings known event): +1
-- Same strike/expiry accumulation over multiple days: +3
-- Dark pool block at PREMIUM to market same day: +4
-- Short interest > 15% AND call sweeps: squeeze setup, +5
+- vol/OI ratio > 0.5 on OTM calls: suggests fresh opening position (not closing): +3
+- Call volume > 2× average daily volume: +2
+- OTM calls (0–15% out of the money) with < 30 DTE: urgency signal: +2
+- Put/call ratio < 0.5 (market pricing out downside): +2
+- Short interest > 15% AND call flow heavy: squeeze setup: +5
+- Short interest rising month-over-month AND call buying: contrarian squeeze: +3
+- Unusual call concentration at single strike (> 30% of total call vol): +4
 
 ### Red Flags (noise / hedging artifact)
-- Known earnings date within 5 days: likely hedging, -3
-- Sold at bid (could be closing longs): -3
-- Part of known covered call / collar program (large-cap, regular cadence): -4
-- Strike > 20% OTM with > 60 DTE: lottery ticket retail, -2
-- Mirrors a known ETF rebalance schedule: -4
+- Earnings within 14 days: likely hedging / speculative — DISQUALIFY: -8
+- Vol/OI < 0.1: stale open interest, not fresh money: -3
+- Put volume > call volume 2×: bearish or portfolio hedge (opposite signal): -3
+- Low absolute volume (< 500 contracts): insufficient size to be institutional: -2
 
 ### Conviction Tiers
-- Score ≥ 12: EXTREME — size up, tight stop, max 5 DTE catalyst window
-- Score 8–11: HIGH — standard position, defined risk
-- Score 5–7: MEDIUM — starter position, wait for confirmation candle
-- Score < 5: LOW — monitor only, no position
+- Score ≥ 10: EXTREME — high conviction directional; tight stop, catalyst window
+- Score 6–9: HIGH — standard defined-risk position
+- Score 3–5: MEDIUM — starter size, wait for confirmation
+- Score < 3: MONITOR ONLY
 
-## Cross-Ticker Correlation Framework
-When multiple tickers in the same sector show elevated call/put flow:
-- Same direction (3+ tickers): sector rotation signal, 1.5× size
-- Opposing direction: pair trade setup — long strong side, short weak side
-- Single ticker vs quiet peers: idiosyncratic catalyst likely (M&A, earnings beat, short squeeze)
-
-## Positioning Output
-For each HIGH or EXTREME signal:
+## Output Format
 SIGNAL: **<BULLISH|BEARISH>** — <ticker>
-CONVICTION: <LOW|MEDIUM|HIGH|EXTREME>
-ENTRY ZONE: $<low>–$<high>
-TARGET: $<price> (<pct>% move)
+CONVICTION: <MONITOR|MEDIUM|HIGH|EXTREME>
+SCORE: <number>
+ENTRY_ZONE: $<low>–$<high>
+TARGET: $<price> (<pct>%)
 STOP: $<price>
-DTE WINDOW: <days>
-INFORMED PROBABILITY: <pct>%
-THESIS: <2–3 sentences explaining WHY this is informed, not hedging>
+INFORMED_PROB: <pct>%
+KEY_EVIDENCE: <2–3 bullet points of specific data>
+THESIS: <1–2 sentences>
 
-Always flag when a large block is more likely macro hedge than directional bet.
-Never recommend chasing a sweep that already ran > 5% intraday.`
+DISQUALIFIED: <ticker> — REASON: <specific reason>
+
+Always separate disqualified tickers from actionable signals.
+Rank actionable signals by conviction, highest first.`
 
 // ---------------------------------------------------------------------------
 // Main interpreter
 // ---------------------------------------------------------------------------
 
-async function interpretOptionsFlow(
-  flowEvents: OptionsFlowEvent[],
-  darkPoolPrints: DarkPoolPrint[],
-) {
+async function interpretOptionsFlow(tickers: WatchTicker[]) {
   const client = new Anthropic()
   const tracker = new FlowSignalTracker()
   await tracker.load()
@@ -154,92 +321,68 @@ async function interpretOptionsFlow(
 
   const tools: Anthropic.Tool[] = [
     {
-      name: 'get_short_interest',
-      description: 'Fetch current short interest, days-to-cover, and short interest change for a ticker.',
+      name: 'get_options_chain',
+      description: 'Fetch live options chain from Yahoo Finance: call/put volumes, OI, unusual activity flags.',
       input_schema: { type: 'object' as const, properties: { ticker: { type: 'string' } }, required: ['ticker'] },
     },
     {
-      name: 'get_implied_vol_surface',
-      description: 'Get the implied volatility surface for a ticker: term structure, skew, and vol rank vs 52-week range.',
+      name: 'get_stock_context',
+      description: 'Fetch short interest, days-to-cover, volume context, and earnings history.',
       input_schema: { type: 'object' as const, properties: { ticker: { type: 'string' } }, required: ['ticker'] },
     },
     {
-      name: 'check_earnings_calendar',
-      description: 'Check if a ticker has earnings within the next 30 days and the expected move priced by options.',
-      input_schema: { type: 'object' as const, properties: { ticker: { type: 'string' } }, required: ['ticker'] },
-    },
-    {
-      name: 'get_open_interest_by_strike',
-      description: 'Get open interest distribution by strike for a ticker to identify gamma walls and max pain.',
-      input_schema: { type: 'object' as const, properties: { ticker: { type: 'string' }, expiry: { type: 'string' } }, required: ['ticker'] },
-    },
-    {
-      name: 'fetch_institutional_activity',
-      description: 'Check for same-day dark pool prints, 13F changes, and ETF rebalancing for a ticker.',
+      name: 'check_earnings_date',
+      description: 'Check if a ticker has earnings within 14 days (which would disqualify the signal).',
       input_schema: { type: 'object' as const, properties: { ticker: { type: 'string' } }, required: ['ticker'] },
     },
   ]
 
-  const tickers = [...new Set(flowEvents.map(e => e.ticker))]
-
-  const flowSummary = flowEvents.map(e =>
-    `[${e.ticker}] ${e.type.toUpperCase()} $${e.strike}c/${e.expiry} | ${e.contracts} contracts ($${(e.premium / 1000).toFixed(0)}K) | ${e.condition} at ${e.side} | IV: ${(e.impliedVol * 100).toFixed(0)}%`
-  ).join('\n')
-
-  const darkSummary = darkPoolPrints.map(p =>
-    `[${p.ticker}] ${p.size.toLocaleString()} shares @ $${p.price.toFixed(2)} (VWAP: $${p.vwap.toFixed(2)}) ${p.premium ? '⬆ PREMIUM PRINT' : ''}`
-  ).join('\n')
-
-  const userPrompt = `Analyze this options tape and dark pool activity for directional signals.
+  const userPrompt = `Analyze these tickers for unusual options flow and generate directional signals.
 Historical signal accuracy from tracker: ${(historicalAccuracy * 100).toFixed(0)}%
 
-OPTIONS FLOW (last 4 hours):
-${flowSummary}
+Tickers to analyze (all sectors):
+${tickers.map(t => `- ${t.ticker} (${t.sector})`).join('\n')}
 
-DARK POOL PRINTS (last 4 hours):
-${darkSummary}
+For EACH ticker:
+1. Call check_earnings_date FIRST — if earnings < 14 days, disqualify immediately
+2. Call get_options_chain to get live options flow
+3. Call get_stock_context to get short interest and squeeze potential
 
-Tickers to analyze: ${tickers.join(', ')}
-
-For each ticker with meaningful flow, call get_short_interest and get_implied_vol_surface.
-Call check_earnings_calendar for all tickers before scoring (earnings = disqualifier).
-For top 2 signals, also call get_open_interest_by_strike to find gamma walls.
-Apply the Informed Flow classifier rubric to every event. Output ranked signals.`
+Apply the Informed Flow Classifier. Output only MEDIUM+ conviction signals.
+Rank by conviction, highest first.`
 
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userPrompt }]
 
   const call1 = await client.messages.create({
     model: 'claude-opus-4-7-20251101',
-    max_tokens: 3000,
+    max_tokens: 4096,
     system: SYSTEM_PROMPT,
     tools,
     messages,
   })
 
-  // Simulated tool responses
   const toolResults: Anthropic.ToolResultBlockParam[] = []
   for (const block of call1.content) {
     if (block.type !== 'tool_use') continue
-    const input = block.input as { ticker: string; expiry?: string }
+    const input = block.input as { ticker: string }
     let result: unknown
 
-    if (block.name === 'get_short_interest') {
-      result = { ticker: input.ticker, short_interest_pct: 18.4, days_to_cover: 3.2, change_2w: '+4.1%', squeeze_score: 72 }
-    } else if (block.name === 'get_implied_vol_surface') {
-      result = { ticker: input.ticker, iv_rank: 24, iv_percentile: 18, term_structure: 'backwardation', skew: 'call_heavy', note: 'Vol suppressed — cheap optionality' }
-    } else if (block.name === 'check_earnings_calendar') {
-      result = { ticker: input.ticker, next_earnings: null, days_away: null, expected_move_pct: null }
-    } else if (block.name === 'get_open_interest_by_strike') {
-      result = { ticker: input.ticker, expiry: input.expiry, gamma_wall_call: 185, gamma_wall_put: 165, max_pain: 172 }
-    } else if (block.name === 'fetch_institutional_activity') {
-      result = { ticker: input.ticker, dark_pool_today: true, etf_rebalance: false, recent_13f_change: 'Increased by 2.3M shares (Citadel)' }
+    console.log(`  → ${block.name}(${input.ticker})`)
+
+    if (block.name === 'get_options_chain') {
+      result = await toolGetOptionsChain(input.ticker)
+    } else if (block.name === 'get_stock_context') {
+      result = await toolGetStockContext(input.ticker)
+    } else if (block.name === 'check_earnings_date') {
+      result = await toolCheckEarningsDate(input.ticker)
     }
+
     toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(result) })
   }
 
   const call2 = await client.messages.create({
     model: 'claude-opus-4-7-20251101',
-    max_tokens: 3000,
+    max_tokens: 4096,
     system: SYSTEM_PROMPT,
     tools,
     messages: [
@@ -254,26 +397,14 @@ Apply the Informed Flow classifier rubric to every event. Output ranked signals.
     .map(b => (b as Anthropic.TextBlock).text)
     .join('\n')
 
-  console.log('\n' + analysis)
+  console.log('\n===== OPTIONS FLOW SIGNALS =====\n')
+  console.log(analysis)
 
-  // Parse and persist HIGH/EXTREME signals
-  const signalMatches = analysis.matchAll(/SIGNAL:\s*\*\*(BULLISH|BEARISH)\*\*\s*—\s*(\w+)/g)
+  // Persist signals
+  const signalMatches = [...analysis.matchAll(/SIGNAL:\s*\*\*(BULLISH|BEARISH)\*\*\s*—\s*(\w+)/g)]
   for (const m of signalMatches) {
     const [, direction, ticker] = m
-    tracker.add({
-      date: new Date().toISOString(),
-      signal: {
-        ticker: ticker!,
-        direction: direction!.toLowerCase() as 'bullish' | 'bearish',
-        conviction: 'high',
-        entryZone: [0, 0],
-        targetPrice: 0,
-        stopLoss: 0,
-        daysToExpiry: 14,
-        thesis: analysis,
-        informedProbability: 0.75,
-      },
-    })
+    tracker.add({ ticker: ticker!, direction: direction!.toLowerCase() as 'bullish' | 'bearish', date: new Date().toISOString() })
   }
 
   await tracker.save()
@@ -281,34 +412,20 @@ Apply the Informed Flow classifier rubric to every event. Output ranked signals.
 }
 
 // ---------------------------------------------------------------------------
-// Entry point — sample tape
+// Entry point
 // ---------------------------------------------------------------------------
 
 async function main() {
-  const flowEvents: OptionsFlowEvent[] = [
-    {
-      ticker: 'MSTR', type: 'call', strike: 400, expiry: '2026-05-16', premium: 1_240_000,
-      contracts: 824, side: 'ask', condition: 'sweep', openInterest: 4200, impliedVol: 0.89,
-      timestamp: new Date().toISOString(),
-    },
-    {
-      ticker: 'COIN', type: 'call', strike: 280, expiry: '2026-05-02', premium: 380_000,
-      contracts: 310, side: 'ask', condition: 'sweep', openInterest: 1100, impliedVol: 0.74,
-      timestamp: new Date().toISOString(),
-    },
-    {
-      ticker: 'SPY', type: 'put', strike: 530, expiry: '2026-04-25', premium: 2_100_000,
-      contracts: 2000, side: 'bid', condition: 'block', openInterest: 45000, impliedVol: 0.18,
-      timestamp: new Date().toISOString(),
-    },
+  const tickers: WatchTicker[] = [
+    { ticker: 'MSTR',  sector: 'BTC proxy / software' },
+    { ticker: 'COIN',  sector: 'crypto exchange' },
+    { ticker: 'PLTR',  sector: 'data/defense software' },
+    { ticker: 'SOUN',  sector: 'voice AI / small-cap' },
+    { ticker: 'NVDA',  sector: 'semiconductors / AI' },
   ]
 
-  const darkPrints: DarkPoolPrint[] = [
-    { ticker: 'MSTR', size: 450_000, price: 372.40, vwap: 368.20, premium: true, timestamp: new Date().toISOString() },
-    { ticker: 'COIN', size: 180_000, price: 247.80, vwap: 246.10, premium: true, timestamp: new Date().toISOString() },
-  ]
-
-  await interpretOptionsFlow(flowEvents, darkPrints)
+  console.log('Fetching live options flow data...\n')
+  await interpretOptionsFlow(tickers)
 }
 
 main().catch(console.error)

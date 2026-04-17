@@ -1,217 +1,252 @@
 'use client'
 
-import { useEffect, useReducer, useCallback, useState } from 'react'
-import { connectEventSource } from '../lib/events'
-import { AgentGraph } from '../components/AgentGraph'
+import dynamic from 'next/dynamic'
+import { useState } from 'react'
+import { CommandProvider, useCommand } from '../components/command/CommandContext'
+import { CommandTopbar } from '../components/command/CommandTopbar'
 import { WorkflowCanvas } from '../components/WorkflowCanvas'
-import { TransactionFeed } from '../components/TransactionFeed'
-import {
-  createGraphState,
-  graphSnapshot,
-  applyPayEvent,
-  applyTradeEvent,
-  applyBalanceEvent,
-  applyInvoiceEvent,
-} from '../lib/graph'
-import type { GraphState } from '../lib/graph'
-import type { AgentiEvent } from '@agenti/sdk'
-import type { FeedItem, GraphNode, GraphEdge } from '../types'
 
-const MAX_FEED = 50
-
-interface State {
-  feed: FeedItem[]
-  nodes: Map<string, GraphNode>
-  edges: GraphEdge[]
-  payCount: number
-  tradeCount: number
-  errorCount: number
-  walletAddress: string
-}
-
-type Action = { type: 'event'; event: AgentiEvent }
-
-function idFromEvent(e: AgentiEvent): string {
-  return `${e.type}-${e.ts}-${Math.random().toString(36).slice(2, 7)}`
-}
-
-function reducer(state: State, action: Action): State {
-  const { event } = action
-  const gs: GraphState = {
-    nodes: new Map([...state.nodes.entries()].map(([k, v]) => [k, { ...v }])),
-    edges: [...state.edges],
-  }
-  let feed = state.feed
-  let { payCount, tradeCount, errorCount, walletAddress } = state
-  const item: FeedItem = { id: idFromEvent(event), type: event.type, label: '', ts: event.ts }
-
-  switch (event.type) {
-    case 'pay':     { item.label = event.url; item.sub = `${event.amount} · ${event.network}`; payCount++; applyPayEvent(gs, event.url, event.network); break }
-    case 'trade':   { item.label = `${event.side.toUpperCase()} ${event.mint.slice(0, 8)}…`; item.sub = `${event.sol} SOL`; tradeCount++; applyTradeEvent(gs, event.mint, event.side); break }
-    case 'balance': { item.label = event.address.slice(0, 10) + '…'; walletAddress = event.address; applyBalanceEvent(gs, event.address); break }
-    case 'invoice': { item.label = `${event.amount} ${event.token}`; item.sub = event.address.slice(0, 10) + '…'; applyInvoiceEvent(gs, event.address, event.token); break }
-    case 'error':   { item.label = event.message; item.sub = event.tool; errorCount++; break }
-  }
-
-  feed = [item, ...feed].slice(0, MAX_FEED)
-  const snap = graphSnapshot(gs)
-  return { feed, nodes: gs.nodes, edges: snap.edges, payCount, tradeCount, errorCount, walletAddress }
-}
-
-function getInitialState(): State {
-  const gs = createGraphState()
-  return { feed: [], nodes: gs.nodes, edges: [], payCount: 0, tradeCount: 0, errorCount: 0, walletAddress: '' }
-}
+const AgentGraph = dynamic(
+  () => import('../components/AgentGraph').then(m => ({ default: m.AgentGraph })),
+  { ssr: false, loading: () => <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3a5555', fontSize: 11 }}>LOADING 3D GRAPH…</div> }
+)
 
 type View = 'workflow' | 'network'
 
-export default function DashboardPage() {
-  const [state, dispatch] = useReducer(reducer, undefined, getInitialState)
+function Dashboard() {
+  const cmd = useCommand()
   const [view, setView] = useState<View>('workflow')
 
-  const handleEvent = useCallback((event: AgentiEvent) => dispatch({ type: 'event', event }), [])
-  useEffect(() => connectEventSource(handleEvent), [handleEvent])
-
-  const graphNodes = Array.from(state.nodes.values())
-  const connected = !!state.walletAddress
-
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      background: 'radial-gradient(ellipse at 15% 50%, rgba(59,130,246,0.05) 0%, transparent 60%), radial-gradient(ellipse at 85% 20%, rgba(139,92,246,0.05) 0%, transparent 60%), #04060f' }}>
+    <div className="crt" style={{ height: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <CommandTopbar />
 
-      {/* ── Topbar ───────────────────────────────────────────────────── */}
-      <div style={{ height: 44, display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12,
-        borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 340px', overflow: 'hidden', minHeight: 0 }}>
 
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 24, height: 24, borderRadius: 7,
-            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 12, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>a</div>
-          <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em',
-            background: 'linear-gradient(90deg, #f1f5f9, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            agenti
-          </span>
-        </div>
+        {/* ── Left: graph ─────────────────────────────────────────── */}
+        <div className="grid-bg" style={{ display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(0,255,204,0.07)', position: 'relative' }}>
 
-        <span style={{ color: 'rgba(255,255,255,0.08)', fontSize: 16 }}>/</span>
-
-        {/* Address */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ position: 'relative', width: 7, height: 7 }}>
-            <span style={{ position: 'absolute', inset: 0, borderRadius: '50%',
-              background: connected ? '#22c55e' : '#334155' }} />
-            {connected && <span style={{ position: 'absolute', inset: '-3px', borderRadius: '50%',
-              background: 'rgba(34,197,94,0.3)', animation: 'ping 2s ease infinite' }} />}
+          {/* View toggle */}
+          <div style={{ position: 'absolute', top: 10, right: 12, zIndex: 10, display: 'flex', gap: 2 }}>
+            {(['workflow', 'network'] as View[]).map(v => (
+              <button key={v} onClick={() => setView(v)} style={{
+                padding: '3px 9px', border: `1px solid ${view === v ? 'rgba(0,255,204,0.3)' : 'rgba(0,255,204,0.08)'}`,
+                background: view === v ? 'rgba(0,255,204,0.08)' : 'rgba(0,0,0,0.6)',
+                color: view === v ? '#00ffcc' : '#3a5555',
+                fontFamily: 'var(--mono)', fontSize: 9, fontWeight: 700,
+                letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer',
+                borderRadius: 2, backdropFilter: 'blur(4px)',
+              }}>
+                {v === 'workflow' ? 'WORKFLOW' : '3D NET'}
+              </button>
+            ))}
           </div>
-          <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: connected ? '#64748b' : '#334155' }}>
-            {connected ? `${state.walletAddress.slice(0,8)}…${state.walletAddress.slice(-6)}` : 'no wallet'}
-          </span>
-        </div>
 
-        <div style={{ flex: 1 }} />
-
-        {/* View toggle */}
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: 3, gap: 2 }}>
-          {(['workflow', 'network'] as View[]).map(v => (
-            <button key={v} onClick={() => setView(v)} style={{
-              padding: '3px 12px', borderRadius: 5, border: 'none', cursor: 'pointer',
-              background: view === v ? 'rgba(59,130,246,0.18)' : 'transparent',
-              color: view === v ? '#93c5fd' : '#475569',
-              fontSize: 11, fontWeight: 500, letterSpacing: '0.01em', transition: 'all 0.15s' }}>
-              {v === 'workflow' ? 'Workflow' : '3D'}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Body ─────────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 300px', overflow: 'hidden' }}>
-
-        {/* Graph */}
-        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10,
-          borderRight: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-
-          <Label>{view === 'workflow' ? 'Agent Workflow' : 'Transaction Network'}</Label>
-
-          <div style={{ flex: 1, borderRadius: 12, overflow: 'hidden',
-            border: '1px solid rgba(255,255,255,0.06)', position: 'relative' }}>
+          <div style={{ flex: 1, minHeight: 0 }}>
             {view === 'workflow'
-              ? <WorkflowCanvas payCount={state.payCount} tradeCount={state.tradeCount} walletAddress={state.walletAddress} />
-              : <AgentGraph nodes={graphNodes} edges={state.edges} width={800} height={600} />}
+              ? <WorkflowCanvas payCount={cmd.payCount} tradeCount={cmd.tradeCount} walletAddress={cmd.walletAddress} />
+              : <AgentGraph nodes={[]} edges={[]} width={800} height={600} />
+            }
+          </div>
+
+          {/* Bottom status bar */}
+          <div style={{ borderTop: '1px solid rgba(0,255,204,0.07)', padding: '4px 12px', display: 'flex', gap: 20, alignItems: 'center', background: '#000' }}>
+            <span style={{ fontSize: 9, color: '#3a5555', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              NETWORKS:
+            </span>
+            {cmd.networksUsed.length === 0
+              ? <span style={{ fontSize: 9, color: '#1a3030' }}>NONE DETECTED</span>
+              : cmd.networksUsed.map(n => (
+                  <span key={n} style={{ fontSize: 9, color: '#00ffcc', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{n}</span>
+                ))
+            }
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 16 }}>
+              {Object.entries(cmd.urlHits).slice(0, 3).map(([url, hits]) => {
+                const host = (() => { try { return new URL(url).hostname } catch { return url.slice(0, 20) } })()
+                return (
+                  <span key={url} style={{ fontSize: 9, color: '#5a7a7a', fontFamily: 'var(--mono)' }}>
+                    <span style={{ color: '#00ffcc' }}>{hits}</span>×&nbsp;{host}
+                  </span>
+                )
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* ── Right: panels ───────────────────────────────────────── */}
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#000' }}>
 
-          {/* Stat cards */}
-          <div style={{ padding: '16px 14px 12px', display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
-            <Label>Activity</Label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-              <StatCard label="Payments" value={state.payCount} color="#22c55e" glow="rgba(34,197,94,0.15)" icon="↗" />
-              <StatCard label="Trades" value={state.tradeCount} color="#3b82f6" glow="rgba(59,130,246,0.15)" icon="⇄" />
-              <StatCard label="Errors" value={state.errorCount} color={state.errorCount > 0 ? '#ef4444' : '#334155'} glow="rgba(239,68,68,0.1)" icon="✕" />
-              <StatCard label="Events" value={state.feed.length} color="#8b5cf6" glow="rgba(139,92,246,0.1)" icon="◎" />
+          {/* Pay events */}
+          <div className="panel" style={{ flex: cmd.payEvents.length > 0 ? '1 1 40%' : '0 0 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderLeft: 'none', borderTop: 'none', borderRight: 'none' }}>
+            <div className="panel-header">
+              <span className="panel-title">PAY EVENTS</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: cmd.payCount > 0 ? '#00ffcc' : '#3a5555', fontWeight: 700 }}>
+                {cmd.payCount.toString().padStart(3, '0')}
+              </span>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+              {cmd.payEvents.length === 0
+                ? <EmptyRow label="AWAITING PAYMENTS" />
+                : cmd.payEvents.slice(0, 30).map((e, i) => (
+                    <EventRow key={e.id} fresh={i === 0}>
+                      <Cell w={60} color="#00ffcc">{e.amount}</Cell>
+                      <Cell w={80} color="#5a7a7a" mono>{e.network.slice(0, 10).toUpperCase()}</Cell>
+                      <Cell flex color="#8a9a9a">{(() => { try { return new URL(e.url).hostname } catch { return e.url } })()}</Cell>
+                      <Cell w={50} color="#3a5555" mono>{reltime(e.ts)}</Cell>
+                    </EventRow>
+                  ))
+              }
             </div>
           </div>
 
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0 14px' }} />
-
-          {/* Feed */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px 6px', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-              <Label>Live Feed</Label>
-              {state.feed.length > 0 && (
-                <span style={{ marginLeft: 'auto', fontSize: 10, color: '#334155',
-                  fontFamily: 'var(--mono)', background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.07)', borderRadius: 4, padding: '1px 5px' }}>
-                  {state.feed.length}
+          {/* Trade events */}
+          <div className="panel" style={{ flex: cmd.tradeEvents.length > 0 ? '1 1 40%' : '0 0 auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', borderLeft: 'none', borderRight: 'none' }}>
+            <div className="panel-header">
+              <span className="panel-title">TRADE EVENTS</span>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                {cmd.solBought > 0 && <span style={{ fontSize: 9, color: '#00ff6a', fontWeight: 700 }}>+{cmd.solBought.toFixed(3)} SOL</span>}
+                {cmd.solSold > 0 && <span style={{ fontSize: 9, color: '#ff3b3b', fontWeight: 700 }}>-{cmd.solSold.toFixed(3)} SOL</span>}
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: cmd.tradeCount > 0 ? '#00ff6a' : '#3a5555', fontWeight: 700 }}>
+                  {cmd.tradeCount.toString().padStart(3, '0')}
                 </span>
-              )}
+              </div>
             </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '0 8px 12px' }}>
-              <TransactionFeed items={state.feed} />
+            <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+              {cmd.tradeEvents.length === 0
+                ? <EmptyRow label="AWAITING TRADES" />
+                : cmd.tradeEvents.slice(0, 30).map((e, i) => (
+                    <EventRow key={e.id} fresh={i === 0}>
+                      <Cell w={36} color={e.side === 'buy' ? '#00ff6a' : '#ff3b3b'}>{e.side.toUpperCase()}</Cell>
+                      <Cell w={60} color={e.side === 'buy' ? '#00ff6a' : '#ff3b3b'}>{e.sol.toFixed(4)}</Cell>
+                      <Cell flex color="#5a7a7a" mono>{e.mint.slice(0, 8)}…{e.mint.slice(-4)}</Cell>
+                      <Cell w={50} color="#3a5555" mono>{reltime(e.ts)}</Cell>
+                    </EventRow>
+                  ))
+              }
             </div>
           </div>
+
+          {/* Errors */}
+          {cmd.errorEvents.length > 0 && (
+            <div className="panel" style={{ flex: '0 0 auto', maxHeight: 120, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderLeft: 'none', borderRight: 'none' }}>
+              <div className="panel-header">
+                <span className="panel-title" style={{ color: '#ff3b3b' }}>ERRORS</span>
+                <span style={{ fontSize: 9, color: '#ff3b3b', fontWeight: 700 }}>{cmd.errorCount.toString().padStart(3, '0')}</span>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+                {cmd.errorEvents.slice(0, 10).map((e, i) => (
+                  <EventRow key={e.id} fresh={i === 0}>
+                    <Cell w={70} color="#ff3b3b" mono>{e.tool ?? 'unknown'}</Cell>
+                    <Cell flex color="#8a6060">{e.message.slice(0, 40)}</Cell>
+                    <Cell w={50} color="#3a5555" mono>{reltime(e.ts)}</Cell>
+                  </EventRow>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Invoices */}
+          {cmd.invoiceEvents.length > 0 && (
+            <div className="panel" style={{ flex: '0 0 auto', maxHeight: 120, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderLeft: 'none', borderRight: 'none' }}>
+              <div className="panel-header">
+                <span className="panel-title" style={{ color: '#ffd700' }}>INVOICES</span>
+                <span style={{ fontSize: 9, color: '#ffd700', fontWeight: 700 }}>{cmd.invoiceCount.toString().padStart(3, '0')}</span>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+                {cmd.invoiceEvents.slice(0, 10).map((e, i) => (
+                  <EventRow key={e.id} fresh={i === 0}>
+                    <Cell w={60} color="#ffd700">{e.amount} {e.token}</Cell>
+                    <Cell flex color="#5a7a7a" mono>{e.address.slice(0, 10)}…</Cell>
+                    <Cell w={50} color="#3a5555" mono>{reltime(e.ts)}</Cell>
+                  </EventRow>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* URL hits heatmap */}
+          {Object.keys(cmd.urlHits).length > 0 && (
+            <div className="panel" style={{ flex: '0 0 auto', borderLeft: 'none', borderRight: 'none', borderBottom: 'none' }}>
+              <div className="panel-header">
+                <span className="panel-title">ENDPOINT HITS</span>
+              </div>
+              <div style={{ padding: '6px 10px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {Object.entries(cmd.urlHits)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 5)
+                  .map(([url, hits]) => {
+                    const maxHits = Math.max(...Object.values(cmd.urlHits))
+                    const pct = (hits / maxHits) * 100
+                    const host = (() => { try { return new URL(url).hostname } catch { return url.slice(0, 30) } })()
+                    return (
+                      <div key={url} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 9, color: '#3a5555', fontWeight: 700, width: 24, textAlign: 'right', flexShrink: 0 }}>{hits}</span>
+                        <div style={{ flex: 1, height: 2, background: 'rgba(0,255,204,0.08)', borderRadius: 1 }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: '#00ffcc', borderRadius: 1, transition: 'width 0.5s ease' }} />
+                        </div>
+                        <span style={{ fontSize: 9, color: '#5a7a7a', flexShrink: 0, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{host}</span>
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
   )
 }
 
-function Label({ children }: { children: React.ReactNode }) {
+// ── helpers ────────────────────────────────────────────────────────────────
+
+function reltime(ts: number) {
+  const s = Math.floor((Date.now() - ts) / 1000)
+  if (s < 60) return `${s}s`
+  if (s < 3600) return `${Math.floor(s / 60)}m`
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function EmptyRow({ label }: { label: string }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 600, color: '#334155',
-      textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+    <div style={{ padding: '8px 10px', fontSize: 9, color: '#1a3030', letterSpacing: '0.1em', textAlign: 'center' }}>
+      {label}
+    </div>
+  )
+}
+
+function EventRow({ children, fresh }: { children: React.ReactNode; fresh?: boolean }) {
+  return (
+    <div className={fresh ? 'anim-in' : ''} style={{
+      display: 'flex', alignItems: 'center', gap: 0,
+      padding: '3px 10px',
+      borderBottom: '1px solid rgba(0,255,204,0.03)',
+      background: fresh ? 'rgba(0,255,204,0.025)' : 'transparent',
+      transition: 'background 1s ease',
+    }}>
       {children}
     </div>
   )
 }
 
-function StatCard({ label, value, color, glow, icon }: { label: string; value: number; color: string; glow: string; icon: string }) {
-  const active = value > 0
+function Cell({ children, w, flex, color, mono }: { children: React.ReactNode; w?: number; flex?: boolean; color?: string; mono?: boolean }) {
   return (
-    <div style={{
-      padding: '10px 12px',
-      borderRadius: 10,
-      background: active ? glow : 'rgba(255,255,255,0.02)',
-      border: `1px solid ${active ? color + '30' : 'rgba(255,255,255,0.05)'}`,
-      transition: 'all 0.3s ease',
+    <span style={{
+      ...(w ? { width: w, flexShrink: 0 } : {}),
+      ...(flex ? { flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : {}),
+      fontSize: 10, color: color ?? '#c8d8d8',
+      fontFamily: mono ? 'var(--mono)' : 'var(--mono)',
+      marginRight: 6,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontSize: 10, color: active ? color + 'bb' : '#334155',
-          textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
-          {label}
-        </span>
-        <span style={{ fontSize: 12, color: active ? color : '#1e293b' }}>{icon}</span>
-      </div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: active ? color : '#1e293b',
-        fontFamily: 'var(--mono)', lineHeight: 1, transition: 'all 0.3s ease' }}>
-        {value}
-      </div>
-    </div>
+      {children}
+    </span>
+  )
+}
+
+export default function Page() {
+  return (
+    <CommandProvider>
+      <Dashboard />
+    </CommandProvider>
   )
 }

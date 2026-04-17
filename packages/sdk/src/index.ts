@@ -155,6 +155,40 @@ export type { GmgnToken, GmgnTokenStat, GmgnNewPair } from './solana/index.js'
 export { getJupiterQuote, executeJupiterSwap, jupiterSwap } from './solana/index.js'
 export type { JupiterQuote, JupiterQuoteParams, JupiterSwapResult } from './solana/index.js'
 
+// Execution algorithms — TWAP, VWAP, Almgren-Chriss optimal execution
+export {
+  executeTwap,
+  previewTwap,
+} from './execution/twap.js'
+export type { TwapConfig, TwapSlice, TwapResult, TwapCallbacks } from './execution/twap.js'
+
+export {
+  executeVwap,
+  flatVolumeProfile,
+  buildVolumeProfile,
+  computeRealizedVwap,
+  annotateMarketVwap,
+} from './execution/vwap.js'
+export type { VwapConfig, VwapSlice, VwapResult, VolumeBucket, VwapCallbacks } from './execution/vwap.js'
+
+export {
+  computeACSchedule,
+  calibrateRiskAversion,
+  formatACSchedule,
+} from './execution/almgren-chriss.js'
+export type { ACParams, ACPeriod, ACSchedule } from './execution/almgren-chriss.js'
+
+// Jupiter Limit Orders — GTC limit buy/sell, cancel, query
+export {
+  createLimitOrder,
+  cancelLimitOrders,
+  getOpenLimitOrders,
+  getLimitOrderHistory,
+  limitBuy,
+  limitSell,
+} from './solana/limit-orders.js'
+export type { LimitOrderParams, LimitOrderResult, OpenLimitOrder, CancelOrdersResult } from './solana/limit-orders.js'
+
 // Market microstructure — L2 order book, VPIN, spread metrics, depth analysis
 export {
   getOrderBook,
