@@ -1,6 +1,6 @@
 # agenti 
 
-**The money layer for AI agents.**
+**The money layer for AI agents.** 
 
 An agent that can think but can't pay is half an agent. Agenti gives every AI — Claude, GPT-4, Llama, Gemini, or any custom LLM — the ability to hold, spend, earn, and receive cryptocurrency natively, autonomously, across any chain.
 
