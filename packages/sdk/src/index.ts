@@ -1,5 +1,6 @@
 export { agenti } from './agenti.js'
 export type { AgentiConfig, AgentiInstance } from './agenti.js'
+export type { PayOptions } from './pay.js'
 export { getBalances } from './balance.js'
 export {
   generateWallet, walletFromKeys,

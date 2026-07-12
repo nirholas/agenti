@@ -205,6 +205,17 @@ async function signEVMPayment(
 // Public API
 // ---------------------------------------------------------------------------
 
+/** Options for {@link pay} — a superset of the standard fetch RequestInit. */
+export interface PayOptions extends RequestInit {
+  /**
+   * Hard ceiling on what a single call may pay, in the asset's smallest unit
+   * (e.g. "1000000" = 1 USDC). If the 402 response demands more, `pay` throws
+   * before signing anything. Omitting it leaves the wallet uncapped — for an
+   * autonomous agent, always set this. Accepts a decimal string or bigint.
+   */
+  maxAmount?: string | bigint
+}
+
 /**
  * Makes an HTTP request, automatically handling 402 Payment Required responses
  * by building and attaching an EIP-3009 payment header.
@@ -218,9 +229,10 @@ export async function pay(
   url: string,
   evmWallet: EVMWallet,
   solanaWallet: SolanaWallet,
-  options?: RequestInit,
+  options?: PayOptions,
 ): Promise<Response> {
-  const response = await fetch(url, options)
+  const { maxAmount, ...fetchOptions } = options ?? {}
+  const response = await fetch(url, fetchOptions)
   if (response.status !== 402) return response
 
   // ------------------------------------------------------------------
@@ -277,6 +289,25 @@ export async function pay(
     'maxTimeoutSeconds' in accept ? accept.maxTimeoutSeconds : 300
 
   // ------------------------------------------------------------------
+  // Enforce the caller's spend ceiling before signing anything. The amount is
+  // fully controlled by the (untrusted) resource server, so an uncapped agent
+  // would sign away whatever it demands, up to the wallet's full balance.
+  // ------------------------------------------------------------------
+  if (maxAmount !== undefined) {
+    let demanded: bigint
+    try {
+      demanded = BigInt(amount)
+    } catch {
+      throw new Error(`Invalid payment amount in 402 response: ${amount}`)
+    }
+    if (demanded > BigInt(maxAmount)) {
+      throw new Error(
+        `Payment of ${amount} exceeds maxAmount ${maxAmount.toString()} — refusing to pay`,
+      )
+    }
+  }
+
+  // ------------------------------------------------------------------
   // Route to the correct payment implementation.
   // ------------------------------------------------------------------
   if (accept.network.toLowerCase().includes('solana')) {
@@ -285,7 +316,7 @@ export async function pay(
     const keypair = Keypair.fromSecretKey(solanaWallet.privateKey)
     const connection = new Connection(clusterApiUrl('mainnet-beta'))
     const solFetch = createX402Fetch(keypair, connection)
-    return solFetch(url, options)
+    return solFetch(url, fetchOptions)
   }
 
   // EVM: build EIP-3009 TransferWithAuthorization signature
@@ -309,9 +340,9 @@ export async function pay(
   const headerName = version >= 2 ? 'PAYMENT-SIGNATURE' : 'X-Payment'
 
   const result = await fetch(url, {
-    ...options,
+    ...fetchOptions,
     headers: {
-      ...(options?.headers ?? {}),
+      ...(fetchOptions.headers ?? {}),
       [headerName]: paymentHeader,
       // Always include the v1 header too so cross-version servers work
       'X-Payment': paymentHeader,
