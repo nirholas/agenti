@@ -1,6 +1,7 @@
 import { generateWallet, walletFromKeys } from '@agenti/core'
 import type { AgentiWallet, Balance, Invoice, Chain } from '@agenti/core'
 import { pay } from './pay.js'
+import type { PayOptions } from './pay.js'
 import { getBalances } from './balance.js'
 import { createInvoice } from './receive.js'
 
@@ -13,7 +14,7 @@ export interface AgentiConfig {
 
 export interface AgentiInstance {
   wallet: AgentiWallet
-  pay(url: string, options?: RequestInit): Promise<Response>
+  pay(url: string, options?: PayOptions): Promise<Response>
   balance(): Promise<Balance[]>
   receive(params: { amount: number; token: string; chain: Chain }): Promise<Invoice>
 }

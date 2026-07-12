@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { agenti, generateWallet, generateMnemonic, walletFromMnemonic, signMessage as sdkSignMessage, bnb, getBnbTokenPrice, swapBnbTokens, TOKENS, parseUnits, watchPumpEvents, decodePumpLog, extractTradingIdeas, routeIdea, calculatePnl } from '@agenti/sdk'
-import type { PumpEvent } from '@agenti/sdk'
+import type { PumpEvent, PayOptions } from '@agenti/sdk'
 import {
   getCoinPrice,
   getTrendingCoins,
@@ -108,8 +108,16 @@ export function createServer(): McpServer {
         .default('GET')
         .describe('HTTP method for the request'),
       body: z.string().optional().describe('Request body as JSON string'),
+      max_amount: z
+        .string()
+        .optional()
+        .describe(
+          "Maximum you will pay, in the asset's smallest unit (e.g. \"1000000\" = 1 USDC). " +
+            'If the server demands more, the payment is refused before signing. ' +
+            'Strongly recommended for autonomous agents.',
+        ),
     },
-    async ({ url, evm_private_key, method, body }) => {
+    async ({ url, evm_private_key, method, body, max_amount }) => {
       const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as
         | `0x${string}`
         | undefined
@@ -124,8 +132,9 @@ export function createServer(): McpServer {
         ...(solanaKey ? { solana: { privateKey: solanaKey } } : {}),
       })
 
-      const init: RequestInit = { method }
+      const init: PayOptions = { method }
       if (body) { init.body = body; init.headers = { 'Content-Type': 'application/json' } }
+      if (max_amount) init.maxAmount = max_amount
       const response = await agent.pay(url, init)
 
       const text = await response.text()
