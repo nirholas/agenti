@@ -17,8 +17,21 @@ const ERC20_BALANCE_ABI = [
 ] as const
 
 interface VerifyBody {
-  payment: PaymentPayload
-  requirements: PaymentRequired
+  // agenti self-hosted contract
+  payment?: PaymentPayload
+  requirements?: PaymentRequired
+  // x402.org contract — accepted as aliases so either client shape works
+  paymentPayload?: PaymentPayload
+  paymentRequirements?: PaymentRequired
+}
+
+function extractVerifyBody(
+  body: VerifyBody,
+): { payment: PaymentPayload; requirements: PaymentRequired } | null {
+  const payment = body.payment ?? body.paymentPayload
+  const requirements = body.requirements ?? body.paymentRequirements
+  if (!payment || !requirements) return null
+  return { payment, requirements }
 }
 
 export function createFacilitator(config: FacilitatorConfig = {}): Hono {
@@ -29,26 +42,31 @@ export function createFacilitator(config: FacilitatorConfig = {}): Hono {
   )
 
   app.post('/verify', async (c) => {
-    const body = await c.req.json<VerifyBody>()
-    if (!body.payment || !body.requirements) {
-      return c.json({ valid: false, error: 'Missing payment or requirements' }, 400)
+    const parsed = extractVerifyBody(await c.req.json<VerifyBody>())
+    if (!parsed) {
+      return c.json({ valid: false, isValid: false, error: 'Missing payment or requirements' }, 400)
     }
-    const result = await verifyPayment(body.payment, body.requirements)
-    return c.json(result, result.valid ? 200 : 400)
+    const result = await verifyPayment(parsed.payment, parsed.requirements)
+    // `isValid` mirrors `valid` so x402.org-shaped clients read the same result.
+    return c.json({ ...result, isValid: result.valid }, result.valid ? 200 : 400)
   })
 
   app.post('/settle', async (c) => {
-    const body = await c.req.json<VerifyBody>()
-    if (!body.payment || !body.requirements) {
-      return c.json({ settled: false, error: 'Missing payment or requirements' }, 400)
+    const parsed = extractVerifyBody(await c.req.json<VerifyBody>())
+    if (!parsed) {
+      return c.json({ settled: false, success: false, error: 'Missing payment or requirements' }, 400)
     }
     // Verify before settling
-    const verifyResult = await verifyPayment(body.payment, body.requirements)
+    const verifyResult = await verifyPayment(parsed.payment, parsed.requirements)
     if (!verifyResult.valid) {
-      return c.json({ settled: false, error: verifyResult.error }, 400)
+      return c.json({ settled: false, success: false, error: verifyResult.error }, 400)
     }
-    const result = await settlePayment(body.payment, body.requirements, config)
-    return c.json(result, result.settled ? 200 : 400)
+    const result = await settlePayment(parsed.payment, parsed.requirements, config)
+    // `success`/`transaction` mirror `settled`/`txHash` for x402.org-shaped clients.
+    return c.json(
+      { ...result, success: result.settled, ...(result.txHash ? { transaction: result.txHash } : {}) },
+      result.settled ? 200 : 400,
+    )
   })
 
   app.get('/balances', async (c) => {

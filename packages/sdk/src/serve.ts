@@ -142,6 +142,23 @@ function decodePaymentHeader(header: string): Record<string, unknown> | null {
  * Returns { isValid: true } on success, { isValid: false, invalidReason } on
  * failure, and throws on network / facilitator errors.
  */
+// The request body carries BOTH the x402.org field names (paymentPayload /
+// paymentRequirements) and the agenti self-hosted facilitator names (payment /
+// requirements) so one call works against either facilitator without knowing
+// which is behind facilitatorUrl.
+function facilitatorBody(
+  paymentPayload: Record<string, unknown>,
+  paymentRequirements: Record<string, unknown>,
+): string {
+  return JSON.stringify({
+    x402Version: paymentPayload.x402Version ?? 1,
+    paymentPayload,
+    paymentRequirements,
+    payment: paymentPayload,
+    requirements: paymentRequirements,
+  })
+}
+
 async function verifyWithFacilitator(
   paymentPayload: Record<string, unknown>,
   paymentRequirements: Record<string, unknown>,
@@ -150,22 +167,66 @@ async function verifyWithFacilitator(
   const response = await fetch(`${facilitatorUrl}/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      x402Version: paymentPayload.x402Version ?? 1,
-      paymentPayload,
-      paymentRequirements,
-    }),
+    body: facilitatorBody(paymentPayload, paymentRequirements),
   })
 
-  if (!response.ok) {
+  if (!response.ok && response.status !== 400) {
     const text = await response.text().catch(() => response.statusText)
     throw new Error(`Facilitator verify failed (${response.status}): ${text.slice(0, 200)}`)
   }
 
-  return (await response.json()) as {
-    isValid: boolean
+  // Accept both response shapes: x402.org returns { isValid }, the agenti
+  // facilitator returns { valid, error }. A 400 carries a validation failure.
+  const raw = (await response.json().catch(() => ({}))) as {
+    isValid?: boolean
+    valid?: boolean
     invalidReason?: string
     invalidMessage?: string
+    error?: string
+  }
+  const isValid = raw.isValid ?? raw.valid ?? false
+  return {
+    isValid,
+    ...(raw.invalidReason ?? raw.error ? { invalidReason: raw.invalidReason ?? raw.error } : {}),
+    ...(raw.invalidMessage ? { invalidMessage: raw.invalidMessage } : {}),
+  }
+}
+
+/**
+ * Settles a verified payment on-chain via the facilitator. Without this step a
+ * gated resource would be served for a signed authorization that is never
+ * redeemed — no funds move and the same authorization replays forever.
+ */
+async function settleWithFacilitator(
+  paymentPayload: Record<string, unknown>,
+  paymentRequirements: Record<string, unknown>,
+  facilitatorUrl: string,
+): Promise<{ settled: boolean; txHash?: string; error?: string }> {
+  const response = await fetch(`${facilitatorUrl}/settle`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: facilitatorBody(paymentPayload, paymentRequirements),
+  })
+
+  if (!response.ok && response.status !== 400) {
+    const text = await response.text().catch(() => response.statusText)
+    throw new Error(`Facilitator settle failed (${response.status}): ${text.slice(0, 200)}`)
+  }
+
+  // x402.org returns { success, transaction, ... }; agenti returns { settled, txHash, error }.
+  const raw = (await response.json().catch(() => ({}))) as {
+    settled?: boolean
+    success?: boolean
+    txHash?: string
+    transaction?: string
+    error?: string
+    errorReason?: string
+  }
+  const settled = raw.settled ?? raw.success ?? false
+  return {
+    settled,
+    ...(raw.txHash ?? raw.transaction ? { txHash: raw.txHash ?? raw.transaction } : {}),
+    ...(raw.error ?? raw.errorReason ? { error: raw.error ?? raw.errorReason } : {}),
   }
 }
 
@@ -265,6 +326,14 @@ export function withPaymentExpress(
         })
         return
       }
+      // Settle on-chain BEFORE serving. verify only checks the signature, not the
+      // payer's balance, so a valid-but-unfunded authorization must be caught here.
+      const settlement = await settleWithFacilitator(payload, requirements, facilitatorUrl)
+      if (!settlement.settled) {
+        res.status(402).json({ error: settlement.error ?? 'Payment settlement failed' })
+        return
+      }
+      if (settlement.txHash) res.setHeader('X-Payment-Response', settlement.txHash)
     } catch (err) {
       res.status(502).json({
         error: 'Facilitator error',
@@ -359,6 +428,11 @@ export function withPaymentHono(handler: HonoHandler, config: PaymentConfig): Ho
           },
           402,
         )
+      }
+      // Settle on-chain before serving — verify does not check the payer's balance.
+      const settlement = await settleWithFacilitator(payload, requirements, facilitatorUrl)
+      if (!settlement.settled) {
+        return c.json({ error: settlement.error ?? 'Payment settlement failed' }, 402)
       }
     } catch (err) {
       return c.json(
@@ -463,6 +537,14 @@ export function withPayment<T extends NextResLike = NextResLike>(
             error: result.invalidReason ?? 'Payment invalid',
             message: result.invalidMessage,
           }),
+          { status: 402, headers: { 'Content-Type': 'application/json' } },
+        ) as unknown as T
+      }
+      // Settle on-chain before serving — verify does not check the payer's balance.
+      const settlement = await settleWithFacilitator(payload, requirements, facilitatorUrl)
+      if (!settlement.settled) {
+        return new Response(
+          JSON.stringify({ error: settlement.error ?? 'Payment settlement failed' }),
           { status: 402, headers: { 'Content-Type': 'application/json' } },
         ) as unknown as T
       }
