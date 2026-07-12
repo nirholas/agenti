@@ -3,6 +3,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { base, arbitrum, mainnet, polygon, baseSepolia } from 'viem/chains'
 import type { Chain } from 'viem'
 import { markNonce } from './nonce-store.js'
+import { checkAsset } from './chains.js'
 import type { PaymentPayload, PaymentRequired, SettleResult, FacilitatorConfig } from './types.js'
 
 const CHAIN_MAP: Record<string, Chain> = {
@@ -61,6 +62,11 @@ export async function settlePayment(
   const chain = CHAIN_MAP[network]
   if (!chain) return { settled: false, error: `Unsupported network: ${network}` }
 
+  // Defence in depth: never broadcast a transferWithAuthorization to a non-USDC
+  // contract, even if /settle is called directly without going through /verify.
+  const assetError = checkAsset(network, requirements.asset)
+  if (assetError) return { settled: false, error: assetError }
+
   const rpcUrl = config.rpcUrls?.[network]
   const transport = rpcUrl ? http(rpcUrl) : http()
 
@@ -88,7 +94,15 @@ export async function settlePayment(
       ],
     })
 
-    await publicClient.waitForTransactionReceipt({ hash: txHash })
+    // writeContract does not simulate, so an authorization that reverts on-chain
+    // (e.g. payer has no balance) is still mined. waitForTransactionReceipt RESOLVES
+    // for reverted txs — it does not throw — so the status must be checked explicitly.
+    // Reporting a reverted settlement as successful lets a payer extract paid services
+    // for free (the merchant delivers before learning settlement failed).
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash })
+    if (receipt.status !== 'success') {
+      return { settled: false, txHash, error: 'Settlement transaction reverted on-chain' }
+    }
     markNonce(authorization.from, authorization.nonce, BigInt(authorization.validBefore))
     return { settled: true, txHash }
   } catch (err) {

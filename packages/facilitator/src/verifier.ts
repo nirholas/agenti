@@ -1,6 +1,7 @@
 import { verifyTypedData, getAddress } from 'viem'
 import { base, arbitrum, mainnet, polygon, baseSepolia } from 'viem/chains'
 import { hasNonce } from './nonce-store.js'
+import { checkAsset } from './chains.js'
 import type { PaymentPayload, PaymentRequired, VerifyResult } from './types.js'
 
 const CHAIN_IDS: Record<string, number> = {
@@ -36,6 +37,13 @@ export async function verifyPayment(
   const chainId = CHAIN_IDS[network]
   if (chainId === undefined) {
     return { valid: false, error: `Unsupported network: ${network}` }
+  }
+
+  // Only the canonical USDC contract is settleable — reject any other asset before
+  // spending gas or trusting a signature scoped to an unknown verifyingContract.
+  const assetError = checkAsset(network, requirements.asset)
+  if (assetError) {
+    return { valid: false, error: assetError }
   }
 
   const now = Math.floor(Date.now() / 1000)
