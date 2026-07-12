@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { Keypair } from '@solana/web3.js'
-import { generateWallet, generateEVMWallet, generateSolanaWallet, walletFromKeys } from '../wallet.js'
+import {
+  generateWallet,
+  generateEVMWallet,
+  generateSolanaWallet,
+  walletFromKeys,
+  evmWalletFromMnemonic,
+  solanaWalletFromMnemonic,
+} from '../wallet.js'
 
 describe('generateWallet', () => {
   it('returns a valid EVM address (0x + 40 hex chars)', () => {
@@ -62,5 +69,35 @@ describe('walletFromKeys', () => {
     // EVM address is deterministic, Solana is fresh each call
     expect(w1.evm.address).toBe(w2.evm.address)
     expect(w1.solana.address).not.toBe(w2.solana.address)
+  })
+})
+
+describe('mnemonic derivation', () => {
+  // Standard BIP-39 test vector mnemonic.
+  const MNEMONIC =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+  // BIP-44 m/44'/60'/0'/0/0 for the vector above — verifiable against any BIP-39 tool.
+  const EXPECTED_EVM_ADDR = '0x9858EfFD232B4033E47d90003D41EC34EcaEda94'
+
+  it('derives the canonical EVM address (BIP-44 secp256k1)', () => {
+    const w = evmWalletFromMnemonic(MNEMONIC)
+    expect(w.address.toLowerCase()).toBe(EXPECTED_EVM_ADDR.toLowerCase())
+  })
+
+  it('derives a deterministic, self-consistent Solana wallet (SLIP-0010 ed25519)', () => {
+    const a = solanaWalletFromMnemonic(MNEMONIC)
+    const b = solanaWalletFromMnemonic(MNEMONIC)
+    // Deterministic for the same seed + index.
+    expect(a.address).toBe(b.address)
+    // secretKey must round-trip to the reported public address.
+    const kp = Keypair.fromSecretKey(a.privateKey)
+    expect(kp.publicKey.toBase58()).toBe(a.address)
+    expect(a.privateKey.length).toBe(64)
+  })
+
+  it('derives distinct Solana addresses per account index', () => {
+    const a0 = solanaWalletFromMnemonic(MNEMONIC, 0)
+    const a1 = solanaWalletFromMnemonic(MNEMONIC, 1)
+    expect(a0.address).not.toBe(a1.address)
   })
 })
