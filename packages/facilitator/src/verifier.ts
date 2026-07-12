@@ -1,6 +1,6 @@
 import { verifyTypedData, getAddress } from 'viem'
 import { hasNonce } from './nonce-store.js'
-import { resolveNetworkPair } from './chains.js'
+import { checkAsset, resolveNetworkPair } from './chains.js'
 import type { EVMPaymentPayload, PaymentRequired, VerifyResult } from './types.js'
 
 const TRANSFER_WITH_AUTHORIZATION_TYPES = {
@@ -26,6 +26,11 @@ export async function verifyPayment(
   const resolved = resolveNetworkPair(network, requirements.network)
   if ('error' in resolved) return { valid: false, error: resolved.error }
   const chainId = resolved.chain.viemChain.id
+
+  // Only the canonical USDC contract is settleable: reject any other asset before
+  // spending gas or trusting a signature scoped to an unknown verifyingContract.
+  const assetError = checkAsset(resolved.chain, requirements.asset)
+  if (assetError) return { valid: false, error: assetError }
 
   const now = Math.floor(Date.now() / 1000)
   if (now <= Number(authorization.validAfter)) {

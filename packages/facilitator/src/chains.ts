@@ -95,3 +95,16 @@ export function resolveNetworkPair(
 
   return { chain: paymentChain }
 }
+
+/**
+ * Asserts the asset a payment names is the canonical USDC of the resolved chain.
+ * Returns an error string on a mismatch, or null when the pairing is valid. This
+ * stops the facilitator being coerced into broadcasting `transferWithAuthorization`
+ * against an arbitrary attacker-supplied contract with its own gas key.
+ */
+export function checkAsset(chain: ChainConfig, asset: string): string | null {
+  if (asset.toLowerCase() !== chain.usdc.toLowerCase()) {
+    return `Unsupported asset for ${chain.caip2}: ${asset}`
+  }
+  return null
+}

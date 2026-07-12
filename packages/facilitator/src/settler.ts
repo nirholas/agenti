@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, http, getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { markNonce } from './nonce-store.js'
-import { resolveNetworkPair } from './chains.js'
+import { checkAsset, resolveNetworkPair } from './chains.js'
 import type { EVMPaymentPayload, PaymentRequired, SettleResult, FacilitatorConfig } from './types.js'
 
 const TRANSFER_WITH_AUTH_ABI = [
@@ -50,6 +50,11 @@ export async function settlePayment(
   if ('error' in resolved) return { settled: false, error: resolved.error }
   const chain = resolved.chain.viemChain
 
+  // Defence in depth: never broadcast a transferWithAuthorization to a non-USDC
+  // contract, even if /settle is called directly without going through /verify.
+  const assetError = checkAsset(resolved.chain, requirements.asset)
+  if (assetError) return { settled: false, error: assetError }
+
   // Callers may key rpcUrls by either the CAIP-2 id or the legacy alias.
   const rpcUrl =
     config.rpcUrls?.[resolved.chain.caip2] ?? config.rpcUrls?.[network] ?? resolved.chain.rpc
@@ -79,7 +84,14 @@ export async function settlePayment(
       ],
     })
 
-    await publicClient.waitForTransactionReceipt({ hash: txHash })
+    // writeContract does not simulate, so an authorization that reverts on-chain
+    // (e.g. the payer has no balance) is still mined, and waitForTransactionReceipt
+    // RESOLVES for reverted transactions. Reporting that as settled would let a
+    // payer extract paid services for free, so the status is checked explicitly.
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash })
+    if (receipt.status !== 'success') {
+      return { settled: false, txHash, error: 'Settlement transaction reverted on-chain' }
+    }
     markNonce(authorization.from, authorization.nonce, BigInt(authorization.validBefore))
     return { settled: true, txHash }
   } catch (err) {
