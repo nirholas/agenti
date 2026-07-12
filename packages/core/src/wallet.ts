@@ -7,6 +7,7 @@ import {
 } from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { HDKey } from '@scure/bip32'
+import { derivePath } from 'ed25519-hd-key'
 import type { EVMWallet, SolanaWallet, AgentiWallet } from './types.js'
 
 export function generateEVMWallet(): EVMWallet {
@@ -63,11 +64,13 @@ export function evmWalletFromMnemonic(mnemonic: string, accountIndex = 0): EVMWa
 }
 
 export function solanaWalletFromMnemonic(mnemonic: string, accountIndex = 0): SolanaWallet {
+  // Solana uses SLIP-0010 ed25519 derivation (the scheme Phantom, Backpack and the
+  // Solana CLI implement) — NOT BIP-32 secp256k1. Deriving with @scure/bip32 here
+  // would produce a valid-but-non-standard keypair whose address matches no other
+  // wallet, silently stranding any funds. ed25519-hd-key implements SLIP-0010.
   const seed = mnemonicToSeedSync(mnemonic)
-  const master = HDKey.fromMasterSeed(seed)
-  const child = master.derive(`m/44'/501'/${accountIndex}'/0'`)
-  if (!child.privateKey) throw new Error('Failed to derive Solana private key')
-  const keypair = Keypair.fromSeed(child.privateKey)
+  const { key } = derivePath(`m/44'/501'/${accountIndex}'/0'`, Buffer.from(seed).toString('hex'))
+  const keypair = Keypair.fromSeed(key)
   return { address: keypair.publicKey.toBase58(), privateKey: keypair.secretKey }
 }
 
