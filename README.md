@@ -905,4 +905,4 @@ These open standards and tools form the broader ecosystem agenti is part of:
 
 ## License
 
-Apache 2.0 — use it in anything, fork it, build on it.
+All rights reserved. See [LICENSE](LICENSE).
