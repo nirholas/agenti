@@ -906,3 +906,10 @@ These open standards and tools form the broader ecosystem agenti is part of:
 ## License
 
 All rights reserved. See [LICENSE](LICENSE).
+
+## Documentation
+
+Full documentation site: **https://nirholas.github.io/agenti/**
+
+- [Getting started](docs/getting-started.md) covers install and first run.
+- [Examples](docs/examples.md) has copy-paste snippets.
