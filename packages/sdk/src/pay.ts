@@ -1,4 +1,5 @@
 import { emitEvent } from './events.js'
+import { getCachedPayment, cachePayment, readIdempotencyKey } from './idempotency.js'
 import { createWalletClient, getAddress, http, toHex } from 'viem'
 import { base, arbitrum, mainnet, polygon, baseSepolia, bsc, bscTestnet } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
@@ -134,7 +135,7 @@ async function signEVMPayment(
   wallet: EVMWallet,
   x402Version: number,
   scheme: string,
-): Promise<string> {
+): Promise<{ header: string; expiresAt: number }> {
   const chain = resolveChain(network)
   const account = privateKeyToAccount(wallet.privateKey)
 
@@ -198,7 +199,7 @@ async function signEVMPayment(
   }
 
   // Encode as standard base64 (mirrors x402 core safeBase64Encode(JSON.stringify(payload))).
-  return safeBase64Encode(JSON.stringify(payment))
+  return { header: safeBase64Encode(JSON.stringify(payment)), expiresAt: Number(validBefore) }
 }
 
 // ---------------------------------------------------------------------------
@@ -288,18 +289,38 @@ export async function pay(
     return solFetch(url, options)
   }
 
-  // EVM: build EIP-3009 TransferWithAuthorization signature
-  const paymentHeader = await signEVMPayment(
-    accept.network,
+  // EVM: build EIP-3009 TransferWithAuthorization signature.
+  //
+  // When the caller set an Idempotency-Key, several attempts are one logical
+  // purchase: replay the authorization signed for the first attempt rather than
+  // minting a new nonce that would settle a second time.
+  const idempotencyKey = readIdempotencyKey(options?.headers)
+  const identity = {
+    network: accept.network,
+    asset: accept.asset,
+    payTo: accept.payTo,
     amount,
-    accept.payTo,
-    accept.asset,
-    maxTimeoutSeconds,
-    accept.extra,
-    evmWallet,
-    version,
-    accept.scheme,
-  )
+  }
+
+  let paymentHeader = idempotencyKey ? getCachedPayment(idempotencyKey, identity) : undefined
+
+  if (!paymentHeader) {
+    const signed = await signEVMPayment(
+      accept.network,
+      amount,
+      accept.payTo,
+      accept.asset,
+      maxTimeoutSeconds,
+      accept.extra,
+      evmWallet,
+      version,
+      accept.scheme,
+    )
+    paymentHeader = signed.header
+    if (idempotencyKey) {
+      cachePayment(idempotencyKey, identity, signed.header, signed.expiresAt)
+    }
+  }
 
   // ------------------------------------------------------------------
   // Choose correct header name per protocol version.

@@ -66,6 +66,12 @@ export type { AgentIdentity, ERC8004Registration, ERC8004Service } from './ident
 
 // x402 payment gating
 export { withPaymentExpress, withPaymentHono, withPayment, LOCAL_FACILITATOR } from './serve.js'
+export type { PaymentGateMode } from './serve.js'
+
+// Retry-safe payments: attach an Idempotency-Key header to pay() and several
+// attempts replay one authorization instead of settling more than once.
+export { clearIdempotencyCache, readIdempotencyKey } from './idempotency.js'
+export type { PaymentIdentity } from './idempotency.js'
 export type { PaymentConfig } from './serve.js'
 
 // x402scan discovery

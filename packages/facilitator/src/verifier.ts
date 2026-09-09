@@ -1,19 +1,7 @@
 import { verifyTypedData, getAddress } from 'viem'
-import { base, arbitrum, mainnet, polygon, baseSepolia } from 'viem/chains'
 import { hasNonce } from './nonce-store.js'
+import { resolveNetworkPair } from './chains.js'
 import type { PaymentPayload, PaymentRequired, VerifyResult } from './types.js'
-
-const CHAIN_IDS: Record<string, number> = {
-  'eip155:1': mainnet.id,
-  'eip155:8453': base.id,
-  'eip155:42161': arbitrum.id,
-  'eip155:137': polygon.id,
-  'eip155:84532': baseSepolia.id,
-  'base-mainnet': base.id,
-  'arbitrum-mainnet': arbitrum.id,
-  'ethereum-mainnet': mainnet.id,
-  'polygon-mainnet': polygon.id,
-}
 
 const TRANSFER_WITH_AUTHORIZATION_TYPES = {
   TransferWithAuthorization: [
@@ -33,10 +21,11 @@ export async function verifyPayment(
   const { network, payload } = payment
   const { authorization, signature } = payload
 
-  const chainId = CHAIN_IDS[network]
-  if (chainId === undefined) {
-    return { valid: false, error: `Unsupported network: ${network}` }
-  }
+  // Bind the claimed network to the one the resource asked to be paid on
+  // before the EIP-712 domain is built from it.
+  const resolved = resolveNetworkPair(network, requirements.network)
+  if ('error' in resolved) return { valid: false, error: resolved.error }
+  const chainId = resolved.chain.viemChain.id
 
   const now = Math.floor(Date.now() / 1000)
   if (now <= Number(authorization.validAfter)) {
