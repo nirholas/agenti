@@ -26,7 +26,9 @@ export function agentiTools(config: AgentiToolsConfig): Record<string, any> {
       execute: async ({ url, method, body }) => {
         const response = await client.pay(url, {
           method: method ?? 'GET',
-          body: body ? JSON.parse(body) : undefined,
+          // pay() takes RequestInit, whose body must be a BodyInit. Parsing to
+          // an object here made fetch stringify it to "[object Object]".
+          body: body ?? undefined,
         })
         return { status: response.status, body: await response.text() }
       },

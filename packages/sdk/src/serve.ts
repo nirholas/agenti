@@ -28,6 +28,12 @@
 // Types
 // ---------------------------------------------------------------------------
 
+/**
+ * How hard a 402 gate is: settle the payment on-chain before the handler runs,
+ * or verify the signature only and leave settlement to the caller.
+ */
+export type PaymentGateMode = 'settle' | 'verify'
+
 /** Configuration for a 402-gated endpoint. */
 export interface PaymentConfig {
   /** Amount in the token's smallest unit (e.g. "1000000" = 1 USDC). */
@@ -68,7 +74,7 @@ export interface PaymentConfig {
    *   front of work that is cheap and safe to repeat, and settle it yourself
    *   later.
    */
-  mode?: 'settle' | 'verify'
+  mode?: PaymentGateMode
 }
 
 // ---------------------------------------------------------------------------

@@ -1,21 +1,8 @@
 import { createPublicClient, createWalletClient, http, getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { base, arbitrum, mainnet, polygon, baseSepolia } from 'viem/chains'
-import type { Chain } from 'viem'
 import { markNonce } from './nonce-store.js'
+import { resolveNetworkPair } from './chains.js'
 import type { PaymentPayload, PaymentRequired, SettleResult, FacilitatorConfig } from './types.js'
-
-const CHAIN_MAP: Record<string, Chain> = {
-  'eip155:1': mainnet,
-  'eip155:8453': base,
-  'eip155:42161': arbitrum,
-  'eip155:137': polygon,
-  'eip155:84532': baseSepolia,
-  'base-mainnet': base,
-  'arbitrum-mainnet': arbitrum,
-  'ethereum-mainnet': mainnet,
-  'polygon-mainnet': polygon,
-}
 
 const TRANSFER_WITH_AUTH_ABI = [
   {
@@ -58,10 +45,14 @@ export async function settlePayment(
   const { network, payload } = payment
   const { authorization, signature } = payload
 
-  const chain = CHAIN_MAP[network]
-  if (!chain) return { settled: false, error: `Unsupported network: ${network}` }
+  // Never broadcast on a chain the resource did not ask to be paid on.
+  const resolved = resolveNetworkPair(network, requirements.network)
+  if ('error' in resolved) return { settled: false, error: resolved.error }
+  const chain = resolved.chain.viemChain
 
-  const rpcUrl = config.rpcUrls?.[network]
+  // Callers may key rpcUrls by either the CAIP-2 id or the legacy alias.
+  const rpcUrl =
+    config.rpcUrls?.[resolved.chain.caip2] ?? config.rpcUrls?.[network] ?? resolved.chain.rpc
   const transport = rpcUrl ? http(rpcUrl) : http()
 
   const account = privateKeyToAccount(config.settlerPrivateKey)
