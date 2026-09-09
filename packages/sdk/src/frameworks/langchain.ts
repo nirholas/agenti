@@ -1,4 +1,5 @@
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import type { StructuredToolInterface } from '@langchain/core/tools'
 import { z } from 'zod'
 import { agenti } from '../agenti.js'
 import type { AgentiConfig } from '../agenti.js'
@@ -10,8 +11,9 @@ export interface AgentiLangChainConfig extends AgentiConfig {
   solanaAgentKit?: SolanaAgentKitConfig
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function agentiLangChainTools(config: AgentiLangChainConfig): DynamicStructuredTool<any>[] {
+export function agentiLangChainTools(
+  config: AgentiLangChainConfig,
+): StructuredToolInterface[] {
   const client = agenti(config)
 
   const payTool = new DynamicStructuredTool({
@@ -61,7 +63,7 @@ export function agentiLangChainTools(config: AgentiLangChainConfig): DynamicStru
   if (config.solanaAgentKit) {
     const kit = createSolanaAgentKit(config.solanaAgentKit)
     const sakTools = getSolanaAgentKitLangchainTools(kit)
-    return [...baseTools, ...sakTools] as DynamicStructuredTool<any>[]
+    return [...baseTools, ...sakTools]
   }
 
   return baseTools

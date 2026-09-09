@@ -366,7 +366,10 @@ export function createServer(): McpServer {
         apiKey: process.env['BITREFILL_API_KEY'] ?? '',
         testMode: process.env['BITREFILL_TEST_MODE'] === 'true',
       }
-      const results = await searchProducts(config, query, { country, type })
+      const filters: { country?: string; type?: 'giftcard' | 'esim' | 'topup' } = {}
+      if (country !== undefined) filters.country = country
+      if (type !== undefined) filters.type = type
+      const results = await searchProducts(config, query, filters)
       return { content: [{ type: 'text', text: JSON.stringify(results, null, 2) }] }
     }
   )
@@ -408,12 +411,15 @@ export function createServer(): McpServer {
         testMode: process.env['BITREFILL_TEST_MODE'] === 'true',
       }
       if (!config.apiKey) throw new Error('Bitrefill API key required (param or BITREFILL_API_KEY)')
-      const invoice = await bitrefillCreateInvoice(config, {
-        productId: product_id,
-        value,
-        paymentMethod: payment_method,
-        deliveryEmail: delivery_email,
-      })
+      const invoiceParams: {
+        productId: string
+        value: number
+        paymentMethod?: 'ethereum' | 'bitcoin' | 'lightning' | 'usdc' | 'tether'
+        deliveryEmail?: string
+      } = { productId: product_id, value }
+      if (payment_method !== undefined) invoiceParams.paymentMethod = payment_method
+      if (delivery_email !== undefined) invoiceParams.deliveryEmail = delivery_email
+      const invoice = await bitrefillCreateInvoice(config, invoiceParams)
       return { content: [{ type: 'text', text: JSON.stringify(invoice, null, 2) }] }
     }
   )
@@ -694,7 +700,12 @@ export function createServer(): McpServer {
       const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
       const kit = createSolanaAgentKit({ keypair, config: { PRIORITY_LEVEL: priority_level } })
 
-      const result = await kit.trade(output_mint, amount, input_mint, slippage_bps)
+      const result = await kit.trade(
+        new PublicKey(output_mint),
+        amount,
+        new PublicKey(input_mint),
+        slippage_bps,
+      )
       return { content: [{ type: 'text', text: JSON.stringify({ signature: result, solscan: `https://solscan.io/tx/${result}` }, null, 2) }] }
     }
   )
@@ -782,7 +793,7 @@ export function createServer(): McpServer {
       const keypair = Keypair.fromSecretKey(Buffer.from(solanaKeyHex, 'hex'))
       const kit = createSolanaAgentKit({ keypair })
 
-      const result = await kit.deployToken(name, uri, symbol, decimals, initial_supply)
+      const result = await kit.deployToken(name, uri, symbol, decimals, {}, initial_supply)
       return {
         content: [{
           type: 'text',

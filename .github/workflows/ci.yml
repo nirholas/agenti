@@ -24,11 +24,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm typecheck
-
+      # Build first: typecheck resolves workspace deps (@agenti/core,
+      # @agenti/sdk, @agenti/facilitator) through their built dist/ types, so
+      # typechecking ahead of the build fails on packages that consume them.
       - name: Build
         run: pnpm build
+
+      - name: Typecheck
+        run: pnpm typecheck
 
       - name: Test
         run: pnpm test

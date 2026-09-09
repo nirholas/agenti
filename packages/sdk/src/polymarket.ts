@@ -372,7 +372,7 @@ export function polymarket(config: PolymarketConfig): PolymarketInstance {
     if (_creds) return _creds
 
     const timestamp = Math.floor(Date.now() / 1000).toString()
-    const nonce = 0
+    const nonce = 0n
 
     const signature = await account.signTypedData({
       domain: { name: 'ClobAuthDomain', version: '1' },
