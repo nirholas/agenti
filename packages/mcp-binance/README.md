@@ -23,7 +23,7 @@ Or configure it directly:
       "args": ["-y", "@agenti/mcp-binance"],
       "env": {
         "BINANCE_API_KEY": "...",
-        "BINANCE_API_SECRET": "..."
+        "BINANCE_SECRET_KEY": "..."
       }
     }
   }
@@ -56,15 +56,19 @@ before `binance_place_order` spends anything.
 ## Use it as a library
 
 ```ts
-import { createClient } from '@agenti/mcp-binance'
+import { createClient, BinanceClient } from '@agenti/mcp-binance'
 
-const client = createClient({
-  apiKey: process.env.BINANCE_API_KEY,
-  apiSecret: process.env.BINANCE_API_SECRET,
-})
+// Reads BINANCE_API_KEY, BINANCE_SECRET_KEY and BINANCE_US from the environment.
+const client = createClient()
 
-const { price } = await client.getPrice('BTCUSDT')
+const ticker = await client.get('/api/v3/ticker/price', { symbol: 'BTCUSDT' })
+
+// Or pass credentials directly:
+const explicit = new BinanceClient(process.env.BINANCE_API_KEY, process.env.BINANCE_SECRET_KEY)
+const account = await explicit.signedGet('/api/v3/account')
 ```
+
+Set `BINANCE_US=true` to target `api.binance.us` instead of `api.binance.com`.
 
 ## Trading safety
 
