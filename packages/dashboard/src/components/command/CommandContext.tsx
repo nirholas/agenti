@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
 import { connectEventSource } from '../../lib/events'
-import type { AgentiEvent } from '@agenti/sdk'
+import type { AgentiEvent } from '@agenti/sdk/events'
 
 // ─── Types ────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 'use client'
 
-import type { AgentiEvent } from '@agenti/sdk'
+import type { AgentiEvent } from '@agenti/sdk/events'
 
 export function connectEventSource(
   onEvent: (event: AgentiEvent) => void,
