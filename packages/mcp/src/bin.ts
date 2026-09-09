@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { createServer } from './server.js'
 
 const useHttp =
@@ -24,11 +25,14 @@ if (useHttp) {
     for await (const chunk of req) chunks.push(chunk as Buffer)
     const body = JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown
 
-    const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: undefined,
-    })
+    // Omitting sessionIdGenerator selects the SDK's stateless mode. Passing it
+    // explicitly as undefined is rejected under exactOptionalPropertyTypes.
+    const transport = new StreamableHTTPServerTransport({})
     const server = createServer()
-    await server.connect(transport)
+    // The SDK's transport classes declare `onclose` as `(() => void) | undefined`,
+    // which its own Transport interface rejects under exactOptionalPropertyTypes.
+    // The runtime shape is correct; this narrows to the interface it implements.
+    await server.connect(transport as Transport)
     await transport.handleRequest(req, res, body)
   })
 
@@ -41,5 +45,5 @@ if (useHttp) {
   )
   const server = createServer()
   const transport = new StdioServerTransport()
-  await server.connect(transport)
+  await server.connect(transport as Transport)
 }

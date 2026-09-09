@@ -33,7 +33,7 @@
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "clean": "rm -rf dist *.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
     "tsup": "^8.0.0"

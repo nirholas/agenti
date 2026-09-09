@@ -11,7 +11,15 @@ export { signEIP712, verifyEIP712, signMessage, verifyMessage } from './signing.
 export type { TypedDataDomain } from './signing.js'
 
 // Solana trading
-export { solana, buy, sell, getCoinState, watchMigration, watchMigrationLogs } from './solana/index.js'
+export {
+  solana,
+  buy,
+  sell,
+  getCoinState,
+  watchMigration,
+  watchMigrationLogs,
+  USDC_MAINNET,
+} from './solana/index.js'
 export type { SolanaConfig, SolanaInstance } from './solana/index.js'
 export type { BuyParams, SellParams, TradeResult } from './solana/trade.js'
 export type { CoinState, CoinPhase } from './solana/coin.js'
