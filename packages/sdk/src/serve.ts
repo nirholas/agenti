@@ -9,8 +9,16 @@
  *   2. If absent, returns a 402 with the payment requirements JSON so the caller
  *      knows exactly what to pay and where.
  *   3. If present, decodes and verifies the EIP-3009 signature by forwarding to
- *      the x402 facilitator (https://x402.org/facilitator by default), then calls
- *      the wrapped handler.
+ *      the x402 facilitator (https://x402.org/facilitator by default).
+ *   4. Settles the payment on-chain through the same facilitator, and only then
+ *      calls the wrapped handler. A handler never runs for a payment that did
+ *      not settle, so non-reversible work is not delivered unpaid.
+ *   5. Echoes the settle receipt back on the X-PAYMENT-RESPONSE header.
+ *
+ * Verification alone is not payment: it proves a signature is good but moves no
+ * funds and consumes no nonce, which leaves the authorization replayable. Set
+ * `mode: 'verify'` to opt an endpoint back into that soft gate when the work it
+ * does is free to repeat.
  *
  * Supports Express (Request/Response/NextFunction), Hono (Context), and
  * Next.js App Router (NextRequest → NextResponse) handler signatures.
@@ -49,6 +57,18 @@ export interface PaymentConfig {
   maxTimeoutSeconds?: number
   /** Human-readable description of what the user is paying for. */
   description?: string
+  /**
+   * How hard the gate is.
+   *
+   * - `'settle'` (default): verify, then settle on-chain before the handler
+   *   runs. The payment is final and cannot be replayed. Use this for anything
+   *   that delivers real work.
+   * - `'verify'`: verify only, then run the handler. No funds move and the
+   *   authorization stays replayable, so only choose this for a soft gate in
+   *   front of work that is cheap and safe to repeat, and settle it yourself
+   *   later.
+   */
+  mode?: 'settle' | 'verify'
 }
 
 // ---------------------------------------------------------------------------
@@ -135,9 +155,52 @@ function decodePaymentHeader(header: string): Record<string, unknown> | null {
   }
 }
 
+/** Base64-encodes a JSON object for transport in a response header. */
+function encodeBase64Json(value: unknown): string {
+  const json = JSON.stringify(value)
+  const btoaFn = (globalThis as typeof globalThis & { btoa?: (s: string) => string }).btoa
+  if (typeof btoaFn === 'function') {
+    const bytes = new TextEncoder().encode(json)
+    let binary = ''
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i] as number)
+    return btoaFn(binary)
+  }
+  return Buffer.from(json, 'utf-8').toString('base64')
+}
+
+/**
+ * Builds the `paymentRequirements` object that /verify and /settle are given.
+ * Must match one of the `accepts` entries handed to the client in the 402 body,
+ * or the facilitator will reject the payload as mismatched.
+ */
+function buildRequirements(config: PaymentConfig): Record<string, unknown> {
+  const {
+    amount,
+    token = DEFAULT_USDC_BASE,
+    network = DEFAULT_NETWORK,
+    address,
+    maxTimeoutSeconds = 300,
+  } = config
+
+  return {
+    scheme: 'exact',
+    network,
+    amount,
+    payTo: address,
+    maxTimeoutSeconds,
+    asset: token,
+    extra: { name: DEFAULT_USDC_NAME, version: DEFAULT_USDC_VERSION },
+  }
+}
+
 /**
  * Calls the x402 facilitator /verify endpoint to validate a payment payload
  * against the payment requirements.
+ *
+ * Verification proves the signature is well-formed and the payer is good for the
+ * amount. It does NOT move funds and does NOT consume the authorization nonce,
+ * so a verified-but-unsettled payload can be replayed. Settlement is what makes
+ * a payment final: see {@link settleWithFacilitator}.
  *
  * Returns { isValid: true } on success, { isValid: false, invalidReason } on
  * failure, and throws on network / facilitator errors.
@@ -169,6 +232,175 @@ async function verifyWithFacilitator(
   }
 }
 
+/**
+ * Calls the x402 facilitator /settle endpoint to broadcast the transfer on-chain
+ * and consume the authorization nonce.
+ *
+ * This is the call that makes a payment final and non-replayable. Run it before
+ * a handler does non-reversible work, not after.
+ *
+ * Returns the facilitator's settle response, and throws on network / facilitator
+ * transport errors.
+ */
+async function settleWithFacilitator(
+  paymentPayload: Record<string, unknown>,
+  paymentRequirements: Record<string, unknown>,
+  facilitatorUrl: string,
+): Promise<{
+  success: boolean
+  transaction?: string
+  network?: string
+  payer?: string
+  errorReason?: string
+}> {
+  const response = await fetch(`${facilitatorUrl}/settle`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      x402Version: paymentPayload.x402Version ?? 1,
+      paymentPayload,
+      paymentRequirements,
+      // agenti-facilitator reads these shorter aliases; x402.org reads the pair above.
+      payment: paymentPayload,
+      requirements: paymentRequirements,
+    }),
+  })
+
+  const body = (await response.json().catch(() => null)) as {
+    success?: boolean
+    settled?: boolean
+    transaction?: string
+    txHash?: string
+    network?: string
+    payer?: string
+    errorReason?: string
+    error?: string
+  } | null
+
+  if (!body) {
+    throw new Error(`Facilitator settle failed (${response.status}): unreadable response`)
+  }
+
+  // The reference facilitator answers { success, transaction }; the bundled
+  // agenti-facilitator answers { settled, txHash }. Normalize both.
+  const success = body.success ?? body.settled ?? false
+  const result: {
+    success: boolean
+    transaction?: string
+    network?: string
+    payer?: string
+    errorReason?: string
+  } = { success }
+
+  const transaction = body.transaction ?? body.txHash
+  if (transaction !== undefined) result.transaction = transaction
+  if (body.network !== undefined) result.network = body.network
+  if (body.payer !== undefined) result.payer = body.payer
+
+  const errorReason = body.errorReason ?? body.error
+  if (!success) result.errorReason = errorReason ?? `Settlement failed (${response.status})`
+
+  return result
+}
+
+// ---------------------------------------------------------------------------
+// Shared payment gate
+// ---------------------------------------------------------------------------
+
+/** A gate that let the request through, with the receipt to echo to the caller. */
+interface GateAllowed {
+  ok: true
+  /** Base64 x402 settle receipt for the X-PAYMENT-RESPONSE header, when settled. */
+  paymentResponse?: string
+}
+
+/** A gate that stopped the request, with the exact response to send. */
+interface GateRejected {
+  ok: false
+  status: number
+  body: Record<string, unknown>
+}
+
+type GateResult = GateAllowed | GateRejected
+
+/**
+ * The full payment gate: decode, verify, and (unless the endpoint opted into
+ * soft-gating) settle, before the caller is allowed to run the handler.
+ *
+ * Every rejection path returns the status and body to send, so the three
+ * framework adapters below stay thin and cannot drift apart.
+ */
+async function runPaymentGate(
+  rawHeader: string,
+  config: PaymentConfig,
+  facilitatorUrl: string,
+): Promise<GateResult> {
+  const payload = decodePaymentHeader(rawHeader)
+  if (!payload) {
+    return { ok: false, status: 402, body: { error: 'Invalid payment header encoding' } }
+  }
+
+  const requirements = buildRequirements(config)
+
+  let verified: { isValid: boolean; invalidReason?: string; invalidMessage?: string }
+  try {
+    verified = await verifyWithFacilitator(payload, requirements, facilitatorUrl)
+  } catch (err) {
+    return {
+      ok: false,
+      status: 502,
+      body: {
+        error: 'Facilitator error',
+        message: err instanceof Error ? err.message : String(err),
+      },
+    }
+  }
+
+  if (!verified.isValid) {
+    const body: Record<string, unknown> = { error: verified.invalidReason ?? 'Payment invalid' }
+    if (verified.invalidMessage !== undefined) body.message = verified.invalidMessage
+    return { ok: false, status: 402, body }
+  }
+
+  // Soft gate: the endpoint explicitly accepted replayable, unsettled payments.
+  if (config.mode === 'verify') return { ok: true }
+
+  let settled: Awaited<ReturnType<typeof settleWithFacilitator>>
+  try {
+    settled = await settleWithFacilitator(payload, requirements, facilitatorUrl)
+  } catch (err) {
+    return {
+      ok: false,
+      status: 502,
+      body: {
+        error: 'Facilitator error',
+        message: err instanceof Error ? err.message : String(err),
+      },
+    }
+  }
+
+  if (!settled.success) {
+    return {
+      ok: false,
+      status: 402,
+      body: {
+        error: 'Payment settlement failed',
+        message: settled.errorReason ?? 'The facilitator could not settle this payment',
+      },
+    }
+  }
+
+  return {
+    ok: true,
+    paymentResponse: encodeBase64Json({
+      success: true,
+      transaction: settled.transaction ?? null,
+      network: settled.network ?? config.network ?? DEFAULT_NETWORK,
+      payer: settled.payer ?? null,
+    }),
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Express adapter
 // ---------------------------------------------------------------------------
@@ -195,6 +427,9 @@ type ExpressHandler = (
 
 /**
  * Wraps an Express route handler with x402 payment enforcement.
+ *
+ * The payment is settled on-chain before your handler runs, so a handler that
+ * ships non-reversible work never runs for an unpaid request.
  *
  * @example
  * ```typescript
@@ -231,47 +466,13 @@ export function withPaymentExpress(
       return
     }
 
-    // Decode and verify
-    const payload = decodePaymentHeader(rawHeader)
-    if (!payload) {
-      res.status(402).json({ error: 'Invalid payment header encoding' })
+    const gate = await runPaymentGate(rawHeader, config, facilitatorUrl)
+    if (!gate.ok) {
+      res.status(gate.status).json(gate.body)
       return
     }
 
-    const {
-      amount,
-      token = DEFAULT_USDC_BASE,
-      network = DEFAULT_NETWORK,
-      address,
-      maxTimeoutSeconds = 300,
-    } = config
-
-    const requirements = {
-      scheme: 'exact',
-      network,
-      amount,
-      payTo: address,
-      maxTimeoutSeconds,
-      asset: token,
-      extra: { name: DEFAULT_USDC_NAME, version: DEFAULT_USDC_VERSION },
-    }
-
-    try {
-      const result = await verifyWithFacilitator(payload, requirements, facilitatorUrl)
-      if (!result.isValid) {
-        res.status(402).json({
-          error: result.invalidReason ?? 'Payment invalid',
-          message: result.invalidMessage,
-        })
-        return
-      }
-    } catch (err) {
-      res.status(502).json({
-        error: 'Facilitator error',
-        message: err instanceof Error ? err.message : String(err),
-      })
-      return
-    }
+    if (gate.paymentResponse) res.setHeader('X-PAYMENT-RESPONSE', gate.paymentResponse)
 
     return handler(req, res, next)
   }
@@ -290,6 +491,7 @@ interface HonoContext {
     header(name: string): string | undefined
   }
   json(body: unknown, status?: number): Response
+  header?(name: string, value: string): void
   status?: number
 }
 type HonoNext = () => Promise<void>
@@ -297,6 +499,9 @@ type HonoHandler = (c: HonoContext, next: HonoNext) => Promise<Response | void>
 
 /**
  * Wraps a Hono route handler with x402 payment enforcement.
+ *
+ * The payment is settled on-chain before your handler runs, so a handler that
+ * ships non-reversible work never runs for an unpaid request.
  *
  * @example
  * ```typescript
@@ -326,48 +531,13 @@ export function withPaymentHono(handler: HonoHandler, config: PaymentConfig): Ho
       return c.json(requirements, 402)
     }
 
-    const payload = decodePaymentHeader(rawHeader)
-    if (!payload) {
-      return c.json({ error: 'Invalid payment header encoding' }, 402)
+    const gate = await runPaymentGate(rawHeader, config, facilitatorUrl)
+    if (!gate.ok) {
+      return c.json(gate.body, gate.status)
     }
 
-    const {
-      amount,
-      token = DEFAULT_USDC_BASE,
-      network = DEFAULT_NETWORK,
-      address,
-      maxTimeoutSeconds = 300,
-    } = config
-
-    const requirements = {
-      scheme: 'exact',
-      network,
-      amount,
-      payTo: address,
-      maxTimeoutSeconds,
-      asset: token,
-      extra: { name: DEFAULT_USDC_NAME, version: DEFAULT_USDC_VERSION },
-    }
-
-    try {
-      const result = await verifyWithFacilitator(payload, requirements, facilitatorUrl)
-      if (!result.isValid) {
-        return c.json(
-          {
-            error: result.invalidReason ?? 'Payment invalid',
-            message: result.invalidMessage,
-          },
-          402,
-        )
-      }
-    } catch (err) {
-      return c.json(
-        {
-          error: 'Facilitator error',
-          message: err instanceof Error ? err.message : String(err),
-        },
-        502,
-      )
+    if (gate.paymentResponse && typeof c.header === 'function') {
+      c.header('X-PAYMENT-RESPONSE', gate.paymentResponse)
     }
 
     return handler(c, next)
@@ -395,6 +565,9 @@ type NextHandler<T extends NextResLike = NextResLike> = (
 
 /**
  * Wraps a Next.js App Router API route handler with x402 payment enforcement.
+ *
+ * The payment is settled on-chain before your handler runs, so a handler that
+ * ships non-reversible work never runs for an unpaid request.
  *
  * @example
  * ```typescript
@@ -429,53 +602,18 @@ export function withPayment<T extends NextResLike = NextResLike>(
       }) as unknown as T
     }
 
-    const payload = decodePaymentHeader(rawHeader)
-    if (!payload) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid payment header encoding' }),
-        { status: 402, headers: { 'Content-Type': 'application/json' } },
-      ) as unknown as T
+    const gate = await runPaymentGate(rawHeader, config, facilitatorUrl)
+    if (!gate.ok) {
+      return new Response(JSON.stringify(gate.body), {
+        status: gate.status,
+        headers: { 'Content-Type': 'application/json' },
+      }) as unknown as T
     }
 
-    const {
-      amount,
-      token = DEFAULT_USDC_BASE,
-      network = DEFAULT_NETWORK,
-      address,
-      maxTimeoutSeconds = 300,
-    } = config
-
-    const requirements = {
-      scheme: 'exact',
-      network,
-      amount,
-      payTo: address,
-      maxTimeoutSeconds,
-      asset: token,
-      extra: { name: DEFAULT_USDC_NAME, version: DEFAULT_USDC_VERSION },
+    const response = await handler(req)
+    if (gate.paymentResponse && response?.headers?.set) {
+      response.headers.set('X-PAYMENT-RESPONSE', gate.paymentResponse)
     }
-
-    try {
-      const result = await verifyWithFacilitator(payload, requirements, facilitatorUrl)
-      if (!result.isValid) {
-        return new Response(
-          JSON.stringify({
-            error: result.invalidReason ?? 'Payment invalid',
-            message: result.invalidMessage,
-          }),
-          { status: 402, headers: { 'Content-Type': 'application/json' } },
-        ) as unknown as T
-      }
-    } catch (err) {
-      return new Response(
-        JSON.stringify({
-          error: 'Facilitator error',
-          message: err instanceof Error ? err.message : String(err),
-        }),
-        { status: 502, headers: { 'Content-Type': 'application/json' } },
-      ) as unknown as T
-    }
-
-    return handler(req)
+    return response
   }
 }
