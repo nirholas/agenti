@@ -23,7 +23,7 @@ import { execFileSync } from 'node:child_process'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 // Samples compile inside a workspace member so pnpm links every @agenti
 // package for them; a temp dir under node_modules would resolve nothing.
-const OUT = join(ROOT, 'scripts', 'readme-samples', 'generated')
+const OUT = join(ROOT, 'scripts', 'checks', 'generated')
 
 /** Errors that mean the documented API is wrong, rather than the sample being a fragment. */
 const API_ERRORS = new Set([
