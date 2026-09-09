@@ -39,6 +39,7 @@ export const ErrorCode = {
   EXPIRED_PAYMENT: 'EXPIRED_PAYMENT',
   DUPLICATE_NONCE: 'DUPLICATE_NONCE',
   NETWORK_MISMATCH: 'NETWORK_MISMATCH',
+  INVALID_RECIPIENT: 'INVALID_RECIPIENT',
   INVALID_AMOUNT: 'INVALID_AMOUNT',
   SETTLEMENT_FAILED: 'SETTLEMENT_FAILED',
 } as const
@@ -124,6 +125,20 @@ export interface MerchantConfig {
   asset?: string
   /** Human-readable description shown to client agents */
   description?: string
+  /**
+   * Settle the payment before the handler runs, instead of after it.
+   *
+   * The A2A x402 flow settles last on purpose, so a buyer is not charged for
+   * work that failed. That is the right default when the handler is pure: a
+   * failed settlement withholds the artifact and nothing was given away.
+   *
+   * It is the wrong default when the handler has side effects the merchant
+   * cannot take back (sending a message, minting, calling a third party). There
+   * the work is already delivered by the time settlement is attempted, and a
+   * failed settle means it was delivered unpaid. Set this to settle first and
+   * skip the handler entirely when the money does not land.
+   */
+  settleFirst?: boolean
 }
 
 export interface ClientConfig {
