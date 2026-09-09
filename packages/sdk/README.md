@@ -86,8 +86,8 @@ default.
 
 ```ts
 import { agentiLangChainTools } from '@agenti/sdk/langchain'
-import { agentiVercelAITools } from '@agenti/sdk/vercel-ai'
-import { agentiElizaPlugin } from '@agenti/sdk/eliza'
+import { agentiTools } from '@agenti/sdk/vercel-ai'
+import { agentiPlugin } from '@agenti/sdk/eliza'
 ```
 
 Each exposes pay, balance, and invoice as tools in that framework's own shape.
