@@ -2,13 +2,21 @@
 import { serve } from '@hono/node-server'
 import { createFacilitator } from './index.js'
 
-const port = Number(process.env['PORT'] ?? 3402)
+function flag(name: string): string | undefined {
+  const i = process.argv.indexOf(`--${name}`)
+  if (i !== -1 && process.argv[i + 1]) return process.argv[i + 1]
+  const inline = process.argv.find((a) => a.startsWith(`--${name}=`))
+  return inline?.split('=').slice(1).join('=')
+}
+
+const port = Number(flag('port') ?? process.env['PORT'] ?? 3402)
 const settlerPrivateKey = process.env['FACILITATOR_PRIVATE_KEY'] as `0x${string}` | undefined
 
 const rpcEnvMap: Record<string, string> = {
   'eip155:1': 'ETH_RPC_URL',
   'eip155:8453': 'BASE_RPC_URL',
   'eip155:42161': 'ARB_RPC_URL',
+  'eip155:137': 'POLYGON_RPC_URL',
   'eip155:84532': 'BASE_SEPOLIA_RPC_URL',
 }
 

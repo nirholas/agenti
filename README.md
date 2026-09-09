@@ -40,6 +40,15 @@ The domain is `agenti.cash`. The name is the mission.
 | [`@agenti/sdk`](./packages/sdk) | Full developer SDK — pay, receive, balance | `npm i @agenti/sdk` |
 | [`@agenti/mcp`](./packages/mcp) | MCP server — plug into any LLM client | `npx @agenti/mcp` |
 
+> **Not on npm yet.** The `@agenti` scope has not been published to, so the
+> install commands above will 404 (tracked in
+> [#126](https://github.com/nirholas/agenti/issues/126)). Until the first
+> release is tagged, use the repo directly:
+>
+> ```bash
+> git clone https://github.com/nirholas/agenti && cd agenti && pnpm install && pnpm build
+> ```
+
 ---
 
 ## Quick Start
@@ -844,8 +853,15 @@ Agenti is built on open standards — not proprietary rails. Everything is audit
 By default, agenti uses the public x402 facilitator for payment settlement. For production deployments or regulated environments, run your own:
 
 ```bash
-npx @agenti/facilitator --port 3001 --network base-mainnet
+FACILITATOR_PRIVATE_KEY=0xyourgaskey npx @agenti/facilitator --port 3001
 ```
+
+It serves every supported chain at once (Ethereum, Base, Arbitrum, Polygon and
+Base Sepolia), so there is no network to choose. `FACILITATOR_PRIVATE_KEY` is
+the gas wallet that broadcasts settlements; without it `/verify` still answers
+and `/settle` is disabled. Point individual chains at your own RPC with
+`ETH_RPC_URL`, `BASE_RPC_URL`, `ARB_RPC_URL`, `POLYGON_RPC_URL` and
+`BASE_SEPOLIA_RPC_URL`.
 
 Then configure agenti to use it:
 
