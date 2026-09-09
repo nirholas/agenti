@@ -1,5 +1,5 @@
-import { onAgentiEvent } from '@agenti/sdk'
-import type { AgentiEvent } from '@agenti/sdk'
+import { onAgentiEvent } from '@agenti/sdk/events'
+import type { AgentiEvent } from '@agenti/sdk/events'
 
 export const dynamic = 'force-dynamic'
 
