@@ -489,6 +489,10 @@ export function withPaymentExpress(
 // ---------------------------------------------------------------------------
 
 // Minimal Hono Context surface.
+// Structural subset of Hono's Context. It must stay assignable FROM the real
+// Context, so every member here has to match Hono's own shape: `status` is a
+// method there, and declaring it as a number made withPaymentHono reject every
+// real Hono handler at the type level.
 interface HonoContext {
   req: {
     url: string
@@ -498,7 +502,6 @@ interface HonoContext {
   }
   json(body: unknown, status?: number): Response
   header?(name: string, value: string): void
-  status?: number
 }
 type HonoNext = () => Promise<void>
 type HonoHandler = (c: HonoContext, next: HonoNext) => Promise<Response | void>

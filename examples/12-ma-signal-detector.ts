@@ -329,16 +329,24 @@ Apply the M&A Readiness Rubric precisely. Output a ranked list from highest to l
 
     let result: unknown
     try {
+      const ticker = input.ticker
+      const companyName = input.company_name
+
       if (block.name === 'fetch_sec_filings') {
-        result = await fetchSecFilings(input.ticker, input.days_back ? Number(input.days_back) : 90)
+        if (!ticker) throw new Error('fetch_sec_filings needs a ticker')
+        result = await fetchSecFilings(ticker, input.days_back ? Number(input.days_back) : 90)
       } else if (block.name === 'scan_job_postings') {
-        result = await scanJobPostings(input.company_name)
+        if (!companyName) throw new Error('scan_job_postings needs a company_name')
+        result = await scanJobPostings(companyName)
       } else if (block.name === 'get_options_flow') {
-        result = await getOptionsFlow(input.ticker)
+        if (!ticker) throw new Error('get_options_flow needs a ticker')
+        result = await getOptionsFlow(ticker)
       } else if (block.name === 'check_patent_transfers') {
-        result = await checkPatentTransfers(input.company_name)
+        if (!companyName) throw new Error('check_patent_transfers needs a company_name')
+        result = await checkPatentTransfers(companyName)
       } else if (block.name === 'fetch_exec_moves') {
-        result = await fetchExecMoves(input.ticker, 180)
+        if (!ticker) throw new Error('fetch_exec_moves needs a ticker')
+        result = await fetchExecMoves(ticker, 180)
       }
     } catch (err) {
       result = { error: (err as Error).message }
