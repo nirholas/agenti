@@ -43,6 +43,10 @@ console.log(`Selected: ${amazon.name} — denominations: $${amazon.denominations
 
 // 2. Create a USDC invoice for a $25 gift card
 const denomination = amazon.denominations.find((d) => d === 25) ?? amazon.denominations[0]
+if (denomination === undefined) {
+  console.error(`${amazon.name} has no purchasable denominations.`)
+  process.exit(1)
+}
 console.log(`Creating USDC invoice for $${denomination}...`)
 
 const invoice = await createInvoice(config, {

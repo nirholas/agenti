@@ -440,15 +440,26 @@ async function getCommodityPriceTrend(commodity: string): Promise<{
     const closes = (result.indicators?.quote?.[0]?.close ?? []).filter((c): c is number => c !== null && c !== undefined)
     if (closes.length < 20) throw new Error('insufficient data')
 
-    const currentPrice = result.meta?.regularMarketPrice ?? closes[closes.length - 1]
+    const latestClose = closes[closes.length - 1]
     const priceYearAgo = closes[0]
     const price30dAgo = closes[Math.max(0, closes.length - 30)]
+    if (latestClose === undefined || priceYearAgo === undefined || price30dAgo === undefined) {
+      throw new Error('insufficient data')
+    }
+
+    const currentPrice = result.meta?.regularMarketPrice ?? latestClose
 
     const change12m = ((currentPrice - priceYearAgo) / priceYearAgo) * 100
     const change30d = ((currentPrice - price30dAgo) / price30dAgo) * 100
 
     // Annualized volatility from daily log returns
-    const returns = closes.slice(1).map((p, i) => Math.log(p / closes[i]))
+    const returns: number[] = []
+    for (let i = 1; i < closes.length; i++) {
+      const previous = closes[i - 1]
+      const current = closes[i]
+      if (previous === undefined || current === undefined) continue
+      returns.push(Math.log(current / previous))
+    }
     const mean = returns.reduce((a, b) => a + b, 0) / returns.length
     const variance = returns.reduce((s, r) => s + (r - mean) ** 2, 0) / returns.length
     const annualizedVol = Math.sqrt(variance * 252) * 100

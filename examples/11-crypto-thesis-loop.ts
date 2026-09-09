@@ -164,16 +164,20 @@ async function handleTool(
       return fetchFearGreed()
 
     case 'get_funding_rate': {
+      const asset = input.coin ?? input.instrument
+      if (!asset) return { error: 'get_funding_rate needs a coin or instrument' }
       try {
-        return await hlClient.getFundingRate(input.coin ?? input.instrument)
+        return await hlClient.getFundingRate(asset)
       } catch (e) {
         return { error: String(e), note: 'Asset may not be listed on Hyperliquid perps' }
       }
     }
 
     case 'get_l2_book': {
+      const asset = input.coin ?? input.instrument
+      if (!asset) return { error: 'get_l2_book needs a coin or instrument' }
       try {
-        const book = await hlClient.getL2Book(input.coin ?? input.instrument, 3)
+        const book = await hlClient.getL2Book(asset, 3)
         const bestBid = book.levels[0][0]
         const bestAsk = book.levels[1][0]
         return {

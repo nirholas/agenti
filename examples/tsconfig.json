@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    // Examples are teaching code, not library code. exactOptionalPropertyTypes
+    // would fill them with `if (x !== undefined)` guards around optional config
+    // that read as noise to someone learning the API. Everything else stays
+    // strict, so the gate still fails when an example stops compiling against
+    // the SDK it demonstrates.
+    "exactOptionalPropertyTypes": false
+  },
+  "include": ["*.ts"]
+}

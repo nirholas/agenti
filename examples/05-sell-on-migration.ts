@@ -86,8 +86,6 @@ const stop = trader.watchMigration(
         mint,
         tokenAmount: sellAmount,
         slippage: 15, // higher slippage for speed on migration
-        keypair,
-        connection,
       })
       console.log(`\n✓ Sold ${sellAmount} tokens on migration!`)
       console.log(`Transaction: ${result.signature}`)
