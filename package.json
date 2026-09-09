@@ -23,5 +23,10 @@
     "pnpm": ">=9.0.0"
   },
   "packageManager": "pnpm@9.0.0",
-  "license": "SEE LICENSE IN LICENSE"
+  "license": "SEE LICENSE IN LICENSE",
+  "pnpm": {
+    "overrides": {
+      "@solana/web3.js": "^1.98.4"
+    }
+  }
 }
