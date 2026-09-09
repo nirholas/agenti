@@ -223,19 +223,42 @@ async function verifyWithFacilitator(
       x402Version: paymentPayload.x402Version ?? 1,
       paymentPayload,
       paymentRequirements,
+      // agenti-facilitator reads these shorter aliases; x402.org reads the pair above.
+      payment: paymentPayload,
+      requirements: paymentRequirements,
     }),
   })
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => response.statusText)
-    throw new Error(`Facilitator verify failed (${response.status}): ${text.slice(0, 200)}`)
-  }
-
-  return (await response.json()) as {
-    isValid: boolean
+  const body = (await response.json().catch(() => null)) as {
+    isValid?: boolean
+    valid?: boolean
     invalidReason?: string
     invalidMessage?: string
+    error?: string
+  } | null
+
+  // A facilitator that could not be reached or did not answer JSON is an
+  // outage, not a rejected payment, and has to surface as one.
+  if (!body) {
+    const text = response.statusText
+    throw new Error(`Facilitator verify failed (${response.status}): ${text}`)
   }
+
+  // The reference facilitator answers 200 { isValid }; the bundled
+  // agenti-facilitator answers 400 { valid: false, error } for a bad payment.
+  // Both are verdicts, so a 4xx carrying a body is a rejection, not an outage.
+  if (response.status >= 500) {
+    throw new Error(`Facilitator verify failed (${response.status})`)
+  }
+
+  const isValid = body.isValid ?? body.valid ?? false
+  const result: { isValid: boolean; invalidReason?: string; invalidMessage?: string } = { isValid }
+  if (!isValid) {
+    const reason = body.invalidReason ?? body.error
+    if (reason !== undefined) result.invalidReason = reason
+    if (body.invalidMessage !== undefined) result.invalidMessage = body.invalidMessage
+  }
+  return result
 }
 
 /**

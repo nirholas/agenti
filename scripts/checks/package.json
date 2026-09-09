@@ -6,7 +6,7 @@
   "description": "Workspace-resolved checks: README samples compile, and every published entry point loads.",
   "scripts": {
     "typecheck": "node ../check-readme-samples.mjs",
-    "test": "node ./check-runtime-imports.mjs"
+    "test": "node ./check-runtime-imports.mjs && node ./check-payment-gate.mjs"
   },
   "dependencies": {
     "@agenti/a2a": "workspace:*",
@@ -20,7 +20,8 @@
     "@hono/node-server": "^1.13.0",
     "@modelcontextprotocol/sdk": "^1.10.0",
     "express": "^4.21.0",
-    "hono": "^4.0.0"
+    "hono": "^4.0.0",
+    "viem": "^2.21.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
