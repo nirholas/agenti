@@ -21,13 +21,18 @@ function jsonResponse(body: unknown, status = 200): Response {
  * Routes /verify and /settle to canned replies and records which endpoints the
  * gate actually called, in order.
  */
-function mockFacilitator(replies: { verify?: unknown; settle?: unknown; settleStatus?: number }) {
+function mockFacilitator(replies: {
+  verify?: unknown
+  verifyStatus?: number
+  settle?: unknown
+  settleStatus?: number
+}) {
   const calls: string[] = []
   const fetchMock = vi.fn(async (url: string | URL | Request) => {
     const href = String(url)
     if (href.endsWith('/verify')) {
       calls.push('verify')
-      return jsonResponse(replies.verify ?? { isValid: true })
+      return jsonResponse(replies.verify ?? { isValid: true }, replies.verifyStatus ?? 200)
     }
     if (href.endsWith('/settle')) {
       calls.push('settle')
@@ -296,5 +301,63 @@ describe('withPayment (Next.js App Router)', () => {
     expect(calls).toEqual(['verify', 'settle'])
     expect(handler).toHaveBeenCalledOnce()
     expect(response.headers.get('X-PAYMENT-RESPONSE')).toBeTruthy()
+  })
+})
+
+describe('facilitator response shapes', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it("accepts the bundled facilitator's { valid: true } verdict", async () => {
+    const calls = mockFacilitator({ verify: { valid: true } })
+    const handler = vi.fn()
+    const gated = withPaymentExpress(handler, CONFIG)
+    const res = expressRes()
+
+    await gated(
+      { url: '/api/secret', method: 'GET', headers: { 'payment-signature': HEADER } },
+      res,
+      () => {},
+    )
+
+    expect(calls).toEqual(['verify', 'settle'])
+    expect(handler).toHaveBeenCalledOnce()
+  })
+
+  it("reports the bundled facilitator's 400 rejection as 402, not a facilitator outage", async () => {
+    mockFacilitator({ verify: { valid: false, error: 'Nonce already used' }, verifyStatus: 400 })
+    const handler = vi.fn()
+    const gated = withPaymentExpress(handler, CONFIG)
+    const res = expressRes()
+
+    await gated(
+      { url: '/api/secret', method: 'GET', headers: { 'payment-signature': HEADER } },
+      res,
+      () => {},
+    )
+
+    expect(handler).not.toHaveBeenCalled()
+    expect(res.statusCode).toBe(402)
+    expect(res.body).toMatchObject({ error: 'Nonce already used' })
+  })
+
+  it('treats a 5xx from the facilitator as an outage', async () => {
+    mockFacilitator({ verify: { error: 'boom' }, verifyStatus: 503 })
+    const handler = vi.fn()
+    const gated = withPaymentExpress(handler, CONFIG)
+    const res = expressRes()
+
+    await gated(
+      { url: '/api/secret', method: 'GET', headers: { 'payment-signature': HEADER } },
+      res,
+      () => {},
+    )
+
+    expect(handler).not.toHaveBeenCalled()
+    expect(res.statusCode).toBe(502)
   })
 })
