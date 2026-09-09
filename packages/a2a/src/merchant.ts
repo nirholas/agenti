@@ -118,6 +118,9 @@ function makePendingStore() {
  *  1. First call (no payment): respond with input-required + payment details.
  *  2. Second call (payment-submitted): verify → execute handler → settle → respond completed.
  *
+ * Set `settleFirst` on the merchant config to settle before the handler runs,
+ * which is what a handler with irreversible side effects needs.
+ *
  * Usage:
  *   app.post('/task', merchantMiddleware(merchantConfig, facilitatorConfig), myHandler)
  */
@@ -169,12 +172,38 @@ export function merchantMiddleware(
       c.set('x402Verified', true)
       c.set('x402TaskId', taskId)
 
+      const settleFirst = merchantConfig.settleFirst === true
+
+      let settleResult = settleFirst
+        ? await settlePayment(payload, requirements, facilitatorConfig)
+        : undefined
+
+      // When settling first, a payment that does not land must not reach the
+      // handler at all: that is the whole point of the option.
+      if (settleResult && !settleResult.settled) {
+        return c.json(
+          failedTask(taskId, ErrorCode.SETTLEMENT_FAILED, settleResult.error ?? 'Settlement failed', requirements.network),
+        )
+      }
+
       // Execute the actual handler
       await next()
 
-      // Settle after handler succeeds
-      const settleResult = await settlePayment(payload, requirements, facilitatorConfig)
-      pending.del(taskId)
+      // Read the handler's output before anything replaces it. Hono ignores a
+      // value returned from middleware once the handler has set c.res, so every
+      // path below has to assign c.res instead of returning. Returning here is
+      // what let the artifact reach the buyer even when settlement failed.
+      const handlerResponse = c.res
+      let resultData: unknown
+      try {
+        resultData = await handlerResponse.clone().json()
+      } catch {
+        resultData = null
+      }
+
+      if (!settleResult) {
+        settleResult = await settlePayment(payload, requirements, facilitatorConfig)
+      }
 
       const receipt: X402Receipt = {
         success: settleResult.settled,
@@ -184,19 +213,15 @@ export function merchantMiddleware(
       }
 
       if (!settleResult.settled) {
-        return c.json(
+        // Keep the pending requirements: the buyer holds a valid authorization
+        // and a transient settle failure must stay retryable for this task.
+        c.res = c.json(
           failedTask(taskId, ErrorCode.SETTLEMENT_FAILED, settleResult.error ?? 'Settlement failed', requirements.network),
         )
+        return
       }
 
-      // Wrap the handler's response in a completed task envelope
-      const handlerResponse = c.res
-      let resultData: unknown
-      try {
-        resultData = await handlerResponse.clone().json()
-      } catch {
-        resultData = null
-      }
+      pending.del(taskId)
 
       const completedTask: A2ATask = {
         kind: 'task',
@@ -214,7 +239,8 @@ export function merchantMiddleware(
           },
         },
       }
-      return c.json(completedTask)
+      c.res = c.json(completedTask)
+      return
     }
 
     // ── Step 1: payment not yet submitted → return payment-required ───────────
@@ -225,10 +251,12 @@ export function merchantMiddleware(
 }
 
 function mapVerifyError(error: string): string {
-  if (error.includes('expired')) return ErrorCode.EXPIRED_PAYMENT
-  if (error.includes('nonce')) return ErrorCode.DUPLICATE_NONCE
-  if (error.includes('network')) return ErrorCode.NETWORK_MISMATCH
-  if (error.includes('amount')) return ErrorCode.INVALID_AMOUNT
+  const text = error.toLowerCase()
+  if (text.includes('expired')) return ErrorCode.EXPIRED_PAYMENT
+  if (text.includes('nonce')) return ErrorCode.DUPLICATE_NONCE
+  if (text.includes('network')) return ErrorCode.NETWORK_MISMATCH
+  if (text.includes('recipient')) return ErrorCode.INVALID_RECIPIENT
+  if (text.includes('amount')) return ErrorCode.INVALID_AMOUNT
   return ErrorCode.INVALID_SIGNATURE
 }
 
@@ -270,7 +298,6 @@ export class MerchantAgent {
     }
 
     const settleResult = await settlePayment(payload, requirements, this.facilitatorConfig)
-    this.pending.del(taskId)
 
     const receipt: X402Receipt = {
       success: settleResult.settled,
@@ -280,12 +307,15 @@ export class MerchantAgent {
     }
 
     if (!settleResult.settled) {
+      // Leave the task pending so the buyer can resubmit the same authorization
+      // after a transient settlement failure.
       return {
         ok: false,
         task: failedTask(taskId, ErrorCode.SETTLEMENT_FAILED, settleResult.error ?? '', requirements.network),
       }
     }
 
+    this.pending.del(taskId)
     return { ok: true, receipt }
   }
 
