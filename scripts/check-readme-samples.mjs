@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Typechecks the TypeScript samples in every package README against the real
- * package types.
+ * Typechecks the TypeScript samples in the root README and every package README
+ * against the real package types.
  *
  * README samples drift silently: nothing compiles them, so a renamed export or
  * a changed constructor signature leaves the docs confidently wrong. This
@@ -79,10 +79,15 @@ function extractSamples(markdown) {
   return samples
 }
 
-const packages = readdirSync(join(ROOT, 'packages'), { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
-  .map((entry) => entry.name)
-  .filter((name) => existsSync(join(ROOT, 'packages', name, 'README.md')))
+/** Every README with samples worth compiling: the root one, and each package. */
+const readmes = [
+  ...(existsSync(join(ROOT, 'README.md')) ? [{ id: 'root', path: join(ROOT, 'README.md') }] : []),
+  ...readdirSync(join(ROOT, 'packages'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((name) => existsSync(join(ROOT, 'packages', name, 'README.md')))
+    .map((name) => ({ id: name, path: join(ROOT, 'packages', name, 'README.md') })),
+]
 
 rmSync(OUT, { recursive: true, force: true })
 mkdirSync(OUT, { recursive: true })
@@ -90,12 +95,12 @@ mkdirSync(OUT, { recursive: true })
 let fileCount = 0
 const origins = new Map()
 
-for (const pkg of packages) {
-  const samples = extractSamples(readFileSync(join(ROOT, 'packages', pkg, 'README.md'), 'utf8'))
+for (const readme of readmes) {
+  const samples = extractSamples(readFileSync(readme.path, 'utf8'))
   samples.forEach((sample, index) => {
-    const name = `${pkg}-${index}.ts`
+    const name = `${readme.id}-${index}.ts`
     writeFileSync(join(OUT, name), wrapSample(sample))
-    origins.set(name, `packages/${pkg}/README.md`)
+    origins.set(name, readme.path.replace(`${ROOT}/`, ''))
     fileCount += 1
   })
 }
@@ -143,7 +148,7 @@ const failures = output
     return `${origin}: ${line.slice(line.indexOf('error'))}`
   })
 
-console.log(`Checked ${fileCount} TypeScript samples across ${packages.length} package READMEs.`)
+console.log(`Checked ${fileCount} TypeScript samples across ${readmes.length} READMEs.`)
 
 if (failures.length > 0) {
   console.error(`\n${failures.length} sample(s) do not match the package API:\n`)

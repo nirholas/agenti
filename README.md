@@ -856,12 +856,49 @@ By default, agenti uses the public x402 facilitator for payment settlement. For 
 FACILITATOR_PRIVATE_KEY=0xyourgaskey npx @agenti/facilitator --port 3001
 ```
 
-It serves every supported chain at once (Ethereum, Base, Arbitrum, Polygon and
-Base Sepolia), so there is no network to choose. `FACILITATOR_PRIVATE_KEY` is
-the gas wallet that broadcasts settlements; without it `/verify` still answers
-and `/settle` is disabled. Point individual chains at your own RPC with
-`ETH_RPC_URL`, `BASE_RPC_URL`, `ARB_RPC_URL`, `POLYGON_RPC_URL` and
-`BASE_SEPOLIA_RPC_URL`.
+It serves every supported chain at once (Ethereum, Base, Arbitrum, Polygon,
+Base Sepolia, and Solana mainnet and devnet), so there is no network to choose.
+`FACILITATOR_PRIVATE_KEY` is the gas wallet that broadcasts EVM settlements;
+without it `/verify` still answers and Solana still settles, because there the
+payer has already broadcast the transfer. Point individual chains at your own
+RPC with `ETH_RPC_URL`, `BASE_RPC_URL`, `ARB_RPC_URL`, `POLYGON_RPC_URL`,
+`BASE_SEPOLIA_RPC_URL` and `SOLANA_RPC_URL`.
+
+### Charging on Solana
+
+Agents could always pay on Solana. They can now be paid on it: name a Solana
+cluster and the gate advertises an SPL transfer instead of an EIP-3009
+authorization.
+
+```ts
+import { withPaymentExpress, LOCAL_FACILITATOR } from '@agenti/sdk/serve'
+
+app.get(
+  '/api/report',
+  withPaymentExpress(
+    async (req, res) => res.json({ report: 'the good stuff' }),
+    {
+      amount: '100000',                                     // 0.10 USDC
+      address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+      network: 'solana',
+      facilitatorUrl: LOCAL_FACILITATOR,
+    },
+  ),
+)
+```
+
+Solana settles the other way round from EVM. The payer builds, signs and submits
+the SPL transfer themselves, then presents the signature, so the money has moved
+before you see it and there is nothing to broadcast. The facilitator's job is to
+prove that transaction really paid you, in the right token, on the right
+cluster, and then consume its signature: a signature is public the moment it
+lands, so without that one real payment would buy every later request.
+
+How much was paid is read from the ledger's own balance changes rather than by
+decoding instructions, so it is right for `TransferChecked`, a plain `Transfer`,
+a transfer through a CPI, and one bundled with unrelated instructions.
+
+Use `network: 'solana-devnet'` to try it without real money.
 
 Then configure agenti to use it:
 
