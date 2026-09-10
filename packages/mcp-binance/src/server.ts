@@ -205,7 +205,10 @@ export function createBinanceMcpServer(): McpServer {
 
   server.tool(
     'binance_place_order',
-    'Place a market or limit buy/sell order. Requires BINANCE_API_KEY + BINANCE_SECRET_KEY.',
+    "Place a market or limit buy/sell order. This executes against real funds on the " +
+      "live exchange and cannot be undone. Use binance_test_order first to validate " +
+      "symbol filters, lot size and notional minimums. Requires BINANCE_API_KEY + " +
+      "BINANCE_SECRET_KEY.",
     {
       symbol: z.string().describe('Trading pair, e.g. BTCUSDT'),
       side: z.enum(['BUY', 'SELL']).describe('Order direction'),
