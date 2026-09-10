@@ -26,7 +26,33 @@
   "license": "SEE LICENSE IN LICENSE",
   "pnpm": {
     "overrides": {
-      "@solana/web3.js": "^1.98.4"
+      "@grpc/grpc-js": ">=1.14.4",
+      "@solana/web3.js": "^1.98.4",
+      "axios": ">=1.15.1",
+      "brace-expansion": ">=5.0.7",
+      "devalue": ">=5.8.1",
+      "fast-uri": ">=3.1.4",
+      "fast-xml-builder": ">=1.1.7",
+      "fast-xml-parser": ">=5.3.1",
+      "form-data": ">=4.0.6",
+      "glob": ">=11.1.0",
+      "hono": ">=4.12.25",
+      "ip-address": ">=10.3.1",
+      "js-yaml": ">=4.3.0",
+      "jsondiffpatch": ">=0.7.6",
+      "langchain": ">=0.3.37",
+      "langsmith": ">=0.6.0",
+      "linkify-it": ">=5.0.1",
+      "nanoid": ">=3.3.16",
+      "node-fetch": ">=2.6.7",
+      "postcss": ">=8.5.12",
+      "protobufjs": ">=7.5.6",
+      "react": "^19.3.0",
+      "react-dom": "^19.3.0",
+      "tar": ">=7.5.19",
+      "tmp": ">=0.2.6",
+      "toml": ">=4.2.0",
+      "ws": ">=8.21.0"
     }
   }
 }
