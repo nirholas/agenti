@@ -2,7 +2,7 @@ import { createPublicClient, createWalletClient, http, getAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { markNonce } from './nonce-store.js'
 import { resolveNetworkPair } from './chains.js'
-import type { PaymentPayload, PaymentRequired, SettleResult, FacilitatorConfig } from './types.js'
+import type { EVMPaymentPayload, PaymentRequired, SettleResult, FacilitatorConfig } from './types.js'
 
 const TRANSFER_WITH_AUTH_ABI = [
   {
@@ -34,7 +34,7 @@ function splitSignature(sig: `0x${string}`): { v: number; r: `0x${string}`; s: `
 }
 
 export async function settlePayment(
-  payment: PaymentPayload,
+  payment: EVMPaymentPayload,
   requirements: PaymentRequired,
   config: FacilitatorConfig,
 ): Promise<SettleResult> {

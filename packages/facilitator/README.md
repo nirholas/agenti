@@ -19,9 +19,10 @@ FACILITATOR_PRIVATE_KEY=0xyourgaskey npx agenti-facilitator
 # listening on http://localhost:3402
 ```
 
-`FACILITATOR_PRIVATE_KEY` is the gas wallet that broadcasts settlement
-transactions. Without it the server still answers `POST /verify`, while
-`POST /settle` and `GET /balances` are disabled.
+`FACILITATOR_PRIVATE_KEY` is the gas wallet that broadcasts EVM settlement
+transactions. Without it the server still answers `POST /verify`, and
+`POST /settle` still works for Solana, where the payer has already broadcast the
+transfer. `GET /balances` is disabled.
 
 | Route | Purpose |
 | --- | --- |
@@ -64,7 +65,62 @@ no nonce, so a verified authorization can still be replayed.
 anything it cannot take back. `@agenti/sdk`'s `withPayment` wrappers do this for
 you.
 
-## Supported chains
+## Solana
+
+Solana is supported alongside EVM, and settles by the opposite route.
+
+On EVM the payer hands over a signed EIP-3009 authorization and this facilitator
+broadcasts it. On Solana the payer builds, signs and submits the SPL transfer
+themselves, then presents the signature. The money has already moved by the time
+you see it, so there is nothing to broadcast and no settler key is needed.
+
+That makes verification the whole job, and it has to be exact:
+
+```ts
+import { verify, settle } from '@agenti/facilitator'
+
+const requirements = {
+  scheme: 'exact',
+  network: 'solana',                                        // or the CAIP-2 form
+  amount: '100000',                                         // 0.10 USDC
+  payTo: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+  asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',    // USDC on mainnet
+}
+
+// payment.payload is { signature, payer } from the client's confirmed transfer.
+const checked = await verify(payment, requirements)
+if (!checked.valid) throw new Error(checked.error)
+
+const claimed = await settle(payment, requirements)
+// { settled: true, txHash: '<the payer's signature>' }
+```
+
+`verify` and `settle` dispatch on the payment, so the same two calls handle both
+chains and your code does not branch.
+
+**How much was paid is read from the ledger, not from the instructions.** The
+verifier sums the pre/post token balance deltas for the recipient and mint, so it
+is correct for `TransferChecked`, a plain `Transfer`, a transfer made through a
+CPI, and a transfer bundled with unrelated instructions, and it cannot be fooled
+by an instruction that looks like a payment but reverted.
+
+**Settling consumes the signature.** A transaction signature is public the moment
+it lands, so without this one real payment would buy unlimited requests from
+anyone reading the chain. `verify` checks the signature has not been claimed but
+does not claim it; `settle` claims it. Claiming happens only after every other
+check passes, so a payment rejected for some other reason is not burned.
+
+Verification waits for `finalized` commitment by default, which cannot be rolled
+back. Pass `commitment: 'confirmed'` to answer in about a second instead, at the
+cost of a transfer that a fork could in principle still drop. Point it at your
+own RPC with `SOLANA_RPC_URL`, `SOLANA_DEVNET_RPC_URL`, or `solana.rpcUrl` in the
+config.
+
+Clusters: mainnet-beta and devnet, by CAIP-2 id or by the names `solana`,
+`solana-mainnet`, `solana-devnet`. A devnet transfer is rejected against a
+mainnet price, where the asset mint is a token anyone can faucet for free.
+
+## Supported EVM chains
 
 Ethereum, Base, Arbitrum, Polygon, and Base Sepolia. Each is accepted by CAIP-2
 id (`eip155:8453`) or by its legacy x402 v1 name (`base-mainnet`).
@@ -80,8 +136,11 @@ or pass `rpcUrls` in the config.
 | Export | Description |
 | --- | --- |
 | `createFacilitator(config)` | The Hono app behind the CLI. |
-| `verifyPayment(payment, requirements)` | `{ valid, error? }`. |
-| `settlePayment(payment, requirements, config)` | `{ settled, txHash?, error? }`. |
+| `verify(payment, requirements, options?)` | Chain-agnostic. `{ valid, error? }`. |
+| `settle(payment, requirements, options?)` | Chain-agnostic. `{ settled, txHash?, error? }`. |
+| `verifyPayment` / `settlePayment` | The EVM path on its own. |
+| `verifySolanaPayment` / `settleSolanaPayment` | The Solana path on its own. |
+| `getSolanaNetwork` / `SOLANA_NETWORKS` | Cluster lookup by CAIP-2 id or alias. |
 | `resolveNetworkPair(paymentNetwork, requiredNetwork)` | Binds the two networks to one chain. |
 | `getChain(network)` / `CHAINS` | Chain lookup by CAIP-2 id or alias. |
 | `hasNonce` / `markNonce` | The in-process replay guard. |

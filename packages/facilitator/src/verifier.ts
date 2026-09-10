@@ -1,7 +1,7 @@
 import { verifyTypedData, getAddress } from 'viem'
 import { hasNonce } from './nonce-store.js'
 import { resolveNetworkPair } from './chains.js'
-import type { PaymentPayload, PaymentRequired, VerifyResult } from './types.js'
+import type { EVMPaymentPayload, PaymentRequired, VerifyResult } from './types.js'
 
 const TRANSFER_WITH_AUTHORIZATION_TYPES = {
   TransferWithAuthorization: [
@@ -15,7 +15,7 @@ const TRANSFER_WITH_AUTHORIZATION_TYPES = {
 } as const
 
 export async function verifyPayment(
-  payment: PaymentPayload,
+  payment: EVMPaymentPayload,
   requirements: PaymentRequired,
 ): Promise<VerifyResult> {
   const { network, payload } = payment
