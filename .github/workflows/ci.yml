@@ -35,3 +35,9 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # Two unauthenticated RCEs sat in the dashboard for months because nothing
+      # ran this. Critical and high fail the build; see scripts/check-audit.mjs
+      # for the accepted-with-a-reason list.
+      - name: Audit production dependencies
+        run: pnpm run check:audit
