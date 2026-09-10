@@ -103,7 +103,10 @@ export function createServer(): McpServer {
         .string()
         .optional()
         .describe('EVM private key for payment signing — falls back to AGENTI_EVM_PRIVATE_KEY'),
-      method: z.enum(['GET', 'POST', 'PUT', 'DELETE']).default('GET'),
+      method: z
+        .enum(['GET', 'POST', 'PUT', 'DELETE'])
+        .default('GET')
+        .describe('HTTP method for the request'),
       body: z.string().optional().describe('Request body as JSON string'),
     },
     async ({ url, evm_private_key, method, body }) => {
@@ -177,7 +180,9 @@ export function createServer(): McpServer {
     {
       address: z.string().describe('Wallet address that should have received payment'),
       token: z.string().describe('Token symbol, e.g. USDC or SOL'),
-      chain: z.enum(['base', 'arbitrum', 'ethereum', 'polygon', 'solana']),
+      chain: z
+        .enum(['base', 'arbitrum', 'ethereum', 'polygon', 'solana'])
+        .describe('Chain to check the balance on'),
       min_amount: z.number().positive().describe('Minimum amount expected'),
     },
     async ({ address, token, chain, min_amount }) => {
@@ -504,7 +509,8 @@ export function createServer(): McpServer {
 
   server.tool(
     'bnb_transfer',
-    'Send BEP-20 tokens (USDT, BUSD, or any BEP-20) to an address on BNB Chain',
+    'Transfer BEP-20 tokens (USDT, BUSD, or any BEP-20) to an address on BNB Chain. ' +
+      'Spends real funds from the configured wallet and cannot be undone.',
     {
       token_address: z.string().describe('BEP-20 token contract address (e.g. USDT_BSC: 0x55d398...)'),
       to: z.string().describe('Recipient wallet address'),
