@@ -681,13 +681,96 @@ export function createX402Fetch(
 
 export interface PaymentRecord {
   signature: string
+  /** Account the tokens came from, read from the ledger's balance changes. */
   payer: string
   agentMint: string
   currencyMint: string
+  /** Amount actually received, in the token's smallest unit. */
   amount: string
-  memo: string
+  /**
+   * The SPL memo attached to the payment, or null when it carried none.
+   *
+   * Null means "this payment had no memo", not "the memo could not be read".
+   */
+  memo: string | null
   timestamp: number
   confirmed: boolean
+}
+
+interface TokenBalanceEntry {
+  accountIndex: number
+  mint: string
+  owner?: string | undefined
+  uiTokenAmount: { amount: string }
+}
+
+interface TransactionMetaLike {
+  preTokenBalances?: TokenBalanceEntry[] | null
+  postTokenBalances?: TokenBalanceEntry[] | null
+}
+
+/**
+ * How much of `mint` moved into accounts owned by `owner` in this transaction.
+ *
+ * Read from the ledger's own pre/post balances rather than by decoding
+ * instructions, so it is correct for TransferChecked, a plain Transfer, a
+ * transfer made through a CPI, and one bundled with unrelated instructions.
+ * A negative result means tokens left instead.
+ */
+function tokenDeltaForOwner(
+  meta: TransactionMetaLike,
+  owner: string,
+  mint: string,
+): bigint {
+  const before = new Map<number, bigint>()
+  for (const entry of meta.preTokenBalances ?? []) {
+    if (entry.mint === mint && entry.owner === owner) {
+      before.set(entry.accountIndex, BigInt(entry.uiTokenAmount.amount))
+    }
+  }
+
+  let delta = 0n
+  const seen = new Set<number>()
+  for (const entry of meta.postTokenBalances ?? []) {
+    if (entry.mint !== mint || entry.owner !== owner) continue
+    seen.add(entry.accountIndex)
+    delta += BigInt(entry.uiTokenAmount.amount) - (before.get(entry.accountIndex) ?? 0n)
+  }
+  for (const [accountIndex, amount] of before) {
+    if (!seen.has(accountIndex)) delta -= amount
+  }
+  return delta
+}
+
+/** The owner whose balance of `mint` fell the most, which is who paid. */
+function largestSpender(meta: TransactionMetaLike, mint: string): string | null {
+  const owners = new Set<string>()
+  for (const entry of [...(meta.preTokenBalances ?? []), ...(meta.postTokenBalances ?? [])]) {
+    if (entry.mint === mint && entry.owner) owners.add(entry.owner)
+  }
+
+  let spender: string | null = null
+  let spent = 0n
+  for (const owner of owners) {
+    const delta = tokenDeltaForOwner(meta, owner, mint)
+    if (delta < spent) {
+      spent = delta
+      spender = owner
+    }
+  }
+  return spender
+}
+
+/** The memo text attached to a transaction, or null when it carried none. */
+function readMemo(tx: {
+  meta?: { logMessages?: string[] | null } | null
+}): string | null {
+  for (const line of tx.meta?.logMessages ?? []) {
+    // The memo program logs its own invocation followed by the memo text.
+    const match = /^Program log: Memo \(len \d+\): "(.*)"$/.exec(line)
+    if (match) return match[1] ?? null
+  }
+  return null
 }
 
 /**
@@ -723,21 +806,20 @@ export async function getPaymentHistory(
     )
     if (!isPayment) continue
 
-    const accountKeys =
-      tx.transaction.message.staticAccountKeys ??
-      // @ts-expect-error – legacy message
-      tx.transaction.message.accountKeys ??
-      []
+    const currency = currencyMint.toBase58()
 
-    const payer = accountKeys[0]?.toBase58() ?? ''
+    // What the vault actually received, rather than the fee payer's position in
+    // the account list and a hardcoded zero.
+    const received = tokenDeltaForOwner(tx.meta, tokenAgentPayments.toBase58(), currency)
+    if (received <= 0n) continue
 
     records.push({
       signature: sig.signature,
-      payer,
+      payer: largestSpender(tx.meta, currency) ?? '',
       agentMint: agentMint.toBase58(),
-      currencyMint: currencyMint.toBase58(),
-      amount: '0',
-      memo: '0',
+      currencyMint: currency,
+      amount: received.toString(),
+      memo: readMemo(tx),
       timestamp: (tx.blockTime ?? 0) * 1000,
       confirmed: true,
     })
@@ -747,42 +829,64 @@ export async function getPaymentHistory(
 }
 
 /**
- * Verify a payment transaction by its signature.
- * Returns the parsed payment details or null if not a valid payment.
+ * Reads what a transaction actually paid, by its signature.
+ *
+ * Returns null when the transaction does not exist, failed, or moved none of
+ * the token. The amount comes from the ledger's balance changes, so it is the
+ * real figure rather than a guess from the instruction list.
+ *
+ * Pass `currencyMint` to read a token other than USDC, and `payTo` to check a
+ * specific recipient instead of taking whoever received the most.
  */
 export async function verifyPaymentReceipt(
   signature: string,
   connection: Connection,
+  options: { currencyMint?: string; payTo?: string } = {},
 ): Promise<PaymentRecord | null> {
   const tx = await connection.getTransaction(signature, {
     maxSupportedTransactionVersion: 0,
   })
-  if (!tx?.meta?.logMessages) return null
+  if (!tx?.meta || tx.meta.err) return null
 
-  const isPayment = tx.meta.logMessages.some(
-    (l) => l.includes('AgentAcceptPaymentEvent') || l.includes('agent_accept_payment'),
-  )
-  if (!isPayment) return null
+  const currency = options.currencyMint ?? USDC_MAINNET
 
-  const accountKeys =
-    tx.transaction.message.staticAccountKeys ??
-    // @ts-expect-error – legacy message
-    tx.transaction.message.accountKeys ??
-    []
+  // Whoever received this token, unless the caller says who it should have been.
+  const recipient =
+    options.payTo ??
+    (() => {
+      const candidates = new Set<string>()
+      for (const entry of [
+        ...(tx.meta?.preTokenBalances ?? []),
+        ...(tx.meta?.postTokenBalances ?? []),
+      ]) {
+        if (entry.mint === currency && entry.owner) candidates.add(entry.owner)
+      }
+      let best: string | null = null
+      let bestDelta = 0n
+      for (const owner of candidates) {
+        const delta = tokenDeltaForOwner(tx.meta as TransactionMetaLike, owner, currency)
+        if (delta > bestDelta) {
+          bestDelta = delta
+          best = owner
+        }
+      }
+      return best
+    })()
 
-  const payer = accountKeys[0]?.toBase58() ?? ''
-  const agentMint = accountKeys[1]?.toBase58() ?? ''
-  const currencyMint = accountKeys[2]?.toBase58() ?? ''
+  if (!recipient) return null
+
+  const received = tokenDeltaForOwner(tx.meta as TransactionMetaLike, recipient, currency)
+  if (received <= 0n) return null
 
   return {
     signature,
-    payer,
-    agentMint,
-    currencyMint,
-    amount: '0',
-    memo: '0',
+    payer: largestSpender(tx.meta as TransactionMetaLike, currency) ?? '',
+    agentMint: recipient,
+    currencyMint: currency,
+    amount: received.toString(),
+    memo: readMemo(tx),
     timestamp: (tx.blockTime ?? 0) * 1000,
-    confirmed: !tx.meta.err,
+    confirmed: true,
   }
 }
 
