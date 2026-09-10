@@ -7,9 +7,10 @@
   ],
   "scripts": {
     "build": "pnpm -r build",
+    "check:audit": "node scripts/check-audit.mjs",
+    "clean": "pnpm -r clean",
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm -r test",
-    "clean": "pnpm -r clean",
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
