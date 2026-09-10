@@ -3,7 +3,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { verifyPayment } from '../verifier.js'
 import { getChain, resolveNetworkPair, CHAINS } from '../chains.js'
 import { markNonce } from '../nonce-store.js'
-import type { PaymentPayload, PaymentRequired } from '../types.js'
+import type { EVMPaymentPayload, PaymentRequired } from '../types.js'
 
 // A throwaway key. Signatures below are produced for real by viem, so the
 // verifier runs its true EIP-712 path rather than a stubbed one.
@@ -41,7 +41,7 @@ async function signedPayment(opts: {
   value?: string
   to?: string
   asset?: string
-}): Promise<PaymentPayload> {
+}): Promise<EVMPaymentPayload> {
   const now = Math.floor(Date.now() / 1000)
   const authorization = {
     from: account.address,

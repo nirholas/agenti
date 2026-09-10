@@ -361,3 +361,124 @@ describe('facilitator response shapes', () => {
     expect(res.statusCode).toBe(502)
   })
 })
+
+describe('Solana gates', () => {
+  const SOLANA_CONFIG = {
+    amount: '100000',
+    address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+    network: 'solana',
+    facilitatorUrl: 'https://facilitator.test',
+  }
+  const SOLANA_USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+  const SOLANA_CAIP2 = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'
+
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  function decodeHeader(value: string): Record<string, unknown> {
+    return JSON.parse(Buffer.from(value, 'base64').toString('utf-8'))
+  }
+
+  it('advertises an SPL transfer priced in USDC on the named cluster', async () => {
+    const gated = withPaymentExpress(vi.fn(), SOLANA_CONFIG)
+    const res = expressRes()
+
+    await gated({ url: '/api/secret', method: 'GET', headers: {} }, res, () => {})
+
+    const accepts = (res.body as { accepts: Array<Record<string, unknown>> }).accepts
+    expect(accepts[0]).toMatchObject({
+      scheme: 'exact',
+      network: SOLANA_CAIP2,
+      asset: SOLANA_USDC,
+      payTo: SOLANA_CONFIG.address,
+      amount: '100000',
+    })
+  })
+
+  it('omits the EIP-712 domain on Solana, where nothing signs typed data', async () => {
+    const gated = withPaymentExpress(vi.fn(), SOLANA_CONFIG)
+    const res = expressRes()
+
+    await gated({ url: '/api/secret', method: 'GET', headers: {} }, res, () => {})
+
+    const accepts = (res.body as { accepts: Array<Record<string, unknown>> }).accepts
+    expect(accepts[0]).not.toHaveProperty('extra')
+  })
+
+  it('keeps the EIP-712 domain on EVM', async () => {
+    const gated = withPaymentExpress(vi.fn(), CONFIG)
+    const res = expressRes()
+
+    await gated({ url: '/api/secret', method: 'GET', headers: {} }, res, () => {})
+
+    const accepts = (res.body as { accepts: Array<Record<string, unknown>> }).accepts
+    expect(accepts[0]).toHaveProperty('extra', { name: 'USD Coin', version: '2' })
+  })
+
+  it('sends the terms on PAYMENT-REQUIRED, which is where v2 and Solana clients look', async () => {
+    const gated = withPaymentExpress(vi.fn(), SOLANA_CONFIG)
+    const res = expressRes()
+
+    await gated({ url: '/api/secret', method: 'GET', headers: {} }, res, () => {})
+
+    const advertised = decodeHeader(res.headers['PAYMENT-REQUIRED'] as string)
+    expect(advertised).toMatchObject({ x402Version: 2 })
+    expect((advertised as { accepts: unknown[] }).accepts).toHaveLength(1)
+  })
+
+  it('resolves a cluster alias to its CAIP-2 id before it reaches the wire', async () => {
+    const gated = withPaymentExpress(vi.fn(), { ...SOLANA_CONFIG, network: 'solana-devnet' })
+    const res = expressRes()
+
+    await gated({ url: '/api/secret', method: 'GET', headers: {} }, res, () => {})
+
+    const accepts = (res.body as { accepts: Array<Record<string, unknown>> }).accepts
+    expect(accepts[0]).toMatchObject({
+      network: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+      asset: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
+    })
+  })
+
+  it("lifts scheme and network out of the Solana payload's accepted block", async () => {
+    const { fetchMock } = (() => {
+      const calls: Array<Record<string, unknown>> = []
+      const mock = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+        calls.push(JSON.parse(String(init?.body)))
+        return jsonResponse(
+          String(url).endsWith('/verify')
+            ? { isValid: true }
+            : { success: true, transaction: 'sig' },
+        )
+      })
+      vi.stubGlobal('fetch', mock)
+      return { fetchMock: Object.assign(mock, { bodies: calls }) }
+    })()
+
+    // The Solana client nests scheme and network inside `accepted`.
+    const solanaPayload = {
+      x402Version: 2,
+      resource: 'https://example.test/api/secret',
+      accepted: { scheme: 'exact', network: SOLANA_CAIP2, asset: SOLANA_USDC },
+      payload: { signature: 'A'.repeat(88), payer: SOLANA_CONFIG.address },
+    }
+    const header = Buffer.from(JSON.stringify(solanaPayload), 'utf-8').toString('base64')
+
+    const handler = vi.fn()
+    const gated = withPaymentExpress(handler, SOLANA_CONFIG)
+    const res = expressRes()
+
+    await gated(
+      { url: '/api/secret', method: 'GET', headers: { 'payment-signature': header } },
+      res,
+      () => {},
+    )
+
+    const sent = fetchMock.bodies[0] as { paymentPayload: Record<string, unknown> }
+    expect(sent.paymentPayload).toMatchObject({ scheme: 'exact', network: SOLANA_CAIP2 })
+    expect(handler).toHaveBeenCalledOnce()
+  })
+})

@@ -4,7 +4,7 @@
   "type": "module",
   "author": "nirholas",
   "license": "Apache-2.0",
-  "description": "Self-hosted x402 facilitator — verify and settle EIP-3009 USDC payments on Base, Arbitrum, and Ethereum",
+  "description": "Self-hosted x402 facilitator \u2014 verify and settle EIP-3009 USDC payments on Base, Arbitrum, and Ethereum",
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/agenti"
@@ -30,7 +30,11 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts --platform node",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
@@ -45,6 +49,7 @@
   "dependencies": {
     "@agenti/core": "workspace:*",
     "@hono/node-server": "^1.12.0",
+    "@solana/web3.js": "^1.98.4",
     "hono": "^4.0.0",
     "lru-cache": "^11.0.0",
     "viem": "^2.21.0"

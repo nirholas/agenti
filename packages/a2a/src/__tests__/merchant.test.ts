@@ -110,7 +110,7 @@ describe('merchantMiddleware', () => {
   })
 
   it('maps a network mismatch to NETWORK_MISMATCH rather than a signature error', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({
       valid: false,
       error: 'Network mismatch: payment is on eip155:84532 but payment is required on eip155:8453',
     })
@@ -125,8 +125,8 @@ describe('merchantMiddleware', () => {
   })
 
   it('runs the handler, settles, and completes the task', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({ valid: true })
-    vi.spyOn(facilitator, 'settlePayment').mockResolvedValue({ settled: true, txHash: '0xabc' })
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({ valid: true })
+    vi.spyOn(facilitator, 'settle').mockResolvedValue({ settled: true, txHash: '0xabc' })
     const { app, handler } = buildApp(MERCHANT)
 
     await post(app, { id: 'task-3', params: {} })
@@ -138,8 +138,8 @@ describe('merchantMiddleware', () => {
   })
 
   it('withholds the artifact when settlement fails after the handler ran', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({ valid: true })
-    vi.spyOn(facilitator, 'settlePayment').mockResolvedValue({
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({ valid: true })
+    vi.spyOn(facilitator, 'settle').mockResolvedValue({
       settled: false,
       error: 'insufficient funds',
     })
@@ -156,9 +156,9 @@ describe('merchantMiddleware', () => {
   })
 
   it('keeps the task payable so a transient settle failure can be retried', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({ valid: true })
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({ valid: true })
     const settle = vi
-      .spyOn(facilitator, 'settlePayment')
+      .spyOn(facilitator, 'settle')
       .mockResolvedValueOnce({ settled: false, error: 'RPC timeout' })
       .mockResolvedValueOnce({ settled: true, txHash: '0xabc' })
     const { app } = buildApp(MERCHANT)
@@ -173,8 +173,8 @@ describe('merchantMiddleware', () => {
   })
 
   it('settleFirst skips the handler entirely when the payment does not settle', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({ valid: true })
-    vi.spyOn(facilitator, 'settlePayment').mockResolvedValue({
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({ valid: true })
+    vi.spyOn(facilitator, 'settle').mockResolvedValue({
       settled: false,
       error: 'insufficient funds',
     })
@@ -189,9 +189,9 @@ describe('merchantMiddleware', () => {
   })
 
   it('settleFirst settles once and still completes on success', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({ valid: true })
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({ valid: true })
     const settle = vi
-      .spyOn(facilitator, 'settlePayment')
+      .spyOn(facilitator, 'settle')
       .mockResolvedValue({ settled: true, txHash: '0xabc' })
     const { app, handler } = buildApp({ ...MERCHANT, settleFirst: true })
 
@@ -211,8 +211,8 @@ describe('MerchantAgent', () => {
   })
 
   it('leaves the task pending when settlement fails, so it can be retried', async () => {
-    vi.spyOn(facilitator, 'verifyPayment').mockResolvedValue({ valid: true })
-    vi.spyOn(facilitator, 'settlePayment')
+    vi.spyOn(facilitator, 'verify').mockResolvedValue({ valid: true })
+    vi.spyOn(facilitator, 'settle')
       .mockResolvedValueOnce({ settled: false, error: 'RPC timeout' })
       .mockResolvedValueOnce({ settled: true, txHash: '0xabc' })
 

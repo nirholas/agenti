@@ -52,7 +52,7 @@ Wrap any Express, Hono, or Next.js App Router handler:
 
 ```ts
 import express from 'express'
-import { withPaymentExpress } from '@agenti/sdk/serve'
+import { withPaymentExpress, LOCAL_FACILITATOR } from '@agenti/sdk/serve'
 
 const app = express()
 
@@ -69,6 +69,33 @@ A caller with no payment gets a 402 describing exactly what to pay. A caller
 with a valid payment has it **settled on-chain before your handler runs**, so
 work is never delivered against a payment that did not land. The settlement
 receipt comes back on `X-PAYMENT-RESPONSE`.
+
+### Charge on Solana
+
+Name a Solana cluster and the whole gate switches: the 402 advertises an SPL
+transfer, `token` defaults to USDC on that cluster, and `address` is a base58
+account.
+
+```ts
+app.get(
+  '/api/report',
+  withPaymentExpress(
+    async (req, res) => res.json({ report: 'the good stuff' }),
+    {
+      amount: '100000',                                     // 0.10 USDC
+      address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+      network: 'solana',
+      facilitatorUrl: LOCAL_FACILITATOR,
+    },
+  ),
+)
+```
+
+Solana payers settle for themselves: they submit and confirm the SPL transfer,
+then present the signature. So the gate verifies the transfer really landed,
+paid you, in the right token, on the right cluster, and then consumes the
+signature so the same payment cannot buy a second request. Use
+`network: 'solana-devnet'` to test without real money.
 
 Endpoints whose work is free to repeat can opt into a verify-only soft gate:
 

@@ -39,17 +39,25 @@ export interface PaymentConfig {
   /** Amount in the token's smallest unit (e.g. "1000000" = 1 USDC). */
   amount: string
   /**
-   * Token contract address.
-   * Defaults to USDC on Base: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+   * Token address to charge in.
+   *
+   * Defaults to USDC on whichever chain `network` names: the Base contract on
+   * EVM, the SPL mint on Solana.
    */
   token?: string
   /**
-   * CAIP-2 network identifier or legacy x402 v1 name.
-   * Examples: "eip155:8453" (Base mainnet), "base-mainnet" (v1 legacy)
-   * Defaults to "eip155:8453".
+   * CAIP-2 network identifier, a legacy x402 v1 name, or a Solana cluster.
+   *
+   * EVM: "eip155:8453" (Base mainnet), or the v1 name "base-mainnet".
+   * Solana: "solana" / "solana-mainnet" / the CAIP-2 genesis-hash form, and
+   * "solana-devnet" for the test cluster.
+   *
+   * Defaults to "eip155:8453". Naming a Solana cluster switches the whole gate:
+   * the 402 advertises an SPL transfer, `token` defaults to USDC on that
+   * cluster, and `address` is a base58 account rather than a 0x address.
    */
   network?: string
-  /** The address that will receive the payment. */
+  /** The address that will receive the payment. 0x on EVM, base58 on Solana. */
   address: string
   /**
    * Facilitator base URL for verify/settle calls.
@@ -66,9 +74,11 @@ export interface PaymentConfig {
   /**
    * How hard the gate is.
    *
-   * - `'settle'` (default): verify, then settle on-chain before the handler
-   *   runs. The payment is final and cannot be replayed. Use this for anything
-   *   that delivers real work.
+   * - `'settle'` (default): verify, then settle before the handler runs. On EVM
+   *   that broadcasts the authorization. On Solana the payer already broadcast
+   *   the transfer, so settling consumes its signature, which is what stops one
+   *   real payment buying every later request. Use this for anything that
+   *   delivers real work.
    * - `'verify'`: verify only, then run the handler. No funds move and the
    *   authorization stays replayable, so only choose this for a soft gate in
    *   front of work that is cheap and safe to repeat, and settle it yourself
@@ -91,6 +101,49 @@ const DEFAULT_USDC_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
 const DEFAULT_USDC_NAME = 'USD Coin'
 const DEFAULT_USDC_VERSION = '2'
 
+/**
+ * Solana clusters this gate can price in.
+ *
+ * A CAIP-2 Solana id embeds a base58 genesis hash, which is case-sensitive, so
+ * these are matched case-insensitively against the whole list rather than
+ * looked up in a map keyed by a lowercased string.
+ */
+const SOLANA_NETWORKS: ReadonlyArray<{ caip2: string; usdc: string; aliases: string[] }> = [
+  {
+    caip2: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+    usdc: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    aliases: ['solana', 'solana-mainnet', 'mainnet-beta'],
+  },
+  {
+    caip2: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+    usdc: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
+    aliases: ['solana-devnet', 'devnet'],
+  },
+]
+
+/** The header the x402 v2 Solana flow reads its requirements from. */
+const HEADER_PAYMENT_REQUIRED = 'PAYMENT-REQUIRED'
+
+function solanaNetwork(network: string): { caip2: string; usdc: string } | undefined {
+  const wanted = network.toLowerCase()
+  return SOLANA_NETWORKS.find(
+    (n) => n.caip2.toLowerCase() === wanted || n.aliases.includes(wanted),
+  )
+}
+
+/** The asset a gate charges in, defaulting per chain rather than globally. */
+function assetFor(config: PaymentConfig): string {
+  if (config.token) return config.token
+  const solana = solanaNetwork(config.network ?? DEFAULT_NETWORK)
+  return solana ? solana.usdc : DEFAULT_USDC_BASE
+}
+
+/** The canonical network id to advertise, so an alias never reaches the wire. */
+function networkFor(config: PaymentConfig): string {
+  const network = config.network ?? DEFAULT_NETWORK
+  return solanaNetwork(network)?.caip2 ?? network
+}
+
 /** Well-known token contract addresses across supported chains. */
 export const TOKENS = {
   USDC_BASE: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
@@ -106,34 +159,24 @@ export const TOKENS = {
  * The `x402Version: 1` field is also included for backwards-compatible clients.
  */
 function buildPaymentRequired(url: string, config: PaymentConfig): Record<string, unknown> {
-  const {
-    amount,
-    token = DEFAULT_USDC_BASE,
-    network = DEFAULT_NETWORK,
-    address,
-    maxTimeoutSeconds = 300,
-    description,
-  } = config
-
   return {
     // v2 shape
     x402Version: 2,
-    resource: { url, description: description ?? 'Payment required' },
-    accepts: [
-      {
-        scheme: 'exact',
-        network,
-        amount,
-        payTo: address,
-        maxTimeoutSeconds,
-        asset: token,
-        extra: {
-          name: DEFAULT_USDC_NAME,
-          version: DEFAULT_USDC_VERSION,
-        },
-      },
-    ],
+    resource: { url, description: config.description ?? 'Payment required' },
+    accepts: [buildRequirements(config)],
   }
+}
+
+/**
+ * The base64 PAYMENT-REQUIRED header value for a 402.
+ *
+ * x402 v2 clients, and every Solana client, read the terms from this header
+ * rather than the body. Sending both means one 402 serves a v1 client reading
+ * JSON, a v2 client reading the header, and a Solana client, without the caller
+ * choosing a protocol version up front.
+ */
+function paymentRequiredHeader(url: string, config: PaymentConfig): string {
+  return encodeBase64Json(buildPaymentRequired(url, config))
 }
 
 /**
@@ -180,23 +223,25 @@ function encodeBase64Json(value: unknown): string {
  * or the facilitator will reject the payload as mismatched.
  */
 function buildRequirements(config: PaymentConfig): Record<string, unknown> {
-  const {
-    amount,
-    token = DEFAULT_USDC_BASE,
-    network = DEFAULT_NETWORK,
-    address,
-    maxTimeoutSeconds = 300,
-  } = config
+  const { amount, address, maxTimeoutSeconds = 300 } = config
+  const network = networkFor(config)
 
-  return {
+  const requirements: Record<string, unknown> = {
     scheme: 'exact',
     network,
     amount,
     payTo: address,
     maxTimeoutSeconds,
-    asset: token,
-    extra: { name: DEFAULT_USDC_NAME, version: DEFAULT_USDC_VERSION },
+    asset: assetFor(config),
   }
+
+  // `extra` carries the EIP-712 domain the EVM verifier rebuilds. Solana signs
+  // no typed data, so sending it there would be noise a verifier must ignore.
+  if (!solanaNetwork(network)) {
+    requirements.extra = { name: DEFAULT_USDC_NAME, version: DEFAULT_USDC_VERSION }
+  }
+
+  return requirements
 }
 
 /**
@@ -359,16 +404,38 @@ type GateResult = GateAllowed | GateRejected
  * Every rejection path returns the status and body to send, so the three
  * framework adapters below stay thin and cannot drift apart.
  */
+/**
+ * Puts a decoded payment header into the one shape the facilitator reads.
+ *
+ * The EVM flow sends { x402Version, scheme, network, payload }. The Solana flow
+ * sends { x402Version, resource, accepted, payload }, with the scheme and
+ * network nested inside `accepted`. Both are valid x402; normalizing here keeps
+ * that difference out of every caller and out of the facilitator.
+ */
+function normalizePaymentPayload(payload: Record<string, unknown>): Record<string, unknown> {
+  if (payload.scheme !== undefined && payload.network !== undefined) return payload
+
+  const accepted = payload.accepted as { scheme?: unknown; network?: unknown } | undefined
+  if (!accepted) return payload
+
+  return {
+    ...payload,
+    scheme: accepted.scheme,
+    network: accepted.network,
+  }
+}
+
 async function runPaymentGate(
   rawHeader: string,
   config: PaymentConfig,
   facilitatorUrl: string,
 ): Promise<GateResult> {
-  const payload = decodePaymentHeader(rawHeader)
-  if (!payload) {
+  const decoded = decodePaymentHeader(rawHeader)
+  if (!decoded) {
     return { ok: false, status: 402, body: { error: 'Invalid payment header encoding' } }
   }
 
+  const payload = normalizePaymentPayload(decoded)
   const requirements = buildRequirements(config)
 
   let verified: { isValid: boolean; invalidReason?: string; invalidMessage?: string }
@@ -489,9 +556,10 @@ export function withPaymentExpress(
       (req.headers['x-payment'] as string | undefined)
 
     if (!rawHeader) {
-      // Return 402 with payment requirements
-      const requirements = buildPaymentRequired(req.url, config)
-      res.status(402).json(requirements)
+      // Return 402 with payment requirements, in the body for v1 clients and on
+      // the header every v2 and Solana client reads.
+      res.setHeader(HEADER_PAYMENT_REQUIRED, paymentRequiredHeader(req.url, config))
+      res.status(402).json(buildPaymentRequired(req.url, config))
       return
     }
 
@@ -559,8 +627,10 @@ export function withPaymentHono(handler: HonoHandler, config: PaymentConfig): Ho
       c.req.header('payment-signature') || c.req.header('x-payment')
 
     if (!rawHeader) {
-      const requirements = buildPaymentRequired(c.req.url, config)
-      return c.json(requirements, 402)
+      if (typeof c.header === 'function') {
+        c.header(HEADER_PAYMENT_REQUIRED, paymentRequiredHeader(c.req.url, config))
+      }
+      return c.json(buildPaymentRequired(c.req.url, config), 402)
     }
 
     const gate = await runPaymentGate(rawHeader, config, facilitatorUrl)
@@ -627,10 +697,12 @@ export function withPayment<T extends NextResLike = NextResLike>(
       req.headers.get('payment-signature') || req.headers.get('x-payment')
 
     if (!rawHeader) {
-      const requirements = buildPaymentRequired(req.url, config)
-      return new Response(JSON.stringify(requirements), {
+      return new Response(JSON.stringify(buildPaymentRequired(req.url, config)), {
         status: 402,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          [HEADER_PAYMENT_REQUIRED]: paymentRequiredHeader(req.url, config),
+        },
       }) as unknown as T
     }
 

@@ -1,5 +1,7 @@
 import type { Context, MiddlewareHandler } from 'hono'
-import { verifyPayment, settlePayment } from '@agenti/facilitator'
+// The chain-agnostic entry points, so an A2A task can be paid on Solana as
+// well as on EVM without this file knowing the difference.
+import { verify, settle } from '@agenti/facilitator'
 import type { FacilitatorConfig } from '@agenti/facilitator'
 import {
   PaymentStatus,
@@ -162,7 +164,7 @@ export function merchantMiddleware(
       }
 
       // Verify
-      const verifyResult = await verifyPayment(payload, requirements)
+      const verifyResult = await verify(payload, requirements, { facilitator: facilitatorConfig })
       if (!verifyResult.valid) {
         const code = mapVerifyError(verifyResult.error ?? '')
         return c.json(failedTask(taskId, code, verifyResult.error ?? 'Verification failed', requirements.network))
@@ -175,7 +177,7 @@ export function merchantMiddleware(
       const settleFirst = merchantConfig.settleFirst === true
 
       let settleResult = settleFirst
-        ? await settlePayment(payload, requirements, facilitatorConfig)
+        ? await settle(payload, requirements, { facilitator: facilitatorConfig })
         : undefined
 
       // When settling first, a payment that does not land must not reach the
@@ -202,7 +204,7 @@ export function merchantMiddleware(
       }
 
       if (!settleResult) {
-        settleResult = await settlePayment(payload, requirements, facilitatorConfig)
+        settleResult = await settle(payload, requirements, { facilitator: facilitatorConfig })
       }
 
       const receipt: X402Receipt = {
@@ -289,7 +291,7 @@ export class MerchantAgent {
       }
     }
 
-    const verifyResult = await verifyPayment(payload, requirements)
+    const verifyResult = await verify(payload, requirements, { facilitator: this.facilitatorConfig })
     if (!verifyResult.valid) {
       return {
         ok: false,
@@ -297,7 +299,7 @@ export class MerchantAgent {
       }
     }
 
-    const settleResult = await settlePayment(payload, requirements, this.facilitatorConfig)
+    const settleResult = await settle(payload, requirements, { facilitator: this.facilitatorConfig })
 
     const receipt: X402Receipt = {
       success: settleResult.settled,
