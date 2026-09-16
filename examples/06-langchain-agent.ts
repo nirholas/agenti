@@ -10,7 +10,7 @@
 
 import { ChatAnthropic } from '@langchain/anthropic'
 import { AgentExecutor, createToolCallingAgent } from 'langchain/agents'
-import { agentiLangChainTools } from '@agenti/sdk'
+import { agentiLangChainTools } from '@agenti/sdk/langchain'
 import { ChatPromptTemplate } from '@langchain/core/prompts'
 
 const tools = agentiLangChainTools({ evm: { privateKey: process.env.EVM_KEY as `0x${string}` } })

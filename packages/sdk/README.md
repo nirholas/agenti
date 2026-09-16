@@ -118,8 +118,21 @@ import { agentiPlugin } from '@agenti/sdk/eliza'
 ```
 
 Each exposes pay, balance, and invoice as tools in that framework's own shape.
-Pass `solanaAgentKit` in the LangChain config to merge in the Solana Agent Kit
-tool set.
+Pass `solanaAgentKit` in the LangChain or Vercel AI config to merge in the Solana
+Agent Kit tool set. `solana-agent-kit` is an optional peer dependency, loaded only
+when you use it, so install it alongside the SDK:
+
+```bash
+npm install @agenti/sdk solana-agent-kit
+```
+
+`solana-agent-kit@1.4` reaches `jito-ts`, which pins `@solana/web3.js@1.77`. Under
+npm that copy resolves an `rpc-websockets` it cannot load, so add this override
+to your `package.json` (pnpm and Yarn installs are unaffected):
+
+```json
+{ "overrides": { "jito-ts": { "rpc-websockets": "7.5.1" } } }
+```
 
 ## Other surfaces
 

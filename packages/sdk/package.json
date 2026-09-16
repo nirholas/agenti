@@ -58,19 +58,21 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/events.ts src/serve.ts src/frameworks/eliza.ts src/frameworks/langchain.ts src/frameworks/vercel-ai.ts --format esm,cjs --dts --external @elizaos/core --external @langchain/core --external ai",
-    "dev": "tsup src/index.ts src/events.ts src/serve.ts src/frameworks/eliza.ts src/frameworks/langchain.ts src/frameworks/vercel-ai.ts --format esm,cjs --dts --watch --external @elizaos/core --external @langchain/core --external ai",
+    "build": "tsup src/index.ts src/events.ts src/serve.ts src/frameworks/eliza.ts src/frameworks/langchain.ts src/frameworks/vercel-ai.ts --format esm,cjs --dts --shims --external @elizaos/core --external @langchain/core --external ai",
+    "dev": "tsup src/index.ts src/events.ts src/serve.ts src/frameworks/eliza.ts src/frameworks/langchain.ts src/frameworks/vercel-ai.ts --format esm,cjs --dts --shims --watch --external @elizaos/core --external @langchain/core --external ai",
     "clean": "rm -rf dist *.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "devDependencies": {
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "solana-agent-kit": "^1.0.0"
   },
   "peerDependencies": {
     "@elizaos/core": "^0.1.0",
     "@langchain/core": "^0.3.0",
-    "ai": "^4.0.0"
+    "ai": "^4.0.0",
+    "solana-agent-kit": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "@elizaos/core": {
@@ -80,6 +82,9 @@
       "optional": true
     },
     "ai": {
+      "optional": true
+    },
+    "solana-agent-kit": {
       "optional": true
     }
   },
@@ -95,7 +100,6 @@
     "bn.js": "^5.2.2",
     "bs58": "^5.0.0",
     "helius-sdk": "^2.2.2",
-    "solana-agent-kit": "^1.0.0",
     "viem": "^2.21.0",
     "zod": "^3.23.0"
   }

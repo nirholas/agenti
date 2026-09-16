@@ -133,10 +133,9 @@ export type { TradingIdea, Market, TradeRecord } from './trade-router.js'
 export { agentiEvents, emitEvent, onAgentiEvent } from './events.js'
 export type { AgentiEvent } from './events.js'
 
-// Framework adapters
-export { agentiPlugin } from './frameworks/eliza.js'
-export { agentiLangChainTools } from './frameworks/langchain.js'
-export { agentiTools } from './frameworks/vercel-ai.js'
+// Framework adapters live on their own subpaths (@agenti/sdk/langchain,
+// @agenti/sdk/vercel-ai, @agenti/sdk/eliza) so the root never loads an
+// optional peer dependency the consumer did not install.
 
 // Price oracle — Pyth + CoinGecko
 export { getPrice, usdToTokenAmount, tokenAmountToUsd, PYTH_FEEDS, COINGECKO_IDS } from './solana/price-oracle.js'

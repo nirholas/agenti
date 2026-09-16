@@ -10,7 +10,7 @@
 
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
-import { agentiTools } from '@agenti/sdk'
+import { agentiTools } from '@agenti/sdk/vercel-ai'
 
 const { text } = await generateText({
   model: anthropic('claude-sonnet-4-6'),
