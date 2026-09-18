@@ -869,7 +869,7 @@ export function createServer(): McpServer {
 
   server.tool(
     'decode_pump_transaction',
-    'Fetch and decode a Solana transaction to extract pump.fun events (launch, trade, graduation, claim).',
+    'Fetch and decode a Solana transaction to extract pump.fun events (launch, trade, graduation, claim, holder_reward_distribution).',
     {
       signature: z.string().describe('Solana transaction signature to decode'),
     },

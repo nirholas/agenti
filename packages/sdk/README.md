@@ -146,6 +146,50 @@ to your `package.json` (pnpm and Yarn installs are unaffected):
 | `signEIP712`, `signMessage` | Signing helpers. |
 | `@agenti/sdk/events` | The event stream, with no chain dependencies. |
 
+## Watch pump.fun events
+
+`watchPumpEvents` subscribes to the pump.fun and PumpSwap programs over the RPC
+WebSocket (falling back to polling) and calls you with each decoded event.
+`decodePumpLog` decodes a single `Program data:` log line, for when you already
+have a transaction's logs.
+
+```ts
+import { Connection } from '@solana/web3.js'
+import { watchPumpEvents } from '@agenti/sdk'
+
+const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
+
+const stop = watchPumpEvents(
+  { connection, eventTypes: ['launch', 'graduation'] },
+  (event) => {
+    if (event.type === 'launch') {
+      console.log(`${event.symbol} by ${event.creator}`, event.holderReward ? '(holder rewards)' : '')
+    } else if (event.type === 'graduation' && event.pool) {
+      console.log(`${event.mint} migrated to pool ${event.pool}`)
+    }
+  },
+)
+
+// later
+stop()
+```
+
+Every event carries `type`, `timestamp` (unix seconds, from the event itself) and
+the transaction `signature`. The layouts follow the pump.fun IDL shipped with
+`@pump-fun/pump-sdk` 2.x.
+
+| `type` | Source event | Fields |
+| --- | --- | --- |
+| `launch` | `CreateEvent` (both `create` and `create_v2`) | `mint`, `name`, `symbol`, `creator` (earns creator fees), `user` (signed the create), `mayhemMode`, `cashback`, `holderReward`, `creatorFeeBps` (0 means the default fee schedule) |
+| `graduation` | `CompleteEvent`, `CompletePumpAmmMigrationEvent` | `mint`, `pool` (the PumpSwap pool; empty for `CompleteEvent`, which fires before the pool exists) |
+| `trade` | `TradeEvent` | `mint`, `side`, `sol`, `tokens` (base units), `wallet` |
+| `holder_reward_distribution` | `DistributeFeeToHoldersEvent` | `mint`, `quoteMint` (`11111111111111111111111111111111` means SOL), `recipients`, `total` (quote base units) |
+| `claim` | `SocialFeePdaClaimed` | `github` or `twitter`, `wallet` |
+
+Launch events emitted by older program deployments are shorter than the current
+layout. They still decode, with the fields they predate at their defaults:
+`mayhemMode`, `cashback` and `holderReward` false, `creatorFeeBps` 0.
+
 ## Related
 
 - [`@agenti/mcp`](../mcp) exposes all of this to Claude and any MCP client.
