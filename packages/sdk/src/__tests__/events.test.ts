@@ -4,7 +4,7 @@ import { PublicKey } from '@solana/web3.js'
 import { PUMP_SDK, pumpIdl } from '@pump-fun/pump-sdk'
 import { decodePumpLog } from '../solana/events.js'
 
-// The pump.fun IDL shipped with @pump-fun/pump-sdk 2.x is the source of truth: every
+// The pump.fun IDL shipped with @pump-fun/pump-sdk 4.x is the source of truth: every
 // event below is encoded with its borsh coder, then checked against both the SDK's
 // own decoder and decodePumpLog.
 const coder = new BorshCoder(pumpIdl as never)
@@ -55,6 +55,7 @@ function createEventBody(overrides: Record<string, unknown> = {}): Buffer {
     virtual_quote_reserves: new BN(0),
     creator_fee_bps: new BN(75),
     is_holder_reward: true,
+    depth: 0,
     ...overrides,
   })
 }
@@ -69,7 +70,7 @@ describe('decodePumpLog: CreateEvent', () => {
     }
   })
 
-  it('agrees with PUMP_SDK.decodeCreateEventBc on the full 2.0 layout', () => {
+  it('agrees with PUMP_SDK.decodeCreateEventBc on the full October 2026 layout', () => {
     const body = createEventBody()
     const sdk = PUMP_SDK.decodeCreateEventBc(body)
     const event = decodePumpLog(logLine('CreateEvent', body), SIG)
@@ -92,9 +93,16 @@ describe('decodePumpLog: CreateEvent', () => {
     expect(event).toMatchObject({ creator: CREATOR.toBase58(), user: USER.toBase58() })
   })
 
+  it('decodes the pre-upgrade layout that ends at is_holder_reward, without the new depth byte', () => {
+    const full = createEventBody()
+    const event = decodePumpLog(logLine('CreateEvent', full.subarray(0, full.length - 1)), SIG)
+    expect(event).toEqual(decodePumpLog(logLine('CreateEvent', full), SIG))
+  })
+
   it('agrees with the SDK on events from deployments before creator_fee_bps and is_holder_reward', () => {
     const full = createEventBody({ creator_fee_bps: new BN(0), is_holder_reward: false })
-    for (const missing of [1, 9]) {
+    // Drop depth, then is_holder_reward, then creator_fee_bps.
+    for (const missing of [2, 10]) {
       const body = full.subarray(0, full.length - missing)
       const sdk = PUMP_SDK.decodeCreateEventBc(body)
       const event = decodePumpLog(logLine('CreateEvent', body), SIG)
@@ -181,44 +189,49 @@ describe('decodePumpLog: graduation events', () => {
   })
 })
 
+function tradeEventBody(): Buffer {
+  return encode('TradeEvent', {
+    mint: MINT,
+    sol_amount: new BN('1500000000'),
+    token_amount: new BN('35000000000000'),
+    is_buy: true,
+    user: USER,
+    timestamp: new BN(TS),
+    virtual_sol_reserves: new BN('31500000000'),
+    virtual_token_reserves: new BN('1038000000000000'),
+    real_sol_reserves: new BN('1500000000'),
+    real_token_reserves: new BN('758100000000000'),
+    fee_recipient: key(6),
+    fee_basis_points: new BN(95),
+    fee: new BN(14250000),
+    creator: CREATOR,
+    creator_fee_basis_points: new BN(30),
+    creator_fee: new BN(4500000),
+    track_volume: true,
+    total_unclaimed_tokens: new BN(0),
+    total_claimed_tokens: new BN(0),
+    current_sol_volume: new BN('1500000000'),
+    last_update_timestamp: new BN(TS),
+    ix_name: 'buy',
+    mayhem_mode: false,
+    cashback_fee_basis_points: new BN(0),
+    cashback: new BN(0),
+    buyback_fee_basis_points: new BN(0),
+    buyback_fee: new BN(0),
+    shareholders: [],
+    quote_mint: PublicKey.default,
+    quote_amount: new BN(0),
+    virtual_quote_reserves: new BN(0),
+    real_quote_reserves: new BN(0),
+    holder_rewards_bps: new BN(0),
+    holder_rewards: new BN(0),
+    creator_fee_unclaimed: new BN(4500000),
+  })
+}
+
 describe('decodePumpLog: TradeEvent', () => {
   it('agrees with PUMP_SDK.decodeTradeEventBc', () => {
-    const body = encode('TradeEvent', {
-      mint: MINT,
-      sol_amount: new BN('1500000000'),
-      token_amount: new BN('35000000000000'),
-      is_buy: true,
-      user: USER,
-      timestamp: new BN(TS),
-      virtual_sol_reserves: new BN('31500000000'),
-      virtual_token_reserves: new BN('1038000000000000'),
-      real_sol_reserves: new BN('1500000000'),
-      real_token_reserves: new BN('758100000000000'),
-      fee_recipient: key(6),
-      fee_basis_points: new BN(95),
-      fee: new BN(14250000),
-      creator: CREATOR,
-      creator_fee_basis_points: new BN(30),
-      creator_fee: new BN(4500000),
-      track_volume: true,
-      total_unclaimed_tokens: new BN(0),
-      total_claimed_tokens: new BN(0),
-      current_sol_volume: new BN('1500000000'),
-      last_update_timestamp: new BN(TS),
-      ix_name: 'buy',
-      mayhem_mode: false,
-      cashback_fee_basis_points: new BN(0),
-      cashback: new BN(0),
-      buyback_fee_basis_points: new BN(0),
-      buyback_fee: new BN(0),
-      shareholders: [],
-      quote_mint: PublicKey.default,
-      quote_amount: new BN(0),
-      virtual_quote_reserves: new BN(0),
-      real_quote_reserves: new BN(0),
-      holder_rewards_bps: new BN(0),
-      holder_rewards: new BN(0),
-    })
+    const body = tradeEventBody()
     const sdk = PUMP_SDK.decodeTradeEventBc(body)
     expect(decodePumpLog(logLine('TradeEvent', body), SIG)).toEqual({
       type: 'trade',
@@ -230,6 +243,61 @@ describe('decodePumpLog: TradeEvent', () => {
       timestamp: sdk.timestamp.toNumber(),
       signature: SIG,
     })
+  })
+
+  it('decodes the pre-upgrade layout without creator_fee_unclaimed to the same trade', () => {
+    const body = tradeEventBody()
+    const legacy = body.subarray(0, body.length - 8)
+    expect(decodePumpLog(logLine('TradeEvent', legacy), SIG)).toEqual(decodePumpLog(logLine('TradeEvent', body), SIG))
+  })
+})
+
+function postCompleteBuyBody(quoteMint: PublicKey): Buffer {
+  return encode('PostCompleteBuyEvent', {
+    user: USER,
+    mint: MINT,
+    bonding_curve: BONDING_CURVE,
+    quote_mint: quoteMint,
+    timestamp: new BN(TS),
+    base_out: new BN('12000000000000'),
+    quote_in: new BN('2650000000'),
+    fee_basis_points: new BN(95),
+    fee: new BN(25175000),
+    creator_fee_basis_points: new BN(30),
+    creator_fee: new BN(7950000),
+    buyback_fee: new BN(0),
+    pool_base_reserves_before: new BN('206900000000000'),
+    pool_quote_reserves_before: new BN('84990359252'),
+    pool_base_reserves_after: new BN('194900000000000'),
+    pool_quote_reserves_after: new BN('87640359252'),
+  })
+}
+
+describe('decodePumpLog: PostCompleteBuyEvent', () => {
+  it('reports the pool leg of a synthetic migration buy, matching PUMP_SDK.decodePostCompleteBuyEvent', () => {
+    expect(discriminator('PostCompleteBuyEvent').toString('hex')).toBe('6fb06d8b316cd5fb')
+    const body = postCompleteBuyBody(PublicKey.default)
+    const sdk = PUMP_SDK.decodePostCompleteBuyEvent(body)
+    expect(decodePumpLog(logLine('PostCompleteBuyEvent', body), SIG)).toEqual({
+      type: 'trade',
+      mint: sdk.mint.toBase58(),
+      side: 'buy',
+      sol: sdk.quoteIn.toNumber() / 1_000_000_000,
+      tokens: sdk.baseOut.toNumber(),
+      wallet: sdk.user.toBase58(),
+      postComplete: true,
+      timestamp: sdk.timestamp.toNumber(),
+      signature: SIG,
+    })
+  })
+
+  it('treats wrapped SOL as a SOL quote', () => {
+    const wsol = new PublicKey('So11111111111111111111111111111111111111112')
+    expect(decodePumpLog(logLine('PostCompleteBuyEvent', postCompleteBuyBody(wsol)), SIG)).toMatchObject({ sol: 2.65 })
+  })
+
+  it('skips coins paired with a quote other than SOL, since `sol` would be wrong', () => {
+    expect(decodePumpLog(logLine('PostCompleteBuyEvent', postCompleteBuyBody(key(9))), SIG)).toBeNull()
   })
 })
 

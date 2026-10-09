@@ -2,16 +2,21 @@ import { Connection, PublicKey, type Logs } from '@solana/web3.js'
 
 const LAMPORTS_PER_SOL = 1_000_000_000
 
+// Quote mints that mean "this coin trades against SOL": the zero key stored on SOL curves,
+// and wrapped SOL, which the v2/v3 trade instructions take for SOL-paired coins.
+const SOL_QUOTE_MINTS = new Set(['11111111111111111111111111111111', 'So11111111111111111111111111111111111111112'])
+
 const PUMP_PROGRAM = new PublicKey('6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P')
 const PUMP_AMM_PROGRAM = new PublicKey('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA')
 
 // Anchor event discriminators (the first 8 bytes of a "Program data:" log),
 // taken from the `events` section of the pump, pump_amm and pump_fees IDLs
-// shipped with @pump-fun/pump-sdk 2.x.
+// shipped with @pump-fun/pump-sdk 4.x (the October 2026 program upgrade).
 const DISC_CREATE = '1b72a94ddeeb6376' // CreateEvent (emitted by both create and create_v2)
 const DISC_COMPLETE = '5f72619cd42e9808' // CompleteEvent
 const DISC_COMPLETE_AMM = 'bde95db95c94ea94' // CompletePumpAmmMigrationEvent
 const DISC_TRADE = 'bddb7fd34ee661ee' // TradeEvent
+const DISC_POST_COMPLETE_BUY = '6fb06d8b316cd5fb' // PostCompleteBuyEvent (pool leg of a synthetic migration buy)
 const DISC_DISTRIBUTE_HOLDERS = 'e3bed7ceb0b4a584' // DistributeFeeToHoldersEvent
 const DISC_CLAIM = '3212c141edd2eaec' // SocialFeePdaClaimed (pump_fees program)
 
@@ -44,7 +49,23 @@ export type PumpEvent =
       timestamp: number
       signature: string
     }
-  | { type: 'trade'; mint: string; side: 'buy' | 'sell'; sol: number; tokens: number; wallet: string; timestamp: number; signature: string }
+  | {
+      type: 'trade'
+      mint: string
+      side: 'buy' | 'sell'
+      sol: number
+      /** Token amount in base units. */
+      tokens: number
+      wallet: string
+      /**
+       * Set on the second half of a buy that completed the curve with a synthetic migration
+       * (`PostCompleteBuyEvent`): the tokens bought at the future PumpSwap pool's price. The
+       * buyer's total is this event plus the `TradeEvent` trade in the same transaction.
+       */
+      postComplete?: true
+      timestamp: number
+      signature: string
+    }
   | { type: 'claim'; mint: string; github?: string; twitter?: string; wallet: string; timestamp: number; signature: string }
   | {
       type: 'holder_reward_distribution'
@@ -98,7 +119,7 @@ function readI64(buf: Buffer, offset: number): number {
  *   user(32), creator(32), timestamp(i64), virtual_token_reserves(u64),
  *   virtual_sol_reserves(u64), real_token_reserves(u64), token_total_supply(u64),
  *   token_program(32), is_mayhem_mode(bool), is_cashback_enabled(bool), quote_mint(32),
- *   virtual_quote_reserves(u64), creator_fee_bps(u64), is_holder_reward(bool)
+ *   virtual_quote_reserves(u64), creator_fee_bps(u64), is_holder_reward(bool), depth(u8)
  *
  * The program has appended fields over time, so events emitted by older deployments
  * are shorter. Every field after `creator` is read only when present and otherwise
@@ -183,7 +204,9 @@ export function decodePumpLog(log: string, signature: string): PumpEvent | null 
       }
     }
 
-    // Trade layout: disc(8), mint(32), sol_amount(8), token_amount(8), is_buy(1), user(32), timestamp(8)
+    // Trade layout: disc(8), mint(32), sol_amount(8), token_amount(8), is_buy(1), user(32), timestamp(8), ...
+    // Only this prefix is read, so the fields the program keeps appending (creator_fee_unclaimed
+    // in the October 2026 upgrade) never shift it.
     if (disc === DISC_TRADE) {
       const mint = readPubkey(bytes, 8)
       const sol = readU64(bytes, 8 + 32) / LAMPORTS_PER_SOL
@@ -193,6 +216,27 @@ export function decodePumpLog(log: string, signature: string): PumpEvent | null 
       const tsOffset = 8 + 32 + 8 + 8 + 1 + 32
       const timestamp = bytes.length >= tsOffset + 8 ? readI64(bytes, tsOffset) : now
       return { type: 'trade', mint, side: isBuy ? 'buy' : 'sell', sol, tokens, wallet, timestamp, signature }
+    }
+
+    // Pool leg of a v3 buy that crossed the end of the curve (synthetic migration):
+    // disc(8), user(32), mint(32), bonding_curve(32), quote_mint(32), timestamp(i64),
+    // base_out(u64), quote_in(u64), fee fields and pool reserves (ignored here).
+    // Reported as a buy only for SOL-paired coins, since `sol` is denominated in SOL.
+    if (disc === DISC_POST_COMPLETE_BUY) {
+      const quoteMint = readPubkey(bytes, 8 + 96)
+      if (!SOL_QUOTE_MINTS.has(quoteMint)) return null
+      const base = 8 + 128
+      return {
+        type: 'trade',
+        mint: readPubkey(bytes, 8 + 32),
+        side: 'buy',
+        sol: readU64(bytes, base + 16) / LAMPORTS_PER_SOL,
+        tokens: readU64(bytes, base + 8),
+        wallet: readPubkey(bytes, 8),
+        postComplete: true,
+        timestamp: readI64(bytes, base),
+        signature,
+      }
     }
 
     // Social fee claim layout: disc(8), timestamp(8), user_id(borsh str), platform(u8),

@@ -176,19 +176,30 @@ stop()
 
 Every event carries `type`, `timestamp` (unix seconds, from the event itself) and
 the transaction `signature`. The layouts follow the pump.fun IDL shipped with
-`@pump-fun/pump-sdk` 2.x.
+`@pump-fun/pump-sdk` 4.x (the October 2026 program upgrade).
 
 | `type` | Source event | Fields |
 | --- | --- | --- |
 | `launch` | `CreateEvent` (both `create` and `create_v2`) | `mint`, `name`, `symbol`, `creator` (earns creator fees), `user` (signed the create), `mayhemMode`, `cashback`, `holderReward`, `creatorFeeBps` (0 means the default fee schedule) |
 | `graduation` | `CompleteEvent`, `CompletePumpAmmMigrationEvent` | `mint`, `pool` (the PumpSwap pool; empty for `CompleteEvent`, which fires before the pool exists) |
-| `trade` | `TradeEvent` | `mint`, `side`, `sol`, `tokens` (base units), `wallet` |
+| `trade` | `TradeEvent`, `PostCompleteBuyEvent` | `mint`, `side`, `sol`, `tokens` (base units), `wallet`, `postComplete` (see below) |
 | `holder_reward_distribution` | `DistributeFeeToHoldersEvent` | `mint`, `quoteMint` (`11111111111111111111111111111111` means SOL), `recipients`, `total` (quote base units) |
 | `claim` | `SocialFeePdaClaimed` | `github` or `twitter`, `wallet` |
 
 Launch events emitted by older program deployments are shorter than the current
 layout. They still decode, with the fields they predate at their defaults:
-`mayhemMode`, `cashback` and `holderReward` false, `creatorFeeBps` 0.
+`mayhemMode`, `cashback` and `holderReward` false, `creatorFeeBps` 0. The decoder
+reads each event's known prefix and ignores trailing bytes, so the fields the
+program appends (`depth` on `CreateEvent`, `creator_fee_unclaimed` on
+`TradeEvent`) never break it, and events from before an upgrade decode too.
+
+Since the October 2026 upgrade, the v3 buy that empties a bonding curve can ask
+for more than the curve has left: it buys the rest at the price of the PumpSwap
+pool the migration will create (a synthetic migration). That buy emits a
+`TradeEvent` for the curve part, then `CompleteEvent`, then a
+`PostCompleteBuyEvent` for the pool part. The pool part arrives as a second
+`trade` with `postComplete: true`; the buyer's total is the sum of both trades.
+It is reported for SOL-paired coins, where `sol` is meaningful.
 
 ## Related
 
