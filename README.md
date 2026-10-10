@@ -1,4 +1,9 @@
 # agenti 
+
+<!-- three.ws:badges -->
+[![GitHub stars](https://img.shields.io/github/stars/nirholas/agenti?style=flat&logo=github)](https://github.com/nirholas/agenti/stargazers) [![Last commit](https://img.shields.io/github/last-commit/nirholas/agenti?style=flat)](https://github.com/nirholas/agenti/commits) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat)](https://github.com/nirholas/agenti/pulls) [![AI agent friendly](https://img.shields.io/badge/AI%20agents-AGENTS.md%20%2B%20llms.txt-6d5dfc?style=flat)](https://github.com/nirholas/agenti/blob/HEAD/AGENTS.md)
+<!-- /three.ws:badges -->
+
  
 **The money layer for AI agents.** 
 
@@ -970,3 +975,26 @@ Full documentation site: **https://nirholas.github.io/agenti/**
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=nirholas/agenti&type=Date)](https://www.star-history.com/#nirholas/agenti&Date)
+
+<!-- three.ws:growth -->
+## Support the project
+
+If agenti saves you time, **[star it on GitHub](https://github.com/nirholas/agenti)**. Stars are how other developers and AI agents find the repositories worth trusting, and they cost you one click.
+
+Know someone who would use it? [Post on X](https://twitter.com/intent/tweet?text=agenti%3A%20Give%20any%20AI%20agent%20a%20crypto%20wallet&url=https%3A%2F%2Fgithub.com%2Fnirholas%2Fagenti) · [Share on Bluesky](https://bsky.app/intent/compose?text=agenti%3A%20Give%20any%20AI%20agent%20a%20crypto%20wallet%20https%3A%2F%2Fgithub.com%2Fnirholas%2Fagenti) · [Share on LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fgithub.com%2Fnirholas%2Fagenti) · [Submit to Hacker News](https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fgithub.com%2Fnirholas%2Fagenti&t=agenti%3A%20Give%20any%20AI%20agent%20a%20crypto%20wallet) · [Share on Reddit](https://www.reddit.com/submit?url=https%3A%2F%2Fgithub.com%2Fnirholas%2Fagenti&title=agenti%3A%20Give%20any%20AI%20agent%20a%20crypto%20wallet)
+
+## Built for AI agents too
+
+Coding agents and LLM tooling can read this repo directly: [AGENTS.md](./AGENTS.md), [llms.txt](./llms.txt), [llms-full.txt](./llms-full.txt). Point an agent at `https://github.com/nirholas/agenti` and it has the context it needs.
+
+## More from the same author
+
+- [All repositories by nirholas](https://github.com/nirholas/nirholas#readme): the full catalog, grouped by topic
+- [three.ws](https://three.ws): the platform for 3D AI agents with Solana wallets, a skill marketplace and x402 payments
+- Questions or ideas: [open an issue](https://github.com/nirholas/agenti/issues) or [start a discussion](https://github.com/nirholas/agenti/discussions)
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=nirholas/agenti)](https://github.com/nirholas/agenti/graphs/contributors)
+
+<!-- /three.ws:growth -->
