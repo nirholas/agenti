@@ -4,7 +4,7 @@
   "type": "module",
   "author": "nirholas",
   "license": "Apache-2.0",
-  "description": "Self-hosted x402 facilitator \u2014 verify and settle EIP-3009 USDC payments on Base, Arbitrum, and Ethereum",
+  "description": "Self-hosted x402 facilitator — verify and settle EIP-3009 USDC payments on Base, Arbitrum, and Ethereum",
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/agenti"
@@ -50,8 +50,8 @@
     "@agenti/core": "workspace:*",
     "@hono/node-server": "^1.12.0",
     "@solana/web3.js": "^1.99.0",
-    "hono": "^4.12.25",
+    "hono": "^4.13.14",
     "lru-cache": "^11.5.3",
-    "viem": "^2.57.3"
+    "viem": "^2.57.13"
   }
 }

@@ -16,7 +16,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -48,15 +51,15 @@
   },
   "dependencies": {
     "@agenti/sdk": "workspace:*",
+    "@hono/node-server": "^1.13.0",
     "@solana/web3.js": "^1.99.0",
     "bs58": "^6.0.0",
-    "hono": "^4.12.25",
-    "@hono/node-server": "^1.13.0",
+    "hono": "^4.13.14",
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.4.0",
-    "@types/node": "^20.0.0"
+    "typescript": "^5.4.0"
   }
 }
