@@ -37,6 +37,71 @@ export interface SellParams {
   maxPriceImpact?: number  // percent threshold for warning (default 5)
 }
 
+const MAX_SWAP_ATTEMPTS = 3
+
+/** Only preflight failures are retried: the transaction was never sent, so a re-quote cannot double-spend. A confirmation timeout is deliberately not matched.
+ * Failure modes where a fresh quote can succeed: stale blockhash or a price that moved past the slippage limit. */
+const RETRYABLE_SIMULATION = [
+  /blockhash not found/i,
+  /TooMuchSolRequired|TooLittleSolReceived/i,
+  /custom program error: 0x(1771|1772|1773)\b/i,
+  /slippage/i,
+]
+
+const TERMINAL_SIMULATION: Array<[RegExp, string]> = [
+  [/no record of a prior credit|insufficient lamports|insufficient funds/i, 'Insufficient SOL to cover the trade amount, fees and rent. Fund the wallet or reduce the amount.'],
+  [/account not found|invalid account data|AccountNotInitialized/i, 'The token account or pool for this mint is not initialized. Check the mint address and that the token is tradeable.'],
+]
+
+function errorText(err: unknown): string {
+  const e = err as { message?: string; logs?: string[] } | undefined
+  return [e?.message ?? String(err), ...(Array.isArray(e?.logs) ? e.logs : [])].join('\n')
+}
+
+function isSimulationFailure(text: string): boolean {
+  return /simulation failed|custom program error|blockhash not found/i.test(text)
+}
+
+/**
+ * Fetch a fresh swap quote from pump.fun, sign it and send it. A failed
+ * simulation is recovered from by re-quoting (fresh blockhash and price) up to
+ * MAX_SWAP_ATTEMPTS times. Failures that cannot succeed on retry, and the final
+ * failure, are raised with a readable explanation instead of the raw RPC error.
+ */
+async function quoteSignSend(
+  body: Record<string, unknown>,
+  keypair: Keypair,
+  connection: Connection,
+): Promise<TradeResult> {
+  let lastText = ''
+  for (let attempt = 1; attempt <= MAX_SWAP_ATTEMPTS; attempt++) {
+    const res = await fetch(`${PUMP_API}/swap`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) throw new Error(`pump.fun API ${res.status}: ${await res.text()}`)
+    const { transaction } = (await res.json()) as { transaction: string }
+
+    try {
+      return await buildSignSend(transaction, keypair, connection)
+    } catch (err) {
+      const text = errorText(err)
+      if (!isSimulationFailure(text)) throw err
+      lastText = text
+      const terminal = TERMINAL_SIMULATION.find(([re]) => re.test(text))
+      if (terminal) throw new Error(`Trade simulation failed: ${terminal[1]}`)
+      if (!RETRYABLE_SIMULATION.some((re) => re.test(text))) {
+        throw new Error(`Trade simulation failed and cannot be retried automatically: ${(err as Error).message}`)
+      }
+    }
+  }
+  throw new Error(
+    `Trade simulation kept failing after ${MAX_SWAP_ATTEMPTS} attempts (price moved past the slippage limit or the network is congested). ` +
+      `Retry later or raise slippage. Last error: ${lastText.split('\n')[0]}`,
+  )
+}
+
 async function buildSignSend(
   txBase64: string,
   keypair: Keypair,
@@ -71,10 +136,7 @@ export async function buy(params: BuyParams): Promise<TradeResult> {
     }
   }
 
-  const res = await fetch(`${PUMP_API}/swap`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const result = await quoteSignSend({
       inputMint: NATIVE_MINT,
       outputMint: mint,
       amount: lamports.toString(),
@@ -84,12 +146,7 @@ export async function buy(params: BuyParams): Promise<TradeResult> {
       frontRunningProtection: false,
       tipAmount: priorityFee,
       encoding: 'base64',
-    }),
-  })
-
-  if (!res.ok) throw new Error(`pump.fun API ${res.status}: ${await res.text()}`)
-  const { transaction } = (await res.json()) as { transaction: string }
-  const result = await buildSignSend(transaction, keypair, connection)
+    }, keypair, connection)
   emitEvent({ type: 'trade', mint, side: 'buy', sol: solAmount, ts: Date.now() })
   return result
 }
@@ -107,10 +164,7 @@ export async function sell(params: SellParams): Promise<TradeResult> {
     }
   }
 
-  const res = await fetch(`${PUMP_API}/swap`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const result = await quoteSignSend({
       inputMint: mint,
       outputMint: NATIVE_MINT,
       amount: rawAmount.toString(),
@@ -120,12 +174,7 @@ export async function sell(params: SellParams): Promise<TradeResult> {
       frontRunningProtection: false,
       tipAmount: 0,
       encoding: 'base64',
-    }),
-  })
-
-  if (!res.ok) throw new Error(`pump.fun API ${res.status}: ${await res.text()}`)
-  const { transaction } = (await res.json()) as { transaction: string }
-  const result = await buildSignSend(transaction, keypair, connection)
+    }, keypair, connection)
   emitEvent({ type: 'trade', mint, side: 'sell', sol: 0, ts: Date.now() })
   return result
 }
