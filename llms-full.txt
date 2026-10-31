@@ -166,7 +166,7 @@ The `@agenti/mcp` package turns every tool in the SDK into an MCP tool that any 
 
 | Tool | Description |
 |---|---|
-| `create_wallet` | Generate a new EVM + Solana wallet with addresses and private keys |
+| `create_wallet` | Generate a new EVM + Solana wallet (disabled by default because it returns private keys to the model; set `AGENTI_MCP_ALLOW_SECRETS=1` for throwaway wallets) |
 | `get_balance` | Check USDC, SOL, and token balances for any address |
 | `pay` | Fetch a URL: if it returns 402, payment is handled automatically |
 | `create_invoice` | Generate a payment request with an address and expiry |
