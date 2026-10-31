@@ -27,6 +27,7 @@ import {
   getVolatility,
 } from '@agenti/sdk'
 import { PublicKey } from '@solana/web3.js'
+import { evmKeyParam, mnemonicParam, resolveEvmKey, resolveMnemonic, secretsAllowed, assertMaySurfaceSecrets } from './secrets.js'
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -39,6 +40,7 @@ export function createServer(): McpServer {
     'Generate a new agent wallet with EVM (Base/Arbitrum/Ethereum) and Solana addresses',
     {},
     async () => {
+      assertMaySurfaceSecrets('create_wallet')
       const wallet = generateWallet()
       return {
         content: [
@@ -69,15 +71,10 @@ export function createServer(): McpServer {
     'get_balance',
     'Get USDC (Base) and SOL balances for a wallet',
     {
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key (0x...) — falls back to AGENTI_EVM_PRIVATE_KEY env var'),
+      ...evmKeyParam(),
     },
     async ({ evm_private_key }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as
-        | `0x${string}`
-        | undefined
+      const privateKey = resolveEvmKey(evm_private_key)
 
       const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
       const solanaKey = solanaKeyHex ? Buffer.from(solanaKeyHex, 'hex') : undefined
@@ -99,10 +96,7 @@ export function createServer(): McpServer {
     'Pay for an HTTP resource — automatically handles 402 Payment Required (x402 protocol)',
     {
       url: z.string().url().describe('URL to fetch'),
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key for payment signing — falls back to AGENTI_EVM_PRIVATE_KEY'),
+      ...evmKeyParam(),
       method: z
         .enum(['GET', 'POST', 'PUT', 'DELETE'])
         .default('GET')
@@ -118,11 +112,9 @@ export function createServer(): McpServer {
         ),
     },
     async ({ url, evm_private_key, method, body, max_amount }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as
-        | `0x${string}`
-        | undefined
+      const privateKey = resolveEvmKey(evm_private_key)
 
-      if (!privateKey) throw new Error('EVM private key required (param or AGENTI_EVM_PRIVATE_KEY)')
+      if (!privateKey) throw new Error('EVM private key required: set AGENTI_EVM_PRIVATE_KEY in the MCP server environment')
 
       const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
       const solanaKey = solanaKeyHex ? Buffer.from(solanaKeyHex, 'hex') : undefined
@@ -158,15 +150,10 @@ export function createServer(): McpServer {
       chain: z
         .enum(['base', 'arbitrum', 'ethereum', 'polygon', 'solana'])
         .describe('Chain to receive payment on'),
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key to derive receiving address — falls back to AGENTI_EVM_PRIVATE_KEY'),
+      ...evmKeyParam(),
     },
     async ({ amount, token, chain, evm_private_key }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as
-        | `0x${string}`
-        | undefined
+      const privateKey = resolveEvmKey(evm_private_key)
 
       const solanaKeyHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
       const solanaKey = solanaKeyHex ? Buffer.from(solanaKeyHex, 'hex') : undefined
@@ -489,14 +476,11 @@ export function createServer(): McpServer {
     'Get BNB native balance plus USDT and BUSD token balances for a wallet address on BNB Chain',
     {
       address: z.string().describe('Wallet address to check'),
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key (0x...) — falls back to AGENTI_EVM_PRIVATE_KEY env var'),
+      ...evmKeyParam(),
     },
     async ({ address, evm_private_key }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as `0x${string}` | undefined
-      if (!privateKey) throw new Error('EVM private key required (param or AGENTI_EVM_PRIVATE_KEY)')
+      const privateKey = resolveEvmKey(evm_private_key)
+      if (!privateKey) throw new Error('EVM private key required: set AGENTI_EVM_PRIVATE_KEY in the MCP server environment')
 
       const instance = bnb({ wallet: { privateKey } })
       const resolvedAddress = address || instance.address
@@ -525,14 +509,11 @@ export function createServer(): McpServer {
       to: z.string().describe('Recipient wallet address'),
       amount: z.string().describe('Amount in token units (e.g. "10.5" for 10.5 USDT)'),
       decimals: z.number().int().default(18).describe('Token decimals (18 for USDT/BUSD on BSC, 6 for USDC)'),
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key (0x...) — falls back to AGENTI_EVM_PRIVATE_KEY env var'),
+      ...evmKeyParam(),
     },
     async ({ token_address, to, amount, decimals, evm_private_key }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as `0x${string}` | undefined
-      if (!privateKey) throw new Error('EVM private key required (param or AGENTI_EVM_PRIVATE_KEY)')
+      const privateKey = resolveEvmKey(evm_private_key)
+      if (!privateKey) throw new Error('EVM private key required: set AGENTI_EVM_PRIVATE_KEY in the MCP server environment')
 
       const { parseUnits } = await import('viem')
       const instance = bnb({ wallet: { privateKey } })
@@ -602,14 +583,11 @@ export function createServer(): McpServer {
       amount_in: z.string().describe('Amount of tokenIn in token units (e.g. "10.5")'),
       decimals_in: z.number().int().default(18).describe('Decimals for tokenIn'),
       slippage_bps: z.number().int().min(1).max(10000).default(50).describe('Slippage tolerance in basis points (50 = 0.5%)'),
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key (0x...) — falls back to AGENTI_EVM_PRIVATE_KEY env var'),
+      ...evmKeyParam(),
     },
     async ({ token_in, token_out, amount_in, decimals_in, slippage_bps, evm_private_key }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as `0x${string}` | undefined
-      if (!privateKey) throw new Error('EVM private key required (param or AGENTI_EVM_PRIVATE_KEY)')
+      const privateKey = resolveEvmKey(evm_private_key)
+      if (!privateKey) throw new Error('EVM private key required: set AGENTI_EVM_PRIVATE_KEY in the MCP server environment')
 
       const { parseUnits } = await import('viem')
       const amountIn = parseUnits(amount_in, decimals_in)
@@ -888,7 +866,7 @@ export function createServer(): McpServer {
       const connection = new Connection(rpcUrl, 'confirmed')
 
       const tx = await connection.getTransaction(signature, {
-        maxSupportedTransactionVersion: 0,
+        maxSupportedTransactionVersion: 1,
         commitment: 'confirmed',
       })
 
@@ -1103,6 +1081,7 @@ export function createServer(): McpServer {
         .describe('Entropy strength: 128 = 12 words (default), 256 = 24 words'),
     },
     async ({ strength }) => {
+      assertMaySurfaceSecrets('generate_mnemonic')
       const bits = strength === '256' ? 256 : 128
       const mnemonic = generateMnemonic(bits as 128 | 256)
       const wallet = walletFromMnemonic(mnemonic, 0)
@@ -1122,9 +1101,9 @@ export function createServer(): McpServer {
 
   server.tool(
     'derive_wallet',
-    'Derive an EVM + Solana wallet from a BIP39 mnemonic at a given account index (BIP44 path)',
+    'Derive the EVM and Solana addresses from the BIP39 mnemonic in AGENTI_MNEMONIC at a given account index (BIP44 path). Returns addresses only.',
     {
-      mnemonic: z.string().describe('BIP39 mnemonic phrase (12 or 24 words)'),
+      ...mnemonicParam(),
       account_index: z
         .number()
         .int()
@@ -1133,7 +1112,8 @@ export function createServer(): McpServer {
         .describe('BIP44 account index (0 = first wallet, 1 = second, etc.)'),
     },
     async ({ mnemonic, account_index }) => {
-      const wallet = walletFromMnemonic(mnemonic, account_index)
+      const wallet = walletFromMnemonic(resolveMnemonic(mnemonic), account_index)
+      const reveal = secretsAllowed()
       return {
         content: [{
           type: 'text',
@@ -1141,15 +1121,15 @@ export function createServer(): McpServer {
             accountIndex: account_index,
             evm: {
               address: wallet.evm.address,
-              privateKey: wallet.evm.privateKey,
+              ...(reveal ? { privateKey: wallet.evm.privateKey } : {}),
               path: `m/44'/60'/0'/0/${account_index}`,
             },
             solana: {
               address: wallet.solana.address,
-              privateKey: Buffer.from(wallet.solana.privateKey).toString('hex'),
+              ...(reveal ? { privateKey: Buffer.from(wallet.solana.privateKey).toString('hex') } : {}),
               path: `m/44'/501'/${account_index}'/0'`,
             },
-            warning: 'Store private keys securely. Never share them.',
+            ...(reveal ? { warning: 'Store private keys securely. Never share them.' } : {}),
           }, null, 2),
         }],
       }
@@ -1161,16 +1141,11 @@ export function createServer(): McpServer {
     'Sign a plain text message using EIP-191 personal_sign. Returns signature and signer address.',
     {
       message: z.string().describe('Message to sign'),
-      evm_private_key: z
-        .string()
-        .optional()
-        .describe('EVM private key (0x...) — falls back to AGENTI_EVM_PRIVATE_KEY env var'),
+      ...evmKeyParam(),
     },
     async ({ message, evm_private_key }) => {
-      const privateKey = (evm_private_key ?? process.env['AGENTI_EVM_PRIVATE_KEY']) as
-        | `0x${string}`
-        | undefined
-      if (!privateKey) throw new Error('EVM private key required (param or AGENTI_EVM_PRIVATE_KEY)')
+      const privateKey = resolveEvmKey(evm_private_key)
+      if (!privateKey) throw new Error('EVM private key required: set AGENTI_EVM_PRIVATE_KEY in the MCP server environment')
       const { privateKeyToAccount } = await import('viem/accounts')
       const signature = await sdkSignMessage(message, privateKey)
       const signer = privateKeyToAccount(privateKey).address

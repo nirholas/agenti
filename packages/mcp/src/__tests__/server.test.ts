@@ -29,7 +29,7 @@ vi.mock('@modelcontextprotocol/sdk/server/mcp.js', () => ({
 // Mock @agenti/sdk so we don't pull in the `ai` peer dep or live network code.
 // Implementations mirror the real agenti/core logic so the tool outputs are realistic.
 vi.mock('@agenti/sdk', async () => {
-  const { generateWallet, walletFromKeys } = await import('@agenti/core')
+  const { generateWallet, walletFromKeys, walletFromMnemonic } = await import('@agenti/core')
   const { randomUUID } = await import('crypto')
 
   function agenti(
@@ -68,13 +68,14 @@ vi.mock('@agenti/sdk', async () => {
     }
   }
 
-  return { agenti, generateWallet }
+  return { agenti, generateWallet, walletFromMnemonic }
 })
 
 import { createServer } from '../server.js'
 
 describe('MCP tools', () => {
   beforeEach(() => {
+    process.env['AGENTI_MCP_ALLOW_SECRETS'] = '1'
     // Clear stale handlers then re-register by constructing a fresh server
     for (const key of Object.keys(handlers)) delete handlers[key]
     createServer()
@@ -121,6 +122,55 @@ describe('MCP tools', () => {
     // balance() returns [] in our mock — result should be parseable JSON
     const parsed = JSON.parse(result.content[0]!.text)
     expect(Array.isArray(parsed)).toBe(true)
+  })
+})
+
+const TEST_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+const TEST_MNEMONIC = 'test test test test test test test test test test test junk'
+
+describe('secret handling (#193)', () => {
+  beforeEach(() => {
+    delete process.env['AGENTI_MCP_ALLOW_SECRETS']
+    delete process.env['AGENTI_MNEMONIC']
+    for (const key of Object.keys(handlers)) delete handlers[key]
+    registrations.length = 0
+    createServer()
+  })
+
+  it('does not advertise a private key or mnemonic parameter to the model by default', () => {
+    const leaking = registrations.flatMap(({ name, schema }) =>
+      Object.keys(schema ?? {})
+        .filter((param) => /private_key|mnemonic|secret/i.test(param))
+        .map((param) => `${name}.${param}`),
+    )
+    expect(leaking).toEqual([])
+  })
+
+  it('rejects a private key passed as a tool argument and names the safe alternative', async () => {
+    await expect(handlers['sign_message']!({ message: 'hi', evm_private_key: TEST_KEY })).rejects.toThrow(
+      /AGENTI_EVM_PRIVATE_KEY/,
+    )
+  })
+
+  it('refuses to hand a freshly generated private key or mnemonic back into the model context', async () => {
+    await expect(handlers['create_wallet']!({})).rejects.toThrow(/AGENTI_MCP_ALLOW_SECRETS/)
+    await expect(handlers['generate_mnemonic']!({})).rejects.toThrow(/AGENTI_MCP_ALLOW_SECRETS/)
+  })
+
+  it('rejects a mnemonic passed as a tool argument', async () => {
+    await expect(handlers['derive_wallet']!({ mnemonic: TEST_MNEMONIC, account_index: 0 })).rejects.toThrow(
+      /AGENTI_MNEMONIC/,
+    )
+  })
+
+  it('derives from AGENTI_MNEMONIC and returns addresses only', async () => {
+    process.env['AGENTI_MNEMONIC'] = TEST_MNEMONIC
+    const result = await handlers['derive_wallet']!({ account_index: 0 })
+    const text = result.content[0]!.text
+    const parsed = JSON.parse(text)
+    expect(parsed.evm.address).toMatch(/^0x[0-9a-fA-F]{40}$/)
+    expect(text).not.toMatch(/privateKey/)
+    expect(text).not.toContain(TEST_MNEMONIC)
   })
 })
 

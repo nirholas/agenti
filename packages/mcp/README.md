@@ -40,6 +40,14 @@ MCP_TRANSPORT=http PORT=3000 npx @agenti/mcp
 
 Stdio is the default.
 
+## Secrets
+
+Tool arguments and results land in the model's context and in client logs, so keys never travel that way by default:
+
+- Signing keys come from the server environment (`AGENTI_EVM_PRIVATE_KEY`, `AGENTI_SOLANA_PRIVATE_KEY`, `AGENTI_MNEMONIC`). The `evm_private_key` and `mnemonic` tool parameters are not advertised, and a value passed anyway is rejected.
+- `derive_wallet` returns addresses only. `create_wallet` and `generate_mnemonic`, which would return a new private key or seed phrase, are disabled.
+- For a throwaway development wallet, set `AGENTI_MCP_ALLOW_SECRETS=1` to restore the key and mnemonic parameters and the secret-returning outputs.
+
 ## Tools
 
 **Wallet and payments**: `create_wallet`, `get_balance`, `pay`, `create_invoice`,
