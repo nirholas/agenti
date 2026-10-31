@@ -15,9 +15,10 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^1.6.0"
+    "vitest": "^5.0.5",
+    "vite": "^7.3.0"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -27,6 +28,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "pnpm": {
     "overrides": {
+      "@agenti/examples>langchain": "^1.6.0",
       "@grpc/grpc-js": ">=1.14.4",
       "@solana/web3.js": "^1.98.4",
       "axios": ">=1.15.1",
@@ -53,6 +55,7 @@
       "tar": ">=7.5.19",
       "tmp": ">=0.2.6",
       "toml": ">=4.2.0",
+      "typescript": "^5.9.3",
       "ws": ">=8.21.0"
     }
   }

@@ -66,11 +66,12 @@
   },
   "devDependencies": {
     "solana-agent-kit": "^1.0.0",
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
   },
   "peerDependencies": {
     "@elizaos/core": "^0.1.0",
-    "@langchain/core": "^0.3.0",
+    "@langchain/core": "^0.3.0 || ^1.0.0",
     "ai": "^4.0.0",
     "solana-agent-kit": "^1.0.0"
   },

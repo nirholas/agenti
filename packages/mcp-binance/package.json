@@ -30,7 +30,11 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts --platform node",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
@@ -40,7 +44,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",

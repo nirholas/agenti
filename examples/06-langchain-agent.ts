@@ -9,23 +9,19 @@
  */
 
 import { ChatAnthropic } from '@langchain/anthropic'
-import { AgentExecutor, createToolCallingAgent } from 'langchain/agents'
+import { createAgent } from 'langchain'
 import { agentiLangChainTools } from '@agenti/sdk/langchain'
-import { ChatPromptTemplate } from '@langchain/core/prompts'
 
 const tools = agentiLangChainTools({ evm: { privateKey: process.env.EVM_KEY as `0x${string}` } })
 const model = new ChatAnthropic({ model: 'claude-sonnet-4-6' })
 
-const prompt = ChatPromptTemplate.fromMessages([
-  ['system', 'You are an agent that can pay for APIs with crypto.'],
-  ['human', '{input}'],
-  ['placeholder', '{agent_scratchpad}'],
-])
-
-const agent = createToolCallingAgent({ llm: model, tools, prompt })
-const executor = new AgentExecutor({ agent, tools })
-
-const result = await executor.invoke({
-  input: 'Fetch the current ETH price from https://api.example.com/eth-price',
+const agent = createAgent({
+  model,
+  tools,
+  systemPrompt: 'You are an agent that can pay for APIs with crypto.',
 })
-console.log(result.output)
+
+const result = await agent.invoke({
+  messages: [{ role: 'user', content: 'Fetch the current ETH price from https://api.example.com/eth-price' }],
+})
+console.log(result.messages.at(-1)?.content)

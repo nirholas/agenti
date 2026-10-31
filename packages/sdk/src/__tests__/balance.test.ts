@@ -22,9 +22,11 @@ function setupMocks(usdcRaw: bigint, lamports: number) {
     readContract: vi.fn().mockResolvedValue(usdcRaw),
   } as unknown as ReturnType<typeof createPublicClient>)
 
-  vi.mocked(Connection).mockImplementation(() => ({
+  vi.mocked(Connection).mockImplementation(function () {
+    return {
     getBalance: vi.fn().mockResolvedValue(lamports),
-  }) as unknown as InstanceType<typeof Connection>)
+  } as unknown as InstanceType<typeof Connection>
+  })
 }
 
 describe('getBalances', () => {
@@ -54,9 +56,11 @@ describe('getBalances', () => {
     vi.mocked(createPublicClient).mockReturnValue({
       readContract: vi.fn().mockRejectedValue(new Error('RPC error')),
     } as unknown as ReturnType<typeof createPublicClient>)
-    vi.mocked(Connection).mockImplementation(() => ({
+    vi.mocked(Connection).mockImplementation(function () {
+    return {
       getBalance: vi.fn().mockResolvedValue(1_000_000_000),
-    }) as unknown as InstanceType<typeof Connection>)
+    } as unknown as InstanceType<typeof Connection>
+  })
 
     const balances = await getBalances(EVM_ADDR, SOL_ADDR)
     expect(balances).toHaveLength(1)

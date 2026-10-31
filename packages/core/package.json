@@ -40,7 +40,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
   },
   "dependencies": {
     "@scure/bip32": "^1.4.0",

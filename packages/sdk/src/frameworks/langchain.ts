@@ -63,7 +63,8 @@ export function agentiLangChainTools(
   if (config.solanaAgentKit) {
     const kit = createSolanaAgentKit(config.solanaAgentKit)
     const sakTools = getSolanaAgentKitLangchainTools(kit)
-    return [...baseTools, ...sakTools]
+    // solana-agent-kit bundles its own @langchain/core 0.3 types; the tools are structurally the same at runtime.
+    return [...baseTools, ...(sakTools as unknown as StructuredToolInterface[])]
   }
 
   return baseTools
