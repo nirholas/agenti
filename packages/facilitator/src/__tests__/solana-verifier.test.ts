@@ -131,6 +131,14 @@ describe('verifySolanaPayment', () => {
     ).resolves.toEqual({ valid: true })
   })
 
+  it('asks the RPC for transactions newer than version 0 so v1 payments are not rejected (#192)', async () => {
+    const connection = connectionReturning(paidTransaction('100000'))
+    await verifySolanaPayment(payment(), requirements(), { connection })
+    const getTransaction = connection.getTransaction as unknown as ReturnType<typeof vi.fn>
+    const config = getTransaction.mock.calls[0]?.[1] as { maxSupportedTransactionVersion?: number }
+    expect(config.maxSupportedTransactionVersion).toBeGreaterThanOrEqual(1)
+  })
+
   it('accepts an overpayment', async () => {
     const connection = connectionReturning(paidTransaction('250000'))
     const result = await verifySolanaPayment(payment(), requirements(), { connection })

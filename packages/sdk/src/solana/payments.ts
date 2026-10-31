@@ -372,7 +372,7 @@ export async function validatePayment(params: ValidatePaymentParams): Promise<bo
     for (const sig of signatures) {
       if (sig.err) continue
       const tx = await connection.getTransaction(sig.signature, {
-        maxSupportedTransactionVersion: 0,
+        maxSupportedTransactionVersion: 1,
       })
       if (!tx?.meta?.logMessages) continue
 
@@ -797,7 +797,7 @@ export async function getPaymentHistory(
   for (const sig of signatures) {
     if (sig.err) continue
     const tx = await connection.getTransaction(sig.signature, {
-      maxSupportedTransactionVersion: 0,
+      maxSupportedTransactionVersion: 1,
     })
     if (!tx?.meta?.logMessages) continue
 
@@ -844,7 +844,7 @@ export async function verifyPaymentReceipt(
   options: { currencyMint?: string; payTo?: string } = {},
 ): Promise<PaymentRecord | null> {
   const tx = await connection.getTransaction(signature, {
-    maxSupportedTransactionVersion: 0,
+    maxSupportedTransactionVersion: 1,
   })
   if (!tx?.meta || tx.meta.err) return null
 

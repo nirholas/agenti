@@ -156,7 +156,7 @@ export async function verifySolanaPayment(
   try {
     transaction = await connection.getTransaction(signature, {
       commitment,
-      maxSupportedTransactionVersion: 0,
+      maxSupportedTransactionVersion: 1,
     })
   } catch (err) {
     // An RPC that cannot answer is an outage, not a rejected payment, and the

@@ -330,7 +330,7 @@ export function watchPumpEvents(
         trimSeen()
 
         const tx = await connection.getTransaction(sigInfo.signature, {
-          maxSupportedTransactionVersion: 0,
+          maxSupportedTransactionVersion: 1,
           commitment: 'confirmed',
         })
         if (!tx?.meta?.logMessages) continue
