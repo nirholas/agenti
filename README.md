@@ -45,6 +45,7 @@ The domain is `agenti.cash`. The name is the mission.
 | [`@agenti/sdk`](./packages/sdk) | Full developer SDK — pay, receive, balance | `npm i @agenti/sdk` |
 | [`@agenti/mcp`](./packages/mcp) | MCP server — plug into any LLM client | `npx @agenti/mcp` |
 | [`@agenti/market`](./packages/market) | 59 market, news, DeFi and on-chain data tools | `npm i @agenti/market` |
+| [`@agenti/gateway`](./packages/gateway) | Paywall any Express API with x402 (Base + Solana), on the official @x402/* packages | `npm i @agenti/gateway` |
 
 > **Not on npm yet.** The `@agenti` scope has not been published to, so the
 > install commands above will 404 (tracked in
