@@ -1,8 +1,6 @@
 # agenti 
 
-<!-- three.ws:badges -->
 [![GitHub stars](https://img.shields.io/github/stars/nirholas/agenti?style=flat&logo=github)](https://github.com/nirholas/agenti/stargazers) [![Last commit](https://img.shields.io/github/last-commit/nirholas/agenti?style=flat)](https://github.com/nirholas/agenti/commits) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat)](https://github.com/nirholas/agenti/pulls) [![AI agent friendly](https://img.shields.io/badge/AI%20agents-AGENTS.md%20%2B%20llms.txt-6d5dfc?style=flat)](https://github.com/nirholas/agenti/blob/HEAD/AGENTS.md)
-<!-- /three.ws:badges -->
 
  
 **The money layer for AI agents.** 
