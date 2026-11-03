@@ -5,7 +5,7 @@ import {
   mnemonicToSeedSync,
   validateMnemonic as bip39ValidateMnemonic,
 } from '@scure/bip39'
-import { wordlist } from '@scure/bip39/wordlists/english'
+import { wordlist } from '@scure/bip39/wordlists/english.js'
 import { HDKey } from '@scure/bip32'
 import { derivePath } from 'ed25519-hd-key'
 import type { EVMWallet, SolanaWallet, AgentiWallet } from './types.js'
