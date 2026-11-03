@@ -33,7 +33,7 @@ async function findUsdcTransfer() {
     if (err) continue
     const tx = await connection.getTransaction(signature, {
       commitment: 'confirmed',
-      maxSupportedTransactionVersion: 0,
+      maxSupportedTransactionVersion: 1,
     })
     if (!tx?.meta) continue
 
