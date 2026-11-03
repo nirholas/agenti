@@ -321,8 +321,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@pump-fun/pump-swap-sdk':
-        specifier: ^2.1.0
-        version: 2.1.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
+        specifier: ^2.2.0
+        version: 2.2.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@solana/spl-token':
         specifier: ^0.4.13
         version: 0.4.14(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
@@ -2598,8 +2598,8 @@ packages:
     resolution: {integrity: sha512-DuBZ5ge3OJPao6m0aZZj+GTZFzfZ/TU3ca1EgL9ejr+8QIYETlLQVMaiznS+U4uGzM9z58mpxoXn3HuVEYHCFw==}
     engines: {node: '>=16'}
 
-  '@pump-fun/pump-swap-sdk@2.1.0':
-    resolution: {integrity: sha512-O0ulb5In/pMzxpcWIkzU17N27HQNZhGGof4fhgXZUkRj/vDbrZsDrViNoouhR52bvtfRf61e/bSvEg/h+35ueA==}
+  '@pump-fun/pump-swap-sdk@2.2.0':
+    resolution: {integrity: sha512-YGHDcLexyL6/N8lDcLMmFBX6o5l7X0Nxqf2kzjRJ96plLatFZ9LXNJZErdl9yySe3dpKpO+/nzQHL4dHtL7nmQ==}
     engines: {node: '>=16'}
 
   '@pythnetwork/client@2.22.1':
@@ -12137,7 +12137,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@pump-fun/pump-swap-sdk@2.1.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)':
+  '@pump-fun/pump-swap-sdk@2.2.0(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
       '@coral-xyz/anchor': 0.31.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@solana/spl-token': 0.4.14(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6))(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@6.0.6)
