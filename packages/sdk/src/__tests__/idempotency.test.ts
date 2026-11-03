@@ -154,6 +154,7 @@ describe('pay() idempotency', () => {
     const second = mockPaidEndpoint('9000000')
     await pay('https://example.com/api', EVM_WALLET, SOLANA_WALLET, {
       headers: { 'Idempotency-Key': 'reused' },
+      maxAmount: '10000000',
     })
 
     expect(nonceOf(first.presented[0] as string)).not.toBe(nonceOf(second.presented[0] as string))

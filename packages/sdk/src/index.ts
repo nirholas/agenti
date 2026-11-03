@@ -1,6 +1,17 @@
 export { agenti } from './agenti.js'
 export type { AgentiConfig, AgentiInstance } from './agenti.js'
+export { pay } from './pay.js'
 export type { PayOptions } from './pay.js'
+// Official x402 client (@x402/core + evm + svm) wired with agenti wallets,
+// usable directly with @x402/fetch or @x402/axios.
+export {
+  createAgentiX402Client,
+  LEGACY_EVM_NETWORKS,
+  LEGACY_SOLANA_NETWORKS,
+  SOLANA_MAINNET_CAIP2,
+  SOLANA_DEVNET_CAIP2,
+} from './x402/client.js'
+export type { AgentiX402ClientOptions } from './x402/client.js'
 export { getBalances } from './balance.js'
 export {
   generateWallet, walletFromKeys,

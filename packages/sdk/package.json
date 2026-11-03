@@ -19,34 +19,34 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./eliza": {
+      "types": "./dist/frameworks/eliza.d.ts",
       "import": "./dist/frameworks/eliza.js",
-      "require": "./dist/frameworks/eliza.cjs",
-      "types": "./dist/frameworks/eliza.d.ts"
+      "require": "./dist/frameworks/eliza.cjs"
     },
     "./langchain": {
+      "types": "./dist/frameworks/langchain.d.ts",
       "import": "./dist/frameworks/langchain.js",
-      "require": "./dist/frameworks/langchain.cjs",
-      "types": "./dist/frameworks/langchain.d.ts"
+      "require": "./dist/frameworks/langchain.cjs"
     },
     "./vercel-ai": {
+      "types": "./dist/frameworks/vercel-ai.d.ts",
       "import": "./dist/frameworks/vercel-ai.js",
-      "require": "./dist/frameworks/vercel-ai.cjs",
-      "types": "./dist/frameworks/vercel-ai.d.ts"
+      "require": "./dist/frameworks/vercel-ai.cjs"
     },
     "./events": {
+      "types": "./dist/events.d.ts",
       "import": "./dist/events.js",
-      "require": "./dist/events.cjs",
-      "types": "./dist/events.d.ts"
+      "require": "./dist/events.cjs"
     },
     "./serve": {
+      "types": "./dist/serve.d.ts",
       "import": "./dist/serve.js",
-      "require": "./dist/serve.cjs",
-      "types": "./dist/serve.d.ts"
+      "require": "./dist/serve.cjs"
     }
   },
   "main": "./dist/index.cjs",
@@ -95,9 +95,13 @@
     "@msgpack/msgpack": "^3.1.3",
     "@pump-fun/pump-sdk": "^4.3.1",
     "@pump-fun/pump-swap-sdk": "^2.2.0",
+    "@solana/kit": "^8.0.0",
     "@solana/spl-token": "^0.4.15",
     "@solana/web3.js": "^1.99.0",
     "@types/bn.js": "^5.2.0",
+    "@x402/core": "~2.29.0",
+    "@x402/evm": "~2.29.0",
+    "@x402/svm": "~2.29.0",
     "bn.js": "^5.2.2",
     "bs58": "^5.0.0",
     "helius-sdk": "^2.2.2",

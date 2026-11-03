@@ -45,6 +45,7 @@ function makeV2HeaderValue() {
         payTo: RECIPIENT,
         maxTimeoutSeconds: 300,
         asset: USDC_BASE,
+        extra: { name: 'USD Coin', version: '2' },
       },
     ],
   }
@@ -118,11 +119,13 @@ describe('x402 flow', () => {
     await pay('https://example.com/resource', EVM_WALLET, SOLANA_WALLET)
     const [, retryOpts] = mockFetch.mock.calls[1] as [string, RequestInit]
     const headers = retryOpts.headers as Record<string, string>
-    // v2 sets both PAYMENT-SIGNATURE and X-Payment
+    // v2 carries the payment in PAYMENT-SIGNATURE only, echoing the accepted option
     expect(headers['PAYMENT-SIGNATURE']).toBeDefined()
+    expect(headers['X-Payment']).toBeUndefined()
     const decoded = JSON.parse(Buffer.from(headers['PAYMENT-SIGNATURE']!, 'base64').toString())
     expect(decoded.x402Version).toBe(2)
-    expect(decoded.network).toBe('eip155:8453')
+    expect(decoded.accepted.network).toBe('eip155:8453')
+    expect(decoded.accepted.amount).toBe('500000')
     expect(decoded.payload.authorization.value).toBe('500000')
   })
 

@@ -526,6 +526,7 @@ export async function acceptPayment(
 export function createX402Fetch(
   configOrKeypair: X402ClientConfig | Keypair,
   connection: Connection,
+  overrides?: Pick<X402ClientConfig, 'network' | 'confirmationTimeoutMs'>,
 ): (input: string | URL | Request, init?: RequestInit) => Promise<Response> {
   let config: X402ClientConfig & { connection: Connection }
 
@@ -549,6 +550,8 @@ export function createX402Fetch(
   } else {
     config = { ...configOrKeypair, connection }
   }
+  if (overrides?.network) config.network = overrides.network
+  if (overrides?.confirmationTimeoutMs) config.confirmationTimeoutMs = overrides.confirmationTimeoutMs
 
   const { payer, signTransaction, sendTransaction, network = SOLANA_MAINNET, confirmationTimeoutMs = 30_000 } = config
 

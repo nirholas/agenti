@@ -27,8 +27,54 @@ console.log(await response.json())
 ```
 
 If the endpoint answers `402 Payment Required`, the SDK reads the payment
-requirements, signs an EIP-3009 authorization, and replays the request with the
-payment attached. Both x402 v1 and v2 are handled, on EVM chains and Solana.
+requirements, signs the payment, and replays the request with it attached.
+Parsing, signing and header encoding come from the official `@x402/core`,
+`@x402/evm` and `@x402/svm` packages, so any conformant x402 v1 or v2 server
+works: EVM (EIP-3009 and Permit2) and Solana.
+
+### Spend limits
+
+By default a payment is limited to well-known stablecoins and **$1** (the
+reference client's default). Set your own ceiling in atomic units, which
+replaces the $1 cap and applies to every asset:
+
+```ts
+await client.pay(url, { maxAmount: '5000000' })        // at most 5 USDC
+await client.pay(url, { spendControls: { maxAmountPerPayment: '$10' } })
+await client.pay(url, { spendControls: { allowedAssets: true } })  // any token
+```
+
+Options over the ceiling are never signed. If every offered option is over it,
+`pay()` throws before anything is signed.
+
+### Choosing a network
+
+When a server offers several networks, prefer one and keep the rest as
+fallbacks. An option that cannot be paid (no key, over a limit, RPC failure
+before signing) falls through to the next:
+
+```ts
+await client.pay(url, { preferNetworks: ['solana:*', 'eip155:8453'] })
+```
+
+Solana payments use `solanaRpcUrl`, then `SOLANA_RPC_URL`, then the public
+endpoint for the cluster being paid. Challenges with a facilitator fee payer
+use the official `@x402/svm` flow; agenti's own self-settled Solana gates
+(below) are paid by submitting the transfer and presenting its signature.
+
+### Use the official client directly
+
+`createAgentiX402Client()` returns an `@x402/core` `x402Client` already wired
+with your wallets, for use with `@x402/fetch`, `@x402/axios` or your own
+transport:
+
+```ts
+import { createAgentiX402Client } from '@agenti/sdk'
+import { wrapFetchWithPayment } from '@x402/fetch'
+
+const x402 = createAgentiX402Client({ evm: wallet.evm, solana: wallet.solana })
+const paidFetch = wrapFetchWithPayment(fetch, x402)
+```
 
 ### Retries that do not pay twice
 
