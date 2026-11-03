@@ -27,6 +27,7 @@ import {
   getVolatility,
 } from '@agenti/sdk'
 import { PublicKey } from '@solana/web3.js'
+import { TOOLS as MARKET_TOOLS, createToolContext as createMarketContext, configFromEnv as marketConfigFromEnv, toText as marketToText, clipText as marketClip } from '@agenti/market'
 import { evmKeyParam, mnemonicParam, resolveEvmKey, resolveMnemonic, secretsAllowed, assertMaySurfaceSecrets } from './secrets.js'
 
 export function createServer(): McpServer {
@@ -34,6 +35,13 @@ export function createServer(): McpServer {
     name: 'agenti',
     version: '0.1.0',
   })
+
+  const registeredNames: string[] = []
+  const originalTool = server.tool.bind(server) as (...a: unknown[]) => unknown
+  ;(server as unknown as { tool: (...a: unknown[]) => unknown }).tool = (...a: unknown[]) => {
+    registeredNames.push(a[0] as string)
+    return originalTool(...a)
+  }
 
   server.tool(
     'create_wallet',
@@ -1508,6 +1516,24 @@ export function createServer(): McpServer {
       }
     }
   )
+
+  // Market, news, DeFi, derivatives and on-chain data (@agenti/market).
+  // Names already defined above (e.g. search_coins) keep their original handler.
+  const marketCtx = createMarketContext(marketConfigFromEnv())
+  const taken = new Set<string>(registeredNames)
+  for (const tool of MARKET_TOOLS) {
+    if (taken.has(tool.name)) continue
+    taken.add(tool.name)
+    server.tool(tool.name, tool.description, tool.input, async (args: unknown) => {
+      try {
+        const result = await tool.run(args as never, marketCtx)
+        return { content: [{ type: 'text' as const, text: marketClip(marketToText(result)) }] }
+      } catch (error) {
+        const message = error instanceof Error ? error.message.split('\n')[0] : String(error)
+        return { content: [{ type: 'text' as const, text: message ?? 'Unknown error' }], isError: true }
+      }
+    })
+  }
 
   return server
 }

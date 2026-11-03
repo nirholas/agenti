@@ -253,11 +253,30 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/market:
+    dependencies:
+      zod:
+        specifier: ^3.23.0
+        version: 3.25.76
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.32)(tsx@4.23.15)(typescript@5.9.3)(yaml@2.9.1)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^5.0.5
+        version: 5.0.5(@opentelemetry/api@1.9.0)(@types/node@24.19.2)(vite@7.3.7(@types/node@24.19.2)(tsx@4.23.15)(yaml@2.9.1))
+
   packages/mcp:
     dependencies:
       '@agenti/core':
         specifier: workspace:*
         version: link:../core
+      '@agenti/market':
+        specifier: workspace:*
+        version: link:../market
       '@agenti/sdk':
         specifier: workspace:*
         version: link:../sdk
@@ -18451,7 +18470,7 @@ snapshots:
       source-map: 0.7.6
       sucrase: 3.35.1
       tinyexec: 0.3.2
-      tinyglobby: 0.2.16
+      tinyglobby: 0.2.17
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.5.32
