@@ -30,9 +30,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^26.6.6",
     "tsup": "^8.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@agenti/sdk": "workspace:*",
