@@ -26,9 +26,28 @@ import {
   detectAnomalies,
   getVolatility,
 } from '@agenti/sdk'
-import { PublicKey } from '@solana/web3.js'
+import { Keypair, PublicKey } from '@solana/web3.js'
+import { privateKeyToAccount } from 'viem/accounts'
+import type { EVMWallet, SolanaWallet } from '@agenti/core'
 import { TOOLS as MARKET_TOOLS, createToolContext as createMarketContext, configFromEnv as marketConfigFromEnv, toText as marketToText, clipText as marketClip } from '@agenti/market'
+import { connectMcp, connectPaidMcp } from './paid-mcp.js'
 import { evmKeyParam, mnemonicParam, resolveEvmKey, resolveMnemonic, secretsAllowed, assertMaySurfaceSecrets } from './secrets.js'
+
+/** Wallets for paying x402 challenges, from the server environment. */
+function paymentWallets(evmKeyArg: string | undefined): { evm?: EVMWallet; solana?: SolanaWallet } {
+  const evmKey = resolveEvmKey(evmKeyArg)
+  const solanaHex = process.env['AGENTI_SOLANA_PRIVATE_KEY']
+  const wallets: { evm?: EVMWallet; solana?: SolanaWallet } = {}
+  if (evmKey) wallets.evm = { address: privateKeyToAccount(evmKey).address, privateKey: evmKey }
+  if (solanaHex) {
+    const keypair = Keypair.fromSecretKey(Buffer.from(solanaHex, 'hex'))
+    wallets.solana = { address: keypair.publicKey.toBase58(), privateKey: keypair.secretKey }
+  }
+  if (!wallets.evm && !wallets.solana) {
+    throw new Error('Set AGENTI_EVM_PRIVATE_KEY or AGENTI_SOLANA_PRIVATE_KEY in the MCP server environment to pay for MCP tools.')
+  }
+  return wallets
+}
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -1513,6 +1532,72 @@ export function createServer(): McpServer {
       const result = await jupiterSwap({ inputMint: input_mint, outputMint: output_mint, amount, inputDecimals: input_decimals, slippageBps: slippage_bps, priorityLevel: priority_level, keypair, connection })
       return {
         content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+      }
+    }
+  )
+
+  server.tool(
+    'list_mcp_tools',
+    'List the tools another MCP server offers, with the x402 price of each paid tool when the server advertises one',
+    {
+      server_url: z.string().url().describe('Streamable HTTP (or SSE) endpoint of the MCP server, e.g. https://tools.example/mcp'),
+    },
+    async ({ server_url }) => {
+      const remote = await connectMcp(server_url)
+      try {
+        const { tools } = await remote.listTools()
+        const listed = tools.map((tool) => ({
+          name: tool.name,
+          description: tool.description,
+          price: typeof tool._meta?.['x402/price'] === 'string' ? tool._meta['x402/price'] : undefined,
+          input: tool.inputSchema,
+        }))
+        return { content: [{ type: 'text' as const, text: JSON.stringify(listed, null, 2) }] }
+      } finally {
+        await remote.close()
+      }
+    }
+  )
+
+  server.tool(
+    'call_mcp_tool',
+    'Call a tool on another MCP server, paying for it with x402 when the tool is paid (USDC on Base or Solana). ' +
+      'Payments are limited to well-known stablecoins and $1 per call unless max_amount is set.',
+    {
+      server_url: z.string().url().describe('Streamable HTTP (or SSE) endpoint of the MCP server'),
+      tool: z.string().min(1).describe('Name of the tool to call'),
+      arguments: z.record(z.string(), z.unknown()).optional().describe('Arguments for the tool, as an object'),
+      max_amount: z
+        .string()
+        .regex(/^\d+$/)
+        .optional()
+        .describe('Most you will pay for this call, in the asset\'s smallest unit ("1000000" = 1 USDC). Offers above it are refused before signing.'),
+      ...evmKeyParam(),
+    },
+    async ({ server_url, tool, arguments: args, max_amount, evm_private_key }) => {
+      const wallets = paymentWallets(evm_private_key)
+      const remote = await connectPaidMcp(server_url, {
+        ...wallets,
+        ...(max_amount ? { maxAmount: max_amount } : {}),
+      })
+      try {
+        const result = await remote.callTool(tool, args ?? {})
+        const receipt = result.paymentResponse
+        const summary = {
+          paid: result.paymentMade,
+          ...(receipt
+            ? { payment: { success: receipt.success, transaction: receipt.transaction, network: receipt.network, payer: receipt.payer } }
+            : {}),
+        }
+        return {
+          content: [...(result.content as Array<{ type: 'text'; text: string }>), { type: 'text' as const, text: JSON.stringify(summary) }],
+          ...(result.isError ? { isError: true } : {}),
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        return { content: [{ type: 'text' as const, text: `Could not call ${tool} on ${server_url}: ${message}` }], isError: true }
+      } finally {
+        await remote.close()
       }
     }
   )

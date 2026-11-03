@@ -77,6 +77,13 @@ Tool arguments and results land in the model's context and in client logs, so ke
 **Gift cards and top-ups**: `bitrefill_search`, `bitrefill_get_featured`,
 `bitrefill_create_invoice`, `bitrefill_check_order`, `bitrefill_get_categories`.
 
+**Paid MCP tools on other servers**: `list_mcp_tools` shows a remote server's
+tools with their x402 prices; `call_mcp_tool` calls one and pays for it when it
+answers with an x402 payment request (EVM via `AGENTI_EVM_PRIVATE_KEY`, Solana
+via `AGENTI_SOLANA_PRIVATE_KEY`). Pass `max_amount` in the asset's smallest unit
+(`"10000"` is $0.01 USDC) to cap what one call may cost; without it the cap is
+$1. The result includes the settlement receipt (`transaction`, `network`, `payer`).
+
 ## Use it as a library
 
 ```ts
@@ -86,6 +93,28 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 const server = createServer()
 await server.connect(new StdioServerTransport())
 ```
+
+## Pay for paid MCP tools from code
+
+`connectPaidMcp` wraps the official `@x402/mcp` client with agenti wallets. It
+connects over Streamable HTTP (falling back to SSE), signs payments when a tool
+asks for one, and refuses anything above `maxAmount`.
+
+```ts
+import { connectPaidMcp } from '@agenti/mcp'
+
+const mcp = await connectPaidMcp('https://tools.example/mcp', {
+  evm: { address: '0x...', privateKey: process.env.AGENTI_EVM_PRIVATE_KEY },
+  maxAmount: '50000', // at most $0.05 USDC per call
+})
+const result = await mcp.callTool('forecast', { symbol: 'SOL' })
+console.log(result.paymentMade, result.paymentResponse?.transaction)
+await mcp.close()
+```
+
+`withAgentiPayments(client, options)` does the same for a client you connect
+yourself, and `onPaymentRequested` lets you approve or refuse each payment. To
+sell tools instead, see [`@agenti/gateway`](../gateway#charge-for-mcp-tools).
 
 ## Spending safety
 

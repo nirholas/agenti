@@ -174,6 +174,8 @@ The `@agenti/mcp` package turns every tool in the SDK into an MCP tool that any 
 | `pay` | Fetch a URL — if it returns 402, payment is handled automatically |
 | `create_invoice` | Generate a payment request with an address and expiry |
 | `check_payment` | Verify on-chain whether a payment was received |
+| `list_mcp_tools` | List a remote MCP server's tools with their x402 prices |
+| `call_mcp_tool` | Call a tool on a remote MCP server, paying for it with x402 when it asks, capped by `max_amount` |
 
 Once configured, you can tell any LLM: *"Pay for this API and summarize the response"* — and it will.
 
@@ -806,7 +808,7 @@ A research agent needs to access premium data sources, academic paper APIs, fina
 Agents list their capabilities (code review, data analysis, image generation, translation) at a price in USDC. Other agents browse the registry, pay, and receive the output — fully automated. Agenti provides the payment rails that make agent economies real.
 
 ### Paid MCP Servers
-Any MCP server can gate its tools behind a micropayment. The client (Claude, Cursor, etc.) pays automatically using agenti before calling the tool. This creates a new monetization model for MCP tool authors — you get paid every time an AI uses your tool.
+Any MCP server can charge per tool call. Sellers price their own tools with `mcpPaywall`, or resell any existing server with one command: `agenti-gateway mcp --stdio "<server>" --price '*=$0.01' --pay-to-evm 0x...`. Agents pay with `connectPaidMcp` or the `call_mcp_tool` MCP tool, within a per-call `maxAmount`. Both sides use the official `@x402/mcp` transport, and a tool that fails is never settled. See [`@agenti/gateway`](./packages/gateway#charge-for-mcp-tools).
 
 ### Multi-Agent Pipelines & Agentic Workflows
 An orchestrator agent breaks a complex task into sub-tasks, delegates to specialist agents, and pays each one on completion. Budget is allocated at the start, spent as work is done, and unused balance is returned. Agenti handles the entire financial layer of the pipeline.

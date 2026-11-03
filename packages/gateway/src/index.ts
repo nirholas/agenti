@@ -25,9 +25,18 @@ export interface RoutePrice {
   mimeType?: string
 }
 
-export interface PaywallOptions {
-  /** Route table. Keys are "METHOD /path" (wildcards allowed, e.g. "GET /api/premium/*"). */
-  routes: Record<string, string | RoutePrice>
+function resolveNetwork(n: string): string {
+  return (NETWORKS as Record<string, string>)[n] ?? n
+}
+
+function family(network: string): 'evm' | 'svm' {
+  if (network.startsWith('eip155:')) return 'evm'
+  if (network.startsWith('solana:')) return 'svm'
+  throw new Error(`Unsupported network "${network}". Use an eip155:* or solana:* CAIP-2 id, or one of: ${Object.keys(NETWORKS).join(', ')}`)
+}
+
+/** Who gets paid, on which networks, through which facilitator. Shared by every seller surface. */
+export interface SellerOptions {
   /** Where payments land. Provide one address per chain family you accept. */
   payTo: { evm?: string; svm?: string }
   /** Networks to accept, as aliases or raw CAIP-2 ids. Defaults to every chain you gave a payTo for, on mainnet. */
@@ -38,19 +47,55 @@ export interface PaywallOptions {
    * Mainnet requires one of the first two (for example a self-hosted @agenti/facilitator).
    */
   facilitator?: string | FacilitatorClient
+}
+
+export interface ResolvedSeller {
+  /** CAIP-2 network ids, in the order buyers see them. */
+  networks: string[]
+  /** Receiving address for a CAIP-2 network. */
+  payToFor(network: string): string
+  /** A resource server with the exact scheme registered on every network. */
+  server: x402ResourceServer
+}
+
+/**
+ * Validates seller config and builds the resource server. Throws on anything
+ * that would otherwise fail at payment time: no payTo, a network without a
+ * matching address, or mainnet with no facilitator to settle on.
+ */
+export function resolveSeller(options: SellerOptions, label = 'paywall'): ResolvedSeller {
+  const { payTo } = options
+  if (!payTo.evm && !payTo.svm) throw new Error(`${label}: payTo needs an evm and/or svm address`)
+
+  const networks = (options.networks ?? [payTo.evm ? 'base' : undefined, payTo.svm ? 'solana' : undefined].filter(Boolean) as string[]).map(resolveNetwork)
+  if (networks.length === 0) throw new Error(`${label}: networks is empty`)
+  for (const n of networks) {
+    if (!payTo[family(n)]) throw new Error(`${label}: network ${n} needs payTo.${family(n)}`)
+  }
+
+  const facilitatorUrl = typeof options.facilitator === 'string' ? options.facilitator : undefined
+  const configured = facilitatorUrl ?? process.env['AGENTI_FACILITATOR_URL']
+  if (!options.facilitator && !configured && networks.some((n) => !TESTNETS.has(n))) {
+    throw new Error(
+      `${label}: mainnet networks need a facilitator. Pass \`facilitator\` or set AGENTI_FACILITATOR_URL (see @agenti/facilitator to self-host one).`,
+    )
+  }
+  const client: FacilitatorClient =
+    typeof options.facilitator === 'object' ? options.facilitator : new HTTPFacilitatorClient({ url: configured ?? TESTNET_FACILITATOR })
+
+  const server = new x402ResourceServer(client)
+  for (const n of networks) {
+    server.register(n as never, family(n) === 'evm' ? new ExactEvmScheme() : new ExactSvmScheme())
+  }
+  return { networks, payToFor: (n) => payTo[family(n)] as string, server }
+}
+
+export interface PaywallOptions extends SellerOptions {
+  /** Route table. Keys are "METHOD /path" (wildcards allowed, e.g. "GET /api/premium/*"). */
+  routes: Record<string, string | RoutePrice>
   paywall?: PaywallConfig
   /** Skip fetching supported kinds from the facilitator at startup. */
   syncFacilitatorOnStart?: boolean
-}
-
-function resolveNetwork(n: string): string {
-  return (NETWORKS as Record<string, string>)[n] ?? n
-}
-
-function family(network: string): 'evm' | 'svm' {
-  if (network.startsWith('eip155:')) return 'evm'
-  if (network.startsWith('solana:')) return 'svm'
-  throw new Error(`Unsupported network "${network}". Use an eip155:* or solana:* CAIP-2 id, or one of: ${Object.keys(NETWORKS).join(', ')}`)
 }
 
 /**
@@ -65,37 +110,15 @@ function family(network: string): 'evm' | 'svm' {
  * ```
  */
 export function paywall(options: PaywallOptions): ReturnType<typeof paymentMiddleware> {
-  const { routes, payTo } = options
+  const { routes } = options
   if (Object.keys(routes).length === 0) throw new Error('paywall: routes is empty')
-  if (!payTo.evm && !payTo.svm) throw new Error('paywall: payTo needs an evm and/or svm address')
-
-  const networks = (options.networks ?? [payTo.evm ? 'base' : undefined, payTo.svm ? 'solana' : undefined].filter(Boolean) as string[]).map(resolveNetwork)
-  for (const n of networks) {
-    if (!payTo[family(n)]) throw new Error(`paywall: network ${n} needs payTo.${family(n)}`)
-  }
-
-  const facilitatorUrl = typeof options.facilitator === 'string' ? options.facilitator : undefined
-  const configured = facilitatorUrl ?? process.env['AGENTI_FACILITATOR_URL']
-  if (!options.facilitator && !configured && networks.some((n) => !TESTNETS.has(n))) {
-    throw new Error(
-      'paywall: mainnet networks need a facilitator. Pass `facilitator` or set AGENTI_FACILITATOR_URL (see @agenti/facilitator to self-host one).',
-    )
-  }
-  const client: FacilitatorClient =
-    typeof options.facilitator === 'object' ? options.facilitator : new HTTPFacilitatorClient({ url: configured ?? TESTNET_FACILITATOR })
-
-  const server = new x402ResourceServer(client)
-  const registered = new Set<string>()
-  for (const n of networks) {
-    server.register(n as never, family(n) === 'evm' ? new ExactEvmScheme() : new ExactSvmScheme())
-    registered.add(n)
-  }
+  const { networks, payToFor, server } = resolveSeller(options)
 
   const table: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(routes)) {
     const spec = typeof value === 'string' ? { price: value } : value
     table[key] = {
-      accepts: networks.map((n) => ({ scheme: 'exact', price: spec.price, network: n, payTo: payTo[family(n)] })),
+      accepts: networks.map((n) => ({ scheme: 'exact', price: spec.price, network: n, payTo: payToFor(n) })),
       ...(spec.description ? { description: spec.description } : {}),
       ...(spec.mimeType ? { mimeType: spec.mimeType } : {}),
     }
@@ -103,5 +126,16 @@ export function paywall(options: PaywallOptions): ReturnType<typeof paymentMiddl
 
   return paymentMiddleware(table as never, server, options.paywall, undefined, options.syncFacilitatorOnStart)
 }
+
+export {
+  mcpPaywall,
+  monetizeMcp,
+  serveMcpOverHttp,
+  type McpPaywall,
+  type McpPaywallOptions,
+  type McpToolPrice,
+  type MonetizeMcpOptions,
+  type ServeMcpOverHttpOptions,
+} from './mcp.js'
 
 export { x402ResourceServer, paymentMiddleware } from '@x402/express'

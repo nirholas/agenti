@@ -2,10 +2,36 @@ import express from 'express'
 import type { Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { paywall, NETWORKS } from '../index.js'
+import { mcpPaywall, paywall, NETWORKS } from '../index.js'
 
 const EVM = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1'
 const SVM = '11111111111111111111111111111112'
+
+describe('MCP paywall config validation', () => {
+  it('requires a payTo address', () => {
+    expect(() => mcpPaywall({ payTo: {} })).toThrow(/mcpPaywall: payTo/)
+  })
+  it('requires a payTo for each requested chain', () => {
+    expect(() => mcpPaywall({ payTo: { svm: SVM }, networks: ['base-sepolia'] })).toThrow(/payTo\.evm/)
+  })
+  it('refuses mainnet without a facilitator', () => {
+    const saved = process.env['AGENTI_FACILITATOR_URL']
+    delete process.env['AGENTI_FACILITATOR_URL']
+    try {
+      expect(() => mcpPaywall({ payTo: { evm: EVM } })).toThrow(/mainnet networks need a facilitator/)
+    } finally {
+      if (saved !== undefined) process.env['AGENTI_FACILITATOR_URL'] = saved
+    }
+  })
+  it('offers every requested testnet in order', () => {
+    const pw = mcpPaywall({ payTo: { evm: EVM, svm: SVM }, networks: ['base-sepolia', 'solana-devnet'] })
+    expect(pw.networks).toEqual([NETWORKS['base-sepolia'], NETWORKS['solana-devnet']])
+  })
+  it('rejects a malformed tool price up front', () => {
+    const pw = mcpPaywall({ payTo: { evm: EVM }, networks: ['base-sepolia'] })
+    expect(() => pw.charge('t', 'ten cents', async () => ({ content: [] }))).toThrow(/Invalid price "ten cents"/)
+  })
+})
 
 describe('config validation', () => {
   it('rejects an empty route table', () => {

@@ -87,6 +87,17 @@ export interface AgentiX402ClientOptions {
    * per payment. Pass `false` to disable when you enforce limits yourself.
    */
   spendControls?: SpendControls | false
+  /**
+   * Hard ceiling per payment, in the asset's smallest unit (e.g. "1000000" =
+   * 1 USDC). Options above it are dropped before anything is signed. When
+   * set without `spendControls`, it replaces the reference $1 USD cap.
+   */
+  maxAmount?: string | bigint
+}
+
+function atomicAmount(requirements: PaymentRequirements): bigint | undefined {
+  const raw = (requirements as PaymentRequirements & { maxAmountRequired?: string }).maxAmountRequired ?? requirements.amount
+  return typeof raw === 'string' && /^\d+$/.test(raw) ? BigInt(raw) : undefined
 }
 
 function readEnv(name: string): string | undefined {
@@ -242,6 +253,17 @@ export function createAgentiX402Client(options: AgentiX402ClientOptions): x402Cl
     }
   }
 
-  if (options.spendControls !== undefined) client.setSpendControls(options.spendControls)
+  if (options.maxAmount !== undefined) {
+    const cap = BigInt(options.maxAmount)
+    client.registerPolicy((_version, accepts) =>
+      accepts.filter((requirements) => {
+        const amount = atomicAmount(requirements)
+        return amount !== undefined && amount <= cap
+      }),
+    )
+  }
+  const controls =
+    options.spendControls ?? (options.maxAmount !== undefined ? { maxAmountPerPayment: false as const } : undefined)
+  if (controls !== undefined) client.setSpendControls(controls)
   return client
 }

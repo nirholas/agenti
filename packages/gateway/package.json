@@ -4,7 +4,7 @@
   "type": "module",
   "author": "nirholas",
   "license": "Apache-2.0",
-  "description": "Charge for any Express API or MCP tool with x402 in a few lines. USDC on Base and Solana, built on the official @x402/* packages",
+  "description": "Charge for any Express API or MCP tool with x402: an HTTP paywall, per-tool MCP pricing, and a CLI that resells any MCP server. USDC on Base and Solana, built on the official @x402/* packages",
   "repository": {
     "type": "git",
     "url": "https://github.com/nirholas/agenti"
@@ -17,6 +17,9 @@
     "access": "public"
   },
   "sideEffects": false,
+  "bin": {
+    "agenti-gateway": "./dist/bin.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,25 +36,27 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "build": "tsup src/index.ts --format esm,cjs --dts && tsup src/bin.ts --format esm --no-dts --platform node",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "clean": "rm -rf dist *.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
+    "express": "^5.1.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^5.0.5",
-    "express": "^5.1.0",
-    "@types/express": "^5.0.0"
+    "vitest": "^5.0.5"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@solana/kit": "^8.0.0",
     "@x402/core": "~2.29.0",
-    "@x402/express": "~2.29.0",
     "@x402/evm": "~2.29.0",
-    "@x402/svm": "~2.29.0",
-    "@solana/kit": "^8.0.0"
+    "@x402/express": "~2.29.0",
+    "@x402/mcp": "~2.29.0",
+    "@x402/svm": "~2.29.0"
   },
   "peerDependencies": {
     "express": "^4.22.3 || ^5.3.0"
