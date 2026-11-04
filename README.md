@@ -5,6 +5,8 @@
  
 **The money layer for AI agents.** 
 
+🌐 **Website:** https://agenti.cash
+
 An agent that can think but can't pay is half an agent. Agenti gives every AI — Claude, GPT-4, Llama, Gemini, or any custom LLM — the ability to hold, spend, earn, and receive cryptocurrency natively, autonomously, across any chain.
 
 ```ts
@@ -969,10 +971,11 @@ All rights reserved. See [LICENSE](LICENSE).
 
 ## Documentation
 
-Full documentation site: **https://nirholas.github.io/agenti/**
+Full documentation site: **https://agenti.cash**
 
 - [Getting started](docs/getting-started.md) covers install and first run.
 - [Examples](docs/examples.md) has copy-paste snippets.
+- [Deploying to Cloudflare Pages](docs/deploy-cloudflare.md) covers how agenti.cash is built and published.
 
 ## Star History
 
