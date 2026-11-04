@@ -30,6 +30,7 @@
     "overrides": {
       "@agenti/examples>langchain": "^1.6.0",
       "@ai-sdk/provider-utils@<3.0.28": "^3.0.28",
+      "@fastify/busboy@<3.2.2": "^3.2.2",
       "@grpc/grpc-js": ">=1.14.7",
       "@solana/web3.js": "^1.98.4",
       "@vue/server-renderer": "^3.5.44",
@@ -77,6 +78,7 @@
       "tmp": ">=0.2.6",
       "toml": ">=5.0.1",
       "typescript": "^5.9.3",
+      "undici@<6.29.1": "^6.29.1",
       "uuid@<11.1.1": "^11.1.1",
       "valibot@1": "^1.4.2",
       "vue": "^3.5.44",
