@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agenti Cloud — the money layer for AI agents</title>
+<meta name="description" content="Agenti Cloud gives AI agents wallets, x402 paywalls and a pay console, plus 59 market-data tools over REST and MCP. Sign in with an Ethereum or Solana wallet.">
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/kit/kit.css">
+<link rel="stylesheet" href="/agenti.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="logo-mark">A</span> Agenti Cloud</a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#live">Live data</a>
+      <a href="#how">How it works</a>
+      <a href="#api">API &amp; MCP</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div data-kit-auth></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">x402 payments · agent wallets · MCP</span>
+      <h1>The money layer<br><span class="grad">for AI agents.</span></h1>
+      <p class="lede">Give your agents wallets and let them pay for the APIs they call with x402 stablecoin micropayments. You can also put your own API behind a paywall and get paid per request in USDC. Agent wallets, paywalls, a pay console and 59 crypto market tools, available from the browser, a REST API or an MCP endpoint.</p>
+      <div class="row">
+        <a class="btn btn-primary btn-lg" href="/app/">Open the console</a>
+        <a class="btn btn-lg" href="#how">See how it works</a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/nirholas/agenti" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="live">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Live market data</h2>
+        <p>These prices come from the same feed as the market tools your agents call. The sources are CoinGecko and the alternative.me Fear &amp; Greed index, and the data is refreshed every minute.</p>
+      </div>
+      <div class="ticker" id="ticker" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Everything an agent needs to spend and earn</h2>
+        <p>Sign in with MetaMask, Rabby, Coinbase Wallet, Phantom or any EIP-6963 / Solana wallet. You don't need an email or a password.</p>
+      </div>
+      <div class="grid">
+        <div class="card feature"><div class="ico">◎</div><h3>Agent wallets</h3><p class="muted">Generate EVM or Solana keypairs in your browser, or register an address you already have. Private keys never leave the page. The console shows live ETH, SOL and USDC balances on Base, Ethereum, Solana and their testnets.</p></div>
+        <div class="card feature"><div class="ico">⇄</div><h3>x402 paywalls</h3><p class="muted">Put any HTTPS API behind a pay-per-request URL priced in USDC. Callers get an HTTP 402 with payment requirements, sign an EIP-3009 authorization and get the response. Payments are verified and settled through the x402.org facilitator.</p></div>
+        <div class="card feature"><div class="ico">↗</div><h3>Pay console</h3><p class="muted">Paste any x402 URL to see its price and accepted networks. Pay with an agent key or your connected wallet and inspect the response and the on-chain transaction. Speaks both x402 v1 and v2.</p></div>
+        <div class="card feature"><div class="ico">▤</div><h3>59 market tools</h3><p class="muted">Prices, OHLC, trending coins, DeFi TVL, yields, gas, DEX pairs, Fear &amp; Greed and more from the <code>@agenti/market</code> catalog. Each tool has a generated form, and its input is validated against the same Zod schema the agent sees.</p></div>
+        <div class="card feature"><div class="ico">⌁</div><h3>MCP endpoint</h3><p class="muted">Point Claude, Cursor or any MCP client at <code>/mcp</code> with an API key. You get every market tool plus wallet balances, x402 inspection and your paywalls and agent wallets.</p></div>
+        <div class="card feature"><div class="ico">⚿</div><h3>API keys &amp; usage</h3><p class="muted">Create scoped <code>sk_agenti_…</code> keys for agents and servers, then revoke them at any time. Each call is logged with its route and latency so you can see exactly what your agents did.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>From zero to a paid API call in four steps</h2>
+        <p>Everything below runs on Base Sepolia with test USDC. You can get test USDC for free from the Circle faucet.</p>
+      </div>
+      <div class="steps">
+        <div class="card"><h3>1. Sign in</h3><p class="muted">Connect a wallet and sign one message (SIWE or SIWS). Your session lasts 30 days.</p></div>
+        <div class="card"><h3>2. Fund an agent</h3><p class="muted">Generate an agent wallet and send it test USDC from <a href="https://faucet.circle.com" rel="noopener">faucet.circle.com</a>. Its balance shows up live.</p></div>
+        <div class="card"><h3>3. Publish a paywall</h3><p class="muted">Wrap an HTTPS endpoint, set a price such as 0.01 USDC and get a public <code>/x/…</code> URL.</p></div>
+        <div class="card"><h3>4. Pay for it</h3><p class="muted">Paste the URL into the pay console, sign and read the response. The settlement shows on Basescan, and your paywall's earnings update.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="api">
+    <div class="wrap grid-2">
+      <div>
+        <h2>Built for agents, not dashboards</h2>
+        <p class="muted">The console and the API run on the same routes. Create a key under <a href="/app/#keys">API keys</a> and call the routes from anywhere.</p>
+        <ul>
+          <li><code>POST /api/market/run/:tool</code> runs any of the 59 market tools</li>
+          <li><code>GET /api/balances?address=…</code> returns native and USDC balances</li>
+          <li><code>POST /api/pay/quote</code> and <code>/api/pay/submit</code> inspect an x402 resource and pay for it</li>
+          <li><code>POST /mcp</code> is a stateless MCP over Streamable HTTP (JSON-RPC)</li>
+          <li><code>/x/:id</code> is your public x402 paywall</li>
+        </ul>
+      </div>
+      <pre class="code"><span class="c"># Run a market tool</span>
+curl -s -X POST https://agenti.ninabrekkerese.workers.dev/api/market/run/get_price \
+  -H "authorization: Bearer $AGENTI_KEY" \
+  -H "content-type: application/json" \
+  -d '{"ids":"bitcoin,ethereum"}'
+
+<span class="c"># Add Agenti to an MCP client (mcp.json)</span>
+{
+  "mcpServers": {
+    "agenti": {
+      "url": "https://agenti.ninabrekkerese.workers.dev/mcp",
+      "headers": { "Authorization": "Bearer sk_agenti_…" }
+    }
+  }
+}</pre>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Pricing</h2>
+        <p>This is a public demo of Agenti. Paywalls settle in test USDC on Base Sepolia, so no real money changes hands unless you choose to pay a mainnet x402 URL yourself.</p>
+      </div>
+      <div class="grid">
+        <div class="card price featured">
+          <h3>Demo</h3>
+          <div class="v">$0</div>
+          <ul><li>50 agent wallets</li><li>25 paywalls on Base Sepolia</li><li>All 59 market tools and MCP</li><li>API keys and a full usage log</li></ul>
+          <a class="btn btn-primary" href="/app/">Start now</a>
+        </div>
+        <div class="card price">
+          <h3>Paywall fee</h3>
+          <div class="v">0%</div>
+          <ul><li>Payers pay your price, nothing added</li><li>USDC goes straight to your <code>payTo</code> address</li><li>Gas is covered by the x402 facilitator</li></ul>
+          <a class="btn" href="/app/#paywalls">Create a paywall</a>
+        </div>
+        <div class="card price">
+          <h3>Self-host</h3>
+          <div class="v">Source</div>
+          <ul><li><code>@agenti/core</code>, <code>sdk</code>, <code>mcp</code>, <code>market</code>, <code>gateway</code></li><li>Runs on Cloudflare Workers + D1</li><li>See the repository for license terms</li></ul>
+          <a class="btn" href="https://github.com/nirholas/agenti" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap row">
+    <span class="grow muted">Agenti Cloud · market data from CoinGecko, DefiLlama, alternative.me and other public APIs · x402 settlement by the x402.org facilitator</span>
+    <a href="https://github.com/nirholas/agenti" rel="noopener">GitHub</a>
+    <a href="/app/">Console</a>
+  </div>
+</footer>
+<script type="module" src="/landing.js"></script>
+</body>
+</html>

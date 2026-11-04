@@ -1,0 +1,36 @@
+:root { --accent: #0f9f74; --accent-2: #6366f1; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --accent: #34d399; --accent-2: #818cf8; } }
+:root[data-theme='dark'] { --accent: #34d399; --accent-2: #818cf8; }
+.logo-mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; font: 800 0.85rem var(--mono); }
+.ticker { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
+.ticker .card { padding: 16px 18px; }
+.coin { display: flex; gap: 8px; align-items: center; }
+.coin img { width: 20px; height: 20px; border-radius: 50%; }
+.delta.up { color: var(--ok); }
+.delta.down { color: var(--bad); }
+.form-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); align-items: end; }
+.form-grid .span { grid-column: 1 / -1; }
+.mt { margin-top: 18px; }
+.sk-sm { height: 14px; width: 45%; }
+.sk-lg { height: 26px; width: 70%; margin-top: 10px; }
+.sk-row { height: 38px; }
+.ticker-note { grid-column: 1 / -1; margin: 0; font-size: 0.85rem; }
+.callout.ok { border-color: var(--ok); }
+.callout.bad { border-color: var(--bad); }
+.callout.warn { border-color: var(--warn); }
+.callout h3 { margin-top: 0; }
+.secret { font-family: var(--mono); font-size: 0.82rem; word-break: break-all; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.opt { display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+.opt:hover, .opt:focus-within { border-color: var(--accent); }
+.opt.disabled { opacity: 0.55; cursor: not-allowed; }
+.opt input { margin-right: 8px; }
+.result-body { max-height: 420px; }
+.tool-list { display: grid; gap: 6px; max-height: 560px; overflow-y: auto; padding-right: 4px; }
+.tool-item { text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); cursor: pointer; font: inherit; }
+.tool-item:hover, .tool-item:focus-visible { border-color: var(--accent); outline: none; }
+.tool-item[aria-current='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.tool-item small { display: block; color: var(--ink-2); margin-top: 2px; }
+.netrow { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+.netrow:last-child { border-bottom: 0; }
+.tabular { font-variant-numeric: tabular-nums; }
+.input.input-auto { width: auto; }

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Console · Agenti Cloud</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/kit/kit.css">
+<link rel="stylesheet" href="/agenti.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="logo-mark">A</span> Agenti Cloud</a>
+    <nav class="nav-links"><a href="/">Home</a><a href="/#api">API &amp; MCP</a><a href="https://github.com/nirholas/agenti" rel="noopener">GitHub</a></nav>
+    <div data-kit-auth></div>
+  </div>
+</header>
+
+<main class="app-main wrap">
+  <div id="app" hidden>
+    <div class="app-head"><h1>Console</h1><span class="muted" id="who"></span></div>
+    <div class="tabs" role="tablist">
+      <button type="button" data-tab="overview" role="tab">Overview</button>
+      <button type="button" data-tab="wallets" role="tab">Agent wallets</button>
+      <button type="button" data-tab="paywalls" role="tab">Paywalls</button>
+      <button type="button" data-tab="pay" role="tab">Pay console</button>
+      <button type="button" data-tab="payments" role="tab">Payments</button>
+      <button type="button" data-tab="tools" role="tab">Market tools</button>
+      <button type="button" data-tab="mcp" role="tab">MCP</button>
+      <button type="button" data-tab="keys" role="tab">API keys</button>
+      <button type="button" data-tab="usage" role="tab">Usage</button>
+    </div>
+
+    <section data-panel="overview" class="stack">
+      <div class="grid" id="kpis"></div>
+      <div class="card stack">
+        <div class="row"><h3 class="grow">Recent payments</h3><a class="btn btn-sm btn-ghost" href="#payments">All payments</a></div>
+        <div id="recent"></div>
+      </div>
+      <div class="callout">
+        <strong>New here?</strong> Create a paywall in front of any HTTPS API, get free test USDC on Base Sepolia from the
+        <a href="https://faucet.circle.com" rel="noopener">Circle faucet</a>, then pay your own paywall from the Pay console.
+      </div>
+    </section>
+
+    <section data-panel="wallets" class="stack" hidden>
+      <div class="grid-2">
+        <div class="card stack">
+          <h3>Generate an agent wallet</h3>
+          <p class="muted">The key pair is generated in your browser. Only the public address is saved to Agenti Cloud; the secret is shown once and never leaves this page.</p>
+          <div class="row">
+            <button type="button" class="btn btn-primary" id="gen-evm">New EVM wallet</button>
+            <button type="button" class="btn" id="gen-sol">New Solana wallet</button>
+          </div>
+          <div id="gen-out" hidden></div>
+        </div>
+        <div class="card stack">
+          <h3>Register an existing address</h3>
+          <form id="wallet-form" class="stack">
+            <label class="field">Chain
+              <select class="input" name="chain"><option value="evm">EVM (Base, Polygon, Avalanche…)</option><option value="sol">Solana</option></select>
+            </label>
+            <label class="field">Address<input class="input" name="address" required maxlength="64" placeholder="0x… or base58" autocomplete="off" spellcheck="false"></label>
+            <label class="field">Label<input class="input" name="label" required maxlength="60" placeholder="research-agent"></label>
+            <div class="row end"><button class="btn btn-primary" type="submit">Add wallet</button></div>
+          </form>
+        </div>
+      </div>
+      <div class="card stack">
+        <div class="row"><h3 class="grow">Your agent wallets</h3><button type="button" class="btn btn-sm btn-ghost" id="wallets-reload">Refresh</button></div>
+        <div id="wallets"></div>
+      </div>
+    </section>
+
+    <section data-panel="paywalls" class="stack" hidden>
+      <div class="card stack">
+        <h3>Create a paywall</h3>
+        <p class="muted" id="pw-network">Callers pay in USDC per request. Settlement goes through the public x402.org facilitator.</p>
+        <form id="paywall-form" class="form-grid">
+          <label class="field">Name<input class="input" name="name" required maxlength="80" placeholder="Weather API"></label>
+          <label class="field">Price per call (USDC)<input class="input" name="price" required inputmode="decimal" pattern="\d{0,3}(\.\d{1,6})?" placeholder="0.01"></label>
+          <label class="field span">Upstream URL (HTTPS)<input class="input" name="upstream" required type="url" maxlength="500" placeholder="https://api.coingecko.com/api/v3/ping"></label>
+          <label class="field span">Pay to (EVM address, defaults to your signed-in wallet)<input class="input" name="payTo" maxlength="64" placeholder="0x…" autocomplete="off" spellcheck="false"></label>
+          <label class="field span">Description<input class="input" name="description" maxlength="280" placeholder="What callers get for their payment"></label>
+          <div class="row end span"><button class="btn btn-primary" type="submit">Create paywall</button></div>
+        </form>
+      </div>
+      <div class="card stack">
+        <div class="row"><h3 class="grow">Your paywalls</h3><button type="button" class="btn btn-sm btn-ghost" id="paywalls-reload">Refresh</button></div>
+        <div id="paywalls"></div>
+      </div>
+    </section>
+
+    <section data-panel="pay" class="stack" hidden>
+      <div class="card stack">
+        <h3>1. Inspect an x402 resource</h3>
+        <form id="quote-form" class="form-grid">
+          <label class="field span">URL<input class="input" name="url" required type="url" maxlength="1000" placeholder="https://agenti.ninabrekkerese.workers.dev/x/…"></label>
+          <label class="field">Method
+            <select class="input" name="method"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select>
+          </label>
+          <label class="field">JSON body (optional)<input class="input" name="body" maxlength="10000" placeholder='{"q":"btc"}'></label>
+          <div class="row end span"><span class="muted grow" id="my-paywalls"></span><button class="btn btn-primary" type="submit">Get quote</button></div>
+        </form>
+      </div>
+      <div id="quote-out" class="stack"></div>
+    </section>
+
+    <section data-panel="payments" class="stack" hidden>
+      <div class="card stack">
+        <div class="row">
+          <h3 class="grow">Payments</h3>
+          <select class="input input-auto" id="pay-dir" aria-label="Direction">
+            <option value="">All</option><option value="in">Received (paywalls)</option><option value="out">Sent (pay console)</option>
+          </select>
+        </div>
+        <div id="payments"></div>
+      </div>
+    </section>
+
+    <section data-panel="tools" class="stack" hidden>
+      <div class="grid-2">
+        <div class="card stack">
+          <input class="input" id="tool-filter" type="search" placeholder="Filter tools…" aria-label="Filter tools">
+          <div id="tool-list" class="tool-list"></div>
+        </div>
+        <div class="card stack" id="tool-pane"><p class="empty-inline muted">Pick a tool to run it with live data.</p></div>
+      </div>
+    </section>
+
+    <section data-panel="mcp" class="stack" hidden>
+      <div class="card stack">
+        <h3>Connect an MCP client</h3>
+        <p class="muted">Stateless Streamable HTTP endpoint. Authenticate with an API key from the API keys tab.</p>
+        <div class="row"><code class="grow trunc" id="mcp-url"></code><button type="button" class="btn btn-sm" id="mcp-copy">Copy URL</button></div>
+        <pre class="code" id="mcp-config"></pre>
+        <pre class="code" id="mcp-curl"></pre>
+      </div>
+      <div class="card stack">
+        <h3>Tools exposed</h3>
+        <div id="mcp-tools"></div>
+      </div>
+    </section>
+
+    <section data-panel="keys" class="stack" hidden><div id="keys"></div></section>
+    <section data-panel="usage" class="stack" hidden><div id="usage"></div></section>
+  </div>
+</main>
+
+<footer class="footer"><div class="wrap row"><span class="grow muted">Agenti Cloud demo · paywalls settle on Base Sepolia testnet</span><a href="https://github.com/nirholas/agenti" rel="noopener">Source</a></div></footer>
+<script type="module" src="/app/app.js"></script>
+</body>
+</html>
